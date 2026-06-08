@@ -2647,33 +2647,51 @@
   // これらは Mates が後から定義されたため、ここでフックを追加する。
   // ════════════════════════════════════════════════════════════════
   (function injectMatesHooks() {
-    var Score = GW.Modules.GLand.Score;
+  console.log('[GW] injectMatesHooks: starting');
 
-    // _updateCells に Mates 連携を追加
-    var origUpdateCells = Score._updateCells;
-    Score._updateCells = function () {
-      origUpdateCells.call(this);
-      try {
-        GW.Modules.GLand.Mates.updateMyColumn();
-      } catch (e) {}
-    };
+  if (!GW.Modules.GLand || !GW.Modules.GLand.Score) {
+    console.error('[GW] injectMatesHooks: GLand.Score が見つかりません');
+    return;
+  }
+  if (!GW.Modules.GLand.Mates) {
+    console.error('[GW] injectMatesHooks: GLand.Mates が見つかりません');
+    return;
+  }
 
-    // _render の最後で Mates.load() を呼ぶ
-    var origRender = Score._render;
-    Score._render = function () {
-      origRender.call(this);
-      try {
-        if (GW.Modules.GLand.state.subtab === 'score') {
-          GW.Modules.GLand.Mates.load();
-        }
-      } catch (e) {}
-    };
+  var Score = GW.Modules.GLand.Score;
 
-    // _openHoleZoom を Mates 版に差し替え（プレースホルダから本実装へ昇格）
-    Score._openHoleZoom = function (holeNo) {
-      GW.Modules.GLand.Mates.openZoom(holeNo);
-    };
-  })();
+  // _updateCells に Mates 連携を追加
+  var origUpdateCells = Score._updateCells;
+  Score._updateCells = function () {
+    origUpdateCells.call(this);
+    try {
+      GW.Modules.GLand.Mates.updateMyColumn();
+    } catch (e) {
+      console.warn('[GW.Mates] updateMyColumn failed:', e);
+    }
+  };
+
+  // _render の最後で Mates.load() を呼ぶ
+  var origRender = Score._render;
+  Score._render = function () {
+    origRender.call(this);
+    try {
+      // ★ subtab 判定を緩める：scoreタブにいない時もMates表は出してOK
+      //   （タブの状態に関わらず、スコア入力エリアの DOM に表は存在する）
+      GW.Modules.GLand.Mates.load();
+    } catch (e) {
+      console.warn('[GW.Mates] load from render failed:', e);
+    }
+  };
+
+  // _openHoleZoom を Mates 版に差し替え
+  Score._openHoleZoom = function (holeNo) {
+    GW.Modules.GLand.Mates.openZoom(holeNo);
+  };
+
+  console.log('[GW] injectMatesHooks: completed successfully');
+})();
+
 
   // ════════════════════════════════════════════════════════════════
   // ★Mates アクションを GW.Core.Action に登録
