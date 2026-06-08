@@ -2296,10 +2296,13 @@
 
     Mates: {
 
-      /** 同伴メンバー表をロード（スコア入力タブ表示時に呼ばれる） */
+      /** 同伴メンバー表をロード */
       load: function () {
         var st = GW.Modules.GLand.state;
-        if (!st.player || !st.player.courseId || !st.player.groupName) return;
+        if (!st.player || !st.player.courseId || !st.player.groupName) {
+          this._renderEmpty('プレイヤー情報なし');
+          return;
+        }
 
         // ── 仮IDのうちは自分のみで描画 ──
         if (String(st.player.playerId).indexOf('P_TMP_') === 0) {
@@ -2310,36 +2313,58 @@
               playerId: st.player.playerId,
               nickname: st.player.nickname,
               realName: st.player.realName,
-              strokes:  st.scores.map(function (s) { return s.stroke || 0; })
+              strokes: st.scores.map(function (s) { return s.stroke || 0; })
             }]
           };
           st.groupMates = soloData.members;
           this._render(soloData);
+          this._scheduleNextPoll();
           return;
         }
 
-        // ── キャッシュから即描画 ──
+        // ── キャッシュまたは自分のみで即描画 ──
         var cached = GW.Core.Cache.loadMates(st.player.courseId, st.player.groupName);
-        if (cached) {
-          st.groupMates = cached.members || [];
+        var pars = (GW.Core.State && GW.Core.State.pars) || new Array(18).fill(4);
+        var selfView = {
+          pars: pars,
+          members: [{
+            playerId: st.player.playerId,
+            nickname: st.player.nickname,
+            realName: st.player.realName,
+            strokes: st.scores.map(function (s) { return s.stroke || 0; })
+          }]
+        };
+
+        if (cached && cached.members && cached.members.length) {
+          st.groupMates = cached.members;
           this._render(cached);
+        } else {
+          st.groupMates = selfView.members;
+          this._render(selfView);
         }
 
         // ── サーバから最新取得 ──
-        var self = this;
         GW.Core.Api.call('gland.getMates', {
-          courseId:  st.player.courseId,
+          courseId: st.player.courseId,
           groupName: st.player.groupName,
-          playerId:  st.player.playerId
+          playerId: st.player.playerId
         }).then(function (res) {
-          if (res && res.members) {
-            self._render(res);
+          if (res && res.members && res.members.length > 0) {
+            st.groupMates = res.members;
             GW.Core.Cache.saveMates(st.player.courseId, st.player.groupName, res);
+            self._render(res);
           }
-        }).catch(function () {});
+        }).catch(function (err) {
+          console.warn('[GW.Mates] load failed:', err);
+        });
 
-        // ── 30秒ポーリング（スコア入力タブの時のみ）──
         this._scheduleNextPoll();
+      },
+
+      /** ★新規追加：空状態の描画 */
+      _renderEmpty: function (msg) {
+        var body = document.getElementById('gw-mate-table-body');
+        if (body) body.innerHTML = '<div style="color:var(--text-sub);font-size:13px;padding:10px;">' + (msg || '同伴メンバーなし') + '</div>';
       },
 
       /** 次回ポーリングをスケジュール */
