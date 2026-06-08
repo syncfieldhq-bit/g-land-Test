@@ -3066,6 +3066,11 @@
 
   console.log('[GW] all modules loaded:', Object.keys(GW.Modules));
 
+  // 画面読み込み完了時に裏でロードを開始
+window.addEventListener('load', function() {
+    console.log('[GW] 予備ロードを開始します');
+    GW.Modules.Mates.load(); // 1ホール目の入力を待たずにデータを先読み！
+});
   // ──────────────────────────────────────────────────────────
   // 即時実行関数を閉じる（ファイル末尾）
   // ──────────────────────────────────────────────────────────
