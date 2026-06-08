@@ -3301,6 +3301,268 @@ var timer = setInterval(function() {
   }
 })();
 
+// ════════════════════════════════════════════════════════════════
+// 【G-WORLD 画面制御モジュール】
+// 3画面（登録 / コース選択 / メイン）の切替を一元管理
+// - イベント委譲方式で Safari タッチ問題を解決
+// - try-catch でバリデーション失敗時もアプリを停止させない
+// - 二重バインド防止フラグ付き
+// ════════════════════════════════════════════════════════════════
+(function gwScreenController() {
+  'use strict';
+
+  // ─────────────────────────────────────────────
+  // 画面定義（追加時はここに足すだけ）
+  // ─────────────────────────────────────────────
+  var SCREENS = [
+    'gw-gland-register',
+    'gw-gland-course-select',
+    'gw-gland-main'
+  ];
+
+  var BIND_FLAG = '__gwScreenCtrlBound';
+  var TOUCH_LOCK_MS = 400;  // touch と click の重複発火を抑える時間
+  var lastActionAt = 0;     // 最後にアクションが走った時刻
+
+  // ─────────────────────────────────────────────
+  // ① 画面切替の中核関数（グローバル公開）
+  // ─────────────────────────────────────────────
+  window.gwShowScreen = function (targetId, options) {
+    options = options || {};
+    console.log('[GW.Screen] 切替先:', targetId);
+
+    if (!targetId) {
+      console.error('[GW.Screen] targetId が未指定');
+      return false;
+    }
+
+    var target = document.getElementById(targetId);
+    if (!target) {
+      console.error('[GW.Screen] 画面要素が見つかりません:', targetId);
+      return false;
+    }
+
+    // 全画面を一旦隠す
+    SCREENS.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.add('gw-hidden');
+    });
+
+    // 対象だけ表示
+    target.classList.remove('gw-hidden');
+
+    // スクロール位置リセット（任意）
+    if (options.scrollTop !== false) {
+      try { window.scrollTo(0, 0); } catch (e) {}
+    }
+
+    // 切替完了イベントを発火（他モジュールから捕捉可能）
+    try {
+      window.dispatchEvent(new CustomEvent('gw:screenChanged', {
+        detail: { screenId: targetId }
+      }));
+    } catch (e) { /* IE11 は無視 */ }
+
+    console.log('[GW.Screen] ✅ 切替完了:', targetId);
+    return true;
+  };
+
+  // ─────────────────────────────────────────────
+  // ② アクション辞書（data-action 値 → 処理）
+  //    追加時はこのオブジェクトに足すだけ
+  // ─────────────────────────────────────────────
+  var ACTIONS = {
+
+    // 登録 → コース選択
+    'register-profile': function (el, ev) {
+      // バリデーション
+      var nicknameEl = document.getElementById('gw-input-nickname');
+      var nickname = nicknameEl ? (nicknameEl.value || '').trim() : '';
+      if (!nickname) {
+        alert('ニックネームを入力してください');
+        if (nicknameEl) nicknameEl.focus();
+        return;
+      }
+
+      // データ保存（既存処理があれば呼ぶ）
+      try {
+        if (window.GW && GW.Modules && GW.Modules.GLand &&
+            typeof GW.Modules.GLand._register === 'function') {
+          GW.Modules.GLand._register();
+        } else {
+          // フォールバック: localStorage に直接保存
+          var realNameEl = document.getElementById('gw-input-realname');
+          var profile = {
+            nickname: nickname,
+            realName: realNameEl ? (realNameEl.value || '').trim() : '',
+            savedAt: new Date().toISOString()
+          };
+          localStorage.setItem('gw_profile', JSON.stringify(profile));
+          console.log('[GW.Screen] localStorage 保存:', profile);
+        }
+      } catch (e) {
+        console.error('[GW.Screen] 保存失敗 (続行):', e);
+      }
+
+      // 画面遷移（保存失敗しても遷移は実行）
+      window.gwShowScreen('gw-gland-course-select');
+    },
+
+    // コース選択 → メイン
+    'cs-confirm': function (el, ev) {
+      // 選択コースの確認
+      var courseId = el.getAttribute('data-course-id') ||
+                     (document.querySelector('.gw-cs-course.selected') || {}).getAttribute &&
+                     document.querySelector('.gw-cs-course.selected').getAttribute('data-course-id');
+
+      if (!courseId) {
+        alert('コースを選択してください');
+        return;
+      }
+
+      // データ保存
+      try {
+        localStorage.setItem('gw_selected_course', courseId);
+        if (window.GW && GW.Modules && GW.Modules.GLand && GW.Modules.GLand.state) {
+          GW.Modules.GLand.state.selectedCourseId = courseId;
+        }
+        console.log('[GW.Screen] コース確定:', courseId);
+      } catch (e) {
+        console.error('[GW.Screen] コース保存失敗 (続行):', e);
+      }
+
+      // 画面遷移
+      window.gwShowScreen('gw-gland-main');
+    },
+
+    // メイン → コース選択に戻る（任意）
+    'back-to-course': function (el, ev) {
+      if (confirm('コース選択に戻りますか？スコア入力中の場合は保存されます')) {
+        window.gwShowScreen('gw-gland-course-select');
+      }
+    },
+
+    // コース選択 → 登録に戻る（任意）
+    'back-to-register': function (el, ev) {
+      window.gwShowScreen('gw-gland-register');
+    }
+  };
+
+  // ─────────────────────────────────────────────
+  // ③ イベント委譲ハンドラ（document に1回だけ登録）
+  // ─────────────────────────────────────────────
+  function delegatedHandler(ev) {
+    // 連打 / touch+click 重複対策
+    var now = Date.now();
+    if (now - lastActionAt < TOUCH_LOCK_MS) {
+      return;
+    }
+
+    // data-action 属性を持つ最も近い祖先を探す
+    var el = ev.target;
+    while (el && el !== document) {
+      if (el.getAttribute && el.getAttribute('data-action')) break;
+      el = el.parentNode;
+    }
+    if (!el || el === document) return;
+
+    var action = el.getAttribute('data-action');
+    var handler = ACTIONS[action];
+    if (!handler) return;  // 別モジュールのアクションは無視
+
+    // ここから実行
+    lastActionAt = now;
+    ev.preventDefault();
+
+    // ハプティック（対応端末のみ）
+    try { if (navigator.vibrate) navigator.vibrate(10); } catch (e) {}
+
+    // 安全な実行
+    try {
+      handler(el, ev);
+    } catch (e) {
+      console.error('[GW.Screen] アクション "' + action + '" でエラー:', e);
+      // ユーザーには見せない（次のアクション可能）
+    }
+  }
+
+  // ─────────────────────────────────────────────
+  // ④ バインド（pointerdown 優先、fallback で click）
+  // ─────────────────────────────────────────────
+  function bind() {
+    if (document[BIND_FLAG]) {
+      console.log('[GW.Screen] バインド済み、スキップ');
+      return;
+    }
+
+    // pointerdown が使えるブラウザでは pointerdown のみ
+    // 使えないブラウザ（古い Safari 等）では touchstart + click 併用
+    if (window.PointerEvent) {
+      document.addEventListener('pointerdown', delegatedHandler, { passive: false });
+      console.log('[GW.Screen] pointerdown でバインド');
+    } else {
+      document.addEventListener('touchstart', delegatedHandler, { passive: false });
+      document.addEventListener('click', delegatedHandler, false);
+      console.log('[GW.Screen] touchstart + click でバインド (legacy)');
+    }
+
+    document[BIND_FLAG] = true;
+  }
+
+  // ─────────────────────────────────────────────
+  // ⑤ 起動時の自動画面判定
+  // ─────────────────────────────────────────────
+  function autoNavigate() {
+    try {
+      var profile = localStorage.getItem('gw_profile') ||
+                    localStorage.getItem('gw_player');
+      var course  = localStorage.getItem('gw_selected_course');
+
+      if (profile && course) {
+        // プロフィール&コース確定済み → メイン
+        console.log('[GW.Screen] 自動遷移: メイン');
+        window.gwShowScreen('gw-gland-main');
+      } else if (profile) {
+        // プロフィールのみ → コース選択
+        console.log('[GW.Screen] 自動遷移: コース選択');
+        window.gwShowScreen('gw-gland-course-select');
+      } else {
+        // 初回 → 登録画面
+        console.log('[GW.Screen] 自動遷移: 登録');
+        window.gwShowScreen('gw-gland-register');
+      }
+    } catch (e) {
+      console.warn('[GW.Screen] 自動遷移失敗、登録画面を表示:', e);
+      window.gwShowScreen('gw-gland-register');
+    }
+  }
+
+  // ─────────────────────────────────────────────
+  // ⑥ 公開API（デバッグ用）
+  // ─────────────────────────────────────────────
+  window.gwScreenCtrl = {
+    show: window.gwShowScreen,
+    actions: ACTIONS,           // 動的にアクション追加可能
+    screens: SCREENS,
+    addAction: function (name, fn) { ACTIONS[name] = fn; },
+    rebind: function () { document[BIND_FLAG] = false; bind(); }
+  };
+
+  // ─────────────────────────────────────────────
+  // 初期化
+  // ─────────────────────────────────────────────
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+      bind();
+      autoNavigate();
+    });
+  } else {
+    bind();
+    autoNavigate();
+  }
+
+  console.log('[GW.Screen] モジュールロード完了');
+})();
 
   // ──────────────────────────────────────────────────────────
   // 即時実行関数を閉じる（ファイル末尾）
