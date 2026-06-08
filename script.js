@@ -3066,12 +3066,6 @@
 
   console.log('[GW] all modules loaded:', Object.keys(GW.Modules));
 
-  // 画面読み込み完了時に裏でロードを開始
-window.addEventListener('load', function() {
-    console.log('[GW] 予備ロードを開始します');
-    GW.Modules.Mates.load(); // 1ホール目の入力を待たずにデータを先読み！
-});
-
 
 /* ══════════════════════════════════════════════════════════════
  * コース選択UI（新規追加・既存コードに影響なし）
@@ -3081,6 +3075,12 @@ window.addEventListener('load', function() {
   'use strict';
 
   console.log('[GW.CourseSelect] module loaded');
+
+    // 画面読み込み完了時に裏でロードを開始
+window.addEventListener('load', function() {
+    console.log('[GW] 予備ロードを開始します');
+    GW.Modules.Mates.load(); // 1ホール目の入力を待たずにデータを先読み！
+});
 
   /** コース定義（後から増やせる） */
   var COURSE_DEFS = {
