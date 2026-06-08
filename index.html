@@ -581,6 +581,253 @@ label{display:block;font-size:13px;font-weight:700;color:var(--gold-bri);margin-
   color:var(--gold);font-size:14px;font-weight:800;
   margin:18px 0 8px;padding-left:10px;border-left:4px solid var(--gold);
 }
+
+/* ════════════════════════════════════════════════════════════════
+   ★Gランド最終UIレイアウト（v2）専用スタイル
+════════════════════════════════════════════════════════════════ */
+
+/* ── ② ホール入力エリア ───────────────── */
+#gw-input-area{
+  margin-bottom:12px;
+}
+
+/* ── シンプルモード入力（既存 .gw-stroke-row を流用） ── */
+/* 既存スタイル維持。新規追加なし */
+
+/* ── カウンターモード入力（上下分割レイアウト） ── */
+.gw-counter-area{
+  background:var(--card-hi);
+  border-radius:14px;
+  padding:14px;
+  margin-top:10px;
+  border:2px solid rgba(245,200,66,0.35);
+}
+.gw-counter-buttons{
+  display:flex;
+  gap:10px;
+  margin-bottom:14px;
+}
+.gw-counter-buttons.single{
+  justify-content:center;
+}
+.gw-counter-col{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+}
+.gw-counter-col-label{
+  font-size:12px;
+  font-weight:800;
+  color:var(--gold-bri);
+}
+.gw-counter-col-buttons{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  width:100%;
+  justify-content:center;
+}
+.gw-counter-btn{
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  border:0;
+  font-size:30px;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 4px 0 #c9a100;
+  transition:transform 0.1s;
+}
+.gw-counter-btn:active{
+  transform:translateY(2px) scale(0.96);
+}
+.gw-counter-btn.shot{
+  background:#ffcc22;
+  color:#000;
+}
+.gw-counter-btn.putt{
+  background:#FF8C00;
+  color:#fff;
+  box-shadow:0 4px 0 #b86200;
+}
+.gw-counter-val{
+  font-size:42px;
+  font-weight:900;
+  color:#fff;
+  min-width:50px;
+  text-align:center;
+}
+
+/* カウンター下部の計算式・合計表示 */
+.gw-counter-formula{
+  background:rgba(0,0,0,0.4);
+  border-radius:10px;
+  padding:14px 10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  font-weight:800;
+}
+.gw-formula-item{
+  text-align:center;
+}
+.gw-formula-item .lbl{
+  font-size:10px;
+  color:var(--text-sub);
+  display:block;
+  margin-bottom:2px;
+}
+.gw-formula-item .val{
+  font-size:22px;
+  font-weight:900;
+  color:var(--gold-bri);
+}
+.gw-formula-op{
+  font-size:22px;
+  font-weight:900;
+  color:var(--text-sub);
+}
+.gw-formula-total{
+  text-align:center;
+  border-left:2px solid rgba(245,200,66,0.5);
+  padding-left:10px;
+  margin-left:6px;
+}
+.gw-formula-total .lbl{
+  font-size:10px;
+  color:var(--text-sub);
+  display:block;
+  margin-bottom:2px;
+}
+.gw-formula-total .val{
+  font-size:32px;
+  font-weight:900;
+  color:var(--gold);
+  line-height:1;
+}
+
+/* ── ③ ホール移動エリア ───────────────── */
+.gw-hole-nav{
+  display:flex;
+  gap:8px;
+  margin-bottom:14px;
+}
+.gw-hole-nav-btn{
+  flex:1;
+  font-size:16px;
+  font-weight:900;
+  min-height:56px;
+}
+.gw-hole-nav-btn:disabled{
+  opacity:0.4;
+  cursor:not-allowed;
+}
+.gw-hole-jump-btn{
+  flex:0 0 110px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(180deg,var(--gold-bri),var(--gold));
+  color:#000;
+  border:0;
+  border-radius:12px;
+  min-height:56px;
+  cursor:pointer;
+  box-shadow:0 3px 0 var(--gold-dk);
+  padding:6px;
+  gap:0;
+}
+.gw-hole-jump-btn:active{
+  transform:translateY(2px);
+  box-shadow:0 1px 0 var(--gold-dk);
+}
+.gw-jump-num{
+  font-size:24px;
+  font-weight:900;
+  line-height:1;
+}
+.gw-jump-total{
+  font-size:10px;
+  font-weight:700;
+  line-height:1;
+  margin-top:2px;
+  opacity:0.8;
+}
+
+/* ── ⑤ 設定・表記エリア ─────────────── */
+.gw-settings-panel{
+  background:rgba(0,0,0,0.25);
+  border:1px solid rgba(245,200,66,0.2);
+  border-radius:12px;
+  padding:12px;
+  margin-bottom:14px;
+}
+.gw-setting-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:8px;
+}
+.gw-setting-row:last-child{
+  margin-bottom:0;
+}
+.gw-setting-label{
+  flex:0 0 80px;
+  font-size:12px;
+  font-weight:700;
+  color:var(--gold-bri);
+}
+.gw-setting-toggle{
+  flex:1;
+  display:flex;
+  gap:4px;
+  background:rgba(0,0,0,0.4);
+  padding:4px;
+  border-radius:10px;
+}
+.gw-setting-toggle button{
+  flex:1;
+  padding:8px 4px;
+  border:0;
+  border-radius:7px;
+  background:transparent;
+  color:#fff;
+  font-size:12px;
+  font-weight:700;
+  min-height:38px;
+  cursor:pointer;
+  transition:all 0.15s;
+}
+.gw-setting-toggle button.active{
+  background:linear-gradient(180deg,var(--gold-bri),var(--gold));
+  color:#000;
+  box-shadow:0 1px 4px rgba(0,0,0,0.3);
+}
+.gw-setting-toggle button:active{
+  transform:scale(0.97);
+}
+
+/* ── ⑥ タブ・保存エリア ──────────────── */
+.gw-bottom-area{
+  margin-top:6px;
+}
+.gw-bottom-area .gw-subtabs{
+  margin-bottom:12px;
+}
+#gw-save-button-area{
+  margin-top:8px;
+}
+
+/* ── 既存FABを非表示（ホール移動エリアに統合済み） ── */
+.gw-fab-jump{
+  display:none !important;
+}
+
+
 </style>
 </head>
 <body>
@@ -659,48 +906,101 @@ label{display:block;font-size:13px;font-weight:700;color:var(--gold-bri);margin-
   </section>
 
   <!-- ───────── 画面②：G-LAND（スコア入力 + 履歴） ───────── -->
-  <section id="gw-screen-gland" class="gw-screen">
-    <!-- 初回登録カード（プレイヤー未登録時のみ表示） -->
-    <div id="gw-gland-register" class="gw-card">
-      <h2 style="margin-top:0;color:var(--gold);font-size:22px;">⛳ ラウンドを開始</h2>
-      <label>ゴルフ場</label>
-      <select id="gw-reg-course"><option value="">読み込み中...</option></select>
-      <label>ニックネーム</label>
-      <input type="text" id="gw-reg-nick" placeholder="例: タロウ" autocomplete="off">
-      <label>本名</label>
-      <input type="text" id="gw-reg-real" placeholder="例: 山田 太郎" autocomplete="off">
-      <label>所属グループ名(組)</label>
-      <input type="text" id="gw-reg-group" placeholder="例: Aチーム / 1組" autocomplete="off">
-      <button class="gw-btn-primary" data-action="register">登録してスコア入力へ</button>
+  <!-- ───────── 画面②：G-LAND（最終UIレイアウト v2） ───────── -->
+<section id="gw-screen-gland" class="gw-screen">
+  <!-- 初回登録カード（プレイヤー未登録時のみ表示） -->
+  <div id="gw-gland-register" class="gw-card">
+    <h2 style="margin-top:0;color:var(--gold);font-size:22px;">⛳ ラウンドを開始</h2>
+    <label>ゴルフ場</label>
+    <select id="gw-reg-course"><option value="">読み込み中...</option></select>
+    <label>ニックネーム</label>
+    <input type="text" id="gw-reg-nick" placeholder="例: タロウ" autocomplete="off">
+    <label>本名</label>
+    <input type="text" id="gw-reg-real" placeholder="例: 山田 太郎" autocomplete="off">
+    <label>所属グループ名(組)</label>
+    <input type="text" id="gw-reg-group" placeholder="例: Aチーム / 1組" autocomplete="off">
+    <button class="gw-btn-primary" data-action="register">登録してスコア入力へ</button>
+  </div>
+
+  <!-- スコア入力エリア（登録後表示・最終UIレイアウト） -->
+  <div id="gw-gland-main" class="gw-hidden">
+
+    <!-- ═══════ ① プレイヤーエリア ═══════ -->
+    <div class="gw-me-bar">
+      <div>
+        <div class="lbl">プレイヤー</div>
+        <div class="v1" id="gw-me-name">-</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="lbl">合計 / PAR差</div>
+        <div class="v2" id="gw-me-total">- / -</div>
+      </div>
     </div>
 
-    <!-- スコア入力エリア（登録後表示） -->
-    <div id="gw-gland-main" class="gw-hidden">
-      <div class="gw-me-bar">
-        <div><div class="lbl">プレイヤー</div><div class="v1" id="gw-me-name">-</div></div>
-        <div style="text-align:right;">
-          <div class="lbl">合計 / PAR差</div>
-          <div class="v2" id="gw-me-total">- / -</div>
+    <!-- ═══════ ② ホール入力エリア（最優先・上部固定） ═══════ -->
+    <div id="gw-input-area">
+      <!-- ホールカード + 入力UI（JS で動的生成） -->
+    </div>
+
+    <!-- ═══════ ③ ホール移動エリア（3ボタン横並び） ═══════ -->
+    <div class="gw-hole-nav">
+      <button class="gw-btn-ghost gw-hole-nav-btn" data-action="gland-prev-hole" id="gw-prev-btn">
+        &lt; 前
+      </button>
+      <button class="gw-hole-jump-btn" data-action="open-hole-picker" id="gw-jump-btn">
+        <span class="gw-jump-num" id="gw-jump-num">1</span>
+        <span class="gw-jump-total">/ 18 H</span>
+      </button>
+      <button class="gw-btn-ghost gw-hole-nav-btn" data-action="gland-next-hole" id="gw-next-btn">
+        次 &gt;
+      </button>
+    </div>
+
+    <!-- ═══════ ④ スコアカード（同伴メンバー表） ═══════ -->
+    <div class="gw-mate-table-wrap" id="gw-mate-table-wrap">
+      <h4 style="margin:0 0 10px;color:var(--gold-bri);">同伴メンバー スコア表（横スクロール可）</h4>
+      <div id="gw-mate-table-body">
+        <div style="color:var(--text-sub);font-size:14px;padding:10px;">準備中...</div>
+      </div>
+    </div>
+
+    <!-- ═══════ ⑤ 設定・表記エリア（常時表示） ═══════ -->
+    <div class="gw-settings-panel">
+      <!-- モード切替 -->
+      <div class="gw-setting-row">
+        <div class="gw-setting-label">入力モード</div>
+        <div class="gw-setting-toggle gw-toggle-2">
+          <button data-action="gland-mode-simple"   id="gw-mode-simple"   class="active">シンプル</button>
+          <button data-action="gland-mode-counter"  id="gw-mode-counter">カウンター</button>
         </div>
       </div>
+      <!-- パット記録 ON/OFF -->
+      <div class="gw-setting-row">
+        <div class="gw-setting-label">パット記録</div>
+        <div class="gw-setting-toggle gw-toggle-2">
+          <button data-action="gland-putt-off" id="gw-putt-off" class="active">OFF</button>
+          <button data-action="gland-putt-on"  id="gw-putt-on">ON</button>
+        </div>
+      </div>
+      <!-- 表示モード切替 -->
+      <div class="gw-setting-row">
+        <div class="gw-setting-label">表示モード</div>
+        <div class="gw-setting-toggle gw-toggle-3">
+          <button data-action="gland-disp-stroke"  id="gw-disp-stroke"  class="active">数字</button>
+          <button data-action="gland-disp-pardiff" id="gw-disp-pardiff">±表記</button>
+          <button data-action="gland-disp-symbol"  id="gw-disp-symbol">記号</button>
+        </div>
+      </div>
+    </div>
 
+    <!-- ═══════ ⑥ タブ・保存エリア（最下部） ═══════ -->
+    <div class="gw-bottom-area">
       <div class="gw-subtabs">
         <button id="gw-subtab-score" class="active" data-subtab="score">スコア入力</button>
         <button id="gw-subtab-hist" data-subtab="hist">履歴</button>
       </div>
 
-      <!-- スコア入力タブ -->
-      <div id="gw-subtab-content-score">
-        <div id="gw-hole-list"></div>
-
-        <div style="display:flex;gap:8px;margin-top:12px;">
-          <button class="gw-btn-primary" style="flex:1;margin:0;" data-action="finish-round">
-            ✅ 終了して履歴に保存
-          </button>
-        </div>
-      </div>
-
-      <!-- 履歴タブ -->
+      <!-- 履歴タブ（隠れている） -->
       <div id="gw-subtab-content-hist" class="gw-hidden">
         <div class="gw-history-filters">
           <div class="filter-row">
@@ -719,16 +1019,44 @@ label{display:block;font-size:13px;font-weight:700;color:var(--gold-bri);margin-
         </div>
 
         <div class="gw-stats-grid">
-          <div class="gw-stat-card"><div class="lbl">ラウンド</div><div class="val" id="gw-stat-rounds">-</div><div class="unit">R</div></div>
-          <div class="gw-stat-card"><div class="lbl">ベスト</div><div class="val" id="gw-stat-best">-</div><div class="unit">打</div></div>
-          <div class="gw-stat-card"><div class="lbl">平均打数</div><div class="val" id="gw-stat-avg-stroke">-</div><div class="unit">打</div></div>
-          <div class="gw-stat-card"><div class="lbl">平均パット</div><div class="val" id="gw-stat-avg-putt">-</div><div class="unit">PT</div></div>
+          <div class="gw-stat-card">
+            <div class="lbl">ラウンド</div>
+            <div class="val" id="gw-stat-rounds">-</div>
+            <div class="unit">R</div>
+          </div>
+          <div class="gw-stat-card">
+            <div class="lbl">ベスト</div>
+            <div class="val" id="gw-stat-best">-</div>
+            <div class="unit">打</div>
+          </div>
+          <div class="gw-stat-card">
+            <div class="lbl">平均打数</div>
+            <div class="val" id="gw-stat-avg-stroke">-</div>
+            <div class="unit">打</div>
+          </div>
+          <div class="gw-stat-card">
+            <div class="lbl">平均パット</div>
+            <div class="val" id="gw-stat-avg-putt">-</div>
+            <div class="unit">PT</div>
+          </div>
         </div>
 
-        <div id="gw-hist-list"><div class="gw-history-empty">読み込み中...</div></div>
+        <div id="gw-hist-list">
+          <div class="gw-history-empty">読み込み中...</div>
+        </div>
+      </div>
+
+      <!-- 終了ボタン（スコア入力タブの時のみ表示） -->
+      <div id="gw-save-button-area">
+        <button class="gw-btn-primary" data-action="finish-round">
+          ✅ 終了して履歴に保存
+        </button>
       </div>
     </div>
-  </section>
+
+  </div>
+</section>
+
 
   <!-- ───────── 画面③：G-COMPETE（プレースホルダ） ───────── -->
   <section id="gw-screen-gcompete" class="gw-screen">
