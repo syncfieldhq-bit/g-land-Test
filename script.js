@@ -2296,76 +2296,106 @@
 
     Mates: {
 
-      /** 同伴メンバー表をロード */
-      load: function () {
-        var st = GW.Modules.GLand.state;
-        if (!st.player || !st.player.courseId || !st.player.groupName) {
-          this._renderEmpty('プレイヤー情報なし');
-          return;
-        }
+          /** 同伴メンバー表をロード（スコア入力タブ表示時に呼ばれる） */
+    load: function () {
+      var st = GW.Modules.GLand.state;
+      console.log('[GW.Mates.load] called. player:', st.player && st.player.playerId);
 
-        // ── 仮IDのうちは自分のみで描画 ──
-        if (String(st.player.playerId).indexOf('P_TMP_') === 0) {
-          var pars = (GW.Core.State && GW.Core.State.pars) || new Array(18).fill(4);
-          var soloData = {
-            pars: pars,
-            members: [{
-              playerId: st.player.playerId,
-              nickname: st.player.nickname,
-              realName: st.player.realName,
-              strokes: st.scores.map(function (s) { return s.stroke || 0; })
-            }]
-          };
-          st.groupMates = soloData.members;
-          this._render(soloData);
-          this._scheduleNextPoll();
-          return;
-        }
+      // ── ガード：プレイヤー情報チェック ──
+      if (!st.player) {
+        console.warn('[GW.Mates.load] EARLY RETURN: no player');
+        this._renderEmpty('プレイヤー情報がありません');
+        return;
+      }
+      if (!st.player.courseId) {
+        console.warn('[GW.Mates.load] EARLY RETURN: no courseId');
+        this._renderEmpty('コース未選択');
+        return;
+      }
+      if (!st.player.groupName) {
+        console.warn('[GW.Mates.load] EARLY RETURN: no groupName');
+        this._renderEmpty('グループ名未設定');
+        return;
+      }
 
-        // ── キャッシュまたは自分のみで即描画 ──
-        var cached = GW.Core.Cache.loadMates(st.player.courseId, st.player.groupName);
-        var pars = (GW.Core.State && GW.Core.State.pars) || new Array(18).fill(4);
-        var selfView = {
+      var pars = (GW.Core.State && GW.Core.State.pars) || new Array(18).fill(4);
+
+      // ── 仮IDのうちは自分のみで描画 ──
+      if (String(st.player.playerId).indexOf('P_TMP_') === 0) {
+        console.log('[GW.Mates.load] 仮ID状態、自分のみ描画');
+        var soloData = {
           pars: pars,
           members: [{
             playerId: st.player.playerId,
             nickname: st.player.nickname,
             realName: st.player.realName,
-            strokes: st.scores.map(function (s) { return s.stroke || 0; })
+            strokes:  st.scores.map(function (s) { return s.stroke || 0; })
           }]
         };
-
-        if (cached && cached.members && cached.members.length) {
-          st.groupMates = cached.members;
-          this._render(cached);
-        } else {
-          st.groupMates = selfView.members;
-          this._render(selfView);
-        }
-
-        // ── サーバから最新取得 ──
-        GW.Core.Api.call('gland.getMates', {
-          courseId: st.player.courseId,
-          groupName: st.player.groupName,
-          playerId: st.player.playerId
-        }).then(function (res) {
-          if (res && res.members && res.members.length > 0) {
-            st.groupMates = res.members;
-            GW.Core.Cache.saveMates(st.player.courseId, st.player.groupName, res);
-            self._render(res);
-          }
-        }).catch(function (err) {
-          console.warn('[GW.Mates] load failed:', err);
-        });
-
+        st.groupMates = soloData.members;
+        this._render(soloData);
         this._scheduleNextPoll();
-      },
+        return;
+      }
 
-      /** ★新規追加：空状態の描画 */
-      _renderEmpty: function (msg) {
-        var body = document.getElementById('gw-mate-table-body');
-        if (body) body.innerHTML = '<div style="color:var(--text-sub);font-size:13px;padding:10px;">' + (msg || '同伴メンバーなし') + '</div>';
-      },
+      // ★★★ 重要な追加：キャッシュ有無に関わらず、まず自分だけで暫定描画 ★★★
+      //   これで「準備中...」が確実に上書きされる。サーバ応答後に最新化される。
+      var cached = GW.Core.Cache.loadMates(st.player.courseId, st.player.groupName);
+      if (cached && cached.members && cached.members.length) {
+        console.log('[GW.Mates.load] キャッシュから描画:', cached.members.length, '名');
+        st.groupMates = cached.members;
+        this._render(cached);
+      } else {
+        console.log('[GW.Mates.load] キャッシュ無し、自分だけで暫定描画');
+        var fallback = {
+          pars: pars,
+          members: [{
+            playerId: st.player.playerId,
+            nickname: st.player.nickname,
+            realName: st.player.realName,
+            strokes:  st.scores.map(function (s) { return s.stroke || 0; })
+          }]
+        };
+        st.groupMates = fallback.members;
+        this._render(fallback);
+      }
+
+      // ── サーバから最新取得（バックグラウンド更新） ──
+      var self = this;
+      console.log('[GW.Mates.load] サーバへ問合せ開始');
+      GW.Core.Api.call('gland.getMates', {
+        courseId:  st.player.courseId,
+        groupName: st.player.groupName,
+        playerId:  st.player.playerId
+      }).then(function (res) {
+        console.log('[GW.Mates.load] ✅ サーバ応答:', res);
+        if (res && res.ok && Array.isArray(res.members) && res.members.length > 0) {
+          console.log('[GW.Mates.load] サーバデータで再描画:', res.members.length, '名');
+          self._render(res);
+          GW.Core.Cache.saveMates(st.player.courseId, st.player.groupName, res);
+        } else {
+          console.warn('[GW.Mates.load] サーバ応答が空、ローカル描画を維持');
+        }
+      }).catch(function (err) {
+        console.warn('[GW.Mates.load] ❌ サーバ問合せ失敗:', err);
+        // 自分だけの描画は既に済んでいるので、ユーザーには何も見えない
+      });
+
+      // ── 30秒ポーリング ──
+      this._scheduleNextPoll();
+    },
+
+    /** ★新規追加：空状態の描画（エラー時・データ不在時用） */
+    _renderEmpty: function (msg) {
+      var body = document.getElementById('gw-mate-table-body');
+      if (!body) {
+        console.warn('[GW.Mates._renderEmpty] body 要素が見つかりません');
+        return;
+      }
+      body.innerHTML = '<div style="color:var(--text-sub);font-size:13px;padding:10px;text-align:center;">' +
+                       GW.Core.UI.escapeHtml(msg || '同伴メンバーなし') + '</div>';
+    },
+
 
       /** 次回ポーリングをスケジュール */
       _scheduleNextPoll: function () {
@@ -2390,86 +2420,97 @@
         }
       },
 
-      /**
-       * テーブルを描画
-       *   - PAR行 + メンバー行 ×N
-       *   - 現在ホールは current-h / current-c クラスでハイライト
-       *   - 自分の行は class="me" で強調
-       *   - 描画後に現在ホールを自動センタリング
-       */
-      _render: function (data) {
-        var body = document.getElementById('gw-mate-table-body');
-        if (!body) return;
-        if (!data || !data.members || !data.members.length) {
-          body.innerHTML = '<div style="color:var(--text-sub);font-size:14px;padding:10px;">' +
-                           '同伴メンバーなし</div>';
-          return;
-        }
+          /**
+     * テーブルを描画
+     *   - PAR行 + メンバー行 ×N
+     *   - 現在ホールは current-h / current-c クラスでハイライト
+     *   - 自分の行は class="me" で強調
+     *   - 描画後に現在ホールを自動センタリング
+     */
+    _render: function (data) {
+      console.log('[GW.Mates._render] called with members:',
+                  data && data.members && data.members.length);
 
-        var st = GW.Modules.GLand.state;
-        var pars = data.pars || (GW.Core.State && GW.Core.State.pars) || new Array(18).fill(4);
-        var cur = st.currentHole;
-        var esc = GW.Core.UI.escapeHtml;
+      var body = document.getElementById('gw-mate-table-body');
+      if (!body) {
+        console.error('[GW.Mates._render] ❌ gw-mate-table-body が DOM に存在しません');
+        return;
+      }
 
-        // ── メンバーリストを正規化（自分は state.scores から最新値を反映）──
-        var members = data.members.map(function (m) {
-          if (m.playerId === st.player.playerId) {
-            var strokes = [];
-            for (var k = 0; k < 18; k++) {
-              strokes.push((st.scores[k] && st.scores[k].stroke) || 0);
-            }
-            return Object.assign({}, m, { strokes: strokes, isMe: true });
+      if (!data || !data.members || !data.members.length) {
+        console.warn('[GW.Mates._render] データなし、空表示');
+        body.innerHTML = '<div style="color:var(--text-sub);font-size:14px;padding:10px;">' +
+                         '同伴メンバーなし</div>';
+        return;
+      }
+
+      var st = GW.Modules.GLand.state;
+      var pars = data.pars || (GW.Core.State && GW.Core.State.pars) || new Array(18).fill(4);
+      var cur = st.currentHole;
+      var esc = GW.Core.UI.escapeHtml;
+
+      // ── メンバーリストを正規化（自分は state.scores から最新値を反映）──
+      var members = data.members.map(function (m) {
+        if (m.playerId === st.player.playerId) {
+          var strokes = [];
+          for (var k = 0; k < 18; k++) {
+            strokes.push((st.scores[k] && st.scores[k].stroke) || 0);
           }
-          return m;
-        });
-        st.groupMates = members;
-
-        // ── ヘッダ行（ホール番号 1H〜18H + 計） ──
-        var head = '<tr><th class="player-name-cell" style="text-align:center;">プレイヤー</th>';
-        for (var k = 0; k < 18; k++) {
-          var hi = (k === cur) ? ' current-h' : '';
-          head += '<th class="hole-h hole-col-' + k + hi + '" ' +
-                  'data-action="gland-hole-zoom" data-hole="' + (k + 1) + '">' +
-                  (k + 1) + 'H</th>';
+          return Object.assign({}, m, { strokes: strokes, isMe: true });
         }
-        head += '<th class="total-col">計</th></tr>';
+        return m;
+      });
+      st.groupMates = members;
 
-        // ── PAR行 ──
-        var parRow = '<tr class="par-row"><td class="player-name-cell">PAR</td>';
-        var parSum = 0;
-        for (var k2 = 0; k2 < 18; k2++) {
-          var pcls = (k2 === cur) ? ' current-c' : '';
-          parRow += '<td class="hole-col-' + k2 + pcls + '">' + pars[k2] + '</td>';
-          parSum += pars[k2];
+      // ── ヘッダ行（ホール番号 1H〜18H + 計） ──
+      var head = '<tr><th class="player-name-cell" style="text-align:center;">プレイヤー</th>';
+      for (var k = 0; k < 18; k++) {
+        var hi = (k === cur) ? ' current-h' : '';
+        head += '<th class="hole-h hole-col-' + k + hi + '" ' +
+                'data-action="gland-hole-zoom" data-hole="' + (k + 1) + '">' +
+                (k + 1) + 'H</th>';
+      }
+      head += '<th class="total-col">計</th></tr>';
+
+      // ── PAR行 ──
+      var parRow = '<tr class="par-row"><td class="player-name-cell">PAR</td>';
+      var parSum = 0;
+      for (var k2 = 0; k2 < 18; k2++) {
+        var pcls = (k2 === cur) ? ' current-c' : '';
+        parRow += '<td class="hole-col-' + k2 + pcls + '">' + pars[k2] + '</td>';
+        parSum += pars[k2];
+      }
+      parRow += '<td class="total-col">' + parSum + '</td></tr>';
+
+      // ── 各メンバー行 ──
+      var rows = members.map(function (m) {
+        var total = 0;
+        var trClass = m.isMe ? ' class="me"' : '';
+        var starMark = m.isMe ? '★ ' : '';
+        var displayName = m.realName || m.nickname || '?';
+        var tds = '<td class="player-name-cell">' + starMark + esc(displayName) + '</td>';
+        for (var k3 = 0; k3 < 18; k3++) {
+          var v = (m.strokes && m.strokes[k3]) || 0;
+          total += v;
+          var display = v > 0
+            ? GW.Modules.GLand.Score._formatScore(v, pars[k3])
+            : '-';
+          var st2 = (k3 === cur) ? ' current-c' : '';
+          tds += '<td class="hole-col-' + k3 + st2 + '">' + display + '</td>';
         }
-        parRow += '<td class="total-col">' + parSum + '</td></tr>';
+        tds += '<td class="total-col">' + (total || '-') + '</td>';
+        return '<tr' + trClass + '>' + tds + '</tr>';
+      }).join('');
 
-        // ── 各メンバー行 ──
-        var rows = members.map(function (m) {
-          var total = 0;
-          var trClass = m.isMe ? ' class="me"' : '';
-          var starMark = m.isMe ? '★ ' : '';
-          var displayName = m.realName || m.nickname || '?';
-          var tds = '<td class="player-name-cell">' + starMark + esc(displayName) + '</td>';
-          for (var k3 = 0; k3 < 18; k3++) {
-            var v = (m.strokes && m.strokes[k3]) || 0;
-            total += v;
-            var display = v > 0
-              ? GW.Modules.GLand.Score._formatScore(v, pars[k3])
-              : '-';
-            var st2 = (k3 === cur) ? ' current-c' : '';
-            tds += '<td class="hole-col-' + k3 + st2 + '">' + display + '</td>';
-          }
-          tds += '<td class="total-col">' + (total || '-') + '</td>';
-          return '<tr' + trClass + '>' + tds + '</tr>';
-        }).join('');
+      var html = '<table class="gw-mate-table">' + head + parRow + rows + '</table>';
+      body.innerHTML = html;
+      console.log('[GW.Mates._render] ✅ 描画完了:', members.length, '名');
 
-        body.innerHTML = '<table class="gw-mate-table">' + head + parRow + rows + '</table>';
+      // ── 現在ホールをセンタリング ──
+      var self = this;
+      setTimeout(function () { self._centerCurrentHole(); }, 30);
+    },
 
-        // ── 現在ホールをセンタリング ──
-        var self = this;
-        setTimeout(function () { self._centerCurrentHole(); }, 30);
-      },
 
       /**
        * ★自分の列だけをローカル状態でその場更新（サーバ問合せ無し）
@@ -2640,57 +2681,65 @@
   // ★モジュール定義時に init を即実行（Action 登録のため）
   GW.Modules.GLand.init();
 
-   // ★Score サブモジュールへの Mates 連携を追加注入
+     // ════════════════════════════════════════════════════════════════
+  // ★Score サブモジュールへの Mates 連携を追加注入
   //
   // Score._updateCells() の最後で Mates.updateMyColumn() を呼ぶ。
   // また Score._render() の最後で Mates.load() を呼ぶ。
   // これらは Mates が後から定義されたため、ここでフックを追加する。
+  //
+  // ★重要：Score._render() は innerHTML で DOM を書き換えるため、
+  //         直後に Mates.load() を呼ぶと body 要素が未反映の場合がある。
+  //         setTimeout(50ms) でブラウザの描画完了を待ってから呼ぶ。
   // ════════════════════════════════════════════════════════════════
   (function injectMatesHooks() {
-  console.log('[GW] injectMatesHooks: starting');
+    console.log('[GW] injectMatesHooks: starting');
 
-  if (!GW.Modules.GLand || !GW.Modules.GLand.Score) {
-    console.error('[GW] injectMatesHooks: GLand.Score が見つかりません');
-    return;
-  }
-  if (!GW.Modules.GLand.Mates) {
-    console.error('[GW] injectMatesHooks: GLand.Mates が見つかりません');
-    return;
-  }
-
-  var Score = GW.Modules.GLand.Score;
-
-  // _updateCells に Mates 連携を追加
-  var origUpdateCells = Score._updateCells;
-  Score._updateCells = function () {
-    origUpdateCells.call(this);
-    try {
-      GW.Modules.GLand.Mates.updateMyColumn();
-    } catch (e) {
-      console.warn('[GW.Mates] updateMyColumn failed:', e);
+    if (!GW.Modules.GLand || !GW.Modules.GLand.Score) {
+      console.error('[GW] injectMatesHooks: GLand.Score が見つかりません');
+      return;
     }
-  };
-
-  // _render の最後で Mates.load() を呼ぶ
-  var origRender = Score._render;
-  Score._render = function () {
-    origRender.call(this);
-    try {
-      // ★ subtab 判定を緩める：scoreタブにいない時もMates表は出してOK
-      //   （タブの状態に関わらず、スコア入力エリアの DOM に表は存在する）
-      GW.Modules.GLand.Mates.load();
-    } catch (e) {
-      console.warn('[GW.Mates] load from render failed:', e);
+    if (!GW.Modules.GLand.Mates) {
+      console.error('[GW] injectMatesHooks: GLand.Mates が見つかりません');
+      return;
     }
-  };
 
-  // _openHoleZoom を Mates 版に差し替え
-  Score._openHoleZoom = function (holeNo) {
-    GW.Modules.GLand.Mates.openZoom(holeNo);
-  };
+    var Score = GW.Modules.GLand.Score;
 
-  console.log('[GW] injectMatesHooks: completed successfully');
-})();
+    // ── _updateCells に Mates 連携を追加（自分列の即時更新） ──
+    var origUpdateCells = Score._updateCells;
+    Score._updateCells = function () {
+      origUpdateCells.call(this);
+      try {
+        GW.Modules.GLand.Mates.updateMyColumn();
+      } catch (e) {
+        console.warn('[GW.Mates] updateMyColumn failed:', e);
+      }
+    };
+
+    // ── _render の後で Mates.load() を呼ぶ（DOM反映待ち付き） ──
+    var origRender = Score._render;
+    Score._render = function () {
+      origRender.call(this);
+      // ★ setTimeout で DOM 反映を確実に待つ（タイミング問題回避）
+      setTimeout(function () {
+        try {
+          console.log('[GW] Score._render hook → Mates.load() 呼出');
+          GW.Modules.GLand.Mates.load();
+        } catch (e) {
+          console.warn('[GW.Mates] load from render failed:', e);
+        }
+      }, 50);
+    };
+
+    // ── _openHoleZoom を Mates 版に差し替え ──
+    Score._openHoleZoom = function (holeNo) {
+      GW.Modules.GLand.Mates.openZoom(holeNo);
+    };
+
+    console.log('[GW] injectMatesHooks: completed successfully');
+  })();
+
 
 
   // ════════════════════════════════════════════════════════════════
