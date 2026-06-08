@@ -23,960 +23,8 @@
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="manifest" href="manifest.webmanifest">
 
-<style>
-/* ════════════════════════════════════════════════════════════════
-   【設計憲法・第3条】CSS変数 - G-WORLD ブランドカラー
-════════════════════════════════════════════════════════════════ */
-:root{
-  --bg-grad:linear-gradient(160deg,#0a3d2e 0%,#0f5f47 60%,#0a3d2e 100%);
-  --gold:#f5c842;
-  --gold-dk:#d4a017;
-  --gold-bri:#ffe082;
-  --danger:#e74c3c;
-  --gray:#7a8a82;
-  --card:rgba(255,255,255,0.10);
-  --card-hi:rgba(255,255,255,0.18);
-  --text:#fff;
-  --text-sub:#d4e8dc;
-  --footer-h:64px;            /* フッターナビ高さ */
-  --safe-bottom:env(safe-area-inset-bottom,0px);
-}
+<link rel="stylesheet" href="style.css">
 
-/* ════════════════════════════════════════════════════════════════
-   全要素リセット
-════════════════════════════════════════════════════════════════ */
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
-html,body{overscroll-behavior-y:contain;}
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif;
-  background:var(--bg-grad);
-  background-attachment:fixed;
-  color:var(--text);
-  padding:env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);
-  /* フッターナビ分の余白を確保（safe-area込み） */
-  padding-bottom:calc(var(--footer-h) + var(--safe-bottom));
-}
-
-/* ════════════════════════════════════════════════════════════════
-   フォーム部品
-════════════════════════════════════════════════════════════════ */
-input,select,textarea{
-  -webkit-user-select:auto !important;user-select:auto !important;
-  width:100%;padding:16px;border:1px solid #ccc;border-radius:12px;
-  font-size:18px;margin-bottom:16px;background-color:#fff;color:#000;
-}
-button{cursor:pointer;font-family:inherit;}
-.gw-btn-primary{
-  width:100%;padding:18px;font-size:20px;margin-top:10px;
-  background:linear-gradient(180deg,var(--gold-bri),var(--gold));
-  color:#000;border:0;border-radius:14px;font-weight:800;
-  min-height:60px;box-shadow:0 4px 0 var(--gold-dk);
-}
-.gw-btn-primary:active{transform:translateY(3px);box-shadow:0 1px 0 var(--gold-dk);}
-.gw-btn-ghost{
-  background:rgba(255,255,255,0.15);color:#fff;
-  border:2px solid rgba(255,255,255,0.3);
-  padding:14px;border-radius:12px;font-weight:700;font-size:15px;min-height:52px;
-}
-.gw-btn-danger{
-  background:linear-gradient(180deg,#ff7466,var(--danger));color:#fff;
-  border:0;border-radius:12px;font-weight:800;min-height:52px;
-}
-label{display:block;font-size:13px;font-weight:700;color:var(--gold-bri);margin-bottom:6px;}
-
-/* ════════════════════════════════════════════════════════════════
-   ヘッダー
-════════════════════════════════════════════════════════════════ */
-.gw-header{
-  background:rgba(0,0,0,0.55);padding:14px 18px;
-  display:flex;justify-content:space-between;align-items:center;
-  position:sticky;top:0;z-index:100;backdrop-filter:blur(10px);
-  border-bottom:2px solid rgba(245,200,66,0.4);
-}
-.gw-header h1{margin:0;font-size:18px;font-weight:800;}
-.gw-header .gw-logo-sub{
-  font-size:10px;color:var(--gold-bri);font-weight:600;
-  letter-spacing:1px;margin-left:6px;
-}
-
-/* ════════════════════════════════════════════════════════════════
-   コンテンツ領域
-════════════════════════════════════════════════════════════════ */
-.gw-container{padding:14px;max-width:760px;margin:0 auto;}
-.gw-card{
-  background:var(--card);border-radius:16px;padding:18px;margin-bottom:14px;
-  border:1px solid rgba(255,255,255,0.08);
-}
-
-/* ════════════════════════════════════════════════════════════════
-   ★フッターナビゲーション（G-WORLD ポータル の核心UI）
-   設計憲法・第5条：5項目固定 / 「ホーム画面ジャック」体験
-════════════════════════════════════════════════════════════════ */
-.gw-footer-nav{
-  position:fixed;
-  bottom:0;left:0;right:0;
-  height:calc(var(--footer-h) + var(--safe-bottom));
-  padding-bottom:var(--safe-bottom);
-  background:rgba(0,0,0,0.85);
-  backdrop-filter:blur(14px);
-  border-top:1px solid rgba(245,200,66,0.35);
-  display:flex;
-  z-index:90;
-  box-shadow:0 -2px 12px rgba(0,0,0,0.4);
-}
-.gw-footer-nav button{
-  flex:1;
-  background:transparent;border:0;
-  color:var(--text-sub);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:2px;
-  font-size:10px;font-weight:600;
-  padding:0;
-  position:relative;
-  transition:color 0.15s;
-}
-.gw-footer-nav button .gw-nav-icon{font-size:22px;line-height:1;}
-.gw-footer-nav button.active{
-  color:var(--gold);
-}
-.gw-footer-nav button.active::before{
-  content:'';position:absolute;top:0;left:25%;right:25%;height:3px;
-  background:linear-gradient(90deg,transparent,var(--gold),transparent);
-  border-radius:0 0 3px 3px;
-}
-.gw-footer-nav button:active{transform:scale(0.95);}
-
-/* ════════════════════════════════════════════════════════════════
-   画面（セクション）共通
-════════════════════════════════════════════════════════════════ */
-.gw-screen{display:none;}
-.gw-screen.active{display:block;}
-
-/* ════════════════════════════════════════════════════════════════
-   起動オーバーレイ（既存資産流用）
-════════════════════════════════════════════════════════════════ */
-.gw-boot-overlay{
-  position:fixed;inset:0;
-  background:linear-gradient(160deg,#0a3d2e,#0f5f47);
-  z-index:9999;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  color:#fff;
-}
-.gw-boot-overlay.hidden{display:none;}
-.gw-boot-spinner{
-  width:60px;height:60px;
-  border:5px solid rgba(245,200,66,0.3);
-  border-top-color:var(--gold);
-  border-radius:50%;
-  animation:gw-spin 1s linear infinite;
-  margin-bottom:20px;
-}
-@keyframes gw-spin{to{transform:rotate(360deg);}}
-.gw-boot-text{font-size:18px;font-weight:700;color:var(--gold-bri);}
-.gw-boot-sub{font-size:12px;color:var(--text-sub);margin-top:8px;}
-.gw-boot-cancel{
-  margin-top:24px;padding:10px 20px;
-  background:rgba(255,255,255,0.15);
-  border:1px solid rgba(255,255,255,0.3);color:#fff;
-  border-radius:8px;font-size:13px;display:none;
-}
-
-/* ════════════════════════════════════════════════════════════════
-   保存キューインジケータ（既存資産流用）
-════════════════════════════════════════════════════════════════ */
-.gw-save-indicator{
-  position:fixed;top:env(safe-area-inset-top,0);right:8px;z-index:150;
-  font-size:11px;padding:4px 10px;border-radius:0 0 10px 10px;
-  background:rgba(0,0,0,0.7);color:var(--gold-bri);font-weight:700;
-  pointer-events:none;transition:opacity 0.3s;opacity:0;
-}
-.gw-save-indicator.show{opacity:1;}
-.gw-save-indicator.error{background:rgba(192,57,43,0.85);color:#fff;}
-.gw-save-indicator.offline{background:rgba(127,140,141,0.9);color:#fff;}
-
-/* ════════════════════════════════════════════════════════════════
-   ホーム画面（G-WORLD ポータル）
-════════════════════════════════════════════════════════════════ */
-.gw-portal-hero{
-  background:linear-gradient(135deg,rgba(245,200,66,0.25),rgba(0,0,0,0.4));
-  border:2px solid var(--gold);
-  border-radius:20px;
-  padding:24px 20px;
-  margin-bottom:14px;
-  text-align:center;
-}
-.gw-portal-hero .gw-greeting{
-  font-size:14px;color:var(--text-sub);margin-bottom:6px;
-}
-.gw-portal-hero .gw-user-name{
-  font-size:24px;font-weight:900;color:var(--gold-bri);
-  margin-bottom:14px;
-}
-.gw-portal-hero .gw-state-badge{
-  display:inline-block;padding:4px 12px;border-radius:12px;
-  font-size:11px;font-weight:700;margin-bottom:14px;
-}
-.gw-state-badge.guest{background:rgba(255,255,255,0.2);color:var(--text);}
-.gw-state-badge.backed-up{background:linear-gradient(180deg,#5cd65c,#27ae60);color:#fff;}
-
-.gw-portal-cta{
-  width:100%;padding:18px;
-  background:linear-gradient(180deg,var(--gold-bri),var(--gold));
-  color:#000;border:0;border-radius:14px;
-  font-size:18px;font-weight:900;
-  box-shadow:0 4px 0 var(--gold-dk);
-}
-.gw-portal-cta:active{transform:translateY(3px);box-shadow:0 1px 0 var(--gold-dk);}
-
-.gw-portal-modules{
-  display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px;
-}
-.gw-portal-module{
-  background:var(--card-hi);border:1px solid rgba(255,255,255,0.1);
-  border-radius:14px;padding:16px 12px;text-align:center;
-  cursor:pointer;transition:transform 0.1s;
-}
-.gw-portal-module:active{transform:scale(0.97);}
-.gw-portal-module.coming-soon{opacity:0.7;}
-.gw-portal-module .gw-mod-icon{font-size:32px;margin-bottom:4px;}
-.gw-portal-module .gw-mod-name{font-size:14px;font-weight:800;color:var(--gold-bri);}
-.gw-portal-module .gw-mod-desc{font-size:10px;color:var(--text-sub);margin-top:2px;}
-.gw-portal-module .gw-mod-badge{
-  display:inline-block;font-size:9px;
-  background:rgba(255,255,255,0.2);color:var(--text);
-  padding:2px 6px;border-radius:6px;margin-top:4px;
-}
-
-.gw-portal-recent{
-  background:var(--card);border-radius:14px;padding:14px;margin-top:14px;
-  border:1px solid rgba(255,255,255,0.08);
-}
-.gw-portal-recent h3{
-  margin:0 0 10px;color:var(--gold);font-size:14px;font-weight:800;
-}
-
-/* ════════════════════════════════════════════════════════════════
-   G-LAND画面（スコア入力タブ群）
-════════════════════════════════════════════════════════════════ */
-.gw-me-bar{
-  display:flex;justify-content:space-between;align-items:center;
-  background:rgba(0,0,0,0.45);border-radius:14px;padding:16px 18px;margin-bottom:14px;
-  border:2px solid rgba(245,200,66,0.5);
-}
-.gw-me-bar .lbl{font-size:12px;color:var(--text-sub);font-weight:600;}
-.gw-me-bar .v1{font-size:18px;font-weight:800;}
-.gw-me-bar .v2{font-size:24px;font-weight:900;color:var(--gold);}
-
-/* G-LAND サブタブ（スコア / 履歴） */
-.gw-subtabs{
-  display:flex;gap:6px;margin-bottom:14px;
-  background:rgba(0,0,0,0.25);padding:5px;border-radius:12px;
-}
-.gw-subtabs button{
-  flex:1;padding:12px 6px;border:0;border-radius:8px;
-  background:transparent;color:#fff;font-size:13px;font-weight:700;min-height:46px;
-}
-.gw-subtabs button.active{
-  background:linear-gradient(180deg,var(--gold-bri),var(--gold));color:#000;
-  box-shadow:0 2px 8px rgba(245,200,66,0.4);
-}
-
-/* ホールカード */
-.gw-hole-card{
-  background:var(--card-hi);border-radius:18px;padding:16px;margin-bottom:12px;
-  border-left:5px solid var(--gold);
-}
-.gw-hole-head{
-  display:flex;justify-content:space-between;align-items:center;
-  margin-bottom:14px;flex-wrap:wrap;gap:8px;
-}
-.gw-hole-no{font-size:28px;font-weight:900;color:var(--gold);}
-.gw-hole-par{
-  background:rgba(0,0,0,0.4);padding:8px 14px;border-radius:8px;
-  font-size:15px;font-weight:700;
-}
-.gw-stroke-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-.gw-stroke-row .lbl{
-  width:70px;font-size:14px;font-weight:700;color:var(--gold-bri);
-  text-align:center;background:rgba(0,0,0,0.3);padding:8px 4px;border-radius:8px;
-}
-.gw-stroke-row .val{
-  flex:1;text-align:center;font-size:36px;font-weight:900;
-  background:rgba(0,0,0,0.35);padding:8px;border-radius:12px;color:#fff;
-}
-.gw-btn-yellow{
-  width:72px;height:72px;border-radius:50%;border:0;
-  font-size:36px;font-weight:900;background:#ffcc22;color:#000;
-  box-shadow:0 5px 0 #c9a100;
-}
-.gw-btn-orange{
-  width:72px;height:72px;border-radius:50%;border:0;
-  font-size:36px;font-weight:900;background:#FF8C00;color:#fff;
-  box-shadow:0 5px 0 #b86200;
-}
-.gw-btn-yellow:active,.gw-btn-orange:active{transform:translateY(3px) scale(0.96);}
-
-/* vs PAR タグ */
-.gw-vspar{font-size:13px;font-weight:800;padding:5px 12px;border-radius:14px;display:inline-block;}
-.gw-vspar.albatross{background:linear-gradient(135deg,#fff,#ffd700);color:#000;}
-.gw-vspar.eagle{background:linear-gradient(135deg,#ffd700,#ffaa00);color:#000;}
-.gw-vspar.birdie{background:linear-gradient(135deg,#ff7674,#e74c3c);color:#fff;}
-.gw-vspar.par{background:linear-gradient(135deg,#5cd65c,#27ae60);color:#fff;}
-.gw-vspar.bogey{background:linear-gradient(135deg,#5dade2,#2980b9);color:#fff;}
-.gw-vspar.dbogey{background:linear-gradient(135deg,#bb8fce,#8e44ad);color:#fff;}
-.gw-vspar.over{background:#444;color:#fff;}
-
-/* 同伴メンバースコア表（既存資産流用） */
-.gw-mate-table-wrap{
-  margin-top:14px;background:rgba(0,0,0,0.4);border-radius:16px;padding:14px;
-  overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scroll-behavior:smooth;
-  border:2px solid rgba(245,200,66,0.35);
-}
-.gw-mate-table-wrap h4{font-size:16px;margin:0 0 10px;color:var(--gold-bri);}
-.gw-mate-table{
-  width:auto;border-collapse:separate;border-spacing:0;min-width:100%;font-size:22px;
-}
-.gw-mate-table th,.gw-mate-table td{
-  border:1px solid rgba(255,255,255,0.25);padding:14px 10px;text-align:center;
-  color:#fff;min-width:64px;font-weight:700;
-}
-.gw-mate-table th{background:rgba(0,0,0,0.5);font-size:20px;color:var(--gold-bri);}
-.gw-mate-table th.hole-h{cursor:pointer;font-weight:900;}
-.gw-mate-table th.hole-h.current-h{
-  background:linear-gradient(180deg,var(--gold-bri),var(--gold));color:#000;
-  box-shadow:0 0 12px rgba(245,200,66,0.7);
-}
-.gw-mate-table td.current-c{
-  background:rgba(245,200,66,0.28);font-weight:900;font-size:26px;
-  box-shadow:inset 0 0 0 2px var(--gold);
-}
-.gw-mate-table td.player-name-cell{
-  text-align:left;font-size:18px;font-weight:800;min-width:140px;
-  background:#1f1f1f;color:var(--gold-bri);position:sticky;left:0;z-index:5;
-}
-.gw-mate-table tr.me td{background:rgba(212,175,55,.18);}
-.gw-mate-table tr.me td.current-c{background:rgba(245,200,66,0.45);}
-.gw-mate-table tr.par-row td{
-  background:linear-gradient(180deg,#2a2a2a,#1f1f1f);
-  color:var(--gold-bri);font-weight:900;font-size:20px;
-}
-.gw-mate-table td.total-col{
-  background:#1f1f1f;color:var(--gold-bri);font-weight:900;font-size:24px;
-  position:sticky;right:0;z-index:4;
-}
-
-/* ホール選択FAB（フッターより上に配置） */
-.gw-fab-jump{
-  position:fixed;
-  bottom:calc(var(--footer-h) + var(--safe-bottom) + 16px);
-  right:16px;z-index:80;
-  width:56px;height:56px;border-radius:50%;
-  background:linear-gradient(180deg,var(--gold-bri),var(--gold));
-  color:#000;border:0;font-size:22px;font-weight:900;
-  box-shadow:0 6px 16px rgba(0,0,0,0.4);
-}
-
-/* 統計カード（履歴タブ） */
-.gw-stats-grid{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;
-}
-.gw-stat-card{
-  background:linear-gradient(135deg,rgba(245,200,66,0.15),rgba(0,0,0,0.4));
-  border:1px solid rgba(245,200,66,0.35);border-radius:12px;padding:12px 6px;text-align:center;
-}
-.gw-stat-card .lbl{font-size:10px;color:var(--text-sub);margin-bottom:4px;}
-.gw-stat-card .val{font-size:22px;font-weight:900;color:var(--gold-bri);line-height:1;}
-.gw-stat-card .unit{font-size:10px;color:var(--text-sub);margin-top:2px;}
-
-/* 履歴フィルタ */
-.gw-history-filters{
-  background:rgba(0,0,0,0.35);border-radius:14px;padding:12px;margin-bottom:14px;
-  border:1px solid rgba(245,200,66,0.3);
-}
-.gw-history-filters .filter-row{display:flex;gap:8px;margin-bottom:8px;align-items:center;}
-.gw-history-filters .filter-row:last-child{margin-bottom:0;}
-.gw-history-filters label{flex:0 0 70px;margin:0;font-size:12px;color:var(--gold-bri);}
-.gw-history-filters select{flex:1;margin:0;padding:10px;font-size:14px;min-height:44px;}
-
-/* 履歴行 */
-.gw-hist-row{
-  background:var(--card-hi);border-radius:12px;padding:14px;margin-bottom:8px;
-  cursor:pointer;border-left:4px solid var(--gold);
-}
-.gw-hist-row.best{
-  border-left-color:#ffd700;
-  background:linear-gradient(90deg,rgba(255,215,0,0.2),var(--card-hi));
-}
-.gw-hist-row .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
-.gw-hist-row .date{font-size:13px;font-weight:800;color:var(--gold-bri);}
-.gw-hist-row .total{font-size:22px;font-weight:900;color:#fff;}
-.gw-hist-row .total .vs{font-size:13px;color:var(--text-sub);margin-left:6px;}
-.gw-hist-row .bottom{display:flex;justify-content:space-between;font-size:12px;color:var(--text-sub);}
-.gw-hist-row .course{font-weight:700;}
-.gw-hist-detail{
-  background:rgba(0,0,0,0.5);border-radius:12px;padding:12px;
-  margin-top:-4px;margin-bottom:10px;border:1px solid rgba(245,200,66,0.25);
-}
-.gw-hist-detail .header{
-  display:flex;justify-content:space-between;font-size:12px;color:var(--gold-bri);
-  margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(245,200,66,0.2);
-}
-.gw-hist-detail-table-wrap{overflow-x:auto;}
-.gw-hist-detail table{width:100%;border-collapse:collapse;min-width:680px;font-size:11px;}
-.gw-hist-detail th,.gw-hist-detail td{
-  border:1px solid rgba(255,255,255,0.18);padding:5px 3px;text-align:center;color:#fff;
-}
-.gw-hist-detail th{background:rgba(245,200,66,0.3);font-weight:700;color:#000;}
-.gw-hist-detail tr.primary td{background:rgba(245,200,66,0.18);font-weight:700;}
-.gw-hist-detail tr.par-row td{background:rgba(0,0,0,0.5);color:var(--gold-bri);font-weight:800;}
-.gw-hist-detail .total-col{background:rgba(0,0,0,0.45);font-weight:800;color:var(--gold-bri);}
-
-.gw-history-empty{
-  text-align:center;padding:40px 20px;color:var(--text-sub);
-  background:rgba(0,0,0,0.25);border-radius:12px;
-}
-
-/* ════════════════════════════════════════════════════════════════
-   マイページ
-════════════════════════════════════════════════════════════════ */
-.gw-mypage-card{
-  background:linear-gradient(135deg,rgba(245,200,66,0.2),rgba(0,0,0,0.4));
-  border:2px solid rgba(245,200,66,0.4);border-radius:18px;
-  padding:20px;margin-bottom:14px;text-align:center;
-}
-.gw-mypage-card .gw-avatar{
-  width:80px;height:80px;border-radius:50%;
-  background:linear-gradient(135deg,var(--gold-bri),var(--gold));
-  color:#000;font-size:36px;font-weight:900;
-  display:flex;align-items:center;justify-content:center;
-  margin:0 auto 12px;
-}
-.gw-mypage-card .gw-uname{font-size:22px;font-weight:900;color:var(--gold-bri);}
-.gw-mypage-card .gw-uid{font-size:11px;color:var(--text-sub);margin-top:4px;font-family:monospace;}
-
-/* ════════════════════════════════════════════════════════════════
-   ★データ保全のご案内モーダル（設計憲法・第7条遵守）
-   ─ "ゲストモード案内" であって "お試し終了" ではない ─
-════════════════════════════════════════════════════════════════ */
-.gw-modal-bg{
-  position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;
-  display:none;align-items:flex-start;justify-content:center;padding:14px;overflow-y:auto;
-}
-.gw-modal-bg.show{display:flex;}
-.gw-modal{
-  background:linear-gradient(180deg,#1e4a3a,#143729);
-  border-radius:18px;padding:22px;max-width:480px;width:100%;margin:auto;
-  border:2px solid rgba(245,200,66,0.25);
-}
-.gw-modal h3{margin:0 0 16px;color:var(--gold);font-size:20px;}
-.gw-modal p{font-size:14px;line-height:1.7;color:var(--text-sub);margin:8px 0;}
-
-.gw-backup-modal .gw-backup-icon{
-  font-size:48px;text-align:center;margin-bottom:8px;
-}
-.gw-backup-modal .gw-backup-title{
-  text-align:center;color:var(--gold);font-size:20px;font-weight:900;margin-bottom:14px;
-}
-.gw-backup-modal .gw-backup-msg{
-  background:rgba(0,0,0,0.3);border-radius:12px;padding:14px;
-  font-size:14px;line-height:1.7;color:var(--text);margin-bottom:14px;
-}
-.gw-backup-modal .gw-backup-benefits{
-  background:rgba(245,200,66,0.1);border:1px solid rgba(245,200,66,0.3);
-  border-radius:10px;padding:12px;font-size:13px;line-height:1.8;color:var(--gold-bri);
-  margin-bottom:14px;
-}
-.gw-backup-modal .gw-backup-benefits .item::before{content:'✓ ';color:#5cd65c;font-weight:900;}
-.gw-backup-modal .gw-backup-note{
-  font-size:11px;color:var(--text-sub);text-align:center;margin-top:10px;
-}
-
-/* PWA案内モーダル */
-.gw-pwa-steps{
-  background:rgba(0,0,0,0.3);border-radius:10px;padding:12px;margin:10px 0;
-  font-size:14px;line-height:1.8;
-}
-.gw-pwa-steps .step{display:flex;align-items:center;gap:8px;margin:4px 0;}
-.gw-pwa-steps .step .n{
-  background:var(--gold);color:#000;width:24px;height:24px;border-radius:50%;
-  display:inline-flex;align-items:center;justify-content:center;
-  font-weight:900;font-size:13px;flex-shrink:0;
-}
-
-/* ホール選択オーバーレイ */
-.gw-hole-picker-overlay{
-  position:fixed;inset:0;z-index:250;background:rgba(0,0,0,.9);
-  backdrop-filter:blur(10px);display:none;align-items:flex-end;justify-content:center;
-}
-.gw-hole-picker-overlay.show{display:flex;}
-.gw-hole-picker-sheet{
-  width:100%;max-width:560px;background:var(--bg-grad);
-  border-top:2px solid var(--gold);border-radius:28px 28px 0 0;
-  padding:20px;max-height:85vh;overflow-y:auto;
-  padding-bottom:calc(20px + var(--safe-bottom));
-}
-.gw-hp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
-.gw-hp-btn{
-  min-height:60px;font-size:18px;font-weight:bold;
-  background:rgba(255,255,255,0.1);color:#fff;
-  border:1px solid rgba(255,255,255,0.2);border-radius:12px;
-}
-.gw-hp-btn.done{background:rgba(46,204,113,0.2);border-color:#2ecc71;color:#2ecc71;}
-.gw-hp-btn.cur{
-  background:radial-gradient(circle at 30% 30%,var(--gold-bri),var(--gold));
-  border-color:#fff;color:#000;transform:scale(1.1);
-}
-
-/* ホール拡大表示 */
-.gw-hole-zoom-overlay{
-  position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.85);
-  backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px;
-}
-.gw-hole-zoom-overlay.show{display:flex;}
-.gw-hole-zoom-card{
-  background:linear-gradient(145deg,var(--card),rgba(20,20,20,0.95));
-  border:2px solid var(--gold);border-radius:24px;
-  padding:24px;width:100%;max-width:420px;text-align:center;
-}
-.gw-hz-num{font-size:64px;font-weight:900;color:var(--gold-bri);line-height:1;}
-.gw-hz-list{margin-top:16px;display:flex;flex-direction:column;gap:10px;text-align:left;}
-.gw-hz-row{
-  display:flex;justify-content:space-between;align-items:center;
-  background:rgba(0,0,0,0.4);padding:12px;border-radius:12px;
-}
-.gw-hz-row.me{background:rgba(212,175,55,.15);border:1px solid var(--gold);}
-.gw-hz-row .n{font-size:18px;font-weight:800;}
-.gw-hz-row .s{font-size:32px;font-weight:900;}
-
-/* Toast */
-.gw-toast{
-  position:fixed;
-  bottom:calc(var(--footer-h) + var(--safe-bottom) + 24px);
-  left:50%;transform:translateX(-50%);
-  background:rgba(0,0,0,0.92);color:#fff;
-  padding:14px 24px;border-radius:12px;z-index:300;
-  font-size:15px;font-weight:700;
-  border:1px solid rgba(245,200,66,0.3);
-  max-width:90%;
-  display:none;
-}
-.gw-toast.show{display:block;}
-
-/* 起動エラー */
-.gw-startup-error{
-  position:fixed;bottom:calc(var(--footer-h) + var(--safe-bottom));left:0;right:0;
-  background:linear-gradient(180deg,#c0392b,#922b21);color:#fff;
-  padding:14px 16px;text-align:center;font-weight:700;font-size:14px;
-  z-index:400;border-top:3px solid #ffd700;box-shadow:0 -4px 12px rgba(0,0,0,0.5);
-}
-.gw-startup-error .err-title{color:#ffd700;font-size:15px;margin-bottom:4px;}
-.gw-startup-error .err-close{
-  position:absolute;top:6px;right:10px;background:transparent;border:0;
-  color:#fff;font-size:18px;font-weight:900;cursor:pointer;
-}
-
-.gw-hidden{display:none !important;}
-.gw-section-title{
-  color:var(--gold);font-size:14px;font-weight:800;
-  margin:18px 0 8px;padding-left:10px;border-left:4px solid var(--gold);
-}
-
-/* ════════════════════════════════════════════════════════════════
-   ★Gランド最終UIレイアウト（v2）専用スタイル
-════════════════════════════════════════════════════════════════ */
-
-/* ── ② ホール入力エリア ───────────────── */
-#gw-input-area{
-  margin-bottom:12px;
-}
-
-/* ── シンプルモード入力（既存 .gw-stroke-row を流用） ── */
-/* 既存スタイル維持。新規追加なし */
-
-/* ── カウンターモード入力（上下分割レイアウト） ── */
-.gw-counter-area{
-  background:var(--card-hi);
-  border-radius:14px;
-  padding:14px;
-  margin-top:10px;
-  border:2px solid rgba(245,200,66,0.35);
-}
-.gw-counter-buttons{
-  display:flex;
-  gap:10px;
-  margin-bottom:14px;
-}
-.gw-counter-buttons.single{
-  justify-content:center;
-}
-.gw-counter-col{
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:8px;
-}
-.gw-counter-col-label{
-  font-size:12px;
-  font-weight:800;
-  color:var(--gold-bri);
-}
-.gw-counter-col-buttons{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  width:100%;
-  justify-content:center;
-}
-.gw-counter-btn{
-  width:60px;
-  height:60px;
-  border-radius:50%;
-  border:0;
-  font-size:30px;
-  font-weight:900;
-  cursor:pointer;
-  box-shadow:0 4px 0 #c9a100;
-  transition:transform 0.1s;
-}
-.gw-counter-btn:active{
-  transform:translateY(2px) scale(0.96);
-}
-.gw-counter-btn.shot{
-  background:#ffcc22;
-  color:#000;
-}
-.gw-counter-btn.putt{
-  background:#FF8C00;
-  color:#fff;
-  box-shadow:0 4px 0 #b86200;
-}
-.gw-counter-val{
-  font-size:42px;
-  font-weight:900;
-  color:#fff;
-  min-width:50px;
-  text-align:center;
-}
-
-/* カウンター下部の計算式・合計表示 */
-.gw-counter-formula{
-  background:rgba(0,0,0,0.4);
-  border-radius:10px;
-  padding:14px 10px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  font-weight:800;
-}
-.gw-formula-item{
-  text-align:center;
-}
-.gw-formula-item .lbl{
-  font-size:10px;
-  color:var(--text-sub);
-  display:block;
-  margin-bottom:2px;
-}
-.gw-formula-item .val{
-  font-size:22px;
-  font-weight:900;
-  color:var(--gold-bri);
-}
-.gw-formula-op{
-  font-size:22px;
-  font-weight:900;
-  color:var(--text-sub);
-}
-.gw-formula-total{
-  text-align:center;
-  border-left:2px solid rgba(245,200,66,0.5);
-  padding-left:10px;
-  margin-left:6px;
-}
-.gw-formula-total .lbl{
-  font-size:10px;
-  color:var(--text-sub);
-  display:block;
-  margin-bottom:2px;
-}
-.gw-formula-total .val{
-  font-size:32px;
-  font-weight:900;
-  color:var(--gold);
-  line-height:1;
-}
-
-/* ── ③ ホール移動エリア ───────────────── */
-.gw-hole-nav{
-  display:flex;
-  gap:8px;
-  margin-bottom:14px;
-}
-.gw-hole-nav-btn{
-  flex:1;
-  font-size:16px;
-  font-weight:900;
-  min-height:56px;
-}
-.gw-hole-nav-btn:disabled{
-  opacity:0.4;
-  cursor:not-allowed;
-}
-.gw-hole-jump-btn{
-  flex:0 0 110px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  background:linear-gradient(180deg,var(--gold-bri),var(--gold));
-  color:#000;
-  border:0;
-  border-radius:12px;
-  min-height:56px;
-  cursor:pointer;
-  box-shadow:0 3px 0 var(--gold-dk);
-  padding:6px;
-  gap:0;
-}
-.gw-hole-jump-btn:active{
-  transform:translateY(2px);
-  box-shadow:0 1px 0 var(--gold-dk);
-}
-.gw-jump-num{
-  font-size:24px;
-  font-weight:900;
-  line-height:1;
-}
-.gw-jump-total{
-  font-size:10px;
-  font-weight:700;
-  line-height:1;
-  margin-top:2px;
-  opacity:0.8;
-}
-
-/* ── ⑤ 設定・表記エリア ─────────────── */
-.gw-settings-panel{
-  background:rgba(0,0,0,0.25);
-  border:1px solid rgba(245,200,66,0.2);
-  border-radius:12px;
-  padding:12px;
-  margin-bottom:14px;
-}
-.gw-setting-row{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-bottom:8px;
-}
-.gw-setting-row:last-child{
-  margin-bottom:0;
-}
-.gw-setting-label{
-  flex:0 0 80px;
-  font-size:12px;
-  font-weight:700;
-  color:var(--gold-bri);
-}
-.gw-setting-toggle{
-  flex:1;
-  display:flex;
-  gap:4px;
-  background:rgba(0,0,0,0.4);
-  padding:4px;
-  border-radius:10px;
-}
-.gw-setting-toggle button{
-  flex:1;
-  padding:8px 4px;
-  border:0;
-  border-radius:7px;
-  background:transparent;
-  color:#fff;
-  font-size:12px;
-  font-weight:700;
-  min-height:38px;
-  cursor:pointer;
-  transition:all 0.15s;
-}
-.gw-setting-toggle button.active{
-  background:linear-gradient(180deg,var(--gold-bri),var(--gold));
-  color:#000;
-  box-shadow:0 1px 4px rgba(0,0,0,0.3);
-}
-.gw-setting-toggle button:active{
-  transform:scale(0.97);
-}
-
-/* ── ⑥ タブ・保存エリア ──────────────── */
-.gw-bottom-area{
-  margin-top:6px;
-}
-.gw-bottom-area .gw-subtabs{
-  margin-bottom:12px;
-}
-#gw-save-button-area{
-  margin-top:8px;
-}
-
-/* ── 既存FABを非表示（ホール移動エリアに統合済み） ── */
-.gw-fab-jump{
-  display:none !important;
-}
-
-/* ════════════════════════════════════════════════════════════════
-   ★Phase 1-B 専用：コース選択画面・QRボタン・QRモーダル
-════════════════════════════════════════════════════════════════ */
-
-/* ── コース選択画面 ─────────────────── */
-.gw-course-greeting{
-  text-align:center;
-  padding:20px 14px 14px;
-  background:linear-gradient(135deg,rgba(245,200,66,0.2),rgba(0,0,0,0.4));
-  border:2px solid var(--gold);
-  border-radius:18px;
-  margin-bottom:18px;
-}
-.gw-course-greet-msg{
-  font-size:14px;
-  color:var(--text-sub);
-  margin-bottom:4px;
-}
-.gw-course-greet-name{
-  font-size:22px;
-  font-weight:900;
-  color:var(--gold-bri);
-}
-.gw-course-list{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-.gw-course-card{
-  display:flex;
-  align-items:center;
-  gap:14px;
-  background:var(--card-hi);
-  border:2px solid rgba(245,200,66,0.4);
-  border-radius:14px;
-  padding:16px;
-  cursor:pointer;
-  text-align:left;
-  color:#fff;
-  font-family:inherit;
-  transition:transform 0.1s, border-color 0.15s;
-  min-height:72px;
-}
-.gw-course-card:active{
-  transform:scale(0.97);
-  border-color:var(--gold);
-}
-.gw-course-card .gw-course-icon{
-  font-size:36px;
-  flex:0 0 auto;
-}
-.gw-course-card .gw-course-name{
-  font-size:18px;
-  font-weight:800;
-  color:var(--gold-bri);
-  margin-bottom:2px;
-}
-.gw-course-card .gw-course-sub{
-  font-size:11px;
-  color:var(--text-sub);
-}
-
-/* ── QRで合流ボタン（同伴メンバー表上部に常設） ─── */
-.gw-qr-join-btn{
-  width:100%;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  background:linear-gradient(135deg,rgba(93,173,226,0.25),rgba(0,0,0,0.4));
-  border:2px solid rgba(93,173,226,0.5);
-  border-radius:12px;
-  padding:12px 14px;
-  cursor:pointer;
-  color:#fff;
-  font-family:inherit;
-  text-align:left;
-  margin-bottom:12px;
-  min-height:60px;
-  transition:transform 0.1s;
-}
-.gw-qr-join-btn:active{
-  transform:scale(0.98);
-}
-.gw-qr-icon{
-  font-size:28px;
-  flex:0 0 auto;
-}
-.gw-qr-text{
-  display:flex;
-  flex-direction:column;
-  gap:2px;
-}
-.gw-qr-text-main{
-  font-size:15px;
-  font-weight:800;
-  color:#5dade2;
-}
-.gw-qr-text-sub{
-  font-size:11px;
-  color:var(--text-sub);
-}
-
-/* ── QRスキャナーモーダル ─────────────── */
-.gw-qr-pre{
-  padding:20px 10px;
-  text-align:center;
-}
-.gw-qr-illust{
-  font-size:48px;
-  margin-bottom:14px;
-}
-.gw-qr-video-wrap{
-  position:relative;
-  width:100%;
-  max-width:320px;
-  margin:0 auto;
-  background:#000;
-  border-radius:12px;
-  overflow:hidden;
-  aspect-ratio:1/1;
-}
-.gw-qr-video-wrap video{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
-}
-.gw-qr-frame{
-  position:absolute;
-  inset:15%;
-  border:3px solid var(--gold);
-  border-radius:12px;
-  pointer-events:none;
-  box-shadow:0 0 0 9999px rgba(0,0,0,0.4);
-}
-.gw-qr-result{
-  padding:30px 20px;
-  text-align:center;
-}
-.gw-qr-result-icon{
-  font-size:64px;
-  margin-bottom:14px;
-}
-.gw-qr-result-text{
-  font-size:18px;
-  font-weight:800;
-  color:var(--gold-bri);
-}
-
-</style>
 </head>
 <body>
 
@@ -1073,42 +121,100 @@ label{display:block;font-size:13px;font-weight:700;color:var(--gold-bri);margin-
       </p>
     </div>
 
-        <!-- ═══════ コース選択画面（プロフィール登録後・毎回起動時に表示） ═══════ -->
+            <!-- ═══════════ コース選択画面（新規追加） ═══════════ -->
     <div id="gw-gland-course-select" class="gw-hidden">
       <div class="gw-course-greeting">
-        <div class="gw-course-greet-msg" id="gw-course-greet-msg">こんにちは</div>
-        <div class="gw-course-greet-name" id="gw-course-greet-name">プレイヤー</div>
+        <div class="gw-course-greet-msg">こんにちは</div>
+        <div class="gw-course-greet-name" id="gw-cs-greet-name">プレイヤー</div>
       </div>
 
       <h2 style="text-align:center;color:var(--gold);font-size:20px;margin:18px 0 14px;">
         本日のコースを選択
       </h2>
 
-      <div class="gw-course-list" id="gw-course-list">
-        <!-- JSで動的生成。フォールバックとして3コース固定UIも準備 -->
-        <button class="gw-course-card" data-course-id="rokko-international" data-course-name="六甲国際パブリック">
-          <div class="gw-course-icon">🏌</div>
-          <div class="gw-course-name">六甲国際パブリック</div>
-          <div class="gw-course-sub">9H(ハーフ) / 18H 選択可</div>
-        </button>
-        <button class="gw-course-card" data-course-id="rokko-west" data-course-name="西コース">
-          <div class="gw-course-icon">⛳</div>
-          <div class="gw-course-name">六甲国際 西コース</div>
-          <div class="gw-course-sub">OUT or IN スタート選択</div>
-        </button>
-        <button class="gw-course-card" data-course-id="rokko-east" data-course-name="東コース">
-          <div class="gw-course-icon">⛳</div>
-          <div class="gw-course-name">六甲国際 東コース</div>
-          <div class="gw-course-sub">OUT or IN スタート選択</div>
-        </button>
+      <div id="gw-cs-course-list">
+        <!-- 六甲国際パブリック：9H/18H 選択 -->
+        <div class="gw-cs-course-wrap" data-course-id="rokko-international">
+          <button class="gw-cs-course-card" data-action="cs-toggle" data-course-id="rokko-international">
+            <div class="gw-cs-course-icon">🏌</div>
+            <div class="gw-cs-course-info">
+              <div class="gw-cs-course-name">六甲国際パブリック</div>
+              <div class="gw-cs-course-sub">9H / 18H 選択可</div>
+            </div>
+            <div class="gw-cs-course-arrow">▼</div>
+          </button>
+          <div class="gw-cs-sub-options gw-hidden">
+            <button class="gw-cs-sub-btn" data-action="cs-confirm" data-course-id="rokko-international" data-variant="9H">
+              🟢 9ホール
+            </button>
+            <button class="gw-cs-sub-btn" data-action="cs-confirm" data-course-id="rokko-international" data-variant="18H">
+              🔵 18ホール
+            </button>
+          </div>
+        </div>
+
+        <!-- 西コース：OUT/IN 選択 -->
+        <div class="gw-cs-course-wrap" data-course-id="rokko-west">
+          <button class="gw-cs-course-card" data-action="cs-toggle" data-course-id="rokko-west">
+            <div class="gw-cs-course-icon">⛳</div>
+            <div class="gw-cs-course-info">
+              <div class="gw-cs-course-name">西コース</div>
+              <div class="gw-cs-course-sub">OUT / IN スタート選択</div>
+            </div>
+            <div class="gw-cs-course-arrow">▼</div>
+          </button>
+          <div class="gw-cs-sub-options gw-hidden">
+            <button class="gw-cs-sub-btn" data-action="cs-confirm" data-course-id="rokko-west" data-variant="OUT">
+              ➡️ OUTスタート
+            </button>
+            <button class="gw-cs-sub-btn" data-action="cs-confirm" data-course-id="rokko-west" data-variant="IN">
+              ⬅️ INスタート
+            </button>
+          </div>
+        </div>
+
+        <!-- 東コース：OUT/IN 選択 -->
+        <div class="gw-cs-course-wrap" data-course-id="rokko-east">
+          <button class="gw-cs-course-card" data-action="cs-toggle" data-course-id="rokko-east">
+            <div class="gw-cs-course-icon">⛳</div>
+            <div class="gw-cs-course-info">
+              <div class="gw-cs-course-name">東コース</div>
+              <div class="gw-cs-course-sub">OUT / IN スタート選択</div>
+            </div>
+            <div class="gw-cs-course-arrow">▼</div>
+          </button>
+          <div class="gw-cs-sub-options gw-hidden">
+            <button class="gw-cs-sub-btn" data-action="cs-confirm" data-course-id="rokko-east" data-variant="OUT">
+              ➡️ OUTスタート
+            </button>
+            <button class="gw-cs-sub-btn" data-action="cs-confirm" data-course-id="rokko-east" data-variant="IN">
+              ⬅️ INスタート
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- パブリックボード参加トグル -->
+      <div class="gw-cs-public-toggle">
+        <div style="flex:1;">
+          <div class="gw-cs-public-title">🌐 他のプレイヤーとスコアを共有</div>
+          <div class="gw-cs-public-sub">パブリックボードに参加（後から変更可）</div>
+        </div>
+        <label class="gw-cs-switch">
+          <input type="checkbox" id="gw-cs-public-toggle" checked>
+          <span class="gw-cs-switch-slider"></span>
+        </label>
       </div>
 
       <div style="text-align:center;margin-top:14px;">
-        <button class="gw-btn-ghost" data-action="open-course-other" style="font-size:13px;padding:10px 20px;">
-          その他のコースを選ぶ
+        <button class="gw-btn-ghost" data-action="cs-back" style="font-size:13px;padding:10px 20px;">
+          ← 戻る
         </button>
       </div>
     </div>
+    <!-- ═══════════ コース選択画面ここまで ═══════════ -->
+
+
 
   <!-- スコア入力エリア（登録後表示・最終UIレイアウト） -->
   <div id="gw-gland-main" class="gw-hidden">

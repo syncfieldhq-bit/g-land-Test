@@ -3071,6 +3071,226 @@ window.addEventListener('load', function() {
     console.log('[GW] 予備ロードを開始します');
     GW.Modules.Mates.load(); // 1ホール目の入力を待たずにデータを先読み！
 });
+
+
+/* ══════════════════════════════════════════════════════════════
+ * コース選択UI（新規追加・既存コードに影響なし）
+ * 設計：data-action 経由でハンドラを呼ぶ。既存 GW.Core.Action と整合。
+ * ══════════════════════════════════════════════════════════════ */
+(function gwCourseSelectModule() {
+  'use strict';
+
+  console.log('[GW.CourseSelect] module loaded');
+
+  /** コース定義（後から増やせる） */
+  var COURSE_DEFS = {
+    'rokko-international': { name: '六甲国際パブリック', variants: ['9H','18H'] },
+    'rokko-west':          { name: '西コース',           variants: ['OUT','IN'] },
+    'rokko-east':          { name: '東コース',           variants: ['OUT','IN'] }
+  };
+
+  /** コース選択画面を表示 */
+  function showCourseSelect() {
+    console.log('[GW.CourseSelect] show');
+
+    // 既存画面を隠す（gw-* 命名規則に対応）
+    var screensToHide = ['gw-gland-register','gw-gland-main','gw-gland-course-select'];
+    screensToHide.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.add('gw-hidden');
+    });
+
+    // コース選択画面のみ表示
+    var cs = document.getElementById('gw-gland-course-select');
+    if (cs) cs.classList.remove('gw-hidden');
+
+    // ニックネーム反映
+    try {
+      var profile = null;
+      // GW.Core.Auth があればそれを優先
+      if (window.GW && GW.Core && GW.Core.Auth && GW.Core.Auth.getProfile) {
+        profile = GW.Core.Auth.getProfile();
+      } else {
+        // フォールバック：localStorage 直接読み込み
+        profile = JSON.parse(localStorage.getItem('gw_profile') || localStorage.getItem('gland_profile') || '{}');
+      }
+      var nameEl = document.getElementById('gw-cs-greet-name');
+      if (nameEl) {
+        if (profile && (profile.nickname || profile.realName)) {
+          nameEl.textContent = (profile.nickname || profile.realName) + 'さん';
+        } else {
+          nameEl.textContent = 'プレイヤー';
+        }
+      }
+    } catch(e) {
+      console.warn('[GW.CourseSelect] profile load failed:', e);
+    }
+
+    // パブリックトグルの状態を復元
+    try {
+      var pub = localStorage.getItem('gw_public_board');
+      var tg = document.getElementById('gw-cs-public-toggle');
+      if (tg) tg.checked = (pub !== 'false');  // デフォルトはON
+    } catch(e) {}
+  }
+
+  /** コースカードの展開/折りたたみ */
+  function toggleCourse(courseId) {
+    console.log('[GW.CourseSelect] toggle:', courseId);
+    var wraps = document.querySelectorAll('.gw-cs-course-wrap');
+    wraps.forEach(function(w) {
+      var card = w.querySelector('.gw-cs-course-card');
+      var subs = w.querySelector('.gw-cs-sub-options');
+      if (w.getAttribute('data-course-id') === courseId) {
+        var isOpen = card.classList.contains('expanded');
+        card.classList.toggle('expanded', !isOpen);
+        subs.classList.toggle('gw-hidden', isOpen);
+      } else {
+        card.classList.remove('expanded');
+        subs.classList.add('gw-hidden');
+      }
+    });
+  }
+
+  /** コース確定（サブ選択ボタンタップ時） */
+  function confirmCourse(courseId, variant) {
+    console.log('[GW.CourseSelect] confirm:', courseId, variant);
+    var def = COURSE_DEFS[courseId];
+    if (!def) {
+      console.warn('[GW.CourseSelect] unknown course:', courseId);
+      return;
+    }
+
+    // パブリックトグル状態を取得
+    var tg = document.getElementById('gw-cs-public-toggle');
+    var isPublic = tg ? tg.checked : true;
+
+    // localStorage に保存
+    try {
+      localStorage.setItem('gw_public_board', isPublic ? 'true' : 'false');
+      localStorage.setItem('gw_selected_course', JSON.stringify({
+        courseId:    courseId,
+        courseName:  def.name,
+        variant:     variant,
+        boardMode:   isPublic ? 'public' : 'private',
+        selectedAt:  Date.now()
+      }));
+    } catch(e) {
+      console.warn('[GW.CourseSelect] save failed:', e);
+    }
+
+    // トースト表示（既存の toast 関数か GW.Core.UI.toast を使う）
+    var msg = '⛳ ' + def.name + '(' + variant + ') を選択';
+    if (window.GW && GW.Core && GW.Core.UI && GW.Core.UI.toast) {
+      GW.Core.UI.toast(msg);
+    } else if (typeof toast === 'function') {
+      toast(msg);
+    } else {
+      console.log(msg);
+    }
+
+    // ▼ 次の画面への遷移は、現状は手動。
+    //   既存の起動ロジックを壊さないため、ここでは画面を閉じるだけ。
+    //   将来のステップで「次画面遷移」を組み込む。
+    setTimeout(function() {
+      goBack();
+    }, 800);
+  }
+
+  /** 戻る */
+  function goBack() {
+    console.log('[GW.CourseSelect] back');
+    var cs = document.getElementById('gw-gland-course-select');
+    if (cs) cs.classList.add('gw-hidden');
+
+    // 元の画面に戻す
+    // プロフィール登録済みかつメインがあるならメインへ、なければ登録画面へ
+    var main = document.getElementById('gw-gland-main');
+    var reg = document.getElementById('gw-gland-register');
+    var hasMain = main && !main.classList.contains('gw-hidden-by-default');
+
+    // 既存挙動を尊重：どの画面が直前まで見えていたかは判断しないので、
+    // とりあえず main があれば main、なければ reg を表示
+    if (main) {
+      main.classList.remove('gw-hidden');
+    } else if (reg) {
+      reg.classList.remove('gw-hidden');
+    }
+  }
+
+  /** GW.Core.Action にハンドラ登録（存在すれば） */
+  function bindActions() {
+    if (!window.GW || !GW.Core || !GW.Core.Action || !GW.Core.Action.registerMany) {
+      console.warn('[GW.CourseSelect] GW.Core.Action 未検出 - 手動バインドでフォールバック');
+      // フォールバック：直接 click イベントを拾う
+      document.addEventListener('click', function(e) {
+        var el = e.target;
+        while (el && el !== document.body) {
+          var act = el.getAttribute && el.getAttribute('data-action');
+          if (act === 'cs-toggle') {
+            e.preventDefault();
+            toggleCourse(el.getAttribute('data-course-id'));
+            return;
+          }
+          if (act === 'cs-confirm') {
+            e.preventDefault();
+            confirmCourse(
+              el.getAttribute('data-course-id'),
+              el.getAttribute('data-variant')
+            );
+            return;
+          }
+          if (act === 'cs-back') {
+            e.preventDefault();
+            goBack();
+            return;
+          }
+          el = el.parentNode;
+        }
+      });
+      return;
+    }
+
+    // 正常パス：GW.Core.Action に登録
+    GW.Core.Action.registerMany({
+      'cs-toggle': function(el) {
+        toggleCourse(el.getAttribute('data-course-id'));
+      },
+      'cs-confirm': function(el) {
+        confirmCourse(
+          el.getAttribute('data-course-id'),
+          el.getAttribute('data-variant')
+        );
+      },
+      'cs-back': function() {
+        goBack();
+      }
+    });
+  }
+
+  // ── 公開API ──
+  window.gwShowCourseSelect = showCourseSelect;
+  window.gwCourseSelectModule = {
+    show:    showCourseSelect,
+    toggle:  toggleCourse,
+    confirm: confirmCourse,
+    back:    goBack,
+    getSelected: function() {
+      try {
+        return JSON.parse(localStorage.getItem('gw_selected_course') || 'null');
+      } catch(e) { return null; }
+    }
+  };
+
+  // DOMContentLoaded を待ってからバインド
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindActions);
+  } else {
+    bindActions();
+  }
+})();
+
+
   // ──────────────────────────────────────────────────────────
   // 即時実行関数を閉じる（ファイル末尾）
   // ──────────────────────────────────────────────────────────
