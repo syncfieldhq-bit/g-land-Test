@@ -827,6 +827,154 @@ label{display:block;font-size:13px;font-weight:700;color:var(--gold-bri);margin-
   display:none !important;
 }
 
+/* ════════════════════════════════════════════════════════════════
+   ★Phase 1-B 専用：コース選択画面・QRボタン・QRモーダル
+════════════════════════════════════════════════════════════════ */
+
+/* ── コース選択画面 ─────────────────── */
+.gw-course-greeting{
+  text-align:center;
+  padding:20px 14px 14px;
+  background:linear-gradient(135deg,rgba(245,200,66,0.2),rgba(0,0,0,0.4));
+  border:2px solid var(--gold);
+  border-radius:18px;
+  margin-bottom:18px;
+}
+.gw-course-greet-msg{
+  font-size:14px;
+  color:var(--text-sub);
+  margin-bottom:4px;
+}
+.gw-course-greet-name{
+  font-size:22px;
+  font-weight:900;
+  color:var(--gold-bri);
+}
+.gw-course-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.gw-course-card{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  background:var(--card-hi);
+  border:2px solid rgba(245,200,66,0.4);
+  border-radius:14px;
+  padding:16px;
+  cursor:pointer;
+  text-align:left;
+  color:#fff;
+  font-family:inherit;
+  transition:transform 0.1s, border-color 0.15s;
+  min-height:72px;
+}
+.gw-course-card:active{
+  transform:scale(0.97);
+  border-color:var(--gold);
+}
+.gw-course-card .gw-course-icon{
+  font-size:36px;
+  flex:0 0 auto;
+}
+.gw-course-card .gw-course-name{
+  font-size:18px;
+  font-weight:800;
+  color:var(--gold-bri);
+  margin-bottom:2px;
+}
+.gw-course-card .gw-course-sub{
+  font-size:11px;
+  color:var(--text-sub);
+}
+
+/* ── QRで合流ボタン（同伴メンバー表上部に常設） ─── */
+.gw-qr-join-btn{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  background:linear-gradient(135deg,rgba(93,173,226,0.25),rgba(0,0,0,0.4));
+  border:2px solid rgba(93,173,226,0.5);
+  border-radius:12px;
+  padding:12px 14px;
+  cursor:pointer;
+  color:#fff;
+  font-family:inherit;
+  text-align:left;
+  margin-bottom:12px;
+  min-height:60px;
+  transition:transform 0.1s;
+}
+.gw-qr-join-btn:active{
+  transform:scale(0.98);
+}
+.gw-qr-icon{
+  font-size:28px;
+  flex:0 0 auto;
+}
+.gw-qr-text{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.gw-qr-text-main{
+  font-size:15px;
+  font-weight:800;
+  color:#5dade2;
+}
+.gw-qr-text-sub{
+  font-size:11px;
+  color:var(--text-sub);
+}
+
+/* ── QRスキャナーモーダル ─────────────── */
+.gw-qr-pre{
+  padding:20px 10px;
+  text-align:center;
+}
+.gw-qr-illust{
+  font-size:48px;
+  margin-bottom:14px;
+}
+.gw-qr-video-wrap{
+  position:relative;
+  width:100%;
+  max-width:320px;
+  margin:0 auto;
+  background:#000;
+  border-radius:12px;
+  overflow:hidden;
+  aspect-ratio:1/1;
+}
+.gw-qr-video-wrap video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.gw-qr-frame{
+  position:absolute;
+  inset:15%;
+  border:3px solid var(--gold);
+  border-radius:12px;
+  pointer-events:none;
+  box-shadow:0 0 0 9999px rgba(0,0,0,0.4);
+}
+.gw-qr-result{
+  padding:30px 20px;
+  text-align:center;
+}
+.gw-qr-result-icon{
+  font-size:64px;
+  margin-bottom:14px;
+}
+.gw-qr-result-text{
+  font-size:18px;
+  font-weight:800;
+  color:var(--gold-bri);
+}
 
 </style>
 </head>
@@ -908,19 +1056,59 @@ label{display:block;font-size:13px;font-weight:700;color:var(--gold-bri);margin-
   <!-- ───────── 画面②：G-LAND（スコア入力 + 履歴） ───────── -->
   <!-- ───────── 画面②：G-LAND（最終UIレイアウト v2） ───────── -->
 <section id="gw-screen-gland" class="gw-screen">
-  <!-- 初回登録カード（プレイヤー未登録時のみ表示） -->
-  <div id="gw-gland-register" class="gw-card">
-    <h2 style="margin-top:0;color:var(--gold);font-size:22px;">⛳ ラウンドを開始</h2>
-    <label>ゴルフ場</label>
-    <select id="gw-reg-course"><option value="">読み込み中...</option></select>
-    <label>ニックネーム</label>
-    <input type="text" id="gw-reg-nick" placeholder="例: タロウ" autocomplete="off">
-    <label>本名</label>
-    <input type="text" id="gw-reg-real" placeholder="例: 山田 太郎" autocomplete="off">
-    <label>所属グループ名(組)</label>
-    <input type="text" id="gw-reg-group" placeholder="例: Aチーム / 1組" autocomplete="off">
-    <button class="gw-btn-primary" data-action="register">登録してスコア入力へ</button>
-  </div>
+      <!-- 初回プロフィール登録カード（ニックネーム + 本名のみ） -->
+    <div id="gw-gland-register" class="gw-card">
+      <h2 style="margin-top:0;color:var(--gold);font-size:22px;">⛳ はじめまして</h2>
+      <p style="color:var(--text-sub);font-size:13px;line-height:1.7;margin:0 0 18px;">
+        G-WORLDをご利用いただきありがとうございます。<br>
+        まずはあなたのお名前を教えてください。
+      </p>
+      <label>ニックネーム</label>
+      <input type="text" id="gw-reg-nick" placeholder="例: タロウ" autocomplete="off">
+      <label>本名</label>
+      <input type="text" id="gw-reg-real" placeholder="例: 山田 太郎" autocomplete="off">
+      <button class="gw-btn-primary" data-action="register-profile">登録して次へ</button>
+      <p style="color:var(--text-sub);font-size:11px;line-height:1.6;margin:14px 0 0;text-align:center;">
+        ※ 1度だけの登録です。次回以降は自動でログインします。
+      </p>
+    </div>
+
+        <!-- ═══════ コース選択画面（プロフィール登録後・毎回起動時に表示） ═══════ -->
+    <div id="gw-gland-course-select" class="gw-hidden">
+      <div class="gw-course-greeting">
+        <div class="gw-course-greet-msg" id="gw-course-greet-msg">こんにちは</div>
+        <div class="gw-course-greet-name" id="gw-course-greet-name">プレイヤー</div>
+      </div>
+
+      <h2 style="text-align:center;color:var(--gold);font-size:20px;margin:18px 0 14px;">
+        本日のコースを選択
+      </h2>
+
+      <div class="gw-course-list" id="gw-course-list">
+        <!-- JSで動的生成。フォールバックとして3コース固定UIも準備 -->
+        <button class="gw-course-card" data-course-id="rokko-international" data-course-name="六甲国際パブリック">
+          <div class="gw-course-icon">🏌</div>
+          <div class="gw-course-name">六甲国際パブリック</div>
+          <div class="gw-course-sub">9H(ハーフ) / 18H 選択可</div>
+        </button>
+        <button class="gw-course-card" data-course-id="rokko-west" data-course-name="西コース">
+          <div class="gw-course-icon">⛳</div>
+          <div class="gw-course-name">六甲国際 西コース</div>
+          <div class="gw-course-sub">OUT or IN スタート選択</div>
+        </button>
+        <button class="gw-course-card" data-course-id="rokko-east" data-course-name="東コース">
+          <div class="gw-course-icon">⛳</div>
+          <div class="gw-course-name">六甲国際 東コース</div>
+          <div class="gw-course-sub">OUT or IN スタート選択</div>
+        </button>
+      </div>
+
+      <div style="text-align:center;margin-top:14px;">
+        <button class="gw-btn-ghost" data-action="open-course-other" style="font-size:13px;padding:10px 20px;">
+          その他のコースを選ぶ
+        </button>
+      </div>
+    </div>
 
   <!-- スコア入力エリア（登録後表示・最終UIレイアウト） -->
   <div id="gw-gland-main" class="gw-hidden">
@@ -956,9 +1144,20 @@ label{display:block;font-size:13px;font-weight:700;color:var(--gold-bri);margin-
       </button>
     </div>
 
-    <!-- ═══════ ④ スコアカード（同伴メンバー表） ═══════ -->
+        <!-- ═══════ ④ スコアカード（同伴メンバー表 + QR合流ボタン） ═══════ -->
     <div class="gw-mate-table-wrap" id="gw-mate-table-wrap">
-      <h4 style="margin:0 0 10px;color:var(--gold-bri);">同伴メンバー スコア表（横スクロール可）</h4>
+      <!-- QRで合流ボタン（上部・常設） -->
+      <button class="gw-qr-join-btn" data-action="open-qr-scanner">
+        <span class="gw-qr-icon">📷</span>
+        <span class="gw-qr-text">
+          <span class="gw-qr-text-main">QRで合流</span>
+          <span class="gw-qr-text-sub">コンペ・プライベートルームに参加</span>
+        </span>
+      </button>
+
+      <h4 style="margin:14px 0 10px;color:var(--gold-bri);">
+        同伴メンバー スコア表（横スクロール可）
+      </h4>
       <div id="gw-mate-table-body">
         <div style="color:var(--text-sub);font-size:14px;padding:10px;">準備中...</div>
       </div>
@@ -1254,6 +1453,68 @@ label{display:block;font-size:13px;font-weight:700;color:var(--gold-bri);margin-
     <button class="gw-btn-ghost" style="width:100%;margin-top:14px;" data-action="close-pwa-modal">閉じる</button>
   </div>
 </div>
+
+<!-- ════════════════════════════════════════════════════════════════
+     QRスキャナーモーダル
+════════════════════════════════════════════════════════════════ -->
+<div id="gw-modal-qr-scanner" class="gw-modal-bg">
+  <div class="gw-modal" style="max-width:480px;">
+    <h3>📷 QRで合流</h3>
+    <p style="color:var(--text-sub);font-size:13px;margin-bottom:14px;">
+      コンペ主催者やルーム作成者から発行された QR コードを枠内に映してください。
+    </p>
+
+    <div id="gw-qr-scanner-area" style="text-align:center;">
+      <!-- カメラ起動前 -->
+      <div id="gw-qr-pre" class="gw-qr-pre">
+        <div class="gw-qr-illust">📱➡️📷</div>
+        <p style="color:var(--text-sub);font-size:13px;">
+          下のボタンでカメラを起動します。<br>
+          初回はカメラ使用許可をお願いします。
+        </p>
+        <button class="gw-btn-primary" data-action="qr-start-camera" style="margin-top:14px;">
+          📷 カメラを起動する
+        </button>
+      </div>
+
+      <!-- カメラ起動中 -->
+      <div id="gw-qr-active" class="gw-hidden">
+        <div class="gw-qr-video-wrap">
+          <video id="gw-qr-video" playsinline></video>
+          <div class="gw-qr-frame"></div>
+        </div>
+        <p id="gw-qr-status" style="color:var(--gold-bri);font-size:13px;margin-top:10px;">
+          QRコードを枠内に映してください...
+        </p>
+      </div>
+
+      <!-- 結果表示 -->
+      <div id="gw-qr-result" class="gw-hidden gw-qr-result">
+        <div class="gw-qr-result-icon">✅</div>
+        <div class="gw-qr-result-text" id="gw-qr-result-text">読み取り完了</div>
+      </div>
+    </div>
+
+    <!-- 手動入力（QRが読めない時のフォールバック） -->
+    <details style="margin-top:14px;background:rgba(0,0,0,0.3);border-radius:10px;padding:10px;">
+      <summary style="cursor:pointer;color:var(--gold-bri);font-size:13px;font-weight:700;">
+        🔢 コードを手入力する
+      </summary>
+      <div style="margin-top:10px;">
+        <label>コンペID または ルームID</label>
+        <input type="text" id="gw-qr-manual-id" placeholder="例: COMP-001 / ROOM-1234" autocomplete="off">
+        <button class="gw-btn-primary" data-action="qr-submit-manual" style="margin-top:6px;">
+          このコードで合流
+        </button>
+      </div>
+    </details>
+
+    <button class="gw-btn-ghost" style="width:100%;margin-top:14px;" data-action="close-qr-scanner">
+      閉じる
+    </button>
+  </div>
+</div>
+
 
 <!-- ════════════════════════════════════════════════════════════════
      汎用確認モーダル
