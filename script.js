@@ -3076,11 +3076,22 @@
 
   console.log('[GW.CourseSelect] module loaded');
 
-    // 画面読み込み完了時に裏でロードを開始
-window.addEventListener('load', function() {
-    console.log('[GW] 予備ロードを開始します');
-    GW.Modules.GLand.Mates.load(); // 1ホール目の入力を待たずにデータを先読み！
-});
+    // プレイヤー情報が準備されるまで最大5秒間、100msおきにチェック
+var retryCount = 0;
+var timer = setInterval(function() {
+  var st = window.GW && GW.Modules && GW.Modules.GLand && GW.Modules.GLand.state;
+  if (st && st.player) {
+    clearInterval(timer);
+    console.log('[CourseSelect] プレイヤー情報発見！Mates.load() を実行します');
+    GW.Modules.GLand.Mates.load();
+  } else {
+    retryCount++;
+    if (retryCount > 50) { 
+      clearInterval(timer);
+      console.warn('[CourseSelect] プレイヤー情報が取得できませんでした');
+    }
+  }
+}, 100);
 
   /** コース定義（後から増やせる） */
   var COURSE_DEFS = {
