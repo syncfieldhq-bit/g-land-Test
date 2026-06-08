@@ -689,15 +689,29 @@
       }
     },
 
-    /** HTMLエスケープ（XSS対策・全モジュール共通） */
+        /**
+     * HTMLエスケープ（XSS対策・全モジュール共通）
+     *
+     * ★重要：this を使わないアロー的実装にしている。
+     *   理由：var esc = GW.Core.UI.escapeHtml; のように変数に代入されても
+     *         動作する必要があるため（_render 内で実際にこの使い方をしている）
+     */
     escapeHtml: function (s) {
-      return this._escapeHtml(s);
+      return String(s == null ? '' : s).replace(/[&<>"']/g, function (m) {
+        return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m];
+      });
     },
+
+    /**
+     * 互換用エイリアス（旧コードが this._escapeHtml を呼んでいる場合のため）
+     * 内部実装も escapeHtml と同じ
+     */
     _escapeHtml: function (s) {
       return String(s == null ? '' : s).replace(/[&<>"']/g, function (m) {
         return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m];
       });
     },
+
 
     /** 起動オーバーレイの表示テキストを更新 */
     setBootText: function (text) {
