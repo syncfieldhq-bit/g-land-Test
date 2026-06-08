@@ -3082,7 +3082,7 @@ var timer = setInterval(function() {
   var st = window.GW && GW.Modules && GW.Modules.GLand && GW.Modules.GLand.state;
   if (st && st.player) {
     clearInterval(timer);
-    console.log('[CourseSelect] プレイヤー情報発見！Mates.load() を実行します');
+    console.log('[CourseSelect] プレイヤー情報発見！ Mates.load() を実行します');
     GW.Modules.GLand.Mates.load();
   } else {
     retryCount++;
