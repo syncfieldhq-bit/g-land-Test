@@ -3079,7 +3079,7 @@
     // 画面読み込み完了時に裏でロードを開始
 window.addEventListener('load', function() {
     console.log('[GW] 予備ロードを開始します');
-    GW.Modules.Mates.load(); // 1ホール目の入力を待たずにデータを先読み！
+    GW.Modules.GLand.Mates.load(); // 1ホール目の入力を待たずにデータを先読み！
 });
 
   /** コース定義（後から増やせる） */
