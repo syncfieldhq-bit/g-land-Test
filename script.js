@@ -2499,7 +2499,7 @@
       // ── 各メンバー行 ──
       var rows = members.map(function (m) {
         var total = 0;
-        var trClass = m.isMe ? ' class="me"' : '';
+        var trClass = '';
         var starMark = m.isMe ? '★ ' : '';
         var displayName = m.realName || m.nickname || '?';
         var tds = '<td class="player-name-cell">' + starMark + esc(displayName) + '</td>';
