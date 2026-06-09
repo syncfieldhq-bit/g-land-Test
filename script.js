@@ -3567,4 +3567,55 @@ var timer = setInterval(function() {
   // ──────────────────────────────────────────────────────────
   // 即時実行関数を閉じる（ファイル末尾）
   // ──────────────────────────────────────────────────────────
+  (function() {
+  'use strict';
+  
+  // 画面切替用：ログ付きデバッグ版
+  window.gwShowScreen = function(screenId) {
+    console.log('[GW.Debug] 画面切替開始:', screenId);
+    var target = document.getElementById(screenId);
+    if (!target) {
+      console.error('[GW.Error] 画面要素が見つかりません:', screenId);
+      return;
+    }
+    
+    // 全画面隠す
+    ['gw-gland-register', 'gw-gland-course-select', 'gw-gland-main'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.add('gw-hidden');
+    });
+    
+    // 表示
+    target.classList.remove('gw-hidden');
+    console.log('[GW.Debug] ✅ 切替完了:', screenId);
+    
+    // ここに描画関数を繋ぐ（824行目のエラー対策）
+    if (screenId === 'gw-gland-main' && typeof GW.Modules.GLand._renderMainScreen === 'function') {
+      try {
+        GW.Modules.GLand._renderMainScreen();
+      } catch(e) {
+        console.error('[GW.Error] 描画失敗:', e);
+      }
+    }
+  };
+
+  // イベント委譲：Safariのタップ問題対策
+  document.addEventListener('pointerdown', function(ev) {
+    var el = ev.target.closest('[data-action]');
+    if (!el) return;
+    
+    var action = el.getAttribute('data-action');
+    console.log('[GW.Debug] アクション検知:', action);
+    
+    if (action === 'register-profile') {
+      // バリデーション付き遷移
+      var nick = document.getElementById('gw-input-nickname');
+      if (!nick || !nick.value) { alert('ニックネームを入力！'); return; }
+      window.gwShowScreen('gw-gland-course-select');
+    }
+    else if (action === 'cs-confirm') {
+      window.gwShowScreen('gw-gland-main');
+    }
+  });
 })();
+//})();
