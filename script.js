@@ -3084,8 +3084,6 @@ var timer = setInterval(function() {
     clearInterval(timer);
     console.log('[CourseSelect] プレイヤー情報発見！ Mates.load() を実行します');
     GW.Modules.GLand.Mates.load();
-    // ★ここに追加（3087行目になります）
-　if (window.gwShowScreen) window.gwShowScreen('gw-gland-course-select');
   } else {
     retryCount++;
     if (retryCount > 50) { 
