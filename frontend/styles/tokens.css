@@ -1,0 +1,25 @@
+/* ════════════════════════════════════════════════════════════════
+   G-World Design Tokens
+   ─ デザイントークン（CSS Custom Properties）の中央管理
+   ─ ここが G-World 全UIの「信頼できる唯一の情報源」
+════════════════════════════════════════════════════════════════ */
+
+:root{
+  /* ── 既存トークン（現行UI互換・絶対に変更しない） ────────── */
+  --bg-grad:linear-gradient(160deg,#0a3d2e 0%,#0f5f47 60%,#0a3d2e 100%);
+  --gold:#f5c842;--gold-dk:#d4a017;--gold-bri:#ffe082;
+  --danger:#e74c3c;--gray:#7a8a82;
+  --card:rgba(255,255,255,0.10);--card-hi:rgba(255,255,255,0.18);
+  --text:#fff;--text-sub:#d4e8dc;
+  --footer-h:64px;--safe-bottom:env(safe-area-inset-bottom,0px);
+
+  /* ── 新規ブランドトークン（マスターズ × アゼリア） ──────── */
+  /*   ※ 既存UIには未適用。将来のリブランド時に段階適用する  */
+  --g-masters-yellow:#FFD93D;
+  --g-masters-green:#006747;
+  --g-masters-green-dk:#004A33;
+  --g-azalea-pink:#E91E63;
+  --g-azalea-pink-soft:#F8BBD0;
+  --g-silence-bg:#FAFAF7;
+  --g-ink:#1A1A1A;
+}

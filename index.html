@@ -23,7 +23,12 @@
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="manifest" href="manifest.webmanifest">
 
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="frontend/styles/tokens.css">
+<link rel="stylesheet" href="frontend/styles/reset.css">
+<link rel="stylesheet" href="frontend/styles/layout.css">
+<link rel="stylesheet" href="frontend/styles/components/ui.css">
+<link rel="stylesheet" href="frontend/styles/widgets/home.css">
+<link rel="stylesheet" href="frontend/styles/widgets/golf.css">
 
 </head>
 <body>
@@ -640,7 +645,63 @@
 <div id="gw-toast" class="gw-toast"></div>
 
 <!-- メインスクリプト -->
-<script src="script.js"></script>
+<!-- ════════════════════════════════════════════════════════════════
+     G-WORLD JavaScript 読み込み
+     ─ Core 層 → Widget 基盤 → Widget 群 → 起動エントリの順
+     ─ 各ファイルは IIFE で window.GW 配下に登録される
+════════════════════════════════════════════════════════════════ -->
+
+<!-- ① 名前空間（最初に読む） -->
+<script src="frontend/scripts/core/namespace.js"></script>
+
+<!-- ② 設定 -->
+<script src="frontend/scripts/config/app.config.js"></script>
+<script src="frontend/scripts/config/hobbies.config.js"></script>
+
+<!-- ③ Core ストレージ・キャッシュ -->
+<script src="frontend/scripts/core/Storage.js"></script>
+<script src="frontend/scripts/core/Cache.js"></script>
+
+<!-- ④ Core API & Queue -->
+<script src="frontend/scripts/api/gasClient.js"></script>
+<script src="frontend/scripts/core/SaveQueue.js"></script>
+
+<!-- ⑤ Core Auth -->
+<script src="frontend/scripts/core/Auth.js"></script>
+
+<!-- ⑥ UI 部品 -->
+<script src="frontend/scripts/ui/Toast.js"></script>
+<script src="frontend/scripts/ui/Modal.js"></script>
+
+<!-- ⑦ Router / Action / SW -->
+<script src="frontend/scripts/core/Router.js"></script>
+<script src="frontend/scripts/core/ActionBus.js"></script>
+<script src="frontend/scripts/core/ServiceWorkerClient.js"></script>
+
+<!-- ⑧ Widget 基盤 -->
+<script src="frontend/scripts/core/WidgetRegistry.js"></script>
+<script src="frontend/scripts/widgets/_BaseWidget.js"></script>
+
+<!-- ⑨ Widget 群 -->
+<!--    Coming Soon プレースホルダ群（早めに登録） -->
+<script src="frontend/scripts/widgets/gcompete/index.js"></script>
+<script src="frontend/scripts/widgets/gtown/index.js"></script>
+
+<!--    Home / MyPage -->
+<script src="frontend/scripts/widgets/home/index.js"></script>
+<script src="frontend/scripts/widgets/mypage/index.js"></script>
+
+<!--    Golf (G-LAND) - サブモジュール群を順次読み込み、最後に index.js で結合 -->
+<script src="frontend/scripts/widgets/golf/courses.config.js"></script>
+<script src="frontend/scripts/widgets/golf/GolfWidget.js"></script>
+<script src="frontend/scripts/widgets/golf/GolfScore.js"></script>
+<script src="frontend/scripts/widgets/golf/GolfMates.js"></script>
+<script src="frontend/scripts/widgets/golf/GolfHistory.js"></script>
+<script src="frontend/scripts/widgets/golf/index.js"></script>
+
+<!-- ⑩ 起動エントリポイント（最後に読む） -->
+<script src="frontend/scripts/main.js"></script>
+
 
 </body>
 </html>
