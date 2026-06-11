@@ -12,7 +12,7 @@
  *   - CACHE_VERSION を bump（v1.1.0 → v1.2.0）
  ******************************************************************/
 
-const CACHE_VERSION = 'gw-v1.2.0';
+const CACHE_VERSION = 'gw-v1.3.0';   // ★必ず bump
 
 const PRECACHE_URLS = [
   './',
@@ -20,18 +20,17 @@ const PRECACHE_URLS = [
   './manifest.webmanifest',
   './icon.png',
 
-  // ── CSS（Phase 1 で分割済み） ──
+  // CSS
   './frontend/styles/tokens.css',
   './frontend/styles/reset.css',
   './frontend/styles/layout.css',
-  './frontend/styles/components/ui.css',
   './frontend/styles/components/button.css',
   './frontend/styles/components/modal.css',
   './frontend/styles/components/splash.css',
   './frontend/styles/widgets/home.css',
   './frontend/styles/widgets/golf.css',
 
-  // ── JS Core 層（Phase 2） ──
+  // JS
   './frontend/scripts/core/namespace.js',
   './frontend/scripts/config/app.config.js',
   './frontend/scripts/config/hobbies.config.js',
@@ -45,15 +44,13 @@ const PRECACHE_URLS = [
   './frontend/scripts/core/Router.js',
   './frontend/scripts/core/ActionBus.js',
   './frontend/scripts/core/ServiceWorkerClient.js',
-
-  // ── Widget 基盤（Phase 3） ──
   './frontend/scripts/core/WidgetRegistry.js',
   './frontend/scripts/widgets/_BaseWidget.js',
-
-  // ── Widget 群（Phase 3） ──
   './frontend/scripts/widgets/gcompete/index.js',
   './frontend/scripts/widgets/gtown/index.js',
+  './frontend/scripts/widgets/home/HomeWidget.js',
   './frontend/scripts/widgets/home/index.js',
+  './frontend/scripts/widgets/mypage/MyPageWidget.js',
   './frontend/scripts/widgets/mypage/index.js',
   './frontend/scripts/widgets/golf/courses.config.js',
   './frontend/scripts/widgets/golf/GolfWidget.js',
@@ -61,10 +58,10 @@ const PRECACHE_URLS = [
   './frontend/scripts/widgets/golf/GolfMates.js',
   './frontend/scripts/widgets/golf/GolfHistory.js',
   './frontend/scripts/widgets/golf/index.js',
-
-  // ── Main エントリ ──
+  './frontend/scripts/widgets/igo/index.js',
   './frontend/scripts/main.js'
 ];
+
 
 self.addEventListener('install', (event) => {
   console.log('[GW-SW] install:', CACHE_VERSION);

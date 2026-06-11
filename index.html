@@ -23,10 +23,17 @@
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="manifest" href="manifest.webmanifest">
 
+<!-- ════════════════════════════════════════════════════════════════
+     CSS 読み込み
+     順序: tokens → reset → layout → components → widgets
+     ★全パスは GitHub Pages の相対パスで記述（先頭スラッシュ禁止）
+════════════════════════════════════════════════════════════════ -->
 <link rel="stylesheet" href="frontend/styles/tokens.css">
 <link rel="stylesheet" href="frontend/styles/reset.css">
 <link rel="stylesheet" href="frontend/styles/layout.css">
-<link rel="stylesheet" href="frontend/styles/components/ui.css">
+<link rel="stylesheet" href="frontend/styles/components/button.css">
+<link rel="stylesheet" href="frontend/styles/components/modal.css">
+<link rel="stylesheet" href="frontend/styles/components/splash.css">
 <link rel="stylesheet" href="frontend/styles/widgets/home.css">
 <link rel="stylesheet" href="frontend/styles/widgets/golf.css">
 
@@ -44,7 +51,7 @@
 </div>
 
 <!-- ════════════════════════════════════════════════════════════════
-     保存キューインジケータ - "通信中"をユーザーに知覚させない最後の砦
+     保存キューインジケータ
 ════════════════════════════════════════════════════════════════ -->
 <div id="gw-save-indicator" class="gw-save-indicator">同期中...</div>
 
@@ -99,20 +106,20 @@
     </div>
 
     <div class="gw-portal-recent" id="gw-portal-recent">
-      <h3>📋 最近のラウンド</h3>
+      <h3>最近のラウンド</h3>
       <div id="gw-portal-recent-list" style="font-size:13px;color:var(--text-sub);">
         まだラウンド記録がありません
       </div>
     </div>
   </section>
 
-  <!-- ───────── 画面②：G-LAND（スコア入力 + 履歴） ───────── -->
-  <!-- ───────── 画面②：G-LAND（最終UIレイアウト v2） ───────── -->
-<section id="gw-screen-gland" class="gw-screen">
-      <!-- 初回プロフィール登録カード（ニックネーム + 本名のみ） -->
+  <!-- ───────── 画面②：G-LAND（スコア管理） ───────── -->
+  <section id="gw-screen-gland" class="gw-screen">
+
+    <!-- 登録カード（プレイヤー未登録時に表示） -->
     <div id="gw-gland-register" class="gw-card">
-      <h2 style="margin-top:0;color:var(--gold);font-size:22px;">⛳ はじめまして</h2>
-      <p style="color:var(--text-sub);font-size:13px;line-height:1.7;margin:0 0 18px;">
+      <h2 style="color:var(--gold);margin:0 0 14px;">はじめまして</h2>
+      <p style="color:var(--text-sub);font-size:13px;line-height:1.7;margin-bottom:14px;">
         G-WORLDをご利用いただきありがとうございます。<br>
         まずはあなたのお名前を教えてください。
       </p>
@@ -120,25 +127,24 @@
       <input type="text" id="gw-input-nickname" placeholder="例: タロウ" autocomplete="off">
       <label>本名</label>
       <input type="text" id="gw-input-realname" placeholder="例: 山田 太郎" autocomplete="off">
-      <button class="gw-btn-primary" data-action="register-profile">登録して次へ</button>
-      <p style="color:var(--text-sub);font-size:11px;line-height:1.6;margin:14px 0 0;text-align:center;">
-        ※ 1度だけの登録です。次回以降は自動でログインします。
-      </p>
+      <button class="gw-btn-primary" data-action="register-profile">
+        次へ進む（コース選択）
+      </button>
     </div>
 
-            <!-- ═══════════ コース選択画面（新規追加） ═══════════ -->
+    <!-- コース選択画面 -->
     <div id="gw-gland-course-select" class="gw-hidden">
       <div class="gw-course-greeting">
         <div class="gw-course-greet-msg">こんにちは</div>
         <div class="gw-course-greet-name" id="gw-cs-greet-name">プレイヤー</div>
       </div>
 
-      <h2 style="text-align:center;color:var(--gold);font-size:20px;margin:18px 0 14px;">
+      <h3 style="color:var(--gold);font-size:16px;margin:0 0 14px;text-align:center;">
         本日のコースを選択
-      </h2>
+      </h3>
 
       <div id="gw-cs-course-list">
-        <!-- 六甲国際パブリック：9H/18H 選択 -->
+        <!-- 六甲国際パブリック -->
         <div class="gw-cs-course-wrap" data-course-id="rokko-international">
           <button class="gw-cs-course-card" data-action="cs-toggle" data-course-id="rokko-international">
             <div class="gw-cs-course-icon">🏌</div>
@@ -150,15 +156,15 @@
           </button>
           <div class="gw-cs-sub-options gw-hidden">
             <button class="gw-cs-sub-btn" data-action="cs-confirm" data-course-id="rokko-international" data-variant="9H">
-              🟢 9ホール
+              9H
             </button>
             <button class="gw-cs-sub-btn" data-action="cs-confirm" data-course-id="rokko-international" data-variant="18H">
-              🔵 18ホール
+              18H
             </button>
           </div>
         </div>
 
-        <!-- 西コース：OUT/IN 選択 -->
+        <!-- 西コース -->
         <div class="gw-cs-course-wrap" data-course-id="rokko-west">
           <button class="gw-cs-course-card" data-action="cs-toggle" data-course-id="rokko-west">
             <div class="gw-cs-course-icon">⛳</div>
@@ -170,15 +176,15 @@
           </button>
           <div class="gw-cs-sub-options gw-hidden">
             <button class="gw-cs-sub-btn" data-action="cs-confirm" data-course-id="rokko-west" data-variant="OUT">
-              ➡️ OUTスタート
+              OUT
             </button>
             <button class="gw-cs-sub-btn" data-action="cs-confirm" data-course-id="rokko-west" data-variant="IN">
-              ⬅️ INスタート
+              IN
             </button>
           </div>
         </div>
 
-        <!-- 東コース：OUT/IN 選択 -->
+        <!-- 東コース -->
         <div class="gw-cs-course-wrap" data-course-id="rokko-east">
           <button class="gw-cs-course-card" data-action="cs-toggle" data-course-id="rokko-east">
             <div class="gw-cs-course-icon">⛳</div>
@@ -190,20 +196,20 @@
           </button>
           <div class="gw-cs-sub-options gw-hidden">
             <button class="gw-cs-sub-btn" data-action="cs-confirm" data-course-id="rokko-east" data-variant="OUT">
-              ➡️ OUTスタート
+              OUT
             </button>
             <button class="gw-cs-sub-btn" data-action="cs-confirm" data-course-id="rokko-east" data-variant="IN">
-              ⬅️ INスタート
+              IN
             </button>
           </div>
         </div>
       </div>
 
-      <!-- パブリックボード参加トグル -->
+      <!-- パブリックボード公開トグル -->
       <div class="gw-cs-public-toggle">
-        <div style="flex:1;">
-          <div class="gw-cs-public-title">🌐 他のプレイヤーとスコアを共有</div>
-          <div class="gw-cs-public-sub">パブリックボードに参加（後から変更可）</div>
+        <div>
+          <div class="gw-cs-public-title">パブリックボード公開</div>
+          <div class="gw-cs-public-sub">他のプレイヤーとスコアを共有</div>
         </div>
         <label class="gw-cs-switch">
           <input type="checkbox" id="gw-cs-public-toggle" checked>
@@ -211,402 +217,307 @@
         </label>
       </div>
 
-      <div style="text-align:center;margin-top:14px;">
-        <button class="gw-btn-ghost" data-action="cs-back" style="font-size:13px;padding:10px 20px;">
-          ← 戻る
+      <button class="gw-btn-ghost" data-action="cs-back" style="width:100%;margin-top:14px;">
+        ← 戻る
+      </button>
+    </div>
+
+    <!-- メイン画面（スコア入力エリア） -->
+    <div id="gw-gland-main" class="gw-hidden">
+
+      <!-- Meバー -->
+      <div class="gw-me-bar">
+        <div>
+          <div class="lbl">プレイヤー</div>
+          <div class="v1" id="gw-me-name">--</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="lbl">合計</div>
+          <div class="v2" id="gw-me-total">- / -</div>
+        </div>
+      </div>
+
+      <!-- QR合流ボタン -->
+      <button class="gw-qr-join-btn" data-action="open-qr-scanner">
+        <div class="gw-qr-icon">📷</div>
+        <div class="gw-qr-text">
+          <div class="gw-qr-text-main">QRで合流</div>
+          <div class="gw-qr-text-sub">同伴メンバーのスコアを共有</div>
+        </div>
+      </button>
+
+      <!-- サブタブ：スコア入力 / 履歴 -->
+      <div class="gw-subtabs">
+        <button id="gw-subtab-score" class="active" data-action="gland-subtab-score" data-subtab="score">
+          スコア入力
+        </button>
+        <button id="gw-subtab-hist" data-action="gland-subtab-hist" data-subtab="hist">
+          履歴
         </button>
       </div>
-    </div>
-    <!-- ═══════════ コース選択画面ここまで ═══════════ -->
 
+      <!-- サブタブ内容①：スコア入力 -->
+      <div id="gw-subtab-content-score">
+        <div id="gw-hole-list"></div>
 
-
-  <!-- スコア入力エリア（登録後表示・最終UIレイアウト） -->
-  <div id="gw-gland-main" class="gw-hidden">
-
-    <!-- ═══════ ① プレイヤーエリア ═══════ -->
-    <div class="gw-me-bar">
-      <div>
-        <div class="lbl">プレイヤー</div>
-        <div class="v1" id="gw-me-name">-</div>
-      </div>
-      <div style="text-align:right;">
-        <div class="lbl">合計 / PAR差</div>
-        <div class="v2" id="gw-me-total">- / -</div>
-      </div>
-    </div>
-
-    <!-- ═══════ ② ホール入力エリア（最優先・上部固定） ═══════ -->
-    <div id="gw-input-area">
-      <!-- ホールカード + 入力UI（JS で動的生成） -->
-    </div>
-
-    <!-- ═══════ ③ ホール移動エリア（3ボタン横並び） ═══════ -->
-    <div class="gw-hole-nav">
-      <button class="gw-btn-ghost gw-hole-nav-btn" data-action="gland-prev-hole" id="gw-prev-btn">
-        &lt; 前
-      </button>
-      <button class="gw-hole-jump-btn" data-action="open-hole-picker" id="gw-jump-btn">
-        <span class="gw-jump-num" id="gw-jump-num">1</span>
-        <span class="gw-jump-total">/ 18 H</span>
-      </button>
-      <button class="gw-btn-ghost gw-hole-nav-btn" data-action="gland-next-hole" id="gw-next-btn">
-        次 &gt;
-      </button>
-    </div>
-
-        <!-- ═══════ ④ スコアカード（同伴メンバー表 + QR合流ボタン） ═══════ -->
-    <div class="gw-mate-table-wrap" id="gw-mate-table-wrap">
-      <!-- QRで合流ボタン（上部・常設） -->
-      <button class="gw-qr-join-btn" data-action="open-qr-scanner">
-        <span class="gw-qr-icon">📷</span>
-        <span class="gw-qr-text">
-          <span class="gw-qr-text-main">QRで合流</span>
-          <span class="gw-qr-text-sub">コンペ・プライベートルームに参加</span>
-        </span>
-      </button>
-
-      <h4 style="margin:14px 0 10px;color:var(--gold-bri);">
-        同伴メンバー スコア表（横スクロール可）
-      </h4>
-      <div id="gw-mate-table-body">
-        <div style="color:var(--text-sub);font-size:14px;padding:10px;">準備中...</div>
-      </div>
-    </div>
-
-    <!-- ═══════ ⑤ 設定・表記エリア（常時表示） ═══════ -->
-    <div class="gw-settings-panel">
-      <!-- モード切替 -->
-      <div class="gw-setting-row">
-        <div class="gw-setting-label">入力モード</div>
-        <div class="gw-setting-toggle gw-toggle-2">
-          <button data-action="gland-mode-simple"   id="gw-mode-simple"   class="active">シンプル</button>
-          <button data-action="gland-mode-counter"  id="gw-mode-counter">カウンター</button>
+        <!-- ラウンド終了ボタン -->
+        <div id="gw-save-button-area">
+          <button class="gw-btn-danger" data-action="finish-round" style="width:100%;font-size:16px;">
+            🏁 ラウンドを終了して履歴に保存
+          </button>
         </div>
       </div>
-      <!-- パット記録 ON/OFF -->
-      <div class="gw-setting-row">
-        <div class="gw-setting-label">パット記録</div>
-        <div class="gw-setting-toggle gw-toggle-2">
-          <button data-action="gland-putt-off" id="gw-putt-off" class="active">OFF</button>
-          <button data-action="gland-putt-on"  id="gw-putt-on">ON</button>
-        </div>
-      </div>
-      <!-- 表示モード切替 -->
-      <div class="gw-setting-row">
-        <div class="gw-setting-label">表示モード</div>
-        <div class="gw-setting-toggle gw-toggle-3">
-          <button data-action="gland-disp-stroke"  id="gw-disp-stroke"  class="active">数字</button>
-          <button data-action="gland-disp-pardiff" id="gw-disp-pardiff">±表記</button>
-          <button data-action="gland-disp-symbol"  id="gw-disp-symbol">記号</button>
-        </div>
-      </div>
-    </div>
 
-    <!-- ═══════ ⑥ タブ・保存エリア（最下部） ═══════ -->
-    <div class="gw-bottom-area">
-      <div class="gw-subtabs">
-        <button id="gw-subtab-score" class="active" data-subtab="score">スコア入力</button>
-        <button id="gw-subtab-hist" data-subtab="hist">履歴</button>
-      </div>
-
-      <!-- 履歴タブ（隠れている） -->
+      <!-- サブタブ内容②：履歴 -->
       <div id="gw-subtab-content-hist" class="gw-hidden">
-        <div class="gw-history-filters">
-          <div class="filter-row">
-            <label>コース</label>
-            <select id="gw-hist-course"><option value="">すべて</option></select>
-          </div>
-          <div class="filter-row">
-            <label>期間</label>
-            <select id="gw-hist-period">
-              <option value="recent10">直近10ラウンド</option>
-              <option value="half_year">過去半年</option>
-              <option value="one_year">過去1年</option>
-              <option value="all" selected>全期間</option>
-            </select>
-          </div>
-        </div>
-
+        <!-- 統計サマリー -->
         <div class="gw-stats-grid">
           <div class="gw-stat-card">
-            <div class="lbl">ラウンド</div>
+            <div class="lbl">ラウンド数</div>
             <div class="val" id="gw-stat-rounds">-</div>
-            <div class="unit">R</div>
+            <div class="unit">回</div>
           </div>
           <div class="gw-stat-card">
             <div class="lbl">ベスト</div>
             <div class="val" id="gw-stat-best">-</div>
-            <div class="unit">打</div>
+            <div class="unit">打数</div>
           </div>
           <div class="gw-stat-card">
             <div class="lbl">平均打数</div>
             <div class="val" id="gw-stat-avg-stroke">-</div>
-            <div class="unit">打</div>
+            <div class="unit">打/R</div>
           </div>
           <div class="gw-stat-card">
             <div class="lbl">平均パット</div>
             <div class="val" id="gw-stat-avg-putt">-</div>
-            <div class="unit">PT</div>
+            <div class="unit">パット/R</div>
           </div>
         </div>
 
-        <div id="gw-hist-list">
-          <div class="gw-history-empty">読み込み中...</div>
+        <!-- フィルタ -->
+        <div class="gw-history-filters">
+          <div class="filter-row">
+            <label>コース</label>
+            <select id="gw-hist-course">
+              <option value="">すべて</option>
+            </select>
+          </div>
+          <div class="filter-row">
+            <label>期間</label>
+            <select id="gw-hist-period">
+              <option value="all">すべて</option>
+              <option value="recent10">最近10ラウンド</option>
+              <option value="half_year">過去半年</option>
+              <option value="one_year">過去1年</option>
+            </select>
+          </div>
         </div>
-      </div>
 
-      <!-- 終了ボタン（スコア入力タブの時のみ表示） -->
-      <div id="gw-save-button-area">
-        <button class="gw-btn-primary" data-action="finish-round">
-          ✅ 終了して履歴に保存
-        </button>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-
-  <!-- ───────── 画面③：G-COMPETE（プレースホルダ） ───────── -->
-  <section id="gw-screen-gcompete" class="gw-screen">
-    <div class="gw-card" style="text-align:center;padding:40px 20px;">
-      <div style="font-size:64px;margin-bottom:12px;">🏆</div>
-      <h2 style="color:var(--gold);margin:0 0 12px;">G-COMPETE</h2>
-      <p style="color:var(--text-sub);font-size:14px;line-height:1.7;">
-        コンペ運営・大会機能はただいま準備中です。<br>
-        近日リリース予定。
-      </p>
-      <div style="margin-top:20px;padding:12px;background:rgba(245,200,66,0.1);border-radius:10px;font-size:12px;color:var(--gold-bri);">
-        🔔 リリース時にお知らせします
+        <!-- 履歴リスト -->
+        <div id="gw-hist-list"></div>
       </div>
     </div>
   </section>
 
-  <!-- ───────── 画面④：G-TOWN（プレースホルダ） ───────── -->
+  <!-- ───────── 画面③：G-COMPETE（Coming Soon） ───────── -->
+  <section id="gw-screen-gcompete" class="gw-screen">
+    <div class="gw-card" style="text-align:center;padding:40px 20px;">
+      <div style="font-size:64px;margin-bottom:16px;">🏆</div>
+      <h2 style="color:var(--gold);">G-COMPETE</h2>
+      <p style="color:var(--text-sub);">コンペ運営機能は近日公開予定です</p>
+    </div>
+  </section>
+
+  <!-- ───────── 画面④：G-TOWN（Coming Soon） ───────── -->
   <section id="gw-screen-gtown" class="gw-screen">
     <div class="gw-card" style="text-align:center;padding:40px 20px;">
-      <div style="font-size:64px;margin-bottom:12px;">🏘</div>
-      <h2 style="color:var(--gold);margin:0 0 12px;">G-TOWN</h2>
-      <p style="color:var(--text-sub);font-size:14px;line-height:1.7;">
-        ゴルフを通じて地域とつながる新機能を準備中です。<br>
-        ゴルフ場、地域の飲食店、宿泊施設との連携により、<br>
-        ラウンド後の楽しみが広がります。
-      </p>
-      <div style="margin-top:20px;padding:12px;background:rgba(245,200,66,0.1);border-radius:10px;font-size:12px;color:var(--gold-bri);">
-        🔔 リリース時にお知らせします
-      </div>
+      <div style="font-size:64px;margin-bottom:16px;">🏘</div>
+      <h2 style="color:var(--gold);">G-TOWN</h2>
+      <p style="color:var(--text-sub);">地域連携機能は近日公開予定です</p>
     </div>
   </section>
 
   <!-- ───────── 画面⑤：マイページ ───────── -->
   <section id="gw-screen-mypage" class="gw-screen">
     <div class="gw-mypage-card">
-      <div class="gw-avatar" id="gw-my-avatar">G</div>
-      <div class="gw-uname" id="gw-my-name">-</div>
-      <div class="gw-uid" id="gw-my-id">-</div>
+      <div class="gw-avatar" id="gw-my-avatar">?</div>
+      <div class="gw-uname" id="gw-my-name">ゲスト</div>
+      <div class="gw-uid" id="gw-my-id">--</div>
       <div class="gw-state-badge guest" id="gw-my-state" style="margin-top:10px;">ゲストモード</div>
     </div>
 
     <div class="gw-card" id="gw-my-backup-card">
-      <h3 style="margin:0 0 10px;color:var(--gold);font-size:15px;">💾 データ保全設定</h3>
-      <p style="font-size:13px;color:var(--text-sub);line-height:1.7;margin:0 0 12px;">
-        <span id="gw-my-backup-msg">
-          現在ゲストモードです。スコア・履歴はこの端末にのみ保存されています。
-          無料でアカウント連携すると、機種変更時もデータを引き継げます。
-        </span>
-      </p>
+      <h3 style="color:var(--gold);margin:0 0 12px;font-size:16px;">📦 データ保全設定</h3>
+      <div id="gw-my-backup-msg" style="font-size:13px;line-height:1.7;color:var(--text-sub);margin-bottom:14px;">
+        現在ゲストモードです。スコア・履歴はこの端末にのみ保存されています。
+      </div>
       <button class="gw-btn-primary" data-action="open-backup-modal" id="gw-my-backup-btn">
         📲 無料でデータを守る
       </button>
     </div>
 
     <div class="gw-card">
-      <h3 style="margin:0 0 10px;color:var(--gold);font-size:15px;">⚙️ 設定</h3>
-      <button class="gw-btn-ghost" style="width:100%;margin-bottom:8px;" data-action="show-pwa-guide">
-        📲 ホーム画面に追加（インストール）
-      </button>
-      <button class="gw-btn-ghost" style="width:100%;margin-bottom:8px;" data-action="logout">
-        🚪 別のプレイヤーで使用
+      <h3 style="color:var(--gold);margin:0 0 12px;font-size:16px;">📱 アプリ設定</h3>
+      <button class="gw-btn-ghost" data-action="show-pwa-guide" style="width:100%;">
+        📲 ホーム画面に追加（PWA）
       </button>
     </div>
 
     <div class="gw-card">
-      <h3 style="margin:0 0 10px;color:var(--gold);font-size:15px;">📊 利用状況</h3>
-      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.1);">
-        <span style="color:var(--text-sub);font-size:13px;">利用回数</span>
-        <span style="color:var(--gold-bri);font-weight:800;" id="gw-my-use-count">-</span>
+      <h3 style="color:var(--gold);margin:0 0 12px;font-size:16px;">📊 利用状況</h3>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;">
+        <span style="color:var(--text-sub);">利用回数</span>
+        <span id="gw-my-use-count" style="color:var(--gold-bri);font-weight:700;">-</span>
       </div>
-      <div style="display:flex;justify-content:space-between;padding:8px 0;">
-        <span style="color:var(--text-sub);font-size:13px;">最終アクセス</span>
-        <span style="color:var(--gold-bri);font-weight:800;font-size:12px;" id="gw-my-last">-</span>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;">
+        <span style="color:var(--text-sub);">最終アクセス</span>
+        <span id="gw-my-last" style="color:var(--gold-bri);font-weight:700;">-</span>
       </div>
-    </div>
-
-    <div style="text-align:center;font-size:11px;color:var(--text-sub);margin-top:24px;">
-      G-WORLD v1.0.0<br>
-      永久無料のゴルフインフラ
+      <button class="gw-btn-ghost" data-action="logout" style="width:100%;margin-top:14px;">
+        🚪 プレイヤーをリセット
+      </button>
     </div>
   </section>
+
 </div>
 
 <!-- ════════════════════════════════════════════════════════════════
-     ホール選択FAB（G-LANDスコア入力時のみ表示）
+     フッターナビゲーション
 ════════════════════════════════════════════════════════════════ -->
-<button id="gw-fab-jump" class="gw-fab-jump gw-hidden" data-action="open-hole-picker">H</button>
-
-<!-- ════════════════════════════════════════════════════════════════
-     ★フッターナビゲーション（G-WORLD ポータルの核心UI）
-════════════════════════════════════════════════════════════════ -->
-<nav class="gw-footer-nav" role="navigation" aria-label="G-WORLD 主要ナビゲーション">
-  <button data-route="home" class="active" aria-label="ホーム">
-    <span class="gw-nav-icon">🏠</span><span>ホーム</span>
+<nav class="gw-footer-nav">
+  <button data-route="home" class="active">
+    <div class="gw-nav-icon">🏠</div>
+    <div>ホーム</div>
   </button>
-  <button data-route="gland" aria-label="G-LAND">
-    <span class="gw-nav-icon">⛳</span><span>G-LAND</span>
+  <button data-route="gland">
+    <div class="gw-nav-icon">⛳</div>
+    <div>G-LAND</div>
   </button>
-  <button data-route="gcompete" aria-label="G-COMPETE">
-    <span class="gw-nav-icon">🏆</span><span>G-COMPETE</span>
+  <button data-route="gcompete">
+    <div class="gw-nav-icon">🏆</div>
+    <div>COMPETE</div>
   </button>
-  <button data-route="gtown" aria-label="G-TOWN">
-    <span class="gw-nav-icon">🏘</span><span>G-TOWN</span>
+  <button data-route="gtown">
+    <div class="gw-nav-icon">🏘</div>
+    <div>TOWN</div>
   </button>
-  <button data-route="mypage" aria-label="マイページ">
-    <span class="gw-nav-icon">👤</span><span>マイ</span>
+  <button data-route="mypage">
+    <div class="gw-nav-icon">👤</div>
+    <div>マイページ</div>
   </button>
 </nav>
 
 <!-- ════════════════════════════════════════════════════════════════
-     ホール選択オーバーレイ
+     FAB（ホールピッカー起動）
 ════════════════════════════════════════════════════════════════ -->
+<button id="gw-fab-jump" class="gw-fab-jump gw-hidden" data-action="open-hole-picker">H</button>
+
+<!-- ════════════════════════════════════════════════════════════════
+     モーダル群
+════════════════════════════════════════════════════════════════ -->
+
+<!-- ホールピッカー -->
 <div id="gw-hole-picker" class="gw-hole-picker-overlay">
   <div class="gw-hole-picker-sheet">
-    <h3 style="text-align:center;color:var(--gold);margin-top:0;">ホール選択</h3>
-    <div id="gw-hole-picker-grid" class="gw-hp-grid"></div>
-    <button class="gw-btn-ghost" style="width:100%;" data-action="close-hole-picker">閉じる</button>
+    <h3 style="color:var(--gold);text-align:center;margin:0 0 14px;">ホール選択</h3>
+    <div class="gw-hp-grid" id="gw-hole-picker-grid"></div>
+    <button class="gw-btn-ghost" data-action="close-hole-picker" style="width:100%;">閉じる</button>
   </div>
 </div>
 
 <!-- ホール拡大表示 -->
 <div id="gw-hole-zoom" class="gw-hole-zoom-overlay" data-action="close-hole-zoom">
   <div class="gw-hole-zoom-card" data-no-close="1">
-    <div class="gw-hz-num" id="gw-hz-num">1H</div>
-    <div style="color:var(--gold-bri);font-weight:700;" id="gw-hz-par">PAR 4</div>
+    <div class="gw-hz-num" id="gw-hz-num">-</div>
+    <div style="color:var(--text-sub);font-size:14px;margin-top:4px;" id="gw-hz-par">PAR -</div>
     <div class="gw-hz-list" id="gw-hz-list"></div>
-    <button class="gw-btn-ghost" style="width:100%;margin-top:20px;" data-action="close-hole-zoom">閉じる</button>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════════════════════════
-     ★データ保全のご案内モーダル
-     ─ 設計憲法・第7条遵守。"認証" "料金" を匂わせない ─
-════════════════════════════════════════════════════════════════ -->
+<!-- データ保全モーダル -->
 <div id="gw-modal-backup" class="gw-modal-bg">
   <div class="gw-modal gw-backup-modal">
-    <div class="gw-backup-icon">💾</div>
-    <div class="gw-backup-title">データ保全のご案内</div>
-
+    <div class="gw-backup-icon">📦</div>
+    <div class="gw-backup-title">データを守りませんか？</div>
     <div class="gw-backup-msg">
-      いつもG-WORLDをご利用ありがとうございます。<br><br>
-      現在<b style="color:var(--gold-bri);">ゲストモード</b>でご利用中のため、
-      スコアや履歴は<b>この端末にのみ保存</b>されています。
+      現在のスコア・履歴はこの端末にのみ保存されています。<br>
+      無料でアカウント連携すると、機種変更時もデータを引き継げます。
     </div>
-
     <div class="gw-backup-benefits">
-      <div class="item">機種変更時もデータをそのまま引き継ぎ</div>
-      <div class="item">万一の端末故障・紛失時も安心</div>
-      <div class="item">将来のG-WORLD新機能の準備にもなります</div>
-      <div class="item">完全無料・いつでも解除可能</div>
+      <div class="item">機種変更でもデータ引き継ぎ</div>
+      <div class="item">複数端末で同じ履歴を閲覧</div>
+      <div class="item">永久無料・追加機能なし</div>
     </div>
-
-    <button class="gw-btn-primary" data-action="link-backup">
-      📲 無料でデータを守る
+    <button class="gw-btn-primary" data-action="link-backup" style="width:100%;">
+      📲 連携してデータを守る
     </button>
     <button class="gw-btn-ghost" style="width:100%;margin-top:8px;" data-action="dismiss-backup-modal">
-      あとで
+      あとで決める
     </button>
-
-    <div class="gw-backup-note">
-      G-WORLDは永久無料のゴルフインフラです。<br>
-      料金が発生することはありません。
-    </div>
+    <div class="gw-backup-note">いつでもマイページから設定できます</div>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════════════════════════
-     PWA インストール案内モーダル
-════════════════════════════════════════════════════════════════ -->
+<!-- PWAインストール案内 -->
 <div id="gw-modal-pwa" class="gw-modal-bg">
   <div class="gw-modal" style="max-width:480px;">
     <h3>📲 ホーム画面に追加</h3>
-    <p>アプリのように快適に。インストールすると次回からホーム画面のアイコンから起動できます。</p>
+    <p>G-WORLDをアプリのように使えます。電波弱地帯でも爆速起動！</p>
 
     <div id="gw-pwa-android" class="gw-hidden">
       <div class="gw-pwa-steps">
-        <div class="step"><span class="n">1</span>下のボタンをタップ</div>
-        <div class="step"><span class="n">2</span>「インストール」を選択</div>
+        <div class="step"><span class="n">1</span>右上の <b>⋮</b> メニューをタップ</div>
+        <div class="step"><span class="n">2</span><b>「ホーム画面に追加」</b>を選択</div>
+        <div class="step"><span class="n">3</span><b>「追加」</b>をタップして完了</div>
       </div>
-      <button class="gw-btn-primary" data-action="pwa-install">ホーム画面に追加する</button>
+      <button class="gw-btn-primary" data-action="pwa-install" style="width:100%;">
+        今すぐインストール
+      </button>
     </div>
 
     <div id="gw-pwa-ios" class="gw-hidden">
       <div class="gw-pwa-steps">
-        <div class="step"><span class="n">1</span>共有ボタン[↑]をタップ</div>
-        <div class="step"><span class="n">2</span>「ホーム画面に追加」を選択</div>
-        <div class="step"><span class="n">3</span>「追加」をタップ</div>
+        <div class="step"><span class="n">1</span>下の <b>共有ボタン □↑</b> をタップ</div>
+        <div class="step"><span class="n">2</span><b>「ホーム画面に追加」</b>を選択</div>
+        <div class="step"><span class="n">3</span><b>「追加」</b>をタップして完了</div>
       </div>
     </div>
 
     <div id="gw-pwa-other" class="gw-hidden">
-      <p>ブラウザのメニューから「ホーム画面に追加」をご利用ください。</p>
+      <p style="color:var(--text-sub);font-size:13px;">ブラウザのメニューから「ホーム画面に追加」を選んでください。</p>
     </div>
 
     <button class="gw-btn-ghost" style="width:100%;margin-top:14px;" data-action="close-pwa-modal">閉じる</button>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════════════════════════
-     QRスキャナーモーダル
-════════════════════════════════════════════════════════════════ -->
+<!-- QRスキャナー -->
 <div id="gw-modal-qr-scanner" class="gw-modal-bg">
   <div class="gw-modal" style="max-width:480px;">
     <h3>📷 QRで合流</h3>
-    <p style="color:var(--text-sub);font-size:13px;margin-bottom:14px;">
-      コンペ主催者やルーム作成者から発行された QR コードを枠内に映してください。
-    </p>
 
-    <div id="gw-qr-scanner-area" style="text-align:center;">
-      <!-- カメラ起動前 -->
-      <div id="gw-qr-pre" class="gw-qr-pre">
-        <div class="gw-qr-illust">📱➡️📷</div>
-        <p style="color:var(--text-sub);font-size:13px;">
-          下のボタンでカメラを起動します。<br>
-          初回はカメラ使用許可をお願いします。
-        </p>
-        <button class="gw-btn-primary" data-action="qr-start-camera" style="margin-top:14px;">
-          📷 カメラを起動する
-        </button>
-      </div>
+    <div id="gw-qr-pre" class="gw-qr-pre">
+      <div class="gw-qr-illust">📷</div>
+      <p style="color:var(--text-sub);font-size:13px;">
+        カメラへのアクセスを許可してください
+      </p>
+      <button class="gw-btn-primary" data-action="qr-start" style="width:100%;">
+        カメラを起動
+      </button>
+    </div>
 
-      <!-- カメラ起動中 -->
-      <div id="gw-qr-active" class="gw-hidden">
-        <div class="gw-qr-video-wrap">
-          <video id="gw-qr-video" playsinline></video>
-          <div class="gw-qr-frame"></div>
-        </div>
-        <p id="gw-qr-status" style="color:var(--gold-bri);font-size:13px;margin-top:10px;">
-          QRコードを枠内に映してください...
-        </p>
-      </div>
-
-      <!-- 結果表示 -->
-      <div id="gw-qr-result" class="gw-hidden gw-qr-result">
-        <div class="gw-qr-result-icon">✅</div>
-        <div class="gw-qr-result-text" id="gw-qr-result-text">読み取り完了</div>
+    <div id="gw-qr-active" class="gw-hidden">
+      <div class="gw-qr-video-wrap">
+        <video id="gw-qr-video" autoplay playsinline></video>
+        <div class="gw-qr-frame"></div>
       </div>
     </div>
 
-    <!-- 手動入力（QRが読めない時のフォールバック） -->
+    <div id="gw-qr-result" class="gw-hidden gw-qr-result">
+      <div class="gw-qr-result-icon">✅</div>
+      <div class="gw-qr-result-text" id="gw-qr-result-text">読み取り完了</div>
+    </div>
+
     <details style="margin-top:14px;background:rgba(0,0,0,0.3);border-radius:10px;padding:10px;">
       <summary style="cursor:pointer;color:var(--gold-bri);font-size:13px;font-weight:700;">
         🔢 コードを手入力する
@@ -626,10 +537,7 @@
   </div>
 </div>
 
-
-<!-- ════════════════════════════════════════════════════════════════
-     汎用確認モーダル
-════════════════════════════════════════════════════════════════ -->
+<!-- 汎用確認モーダル -->
 <div id="gw-modal-confirm" class="gw-modal-bg">
   <div class="gw-modal" style="max-width:420px;">
     <h3 id="gw-confirm-title">確認</h3>
@@ -644,11 +552,11 @@
 <!-- Toast -->
 <div id="gw-toast" class="gw-toast"></div>
 
-<!-- メインスクリプト -->
+
 <!-- ════════════════════════════════════════════════════════════════
-     G-WORLD JavaScript 読み込み
-     ─ Core 層 → Widget 基盤 → Widget 群 → 起動エントリの順
+     JavaScript 読み込み（順序厳守）
      ─ 各ファイルは IIFE で window.GW 配下に登録される
+     ─ 順序: namespace → config → core → api → ui → router/action → widget基盤 → widget群 → main
 ════════════════════════════════════════════════════════════════ -->
 
 <!-- ① 名前空間（最初に読む） -->
@@ -662,7 +570,7 @@
 <script src="frontend/scripts/core/Storage.js"></script>
 <script src="frontend/scripts/core/Cache.js"></script>
 
-<!-- ④ Core API & Queue -->
+<!-- ④ Core API & Queue（Api を先に、Queue は後に） -->
 <script src="frontend/scripts/api/gasClient.js"></script>
 <script src="frontend/scripts/core/SaveQueue.js"></script>
 
@@ -673,25 +581,28 @@
 <script src="frontend/scripts/ui/Toast.js"></script>
 <script src="frontend/scripts/ui/Modal.js"></script>
 
-<!-- ⑦ Router / Action / SW -->
+<!-- ⑦ Router / Action / Service Worker クライアント -->
 <script src="frontend/scripts/core/Router.js"></script>
 <script src="frontend/scripts/core/ActionBus.js"></script>
 <script src="frontend/scripts/core/ServiceWorkerClient.js"></script>
 
-<!-- ⑧ Widget 基盤 -->
+<!-- ⑧ Widget 基盤（★ _BaseWidget.js は widgets/ 直下にあるため要注意） -->
 <script src="frontend/scripts/core/WidgetRegistry.js"></script>
 <script src="frontend/scripts/widgets/_BaseWidget.js"></script>
 
-<!-- ⑨ Widget 群 -->
-<!--    Coming Soon プレースホルダ群（早めに登録） -->
+<!-- ⑨ Widget 群：Coming Soon プレースホルダ -->
 <script src="frontend/scripts/widgets/gcompete/index.js"></script>
 <script src="frontend/scripts/widgets/gtown/index.js"></script>
 
-<!--    Home / MyPage -->
+<!-- ⑩ Widget 群：Home（HomeWidget本体 + index登録） -->
+<script src="frontend/scripts/widgets/home/HomeWidget.js"></script>
 <script src="frontend/scripts/widgets/home/index.js"></script>
+
+<!-- ⑪ Widget 群：MyPage（MyPageWidget本体 + index登録） -->
+<script src="frontend/scripts/widgets/mypage/MyPageWidget.js"></script>
 <script src="frontend/scripts/widgets/mypage/index.js"></script>
 
-<!--    Golf (G-LAND) - サブモジュール群を順次読み込み、最後に index.js で結合 -->
+<!-- ⑫ Widget 群：Golf (G-LAND) - サブモジュール群を順次読み込み、最後に index.js で結合 -->
 <script src="frontend/scripts/widgets/golf/courses.config.js"></script>
 <script src="frontend/scripts/widgets/golf/GolfWidget.js"></script>
 <script src="frontend/scripts/widgets/golf/GolfScore.js"></script>
@@ -699,9 +610,11 @@
 <script src="frontend/scripts/widgets/golf/GolfHistory.js"></script>
 <script src="frontend/scripts/widgets/golf/index.js"></script>
 
-<!-- ⑩ 起動エントリポイント（最後に読む） -->
-<script src="frontend/scripts/main.js"></script>
+<!-- ⑬ Widget 群：Igo（将来の趣味例・現状は空登録のみ） -->
+<script src="frontend/scripts/widgets/igo/index.js"></script>
 
+<!-- ⑭ 起動エントリポイント（最後に読む） -->
+<script src="frontend/scripts/main.js"></script>
 
 </body>
 </html>
