@@ -652,52 +652,52 @@
 ════════════════════════════════════════════════════════════════ -->
 
 <!-- ① 名前空間（最初に読む） -->
-<script src="core/namespace.js"></script>
+<script src="frontend/scripts/core/namespace.js"></script>
 
 <!-- ② 設定 -->
-<script src="config/app.config.js"></script>
-<script src="config/hobbies.config.js"></script>
+<script src="frontend/scripts/config/app.config.js"></script>
+<script src="frontend/scripts/config/hobbies.config.js"></script>
 
 <!-- ③ Core ストレージ・キャッシュ -->
-<script src="core/Storage.js"></script>
-<script src="core/Cache.js"></script>
+<script src="frontend/scripts/core/Storage.js"></script>
+<script src="frontend/scripts/core/Cache.js"></script>
 
 <!-- ④ Core API & Queue -->
-<script src="api/gasClient.js"></script>
-<script src="core/SaveQueue.js"></script>
+<script src="frontend/scripts/api/gasClient.js"></script>
+<script src="frontend/scripts/core/SaveQueue.js"></script>
 
 <!-- ⑤ Core Auth -->
-<script src="core/Auth.js"></script>
+<script src="frontend/scripts/core/Auth.js"></script>
 
 <!-- ⑥ UI 部品 -->
-<script src="ui/Toast.js"></script>
-<script src="ui/Modal.js"></script>
+<script src="frontend/scripts/ui/Toast.js"></script>
+<script src="frontend/scripts/ui/Modal.js"></script>
 
 <!-- ⑦ Router / Action / SW -->
-<script src="core/Router.js"></script>
-<script src="core/ActionBus.js"></script>
-<script src="core/ServiceWorkerClient.js"></script>
+<script src="frontend/scripts/core/Router.js"></script>
+<script src="frontend/scripts/core/ActionBus.js"></script>
+<script src="frontend/scripts/core/ServiceWorkerClient.js"></script>
 
 <!-- ⑧ Widget 基盤 -->
-<script src="core/WidgetRegistry.js"></script>
-<script src="widgets/_BaseWidget.js"></script>
+<script src="frontend/scripts/core/WidgetRegistry.js"></script>
+<script src="frontend/scripts/widgets/_BaseWidget.js"></script>
 
 <!-- ⑨ Widget 群 -->
 <!--    Coming Soon プレースホルダ群（早めに登録） -->
-<script src="widgets/gcompete/index.js"></script>
-<script src="widgets/gtown/index.js"></script>
+<script src="frontend/scripts/widgets/gcompete/index.js"></script>
+<script src="frontend/scripts/widgets/gtown/index.js"></script>
 
 <!--    Home / MyPage -->
-<script src="widgets/home/index.js"></script>
-<script src="widgets/mypage/index.js"></script>
+<script src="frontend/scripts/widgets/home/index.js"></script>
+<script src="frontend/scripts/widgets/mypage/index.js"></script>
 
 <!--    Golf (G-LAND) - サブモジュール群を順次読み込み、最後に index.js で結合 -->
-<script src="widgets/golf/courses.config.js"></script>
-<script src="widgets/golf/GolfWidget.js"></script>
-<script src="widgets/golf/GolfScore.js"></script>
-<script src="widgets/golf/GolfMates.js"></script>
-<script src="widgets/golf/GolfHistory.js"></script>
-<script src="widgets/golf/index.js"></script>
+<script src="frontend/scripts/widgets/golf/courses.config.js"></script>
+<script src="frontend/scripts/widgets/golf/GolfWidget.js"></script>
+<script src="frontend/scripts/widgets/golf/GolfScore.js"></script>
+<script src="frontend/scripts/widgets/golf/GolfMates.js"></script>
+<script src="frontend/scripts/widgets/golf/GolfHistory.js"></script>
+<script src="frontend/scripts/widgets/golf/index.js"></script>
 
 <!-- ⑩ 起動エントリポイント（最後に読む） -->
 <script src="main.js"></script>
