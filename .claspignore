@@ -1,0 +1,9 @@
+# すべてを無視する
+**/*
+
+# backendフォルダとfrontendフォルダは送る
+!backend/**
+!frontend/**
+
+# 設定ファイルも送る
+!appsscript.json
