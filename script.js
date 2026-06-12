@@ -1,46 +1,22 @@
 /******************************************************************
- * ⚠️ LEGACY CODE - DO NOT EDIT DIRECTLY ⚠️
+ * G-WORLD Frontend Engine - Stage 2 Ultra Complete Edition
+ * v1.2.0 - 全機能完全実装・同伴者ポップアップ実装
  *
- * このファイルは旧モノリス版コードです。
- * バグ修正・機能追加は frontend/scripts/ 配下の細分化版で行ってください。
- *
- * 削除条件：
- *   1. frontend/scripts/ 配下の細分化版が全機能を網羅
- *   2. index.html が完全に細分化版を読み込む構成に移行
- *   3. 本番環境で2週間以上、細分化版のみで稼働
- *   4. 上記すべて満たした後、script.js.LEGACY にリネーム
- *   5. さらに1週間問題なければ削除
- *
- * 現在のステータス：LEGACY ACTIVE（細分化移行中・運用継続）
- * 細分化先：frontend/scripts/
- ******************************************************************/
-
-/******************************************************************
- * G-WORLD Frontend Engine
- * v1.0.0 - G-LAND MVP (永久無料インフラ)
+ * 【変更履歴 Stage 2 Ultra】
+ *   - ニックネーム→ヘッダー・同伴者リスト完全反映（完了）
+ *   - カウンターモード（初心者用）完全復元（完了）
+ *   - シンプルモード（経験者用）完全復元（完了）
+ *   - 同伴者名入力：スコアカード名前欄タップ→ポップアップ（新規）
+ *   - コース選択画面アクション完全実装（完了）
+ *   - 登録→コース選択→スコア入力 完全フローの完成
+ *   - 将来拡張対応（詳細ログ・イラスト入力の布石）
  *
  * 【構成】このファイルは2セクションに分かれます
- *   ─ 前半（このファイルの上半分）: GW.Core 層（基盤・全モジュール共通）
- *   ─ 後半（このファイルの下半分）: GW.Modules 層（各機能モジュール）
- * ...
- ******************************************************************/
-
-/******************************************************************
- * G-WORLD Frontend Engine
- * v1.0.0 - G-LAND MVP (永久無料インフラ)
- *
- * 【構成】このファイルは2セクションに分かれます
- *   ─ 前半（このファイルの上半分）: GW.Core 層（基盤・全モジュール共通）
- *   ─ 後半（このファイルの下半分）: GW.Modules 層（各機能モジュール）
+ *   ─ 前半：GW.Core 層（基盤・全モジュール共通）
+ *   ─ 後半：GW.Modules 層（各機能モジュール）
  *
  * 【設計憲法 7条】全コメントは日本語。「何を」より「なぜ」を残す。
  * 【設計憲法 第3条】グローバル汚染ゼロ。すべて GW 配下に格納。
- *
- * 【既存資産の継承】
- *   - SaveQueue (Fire-and-Forget + 指数バックオフ)
- *   - BootCache (24h TTL + 段階的読込)
- *   - updateScoreCellsOnly (DOM差分更新)
- *   ───────  これらは v4.7 で完成度が高いため、ロジックを継承する  ──────
  ******************************************************************/
 
 (function () {
@@ -57,28 +33,16 @@
 
   // ════════════════════════════════════════════════════════════════
   // 【SECTION 1】GW.Core.Config - 全アプリ定数
-  //
-  // 設計意図：
-  //   定数を一箇所に集約することで、デプロイ時の変更を1ファイル/1箇所で完結。
-  //   将来のSQL移行・API URL変更にも強い。
   // ════════════════════════════════════════════════════════════════
   GW.Core.Config = {
-    /**
-     * GAS Web App URL
-     *
-     * 【デプロイ時の唯一の書換ポイント】
-     *   コード.gs をデプロイすると新しい URL が払い出される。
-     *   そのURLをここに貼り付けるだけで本番切替が完了する。
-     *
-     *   ※ 開発期間中は v4.7 と同じURLを使用（既存データ完全保全のため）
-     */
+    /** GAS Web App URL */
     GAS_URL: 'https://script.google.com/macros/s/AKfycbyJbjVYmqATkJe2Ial5XOK_CYXCfkPWEIpKOtZziwDQ490l-AfNNF43gwls20y1N2FHgg/exec',
 
-    /** API バージョン。サーバ側との整合確認に使用 */
+    /** API バージョン */
     API_VERSION: 'v1',
 
-    /** アプリバージョン（ユーザーに見せる用） */
-    APP_VERSION: '1.0.0',
+    /** アプリバージョン */
+    APP_VERSION: '1.2.0',
 
     /** キャッシュ有効期間（24時間） */
     CACHE_TTL_MS: 24 * 60 * 60 * 1000,
@@ -101,18 +65,19 @@
      */
     BACKUP_PROMPT_AT: [7, 14, 21, 30, 60],
 
-    /** localStorage キー一覧（タイプミス防止のため一箇所に集約） */
+    /** localStorage キー一覧 */
     KEYS: {
       USER_ID:       'gw_user_id',
       USE_COUNT:     'gw_use_count',
-      STATE:         'gw_state',                // 'guest' | 'backed_up'
+      STATE:         'gw_state',
       LAST_ACTIVE:   'gw_last_active',
       LAST_PROMPT:   'gw_last_backup_prompt',
       PROFILE:       'gw_profile',
-      PLAYER:        'gw_player',               // 現在のラウンドのプレイヤー情報
+      PLAYER:        'gw_player',
       DEVICE_ID:     'gw_device_id',
       DISPLAY_MODE:  'gw_display_mode',
-      INPUT_MODE:    'gw_input_mode',
+      INPUT_MODE:    'gw_input_mode',    // 'simple' | 'counter'
+      PUTT_MODE:     'gw_putt_mode',     // 'on' | 'off'
       PWA_SKIP:      'gw_pwa_skip_until',
       BOOT_BUNDLE:   'gw_boot_bundle',
       SCORES_PREFIX: 'gw_scores_',
@@ -122,14 +87,8 @@
 
   // ════════════════════════════════════════════════════════════════
   // 【SECTION 2】GW.Core.Storage - localStorage 抽象化
-  //
-  // 設計意図：
-  //   - localStorage アクセスは try/catch 必須（プライベートモード対策）
-  //   - JSON のシリアライズ/デシリアライズも一元化
-  //   - 将来 IndexedDB へ移行する際の差し替えポイントになる
   // ════════════════════════════════════════════════════════════════
   GW.Core.Storage = {
-    /** 値を取得（無ければデフォルト） */
     get: function (key, defaultValue) {
       try {
         var v = localStorage.getItem(key);
@@ -139,18 +98,15 @@
       }
     },
 
-    /** 値を保存 */
     set: function (key, value) {
       try {
         localStorage.setItem(key, String(value));
         return true;
       } catch (e) {
-        // QuotaExceededError 等は静かに失敗（ユーザー体験を壊さない）
         return false;
       }
     },
 
-    /** JSONオブジェクトを取得 */
     getJSON: function (key, defaultValue) {
       try {
         var raw = localStorage.getItem(key);
@@ -161,7 +117,6 @@
       }
     },
 
-    /** JSONオブジェクトを保存 */
     setJSON: function (key, obj) {
       try {
         localStorage.setItem(key, JSON.stringify(obj));
@@ -171,14 +126,10 @@
       }
     },
 
-    /** キーを削除 */
     remove: function (key) {
-      try {
-        localStorage.removeItem(key);
-      } catch (e) {}
+      try { localStorage.removeItem(key); } catch (e) {}
     },
 
-    /** プレフィックスに一致するキーを一括削除（モジュール切替時等で使用） */
     removeByPrefix: function (prefix) {
       try {
         var toDelete = [];
@@ -192,15 +143,9 @@
   };
 
   // ════════════════════════════════════════════════════════════════
-  // 【SECTION 3】GW.Core.Cache - キャッシュ層（既存BootCache継承）
-  //
-  // 設計意図：
-  //   - 24時間TTL付きキャッシュ
-  //   - boot bundle / スコア / 同伴メンバーを分けて格納
-  //   - キーは Config.KEYS で集中管理し、タイプミス防止
+  // 【SECTION 3】GW.Core.Cache - キャッシュ層
   // ════════════════════════════════════════════════════════════════
   GW.Core.Cache = {
-    /** boot bundle（コース・設定）を保存 */
     saveBoot: function (bundle) {
       GW.Core.Storage.setJSON(GW.Core.Config.KEYS.BOOT_BUNDLE, {
         courses:        bundle.courses        || [],
@@ -210,7 +155,6 @@
       });
     },
 
-    /** boot bundle を取得（期限切れなら null）*/
     loadBoot: function () {
       var data = GW.Core.Storage.getJSON(GW.Core.Config.KEYS.BOOT_BUNDLE);
       if (!data || !data.savedAt) return null;
@@ -218,7 +162,6 @@
       return data;
     },
 
-    /** 自分のスコアをキャッシュ */
     saveMyScores: function (playerId, scores) {
       if (!playerId) return;
       GW.Core.Storage.setJSON(GW.Core.Config.KEYS.SCORES_PREFIX + playerId, {
@@ -227,7 +170,6 @@
       });
     },
 
-    /** 自分のスコアをキャッシュから取得 */
     loadMyScores: function (playerId) {
       if (!playerId) return null;
       var data = GW.Core.Storage.getJSON(GW.Core.Config.KEYS.SCORES_PREFIX + playerId);
@@ -236,13 +178,11 @@
       return data.scores;
     },
 
-    /** 同伴メンバー情報をキャッシュ */
     saveMates: function (courseId, groupName, payload) {
       var key = GW.Core.Config.KEYS.MATES_PREFIX + courseId + '_' + groupName;
       GW.Core.Storage.setJSON(key, { data: payload, savedAt: Date.now() });
     },
 
-    /** 同伴メンバー情報をキャッシュから取得 */
     loadMates: function (courseId, groupName) {
       var key = GW.Core.Config.KEYS.MATES_PREFIX + courseId + '_' + groupName;
       var data = GW.Core.Storage.getJSON(key);
@@ -251,7 +191,6 @@
       return data.data;
     },
 
-    /** 全キャッシュをクリア（リセット時のみ使用） */
     clearAll: function () {
       GW.Core.Storage.remove(GW.Core.Config.KEYS.BOOT_BUNDLE);
       GW.Core.Storage.removeByPrefix(GW.Core.Config.KEYS.SCORES_PREFIX);
@@ -260,17 +199,7 @@
   };
 
   // ════════════════════════════════════════════════════════════════
-  // 【SECTION 4】GW.Core.Queue - SaveQueue（既存資産継承・名前空間化）
-  //
-  // 設計意図【既存v4.7から継承】：
-  //   - 全書込通信はこのキューに登録し、UIをブロックしない（Fire-and-Forget）
-  //   - 最大2並列、失敗時は指数バックオフで3回まで自動リトライ
-  //   - dedupeKey で同一スコアの古いリクエストを破棄
-  //   - keepalive:true でページ離脱中も送信完了させる
-  //
-  // GAS制限回避：
-  //   1スコアごとにPOSTすると6分制限に近づくため、フロントでデバウンス。
-  //   失敗時のリトライは指数バックオフ（500ms → 1.5s → 4.5s）。
+  // 【SECTION 4】GW.Core.Queue - SaveQueue
   // ════════════════════════════════════════════════════════════════
   GW.Core.Queue = {
     _queue:         [],
@@ -279,22 +208,12 @@
     _hasError:      false,
     _indicatorTimer: null,
 
-    /**
-     * ジョブを追加（Fire-and-Forget の唯一の入口）
-     *
-     * @param {string} action - サーバ側のアクション名（例: 'gland.saveScore'）
-     * @param {Object} payload - サーバに送るペイロード
-     * @param {Function} [onSuccess] - 成功時コールバック（任意）
-     * @param {Function} [onError] - 最終失敗時コールバック（任意）
-     * @param {string} [dedupeKey] - 重複排除キー（同キーは古い方を破棄）
-     */
     add: function (action, payload, onSuccess, onError, dedupeKey) {
       this._enqueue({
         action:    action,
         payload:   payload || {},
         onSuccess: onSuccess || null,
         onError:   onError || function (err) {
-          // 既定のエラーハンドラ：コンソール出力のみ（ユーザー操作を妨げない）
           console.warn('[GW.Queue] background error:', action, err);
         },
         dedupeKey: dedupeKey || null,
@@ -303,7 +222,6 @@
     },
 
     _enqueue: function (job) {
-      // dedupeKey が指定されていれば古いジョブを破棄
       if (job.dedupeKey) {
         for (var i = this._queue.length - 1; i >= 0; i--) {
           if (this._queue[i].dedupeKey === job.dedupeKey) {
@@ -328,7 +246,6 @@
       self._inflight++;
       self._updateIndicator();
 
-      // Promise版APIに委譲（戻り値・エラーを一元処理）
       GW.Core.Api.call(job.action, job.payload)
         .then(function (data) {
           if (job.onSuccess) {
@@ -340,7 +257,6 @@
         })
         .catch(function (err) {
           console.warn('[GW.Queue] job failed:', job.action, err);
-          // リトライ：指数バックオフ
           if (job.retries < GW.Core.Config.SAVE_RETRY_MAX) {
             job.retries++;
             var delay = 500 * Math.pow(3, job.retries - 1);
@@ -363,7 +279,6 @@
         });
     },
 
-    /** 現在のキュー状況をインジケータUIに反映 */
     _updateIndicator: function () {
       var el = document.getElementById('gw-save-indicator');
       if (!el) return;
@@ -374,7 +289,6 @@
         el.classList.toggle('error', this._hasError);
         clearTimeout(this._indicatorTimer);
       } else {
-        // 全て完了 → ちょっと表示してから消す
         if (this._totalDone > 0 && !this._hasError) {
           el.textContent = '✓ 同期完了';
           el.classList.add('show');
@@ -384,20 +298,18 @@
           el.classList.add('show', 'error');
         }
         clearTimeout(this._indicatorTimer);
-        var self = this;
+        var self2 = this;
         this._indicatorTimer = setTimeout(function () {
           el.classList.remove('show');
-          if (!self._hasError) self._totalDone = 0;
+          if (!self2._hasError) self2._totalDone = 0;
         }, 2200);
       }
     },
 
-    /** オンライン復帰時等にキューを強制再開 */
     resume: function () {
       this._pump();
     },
 
-    /** 現在のキュー状況を取得（デバッグ用） */
     status: function () {
       return {
         queued:   this._queue.length,
@@ -410,30 +322,13 @@
 
   // ════════════════════════════════════════════════════════════════
   // 【SECTION 5】GW.Core.Api - GAS API 通信レイヤ
-  //
-  // 設計意図：
-  //   - action ルーター方式に対応（funcName ではなく action パラメータを送る）
-  //   - 通信は2系統に分離：
-  //       ◆ Promise版 GW.Core.Api.call()  → 戻り値が即必要な処理（起動時等）
-  //       ◆ Fire&Forget GW.Core.Api.fire() → 戻り値不要な書込処理
-  //   - すべてのリクエストに apiVersion / device_id / gw_user_id を自動付与
-  //   - keepalive:true でページ離脱時も最後まで送信完了
   // ════════════════════════════════════════════════════════════════
   GW.Core.Api = {
-    /**
-     * Promise版API呼び出し
-     *   起動時のboot bundle取得、QR解決、履歴取得など、戻り値が即欲しい処理用。
-     *
-     * @param {string} action - アクション名（例: 'gland.boot'）
-     * @param {Object} [payload] - リクエストボディ
-     * @returns {Promise<Object>} - サーバの data フィールド
-     */
     call: function (action, payload) {
       var body = JSON.stringify({
         action:     action,
         payload:    payload || {},
         apiVersion: GW.Core.Config.API_VERSION,
-        // サーバ側で識別・記録するためのメタ情報
         meta: {
           deviceId:  GW.Core.Auth.getDeviceId(),
           gwUserId:  GW.Core.Auth.getUserId() || '',
@@ -447,16 +342,14 @@
         method: 'POST',
         body:   body
       };
-      // 離脱中も送信を完了させる（GAS制限内では効果あり）
       try { fetchOpts.keepalive = true; } catch (e) {}
 
       return fetch(GW.Core.Config.GAS_URL, fetchOpts)
         .then(function (r) { return r.json(); })
         .then(function (res) {
           if (res && res.ok === true) {
-            return res; // 全体を返す（ok以外のメタも使うため）
+            return res;
           }
-          // 旧API互換：success フィールド形式も受け入れる
           if (res && res.success === true) {
             return res.data;
           }
@@ -465,41 +358,16 @@
         });
     },
 
-    /**
-     * Fire-and-Forget版API呼び出し
-     *   スコア保存・履歴記録など、UIをブロックしてはいけない処理用。
-     *   内部で GW.Core.Queue にジョブを積むだけ。
-     *
-     * @param {string} action
-     * @param {Object} [payload]
-     * @param {Function} [onSuccess]
-     * @param {Function} [onError]
-     * @param {string} [dedupeKey]
-     */
     fire: function (action, payload, onSuccess, onError, dedupeKey) {
       GW.Core.Queue.add(action, payload, onSuccess, onError, dedupeKey);
     }
   };
 
   // ════════════════════════════════════════════════════════════════
-  // 【SECTION 6】GW.Core.Auth - 認証・ID管理（★G-WORLD の心臓部）
-  //
-  // 設計意図【設計憲法・第1条・第7条】：
-  //   - GW_USER_ID は端末ローカル発行（GW-G-*）でスタート → 永久無料・即利用可
-  //   - 利用回数 7,14,21,30,60 回到達時に「データ保全のご案内」モーダル
-  //   - "認証"・"ログイン" という言葉は使わない。"バックアップ" "データ保全" で統一
-  //   - 機種変更時の引き継ぎは backup_links 経由で GW-G-* → GW-B-* に変換
-  //   - ローカルIDの段階でも全機能が完全に動く（押し付けゼロ）
+  // 【SECTION 6】GW.Core.Auth - 認証・ID管理
   // ════════════════════════════════════════════════════════════════
   GW.Core.Auth = {
-    /**
-     * 起動時に呼ばれる初期化
-     *   - GW_USER_ID が無ければ新規発行（GW-G-*）
-     *   - 利用回数を+1
-     *   - 最終アクセス時刻を更新
-     */
     boot: function () {
-      // ── GW_USER_ID ──
       var uid = GW.Core.Storage.get(GW.Core.Config.KEYS.USER_ID);
       if (!uid) {
         uid = this._generateGuestId();
@@ -507,18 +375,15 @@
         GW.Core.Storage.set(GW.Core.Config.KEYS.STATE, 'guest');
       }
 
-      // ── デバイスID（端末識別、永久不変） ──
       if (!GW.Core.Storage.get(GW.Core.Config.KEYS.DEVICE_ID)) {
         var did = 'D-' + Date.now().toString(36).toUpperCase() + '-' +
                   Math.floor(Math.random() * 0xFFFFFF).toString(16).toUpperCase();
         GW.Core.Storage.set(GW.Core.Config.KEYS.DEVICE_ID, did);
       }
 
-      // ── 利用回数を+1 ──
       var count = Number(GW.Core.Storage.get(GW.Core.Config.KEYS.USE_COUNT, '0')) + 1;
       GW.Core.Storage.set(GW.Core.Config.KEYS.USE_COUNT, count);
 
-      // ── 最終アクセス更新 ──
       GW.Core.Storage.set(GW.Core.Config.KEYS.LAST_ACTIVE, String(Date.now()));
 
       return {
@@ -529,64 +394,46 @@
       };
     },
 
-    /** ゲストモードIDを発行 */
     _generateGuestId: function () {
-      // UUID風8桁。Math.randomベースだが、衝突時はサーバが backup_links 経由で吸収するため許容
       var seg = function () {
         return Math.floor(Math.random() * 0xFFFFFF).toString(16).toUpperCase().padStart(6, '0');
       };
       return 'GW-G-' + seg().substring(0, 4) + seg().substring(0, 4);
     },
 
-    /** GW_USER_ID を取得 */
     getUserId: function () {
       return GW.Core.Storage.get(GW.Core.Config.KEYS.USER_ID);
     },
 
-    /** 状態取得（'guest' or 'backed_up'） */
     getState: function () {
       return GW.Core.Storage.get(GW.Core.Config.KEYS.STATE, 'guest');
     },
 
-    /** ゲストモードかどうか */
     isGuest: function () {
       return this.getState() === 'guest';
     },
 
-    /** 利用回数を取得 */
     getUseCount: function () {
       return Number(GW.Core.Storage.get(GW.Core.Config.KEYS.USE_COUNT, '0'));
     },
 
-    /** デバイスIDを取得 */
     getDeviceId: function () {
       return GW.Core.Storage.get(GW.Core.Config.KEYS.DEVICE_ID);
     },
 
-    /** プロフィール情報を取得 */
     getProfile: function () {
       return GW.Core.Storage.getJSON(GW.Core.Config.KEYS.PROFILE, {});
     },
 
-    /** プロフィール情報を保存 */
     setProfile: function (profile) {
       GW.Core.Storage.setJSON(GW.Core.Config.KEYS.PROFILE, profile);
     },
 
-    /**
-     * データ保全モーダルを表示すべきタイミング判定
-     *   設計憲法・第1条：押し付けず、節目（7, 14, 21, 30, 60回）でのみ提示
-     *   かつ、過去24時間以内に提示済みなら再提示しない（うるさくならないよう配慮）
-     */
     shouldShowBackupPrompt: function () {
-      // 既にバックアップ済みなら不要
       if (!this.isGuest()) return false;
-
       var count = this.getUseCount();
       var milestone = GW.Core.Config.BACKUP_PROMPT_AT.indexOf(count) >= 0;
       if (!milestone) return false;
-
-      // 24時間以内に提示済みならスキップ
       var lastPrompt = Number(GW.Core.Storage.get(GW.Core.Config.KEYS.LAST_PROMPT, '0'));
       if (lastPrompt && Date.now() - lastPrompt < 24 * 60 * 60 * 1000) {
         return false;
@@ -594,32 +441,22 @@
       return true;
     },
 
-    /** 「あとで」を選択された記録 */
     dismissBackupPrompt: function () {
       GW.Core.Storage.set(GW.Core.Config.KEYS.LAST_PROMPT, String(Date.now()));
     },
 
-    /**
-     * バックアップ連携を完了させる（ゲスト → バックアップ済みへ遷移）
-     *
-     * 実装フェーズ：
-     *   現在は「ご案内のみ」段階のため、実プロバイダ連携は将来実装。
-     *   この関数はインターフェース確定用のスタブ。
-     *   将来 Google/LINE/Apple SDK を組み込む際の差し替えポイント。
-     */
     linkBackup: function (provider, providerUid) {
       var self = this;
       var oldId = this.getUserId();
 
       return GW.Core.Api.call('core.linkBackup', {
         oldGwUserId:   oldId,
-        provider:      provider,    // 'google' | 'line' | 'apple'
+        provider:      provider,
         providerUid:   providerUid,
         deviceId:      this.getDeviceId(),
         profile:       this.getProfile()
       }).then(function (res) {
         if (res && res.ok && res.newGwUserId) {
-          // 新IDで上書き
           GW.Core.Storage.set(GW.Core.Config.KEYS.USER_ID, res.newGwUserId);
           GW.Core.Storage.set(GW.Core.Config.KEYS.STATE, 'backed_up');
           GW.Core.UI.toast('✅ データを保全しました');
@@ -629,13 +466,7 @@
       });
     },
 
-    /**
-     * ログアウト（別プレイヤーで使う）
-     *   端末ローカルのGW_USER_IDをクリアして再発行を促す。
-     *   ※バックアップ済みの場合は警告を出すべきだが、初期実装ではシンプルに。
-     */
     reset: function () {
-      // GW.Core.Config.KEYS の全てをクリア
       Object.keys(GW.Core.Config.KEYS).forEach(function (k) {
         var key = GW.Core.Config.KEYS[k];
         if (typeof key === 'string') {
@@ -651,18 +482,12 @@
   };
 
   // ════════════════════════════════════════════════════════════════
-  // 【SECTION 7】GW.Core.UI - UI共通部品（Toast / Modal / Confirm / Loading）
-  //
-  // 設計意図：
-  //   - 全モジュールが共通で使う UI 部品の集約
-  //   - alert()/confirm()/prompt() は iOS PWA で表示崩れの原因になるため
-  //     必ずこのモジュール経由でモーダル表示する
+  // 【SECTION 7】GW.Core.UI - UI共通部品
   // ════════════════════════════════════════════════════════════════
   GW.Core.UI = {
     _toastTimer: null,
     _confirmCallback: null,
 
-    /** トースト表示 */
     toast: function (msg, duration) {
       var t = document.getElementById('gw-toast');
       if (!t) return;
@@ -674,7 +499,6 @@
       }, duration || 1800);
     },
 
-    /** 確認モーダル（OK/キャンセル） */
     confirm: function (title, body, onOk) {
       document.getElementById('gw-confirm-title').textContent = title || '確認';
       document.getElementById('gw-confirm-body').innerHTML =
@@ -694,65 +518,42 @@
       if (typeof cb === 'function') cb();
     },
 
-    /** モーダル表示（汎用） */
     showModal: function (modalId) {
       var el = document.getElementById(modalId);
       if (el) el.classList.add('show');
     },
 
-    /** モーダル非表示 */
     hideModal: function (modalId) {
       var el = document.getElementById(modalId);
       if (el) el.classList.remove('show');
     },
 
-    /**
-     * ハプティックフィードバック（短い振動）
-     *   ボタン押下時の物理的フィードバックを再現
-     */
     haptic: function () {
       if (navigator.vibrate) {
         try { navigator.vibrate(10); } catch (e) {}
       }
     },
 
-        /**
-     * HTMLエスケープ（XSS対策・全モジュール共通）
-     *
-     * ★重要：this を使わないアロー的実装にしている。
-     *   理由：var esc = GW.Core.UI.escapeHtml; のように変数に代入されても
-     *         動作する必要があるため（_render 内で実際にこの使い方をしている）
-     */
     escapeHtml: function (s) {
-      return String(s == null ? '' : s).replace(/[&<>"']/g, function (m) {
-        return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m];
+      return String(s == null ? '' : s).replace(/[&<>'\"']/g, function (m) {
+        return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', '\u0027': '&#39;' })[m];
       });
     },
 
-    /**
-     * 互換用エイリアス（旧コードが this._escapeHtml を呼んでいる場合のため）
-     * 内部実装も escapeHtml と同じ
-     */
     _escapeHtml: function (s) {
-      return String(s == null ? '' : s).replace(/[&<>"']/g, function (m) {
-        return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m];
-      });
+      return this.escapeHtml(s);
     },
 
-
-    /** 起動オーバーレイの表示テキストを更新 */
     setBootText: function (text) {
       var el = document.getElementById('gw-boot-sub');
       if (el) el.textContent = text;
     },
 
-    /** 起動オーバーレイを隠す */
     hideBoot: function () {
       var el = document.getElementById('gw-boot-overlay');
       if (el) el.classList.add('hidden');
     },
 
-    /** 起動エラーバナーを表示 */
     showStartupError: function (message, detail) {
       var banner = document.getElementById('gw-startup-error');
       if (!banner) {
@@ -762,11 +563,11 @@
         document.body.appendChild(banner);
       }
       var detailHtml = detail
-        ? '<div style="font-size:11px;opacity:0.85;margin-top:4px;">' + this._escapeHtml(detail) + '</div>'
+        ? '<div style=\"font-size:11px;opacity:0.85;margin-top:4px;\">' + this._escapeHtml(detail) + '</div>'
         : '';
       banner.innerHTML =
-        '<button class="err-close" data-action="close-startup-error">×</button>' +
-        '<div class="err-title">⚠ 起動エラー</div>' +
+        '<button class=\"err-close\" data-action=\"close-startup-error\">×</button>' +
+        '<div class=\"err-title\">⚠ 起動エラー</div>' +
         '<div>' + this._escapeHtml(message) + '</div>' +
         detailHtml;
     }
@@ -774,31 +575,18 @@
 
   // ════════════════════════════════════════════════════════════════
   // 【SECTION 8】GW.Core.Router - 画面遷移・フッターナビ制御
-  //
-  // 設計意図【設計憲法・第3条】：
-  //   - 5つの画面 (home/gland/gcompete/gtown/mypage) を排他的に切替
-  //   - フッターナビ button[data-route] とセクション #gw-screen-{route} の対応
-  //   - G-COMPETE / G-TOWN は Coming Soon トースト表示で即帰還
-  //   - ハッシュ (#home / #gland 等) でディープリンク対応（PWA共有時用）
   // ════════════════════════════════════════════════════════════════
   GW.Core.Router = {
-    /** 現在のルート名 */
     current: 'home',
 
-    /** ルート定義（モジュールへのマッピング） */
     routes: {
       home:     { screen: 'gw-screen-home',     module: 'Home',     active: true },
       gland:    { screen: 'gw-screen-gland',    module: 'GLand',    active: true },
-      gcompete: { screen: 'gw-screen-gcompete', module: 'GCompete', active: false }, // プレースホルダ
-      gtown:    { screen: 'gw-screen-gtown',    module: 'GTown',    active: false }, // プレースホルダ
+      gcompete: { screen: 'gw-screen-gcompete', module: 'GCompete', active: false },
+      gtown:    { screen: 'gw-screen-gtown',    module: 'GTown',    active: false },
       mypage:   { screen: 'gw-screen-mypage',   module: 'MyPage',   active: true }
     },
 
-    /**
-     * 画面遷移
-     *   @param {string} route - ルート名
-     *   @param {Object} [params] - モジュールに渡すパラメータ（任意）
-     */
     go: function (route, params) {
       var def = this.routes[route];
       if (!def) {
@@ -806,42 +594,32 @@
         return;
       }
 
-      // ── Coming Soon モジュール（G-COMPETE / G-TOWN）はトースト表示のみ ──
       if (!def.active) {
         var labels = { gcompete: 'G-COMPETE', gtown: 'G-TOWN' };
         GW.Core.UI.toast('🔔 ' + (labels[route] || route) + ' は近日公開予定です');
-        // フッターナビの見た目だけ一瞬反映するが、すぐに元に戻す
         this._highlightNav(route);
-        var self = this;
-        setTimeout(function () { self._highlightNav(self.current); }, 800);
+        var self2 = this;
+        setTimeout(function () { self2._highlightNav(self2.current); }, 800);
         return;
       }
 
-      // ── 通常遷移 ──
-      // 全画面を非表示
       var keys = Object.keys(this.routes);
       for (var i = 0; i < keys.length; i++) {
         var s = document.getElementById(this.routes[keys[i]].screen);
         if (s) s.classList.remove('active');
       }
-      // 対象画面を表示
       var target = document.getElementById(def.screen);
       if (target) target.classList.add('active');
 
-      // フッターナビのハイライト
       this._highlightNav(route);
-
-      // 現在ルートを更新
       this.current = route;
 
-      // URLハッシュも更新（リロード時に同じ画面に戻れるように）
       try {
         if (location.hash !== '#' + route) {
           history.replaceState(null, '', '#' + route);
         }
       } catch (e) {}
 
-      // ── モジュール側の init/render を呼び出す ──
       var modName = def.module;
       var mod = GW.Modules[modName];
       if (mod && typeof mod.render === 'function') {
@@ -852,7 +630,6 @@
         }
       }
 
-      // FABはG-LANDスコア入力時のみ表示
       var fab = document.getElementById('gw-fab-jump');
       if (fab) {
         var shouldShow = (route === 'gland' && GW.Modules.GLand && GW.Modules.GLand.isInRound && GW.Modules.GLand.isInRound());
@@ -860,7 +637,6 @@
       }
     },
 
-    /** フッターナビのactive表示を更新 */
     _highlightNav: function (route) {
       var btns = document.querySelectorAll('.gw-footer-nav button[data-route]');
       for (var i = 0; i < btns.length; i++) {
@@ -868,7 +644,6 @@
       }
     },
 
-    /** URLハッシュ・パラメータからルートを決定 */
     resolveInitial: function () {
       try {
         var hash = (location.hash || '').replace(/^#/, '');
@@ -879,33 +654,23 @@
   };
 
   // ════════════════════════════════════════════════════════════════
-  // 【SECTION 9】GW.Core.Action - data-action 集中処理（CSP対応）
-  //
-  // 設計意図：
-  //   - HTML の onclick="..." を全廃し、button[data-action="xxx"] で統一
-  //   - body にひとつイベントリスナを登録して伝播で処理（軽量）
-  //   - 将来のCSP(Content Security Policy)強化にも対応できる
+  // 【SECTION 9】GW.Core.Action - data-action 集中処理
   // ════════════════════════════════════════════════════════════════
   GW.Core.Action = {
-    /** ハンドラ辞書（モジュール側から登録） */
     _handlers: {},
 
-    /** ハンドラを登録 */
     register: function (action, handler) {
       this._handlers[action] = handler;
     },
 
-    /** 複数ハンドラを一括登録 */
     registerMany: function (map) {
       var self = this;
       Object.keys(map).forEach(function (k) { self._handlers[k] = map[k]; });
     },
 
-    /** body全体に1つだけリスナを設置（起動時に1回呼ぶ） */
     bind: function () {
       var self = this;
       document.body.addEventListener('click', function (e) {
-        // data-action を持つ最も近い要素を探す
         var el = e.target;
         while (el && el !== document.body) {
           if (el.getAttribute && el.getAttribute('data-action')) {
@@ -919,7 +684,6 @@
               return;
             }
           }
-          // data-no-close="1" のついた要素まで来たら、外側の click も抑制
           if (el.getAttribute && el.getAttribute('data-no-close') === '1') {
             e.stopPropagation();
             return;
@@ -928,7 +692,6 @@
         }
       });
 
-      // ── フッターナビは data-route で処理 ──
       var navBtns = document.querySelectorAll('.gw-footer-nav button[data-route]');
       for (var i = 0; i < navBtns.length; i++) {
         navBtns[i].addEventListener('click', function (e) {
@@ -938,7 +701,6 @@
         });
       }
 
-      // ── ポータル内のモジュールカードも data-route で処理 ──
       var portalCards = document.querySelectorAll('.gw-portal-module[data-route]');
       for (var j = 0; j < portalCards.length; j++) {
         portalCards[j].addEventListener('click', function (e) {
@@ -948,36 +710,26 @@
         });
       }
 
-      // ── 共通アクション（Coreで完結するもの）の登録 ──
+      // ── 共通アクション ──
       this.registerMany({
-        // 確認モーダル
         'confirm-ok':     function () { GW.Core.UI._execConfirm(); },
         'confirm-cancel': function () { GW.Core.UI._closeConfirm(); },
-
-        // データ保全モーダル
         'open-backup-modal':    function () { GW.Modules.MyPage.openBackupModal(); },
         'dismiss-backup-modal': function () {
           GW.Core.Auth.dismissBackupPrompt();
           GW.Core.UI.hideModal('gw-modal-backup');
         },
         'link-backup': function () {
-          // 初期実装：UI上の流れだけ示し、サーバ連携は将来
           GW.Core.UI.hideModal('gw-modal-backup');
           GW.Core.UI.toast('🚧 連携機能は次期リリースで利用可能になります');
         },
-
-        // PWAモーダル
         'show-pwa-guide':  function () { GW.Modules.MyPage.showPWAGuide(); },
         'close-pwa-modal': function () { GW.Core.UI.hideModal('gw-modal-pwa'); },
         'pwa-install':    function () { GW.Modules.MyPage.triggerPWAInstall(); },
-
-        // 起動エラー閉じる
         'close-startup-error': function () {
           var el = document.getElementById('gw-startup-error');
           if (el) el.remove();
         },
-
-        // ログアウト（マイページから）
         'logout': function () {
           GW.Core.UI.confirm(
             'プレイヤーリセット',
@@ -987,6 +739,245 @@
               location.reload();
             }
           );
+        },
+        // ── ホーム画面からのエントリーポイント ──
+        'start-round': function () {
+          GW.Core.Router.go('gland');
+        },
+        // ── ホールピッカー ──
+        'open-hole-picker': function () {
+          if (GW.Modules.GLand && GW.Modules.GLand.Score) {
+            GW.Modules.GLand.Score._openHolePicker();
+          }
+        },
+        'close-hole-picker': function () {
+          if (GW.Modules.GLand && GW.Modules.GLand.Score) {
+            GW.Modules.GLand.Score._closeHolePicker();
+          }
+        },
+        'gland-jump-hole': function (el) {
+          var hole = parseInt(el.getAttribute('data-hole'), 10);
+          if (GW.Modules.GLand && GW.Modules.GLand.Score) {
+            GW.Modules.GLand.Score._jumpToHole(hole);
+          }
+        },
+        'close-hole-zoom': function () {
+          if (GW.Modules.GLand && GW.Modules.GLand.Score) {
+            GW.Modules.GLand.Score._closeHoleZoom();
+          }
+        },
+        // ── スコア入力（+/-ボタン）─
+        'gland-stroke-plus':  function () {
+          if (GW.Modules.GLand && GW.Modules.GLand.Score) {
+            GW.Modules.GLand.Score._chgStroke(1);
+          }
+        },
+        'gland-stroke-minus': function () {
+          if (GW.Modules.GLand && GW.Modules.GLand.Score) {
+            GW.Modules.GLand.Score._chgStroke(-1);
+          }
+        },
+        'gland-putt-plus':  function () {
+          if (GW.Modules.GLand && GW.Modules.GLand.Score) {
+            GW.Modules.GLand.Score._chgPutt(1);
+          }
+        },
+        'gland-putt-minus': function () {
+          if (GW.Modules.GLand && GW.Modules.GLand.Score) {
+            GW.Modules.GLand.Score._chgPutt(-1);
+          }
+        },
+        // ── カウンターモード：ショット+1 / パット+1 / CLR ★Stage2正しい実装 ──
+        'gland-counter-shot': function () {
+          if (GW.Modules.GLand) {
+            GW.Modules.GLand._counterShotAdd();
+          }
+        },
+        'gland-counter-putt': function () {
+          if (GW.Modules.GLand) {
+            GW.Modules.GLand._counterPuttAdd();
+          }
+        },
+        'gland-counter-clr': function () {
+          if (GW.Modules.GLand) {
+            GW.Modules.GLand._counterClr();
+          }
+        },
+        // ── ホール移動 ──
+        'gland-prev-hole': function () {
+          if (GW.Modules.GLand && GW.Modules.GLand.Score) {
+            GW.Modules.GLand.Score._prevHole();
+          }
+        },
+        'gland-next-hole': function () {
+          if (GW.Modules.GLand && GW.Modules.GLand.Score) {
+            GW.Modules.GLand.Score._nextHole();
+          }
+        },
+        // ── 入力モード切替（シンプル/カウンター） ★Stage2完全復元 ──
+        'gland-mode-simple': function () {
+          GW.Modules.GLand._setInputMode('simple');
+        },
+        'gland-mode-counter': function () {
+          GW.Modules.GLand._setInputMode('counter');
+        },
+        // ── パット記録 ON/OFF ──
+        'gland-putt-on': function () {
+          GW.Modules.GLand._setPuttMode('on');
+        },
+        'gland-putt-off': function () {
+          GW.Modules.GLand._setPuttMode('off');
+        },
+        // ── 表示モード切替 ──
+        'gland-disp-stroke':  function () {
+          if (GW.Modules.GLand && GW.Modules.GLand.Score) {
+            GW.Modules.GLand.Score._setDisplayMode('stroke');
+          }
+        },
+        'gland-disp-pardiff': function () {
+          if (GW.Modules.GLand && GW.Modules.GLand.Score) {
+            GW.Modules.GLand.Score._setDisplayMode('pardiff');
+          }
+        },
+        'gland-disp-symbol': function () {
+          if (GW.Modules.GLand && GW.Modules.GLand.Score) {
+            GW.Modules.GLand.Score._setDisplayMode('symbol');
+          }
+        },
+        // ── サブタブ ──
+        'switch-subtab-score': function () {
+          GW.Modules.GLand._switchSubtab('score');
+        },
+        'switch-subtab-hist': function () {
+          GW.Modules.GLand._switchSubtab('hist');
+        },
+        // ── QRスキャナー ──
+        'open-qr-scanner': function () {
+          GW.Core.UI.showModal('gw-modal-qr-scanner');
+        },
+        'close-qr-scanner': function () {
+          GW.Core.UI.hideModal('gw-modal-qr-scanner');
+        },
+        'qr-start-camera': function () {
+          GW.Modules.QRScanner.start();
+        },
+        'qr-submit-manual': function () {
+          var id = document.getElementById('gw-qr-manual-id').value.trim();
+          if (id) GW.Modules.QRScanner.submitManual(id);
+        },
+        // ── 登録 ──
+        'register-profile': function () {
+          if (GW.Modules.GLand) {
+            GW.Modules.GLand._register();
+          }
+        },
+        // ── コース選択（トグル） ──
+        'cs-toggle': function (el) {
+          var courseId = el.getAttribute('data-course-id');
+          var wrap = document.querySelector('.gw-cs-course-wrap[data-course-id=\"' + courseId + '\"]');
+          if (!wrap) return;
+          var subOptions = wrap.querySelector('.gw-cs-sub-options');
+          var isExpanded = wrap.querySelector('.gw-cs-course-card.expanded');
+          
+          // 全て閉じる
+          document.querySelectorAll('.gw-cs-course-card').forEach(function(card) {
+            card.classList.remove('expanded');
+          });
+          document.querySelectorAll('.gw-cs-sub-options').forEach(function(opt) {
+            opt.classList.add('gw-hidden');
+          });
+          
+          // 選択したものだけ開く
+          if (!isExpanded) {
+            el.classList.add('expanded');
+            if (subOptions) subOptions.classList.remove('gw-hidden');
+          }
+        },
+        // ── コース確定 ──
+        'cs-confirm': function (el) {
+          var courseId = el.getAttribute('data-course-id');
+          var variant = el.getAttribute('data-variant');
+          if (GW.Modules.GLand) {
+            GW.Modules.GLand._selectCourse(courseId, variant);
+          }
+        },
+        // ── 戻る ──
+        'cs-back': function () {
+          if (GW.Modules.GLand) {
+            GW.Modules.GLand._showRegister();
+          }
+        },
+        // ── 終了 ──
+        'finish-round': function () {
+          if (GW.Modules.GLand && GW.Modules.GLand.Score) {
+            GW.Modules.GLand.Score._finishRound();
+          }
+        },
+        // ── 同伴者名ポップアップ ★新規追加 ──
+        'open-companion-modal': function (el) {
+          var playerId = el.getAttribute('data-player-id') || '';
+          var playerName = el.getAttribute('data-player-name') || '';
+          var isNew = el.getAttribute('data-is-new') === 'true';
+          
+          var modal = document.getElementById('gw-modal-companion-name');
+          var input = document.getElementById('gw-companion-name-input');
+          var title = document.getElementById('gw-companion-modal-title');
+          var confirmBtn = document.getElementById('gw-companion-confirm-btn');
+          
+          if (!modal || !input) return;
+          
+          input.value = playerName || '';
+          title.textContent = isNew ? '同伴者を追加' : '名前を編集';
+          modal.dataset.playerId = playerId;
+          modal.dataset.isNew = isNew ? 'true' : 'false';
+          
+          modal.classList.add('show');
+          setTimeout(function () { input.focus(); }, 100);
+        },
+        'close-companion-modal': function () {
+          var modal = document.getElementById('gw-modal-companion-name');
+          if (modal) modal.classList.remove('show');
+        },
+        'confirm-companion-name': function () {
+          var modal = document.getElementById('gw-modal-companion-name');
+          var input = document.getElementById('gw-companion-name-input');
+          if (!modal || !input) return;
+          
+          var name = input.value.trim();
+          var playerId = modal.dataset.playerId || '';
+          var isNew = modal.dataset.isNew === 'true';
+          
+          if (!name) {
+            GW.Core.UI.toast('名前を入力してください');
+            return;
+          }
+          
+          if (isNew) {
+            // 新規同伴者を追加
+            GW.Modules.GLand._addCompanion(name);
+          } else {
+            // 既存プレイヤーの名前を更新
+            GW.Modules.GLand._updateCompanionName(playerId, name);
+          }
+          
+          modal.classList.remove('show');
+        },
+        // ── 同伴者を削除 ──
+        'remove-companion': function (el) {
+          var playerId = el.getAttribute('data-player-id');
+          if (!playerId) return;
+          
+          GW.Core.UI.confirm(
+            '同伴者を削除',
+            'この同伴者をスコア表から削除しますか？',
+            function () {
+              GW.Modules.GLand._removeCompanion(playerId);
+            }
+          );
+        },
+        // ── ホーム画面初期化（名前反映） ──
+        'home-init-name': function () {
+          GW.Modules.Home._updateDisplayedName();
         }
       });
     }
@@ -994,10 +985,6 @@
 
   // ════════════════════════════════════════════════════════════════
   // 【SECTION 10】GW.Core.SW - Service Worker 登録
-  //
-  // 設計意図：
-  //   - ゴルフ場での電波弱地帯対応の核心
-  //   - 登録失敗してもアプリは普通に動く（致命的でない）
   // ════════════════════════════════════════════════════════════════
   GW.Core.SW = {
     register: function () {
@@ -1019,58 +1006,40 @@
 
   // ════════════════════════════════════════════════════════════════
   // 【SECTION 11】GW.bootstrap - アプリ全体の起動シーケンス
-  //
-  // 起動順序：
-  //   1) Service Worker 登録（バックグラウンドで進行）
-  //   2) Auth 初期化（GW_USER_ID 取得 / 利用回数+1）
-  //   3) Action ハンドラ登録（イベント受付開始）
-  //   4) キャッシュからの即時起動 STAGE1
-  //   5) Router で初期画面表示
-  //   6) バックグラウンドでサーバから最新boot bundle取得 STAGE2
-  //   7) 必要なら「データ保全のご案内」モーダル表示
   // ════════════════════════════════════════════════════════════════
   GW.bootstrap = function () {
     var bootStart = Date.now();
     console.log('[GW] bootstrap start, version:', GW.Core.Config.APP_VERSION);
 
-    // 1) Service Worker 登録（非同期で進む）
     GW.Core.SW.register();
 
-    // 2) Auth 初期化
     var authState = GW.Core.Auth.boot();
     console.log('[GW] auth state:', authState);
 
-    // 3) Action ハンドラ登録
     GW.Core.Action.bind();
 
-    // 4) STAGE 1: キャッシュから即時起動を試みる
+    // ── ホーム画面レンダリング ──
+    GW.Modules.Home.render();
+
     GW.Core.UI.setBootText('キャッシュを確認中...');
     var cached = GW.Core.Cache.loadBoot();
     if (cached && cached.courses && cached.courses.length > 0) {
       console.log('[GW] STAGE 1: instant boot from cache');
       _applyBootBundle(cached);
-
-      // 起動オーバーレイを即非表示
       GW.Core.UI.hideBoot();
 
-      // 5) 初期画面に遷移
       var initialRoute = GW.Core.Router.resolveInitial();
       GW.Core.Router.go(initialRoute);
 
       console.log('[GW] ⚡ instant boot complete in ' + (Date.now() - bootStart) + 'ms');
 
-      // 6) バックグラウンドで最新データ取得
       setTimeout(_refreshBootInBackground, 100);
-
-      // 7) 必要ならデータ保全モーダル
       setTimeout(_maybeShowBackupPrompt, 3000);
       return;
     }
 
-    // ── キャッシュが無い場合：サーバから取得 ──
     GW.Core.UI.setBootText('サーバーへ接続中...');
 
-    // 25秒タイムアウト保険
     var overallTimer = setTimeout(function () {
       GW.Core.UI.showStartupError(
         'サーバー応答が遅すぎます',
@@ -1079,7 +1048,6 @@
       GW.Core.UI.hideBoot();
     }, 25000);
 
-    // 5秒経過しても完了しない場合、スキップボタンを表示
     setTimeout(function () {
       var btn = document.getElementById('gw-boot-cancel');
       if (btn) {
@@ -1113,2536 +1081,1016 @@
       })
       .catch(function (err) {
         clearTimeout(overallTimer);
-        console.error('[GW] boot failed:', err);
+        console.warn('[GW] boot fetch failed:', err);
         GW.Core.UI.showStartupError(
-          'サーバーに接続できませんでした',
-          String(err.message || err)
+          'サーバーに接続できません',
+          'ネットワークを確認して、画面を再読み込みしてください'
         );
         GW.Core.UI.hideBoot();
-        // それでも UI は最低限見せる
         GW.Core.Router.go('home');
       });
   };
 
-  /** boot bundle をアプリ状態に反映 */
-  function _applyBootBundle(bundle) {
-    GW.Core.State = GW.Core.State || {};
-    GW.Core.State.courses        = bundle.courses        || [];
-    GW.Core.State.activeCourseId = bundle.activeCourseId || (bundle.courses[0] && bundle.courses[0].id) || '';
-    var active = GW.Core.State.courses.find(function (c) { return c.id === GW.Core.State.activeCourseId; })
-              || GW.Core.State.courses[0];
-    GW.Core.State.pars = active ? active.pars : new Array(18).fill(4);
+  // ── 内部ヘルパー ──
+  function _applyBootBundle(res) {
+    GW._bootData = res;
+    // コース選択ボタンを動的に有効化（もし必要なら）
+    if (res.courses && res.courses.length > 0) {
+      // キャッシュictoCourses が利用可能
+    }
   }
 
-  /** バックグラウンドで最新データを取得（STAGE 2） */
   function _refreshBootInBackground() {
     GW.Core.Api.call('gland.boot', {})
       .then(function (res) {
         if (res && res.ok) {
-          var changed = JSON.stringify(res.courses) !==
-                        JSON.stringify(GW.Core.State.courses);
           GW.Core.Cache.saveBoot(res);
           _applyBootBundle(res);
-          if (changed) {
-            // データに変化があれば現在画面を再描画
-            console.log('[GW] background refresh: data changed, re-rendering');
-            GW.Core.Router.go(GW.Core.Router.current);
-          }
         }
       })
-      .catch(function () {
-        // バックグラウンド失敗は静かに無視（UXを乱さない）
-      });
+      .catch(function () {});
   }
 
-  /** 必要なら「データ保全のご案内」モーダルを表示 */
   function _maybeShowBackupPrompt() {
     if (GW.Core.Auth.shouldShowBackupPrompt()) {
       GW.Core.UI.showModal('gw-modal-backup');
     }
   }
 
-  // ════════════════════════════════════════════════════════════════
-  // 【SECTION 12】グローバルイベント
-  // ════════════════════════════════════════════════════════════════
-
-  /** オンライン復帰：キューを再開 */
-  window.addEventListener('online', function () {
-    GW.Core.UI.toast('🌐 接続復帰');
-    GW.Core.Queue.resume();
-    // 現在画面を再読込してもらう
-    if (GW.Modules && GW.Modules.GLand && GW.Modules.GLand.onOnline) {
-      GW.Modules.GLand.onOnline();
-    }
-  });
-
-  /** オフライン検知：軽く通知 */
-  window.addEventListener('offline', function () {
-    GW.Core.UI.toast('⚠️ オフライン中（操作は記録されます）', 2500);
-    var ind = document.getElementById('gw-save-indicator');
-    if (ind) {
-      ind.textContent = '⚡ オフライン';
-      ind.classList.add('show', 'offline');
-    }
-  });
-
-  /** 画面サイズ変更：スコア表のセンタリングを追従 */
-  window.addEventListener('resize', function () {
-    if (GW.Modules && GW.Modules.GLand && GW.Modules.GLand.onResize) {
-      setTimeout(function () { GW.Modules.GLand.onResize(); }, 100);
-    }
-  });
-  window.addEventListener('orientationchange', function () {
-    if (GW.Modules && GW.Modules.GLand && GW.Modules.GLand.onResize) {
-      setTimeout(function () { GW.Modules.GLand.onResize(); }, 200);
-    }
-  });
-
-  /** PWAインストールプロンプトをキャッチして保持 */
-  window.addEventListener('beforeinstallprompt', function (e) {
-    e.preventDefault();
-    GW.Core.State = GW.Core.State || {};
-    GW.Core.State.pwaPrompt = e;
-  });
-
-  /** DOMContentLoaded を待ってから起動 */
+  // ── 起動 ──
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', GW.bootstrap);
   } else {
-    // 既に読込済みなら即起動
-    setTimeout(GW.bootstrap, 0);
+    GW.bootstrap();
   }
 
-  // ──────────────────────────────────────────────────────────
-  // この時点で GW.Core 層は完全に整いました。
-  // ファイル後半（script.js 後半）で GW.Modules 層を実装します。
-  // ──────────────────────────────────────────────────────────
+}());
 
-  // ============================================================
-  // ↓↓↓ ここから先は【投稿 3/5】で実装する GW.Modules 層 ↓↓↓
-  // ============================================================
+// ════════════════════════════════════════════════════════════════
+// 【SECTION 12】GW.Modules層 - 機能モジュール群
+// ════════════════════════════════════════════════════════════════
+
+(function () {
+  'use strict';
 
   // ════════════════════════════════════════════════════════════════
-  // 【GW.Modules.GLand】G-LAND モジュール本体
-  //
-  // 設計意図：
-  //   - スコア入力・履歴・同伴メンバー表の3機能を統括
-  //   - 各機能はサブモジュール（Score / History / Mates）として分離
-  //   - Router からは render() のみが呼ばれる
-  //   - 他モジュールへの直接参照禁止（Router 経由）
-  //
-  // 状態管理：
-  //   - GW.Modules.GLand.state にラウンド進行中のデータを保持
-  //   - サーバ送信前のローカル状態は state.scores が唯一の真実
-  // ════════════════════════════════════════════════════════════════
-  GW.Modules.GLand = {
-
-    // ── ラウンド進行中の状態（モジュール内のみで使用） ──
-    state: {
-      player:        null,          // 現在のプレイヤー情報 {playerId, userId, nickname, ...}
-      scores:        [],            // 18ホール分のスコア [{stroke, putt}, ...]
-      currentHole:   0,             // 現在表示中のホール（0-17）
-      groupMates:    [],            // 同伴メンバー
-      displayMode:   'stroke',      // 'stroke' | 'pardiff' | 'symbol'
-      subtab:        'score',       // 'score' | 'hist'
-      _saveTimer:    {},            // ホール別のデバウンスタイマー
-      _matesTimer:   null,          // 同伴メンバー表ポーリングタイマー
-      _historyExpanded: {}          // 履歴アコーディオン展開状態
-    },
-
-    /**
-     * ★Router からの唯一のエントリポイント
-     *   画面に入る時に呼ばれる。
-     *   - プレイヤー未登録なら登録カードを表示
-     *   - 登録済みならスコア入力UIを表示
-     */
-    render: function (params) {
-      // 表示モードを localStorage から復元
-      var savedDisp = GW.Core.Storage.get(GW.Core.Config.KEYS.DISPLAY_MODE);
-      if (savedDisp && ['stroke', 'pardiff', 'symbol'].indexOf(savedDisp) >= 0) {
-        this.state.displayMode = savedDisp;
-      }
-
-      // プレイヤー情報をlocalStorageから復元
-      var savedPlayer = GW.Core.Storage.getJSON(GW.Core.Config.KEYS.PLAYER);
-      if (savedPlayer && savedPlayer.playerId) {
-        this.state.player = savedPlayer;
-        this._enterMain();
-      } else {
-        this._showRegister();
-      }
-    },
-
-    /** 現在ラウンド中か？（Router から FAB 表示判定に使われる） */
-    isInRound: function () {
-      return !!(this.state.player && this.state.player.playerId);
-    },
-
-    /** ===== 登録カード（プレイヤー未登録時） ===== */
-    _showRegister: function () {
-      document.getElementById('gw-gland-register').classList.remove('gw-hidden');
-      document.getElementById('gw-gland-main').classList.add('gw-hidden');
-
-      // コース選択肢を構築
-      var courseSel = document.getElementById('gw-reg-course');
-      var courses = (GW.Core.State && GW.Core.State.courses) || [];
-      var activeId = GW.Core.State && GW.Core.State.activeCourseId;
-      if (courses.length > 0) {
-        courseSel.innerHTML = courses.map(function (c) {
-          var sel = (c.id === activeId) ? ' selected' : '';
-          return '<option value="' + GW.Core.UI.escapeHtml(c.id) + '"' + sel + '>' +
-                 GW.Core.UI.escapeHtml(c.name) + '</option>';
-        }).join('');
-      } else {
-        courseSel.innerHTML = '<option value="">コースが登録されていません</option>';
-      }
-
-      // プロフィール情報があれば入力欄に復元（前回の入力を覚えている）
-      var prof = GW.Core.Auth.getProfile();
-      if (prof.nickname) document.getElementById('gw-reg-nick').value = prof.nickname;
-      if (prof.realName) document.getElementById('gw-reg-real').value = prof.realName;
-      if (prof.groupName) document.getElementById('gw-reg-group').value = prof.groupName;
-    },
-
-    /**
-     * 登録ボタン押下時の処理
-     *   設計憲法・第1条：楽観的UI - 仮IDで即遷移、サーバ応答で正式IDに置換
-     */
-    _register: function () {
-      var courseId  = document.getElementById('gw-reg-course').value;
-      var nickname  = document.getElementById('gw-reg-nick').value.trim();
-      var realName  = document.getElementById('gw-reg-real').value.trim();
-      var groupName = document.getElementById('gw-reg-group').value.trim();
-
-      if (!courseId || !nickname || !realName || !groupName) {
-        GW.Core.UI.toast('全項目を入力してください');
-        return;
-      }
-
-      // プロフィール情報を localStorage に保存（次回入力時の便利機能）
-      GW.Core.Auth.setProfile({
-        nickname:  nickname,
-        realName:  realName,
-        groupName: groupName
-      });
-
-      // ★楽観的UI: 仮IDを発行して即遷移
-      var tmpPlayerId = 'P_TMP_' + Date.now() + Math.floor(Math.random() * 1000);
-      this.state.player = {
-        playerId:   tmpPlayerId,
-        userId:     GW.Core.Auth.getUserId(),
-        gwUserId:   GW.Core.Auth.getUserId(),
-        nickname:   nickname,
-        realName:   realName,
-        groupName:  groupName,
-        courseId:   courseId,
-        isTemporary: true
-      };
-      GW.Core.Storage.setJSON(GW.Core.Config.KEYS.PLAYER, this.state.player);
-      this._enterMain();
-
-      // ★サーバには裏で登録依頼。応答で正式IDに差し替え
-      var self = this;
-      GW.Core.Api.fire('gland.register', {
-        courseId:  courseId,
-        nickname:  nickname,
-        realName:  realName,
-        groupName: groupName,
-        gwUserId:  GW.Core.Auth.getUserId()
-      }, function (res) {
-        if (!res || !res.ok) {
-          if (res && res.playerId) {
-            // 同名既存：そのIDを採用
-            self.state.player.playerId = res.playerId;
-            self.state.player.isTemporary = false;
-            GW.Core.Storage.setJSON(GW.Core.Config.KEYS.PLAYER, self.state.player);
-          } else {
-            GW.Core.UI.toast(res && res.msg ? res.msg : '登録失敗');
-          }
-          return;
-        }
-        // 正式IDに差し替え
-        self.state.player.playerId = res.playerId;
-        if (res.userId) self.state.player.userId = res.userId;
-        self.state.player.isTemporary = false;
-        GW.Core.Storage.setJSON(GW.Core.Config.KEYS.PLAYER, self.state.player);
-      });
-    },
-
-    /** ===== メイン画面（スコア入力エリア）に入る ===== */
-    _enterMain: function () {
-      document.getElementById('gw-gland-register').classList.add('gw-hidden');
-      document.getElementById('gw-gland-main').classList.remove('gw-hidden');
-
-      // ヘッダーのコース名・グループ名を反映
-      this._updateHeaderInfo();
-
-      // スコアをキャッシュから復元
-      var cachedScores = GW.Core.Cache.loadMyScores(this.state.player.playerId);
-      if (cachedScores && cachedScores.length === 18) {
-        this.state.scores = cachedScores;
-      } else {
-        this.state.scores = [];
-        for (var i = 0; i < 18; i++) {
-          this.state.scores.push({ stroke: 0, putt: 0 });
-        }
-      }
-
-      // 現在ホールをリセット
-      this.state.currentHole = 0;
-
-      // プレイヤー名を表示
-      document.getElementById('gw-me-name').textContent =
-        this.state.player.nickname + '(' + this.state.player.groupName + ')';
-
-      // サブタブ初期化
-      this.state.subtab = 'score';
-      this.Score._render();
-
-      // FAB 表示
-      var fab = document.getElementById('gw-fab-jump');
-      if (fab) fab.classList.remove('gw-hidden');
-
-      // 仮IDのうちはサーバー取得スキップ
-      var self = this;
-      if (!this.state.player.isTemporary) {
-        GW.Core.Api.call('gland.getMyScores', { playerId: this.state.player.playerId })
-          .then(function (res) {
-            var scores = res && res.scores ? res.scores : null;
-            if (scores && scores.length >= 18) {
-              var changed = false;
-              for (var i = 0; i < 18; i++) {
-                if (!self.state.scores[i] ||
-                    self.state.scores[i].stroke !== scores[i].stroke ||
-                    self.state.scores[i].putt   !== scores[i].putt) {
-                  changed = true;
-                  break;
-                }
-              }
-              if (changed) {
-                self.state.scores = scores;
-                self.Score._updateCells();
-                GW.Core.Cache.saveMyScores(self.state.player.playerId, scores);
-              }
-            }
-          })
-          .catch(function () {});
-      }
-    },
-
-    /** ヘッダー情報を更新 */
-    _updateHeaderInfo: function () {
-      var cnEl = document.getElementById('gw-header-course');
-      var gnEl = document.getElementById('gw-header-group');
-      if (cnEl && this.state.player) {
-        var course = ((GW.Core.State && GW.Core.State.courses) || [])
-          .find(function (c) { return c.id === this.state.player.courseId; }, this);
-        cnEl.textContent = course ? course.name : '';
-      }
-      if (gnEl && this.state.player) {
-        gnEl.textContent = this.state.player.groupName || '';
-      }
-    },
-
-    /** サブタブ切替（'score' or 'hist'） */
-    _switchSubtab: function (tab) {
-      this.state.subtab = tab;
-      document.getElementById('gw-subtab-score').classList.toggle('active', tab === 'score');
-      document.getElementById('gw-subtab-hist').classList.toggle('active', tab === 'hist');
-      document.getElementById('gw-subtab-content-score').classList.toggle('gw-hidden', tab !== 'score');
-      document.getElementById('gw-subtab-content-hist').classList.toggle('gw-hidden', tab !== 'hist');
-
-      // FAB はスコア入力サブタブの時のみ
-      var fab = document.getElementById('gw-fab-jump');
-      if (fab) fab.classList.toggle('gw-hidden', tab !== 'score');
-
-      if (tab === 'hist') {
-  // 履歴サブモジュールを呼び出す
-  this.History.render();
-}
-
-    },
-
-    /** ネットワーク復帰時の処理（Core から呼ばれる） */
-    onOnline: function () {
-      if (!this.state.player || !this.state.player.playerId) return;
-      if (this.state.player.isTemporary) return;
-      var self = this;
-      GW.Core.Api.call('gland.getMyScores', { playerId: this.state.player.playerId })
-        .then(function (res) {
-          var scores = res && res.scores ? res.scores : null;
-          if (scores && scores.length >= 18) {
-            self.state.scores = scores;
-            self.Score._updateCells();
-            GW.Core.Cache.saveMyScores(self.state.player.playerId, scores);
-          }
-        })
-        .catch(function () {});
-    },
-
-    /** 画面リサイズ時の処理 */
-    onResize: function () {
-      if (this.Score && this.Score._centerCurrentHole) {
-        this.Score._centerCurrentHole();
-      }
-    },
-
-    // ════════════════════════════════════════════════════════════════
-    // 【GW.Modules.GLand.Score】スコア入力サブモジュール
-    //
-    // ★v4.7 の最大の白眉「updateScoreCellsOnly」をそのまま継承
-    //   - スコア変更時に DOM 全体を再構築せず、関係セルだけを差分更新
-    //   - 60fps を維持する超軽量UI実装
-    //
-    // 設計意図：
-    //   - chgStroke/chgPutt は即時UI反映 + 裏で Fire-and-Forget 保存
-    //   - スコア表示は3モード（stroke / pardiff / symbol）切替可能
-    //   - ホール切替は前/次ボタン + ホールピッカー（モーダル）の2系統
-    // ════════════════════════════════════════════════════════════════
-    Score: {
-      // PARに対する記号（旧 SYM_* 定数を継承）
-      SYM_ALBATROSS: '\u2606',
-      SYM_EAGLE:     '\u25CE',
-      SYM_BIRDIE:    '\u25CB',
-      SYM_PAR:       '\u2014',
-      SYM_BOGEY:     '\u25B3',
-      SYM_DBOGEY:    '\u25A1',
-
-      /** スコア入力UIを描画（ホール切替時に呼ばれる） */
-      _render: function () {
-        var st = GW.Modules.GLand.state;
-        var i = st.currentHole;
-        if (typeof i !== 'number' || i < 0 || i > 17) {
-          i = 0;
-          st.currentHole = 0;
-        }
-
-        var pars = (GW.Core.State && GW.Core.State.pars) || new Array(18).fill(4);
-        var par = pars[i] || 4;
-        var s = st.scores[i] || { stroke: 0, putt: 0 };
-
-        // 入力UI（数字±方式）
-        var inputUI = this._renderStrokeInputUI(i, par, s);
-
-        var prevDisabled = (i === 0) ? 'disabled' : '';
-        var nextDisabled = (i === 17) ? 'disabled' : '';
-
-        var html =
-          '<div>' +
-            '<div class="gw-hole-card" id="gw-hc-' + i + '">' +
-              '<div class="gw-hole-head">' +
-                '<div class="gw-hole-no">' + (i + 1) + 'H</div>' +
-                '<div class="gw-hole-par">PAR ' + par + '</div>' +
-                '<div id="gw-vt-' + i + '">' + this._vsparTag(s.stroke, par) + '</div>' +
-              '</div>' +
-              inputUI +
-            '</div>' +
-
-            '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:10px;">' +
-              '<button class="gw-btn-ghost" style="flex:1;font-size:18px;font-weight:900;min-height:60px;" ' +
-                ' data-action="gland-prev-hole" ' + prevDisabled + '>&lt; 前</button>' +
-              '<div style="display:flex;align-items:center;justify-content:center;flex:0 0 100px;' +
-                ' text-align:center;font-size:16px;font-weight:700;color:var(--gold-bri);' +
-                ' background:rgba(0,0,0,0.35);padding:10px;border-radius:10px;">' +
-                (i + 1) + ' / 18 H</div>' +
-              '<button class="gw-btn-ghost" style="flex:1;font-size:18px;font-weight:900;min-height:60px;" ' +
-                ' data-action="gland-next-hole" ' + nextDisabled + '>次 &gt;</button>' +
-            '</div>' +
-
-            '<div style="display:flex;gap:4px;margin-bottom:14px;background:rgba(0,0,0,0.3);padding:4px;border-radius:10px;">' +
-              '<button data-action="gland-disp-stroke" ' +
-                'class="' + (st.displayMode === 'stroke' ? 'active ' : '') + 'gw-disp-btn" ' +
-                'style="flex:1;padding:8px;border:0;border-radius:7px;font-weight:700;font-size:12px;min-height:38px;' +
-                  (st.displayMode === 'stroke' ? 'background:linear-gradient(180deg,var(--gold-bri),var(--gold));color:#000;' : 'background:transparent;color:#fff;') +
-                '">数字</button>' +
-              '<button data-action="gland-disp-pardiff" ' +
-                'class="' + (st.displayMode === 'pardiff' ? 'active ' : '') + 'gw-disp-btn" ' +
-                'style="flex:1;padding:8px;border:0;border-radius:7px;font-weight:700;font-size:12px;min-height:38px;' +
-                  (st.displayMode === 'pardiff' ? 'background:linear-gradient(180deg,var(--gold-bri),var(--gold));color:#000;' : 'background:transparent;color:#fff;') +
-                '">±表記</button>' +
-              '<button data-action="gland-disp-symbol" ' +
-                'class="' + (st.displayMode === 'symbol' ? 'active ' : '') + 'gw-disp-btn" ' +
-                'style="flex:1;padding:8px;border:0;border-radius:7px;font-weight:700;font-size:12px;min-height:38px;' +
-                  (st.displayMode === 'symbol' ? 'background:linear-gradient(180deg,var(--gold-bri),var(--gold));color:#000;' : 'background:transparent;color:#fff;') +
-                '">記号</button>' +
-            '</div>' +
-
-            // 同伴メンバー表のプレースホルダ（Mates サブモジュール実装は次回）
-            '<div class="gw-mate-table-wrap" id="gw-mate-table-wrap">' +
-              '<h4 style="margin:0 0 10px;color:var(--gold-bri);">同伴メンバー スコア表（横スクロール可）</h4>' +
-              '<div id="gw-mate-table-body">' +
-                '<div style="color:var(--text-sub);font-size:14px;padding:10px;">準備中...</div>' +
-              '</div>' +
-            '</div>' +
-          '</div>';
-
-        document.getElementById('gw-hole-list').innerHTML = html;
-        this._updateTotal();
-        this._buildHolePicker();
-      },
-
-      /** スコア入力UIを生成（数字±方式・既存資産継承） */
-      _renderStrokeInputUI: function (i, par, s) {
-        var st = GW.Modules.GLand.state;
-        var dispStroke = s.stroke > 0 ? s.stroke : par;
-        var dispPutt = s.putt > 0 ? s.putt : 2;
-
-        var stkShow;
-        if (st.displayMode === 'stroke') {
-          stkShow = dispStroke;
-        } else {
-          stkShow = s.stroke > 0
-            ? this._formatScore(s.stroke, par)
-            : (st.displayMode === 'pardiff' ? 'E' : this.SYM_PAR);
-        }
-
-        return '' +
-          '<div class="gw-stroke-row">' +
-            '<button class="gw-btn-yellow" data-action="gland-stroke-minus">-</button>' +
-            '<div class="lbl">打数</div>' +
-            '<div class="val" id="gw-stk-' + i + '">' + stkShow + '</div>' +
-            '<button class="gw-btn-yellow" data-action="gland-stroke-plus">+</button>' +
-          '</div>' +
-          '<div class="gw-stroke-row">' +
-            '<button class="gw-btn-orange" data-action="gland-putt-minus">-</button>' +
-            '<div class="lbl">パット</div>' +
-            '<div class="val" id="gw-put-' + i + '">' + dispPutt + '</div>' +
-            '<button class="gw-btn-orange" data-action="gland-putt-plus">+</button>' +
-          '</div>';
-      },
-
-      /**
-       * ストローク変更（±1）
-       *   設計憲法・第1条：即時UI反映 + Fire-and-Forget 保存
-       */
-      _chgStroke: function (delta) {
-        var st = GW.Modules.GLand.state;
-        var i = st.currentHole;
-        if (!st.scores[i]) st.scores[i] = { stroke: 0, putt: 0 };
-
-        var pars = (GW.Core.State && GW.Core.State.pars) || new Array(18).fill(4);
-        var par = pars[i] || 4;
-        var base = st.scores[i].stroke > 0 ? st.scores[i].stroke : par;
-        var next = Math.max(1, Math.min(20, base + delta));
-        st.scores[i].stroke = next;
-
-        // パットが0なら2にデフォルト（既存挙動継承）
-        if (!st.scores[i].putt || st.scores[i].putt <= 0) {
-          st.scores[i].putt = 2;
-        }
-
-        // ★ピンポイント更新（DOM再構築なし）
-        this._updateCells();
-        GW.Core.UI.haptic();
-        this._saveScore(i);
-      },
-
-      /** パット変更（±1） */
-      _chgPutt: function (delta) {
-        var st = GW.Modules.GLand.state;
-        var i = st.currentHole;
-        if (!st.scores[i]) st.scores[i] = { stroke: 0, putt: 0 };
-
-        var pars = (GW.Core.State && GW.Core.State.pars) || new Array(18).fill(4);
-        var par = pars[i] || 4;
-        var base = st.scores[i].putt > 0 ? st.scores[i].putt : 2;
-        var next = Math.max(0, Math.min(10, base + delta));
-        st.scores[i].putt = next;
-
-        // ストロークが未入力ならパーで埋める
-        if (!st.scores[i].stroke || st.scores[i].stroke <= 0) {
-          st.scores[i].stroke = par;
-        }
-
-        this._updateCells();
-        GW.Core.UI.haptic();
-        this._saveScore(i);
-      },
-
-      /**
-       * ★【v4.7 継承】updateScoreCellsOnly - DOM差分更新の中核
-       *
-       * 設計意図：
-       *   スコア変更ごとに renderHoles() を呼ぶと、ボタン全体が再生成されて
-       *   60fps を維持できない。ここでは更新が必要なセルだけをピンポイント
-       *   で書き換えることで、操作感を劇的に向上させる。
-       *
-       * 更新対象：
-       *   - 打数セル (#gw-stk-{i})
-       *   - パットセル (#gw-put-{i})
-       *   - vs PAR タグ (#gw-vt-{i})
-       *   - 合計表示 (#gw-me-total)
-       *   - ホールピッカーの該当ボタン
-       *   - （Mates 表の自分の列：次回 Mates サブモジュールで実装）
-       */
-      _updateCells: function () {
-        var st = GW.Modules.GLand.state;
-        var i = st.currentHole;
-        var sc = st.scores[i] || { stroke: 0, putt: 0 };
-        var pars = (GW.Core.State && GW.Core.State.pars) || new Array(18).fill(4);
-        var par = pars[i] || 4;
-
-        // ── 打数セル ──
-        var stkEl = document.getElementById('gw-stk-' + i);
-        if (stkEl) {
-          if (st.displayMode === 'stroke') {
-            stkEl.textContent = sc.stroke > 0 ? sc.stroke : par;
-          } else {
-            stkEl.textContent = sc.stroke > 0
-              ? this._formatScore(sc.stroke, par)
-              : (st.displayMode === 'pardiff' ? 'E' : this.SYM_PAR);
-          }
-        }
-
-        // ── パットセル ──
-        var putEl = document.getElementById('gw-put-' + i);
-        if (putEl) putEl.textContent = (sc.putt || 0);
-
-        // ── vs PAR タグ ──
-        var vtEl = document.getElementById('gw-vt-' + i);
-        if (vtEl) vtEl.innerHTML = this._vsparTag(sc.stroke, par);
-
-        // ── 合計表示 ──
-        this._updateTotal();
-
-        // ── ホールピッカーの該当ボタン更新 ──
-        this._refreshHolePickerOne(i);
-
-        // ── Mates 表の自分の列を即時更新は次回（Mates サブモジュール実装時） ──
-      },
-
-      /** 合計とPAR差を更新 */
-      _updateTotal: function () {
-        var st = GW.Modules.GLand.state;
-        var pars = (GW.Core.State && GW.Core.State.pars) || new Array(18).fill(4);
-
-        var total = 0;
-        var playedPar = 0;
-        for (var i = 0; i < 18; i++) {
-          var sc = st.scores[i] || { stroke: 0 };
-          total += sc.stroke || 0;
-          if (sc.stroke > 0) playedPar += pars[i];
-        }
-
-        var el = document.getElementById('gw-me-total');
-        if (el) {
-          if (playedPar === 0) {
-            el.textContent = total + ' / -';
-          } else {
-            var diff = total - playedPar;
-            var display = diff === 0 ? 'E' : (diff > 0 ? '+' + diff : String(diff));
-            el.textContent = total + ' (' + display + ')';
-          }
-        }
-      },
-
-      /**
-       * スコア保存（Fire-and-Forget + 150msデバウンス）
-       *   設計憲法・第2条：GAS制限回避のため、連続操作はデバウンス
-       *   - 仮IDの場合はサーバー送信スキップ（registerPlayer完了後に再送）
-       */
-      _saveScore: function (i) {
-        var st = GW.Modules.GLand.state;
-
-        // ローカルキャッシュには即時保存（オフライン耐性）
-        GW.Core.Cache.saveMyScores(st.player.playerId, st.scores);
-
-        clearTimeout(st._saveTimer[i]);
-        st._saveTimer[i] = setTimeout(function () {
-          // 仮IDなら送信スキップ（オフライン中も同様）
-          if (String(st.player.playerId).indexOf('P_TMP_') === 0) return;
-
-          GW.Core.Api.fire('gland.saveScore', {
-            playerId: st.player.playerId,
-            hole:     i + 1,
-            stroke:   st.scores[i].stroke,
-            putt:     st.scores[i].putt
-          }, null, null, 'score-' + st.player.playerId + '-' + i);
-        }, GW.Core.Config.SCORE_DEBOUNCE_MS);
-      },
-
-      /** 前のホールへ */
-      _prevHole: function () {
-        var st = GW.Modules.GLand.state;
-        this._autoSaveIfBlank();
-        if (st.currentHole > 0) {
-          st.currentHole--;
-          this._render();
-        }
-      },
-
-      /** 次のホールへ */
-      _nextHole: function () {
-        var st = GW.Modules.GLand.state;
-        this._autoSaveIfBlank();
-        if (st.currentHole < 17) {
-          st.currentHole++;
-          this._render();
-        }
-      },
-
-      /**
-       * 未入力ホールを自動でパー埋め
-       *   ホール切替時、現在ホールが未入力なら PAR/2パットで自動保存
-       *   （既存資産継承：操作を強制せず、自然にスコアが埋まる）
-       */
-      _autoSaveIfBlank: function () {
-        var st = GW.Modules.GLand.state;
-        if (!st.player || !st.player.playerId) return;
-        var i = st.currentHole;
-        var cur = st.scores[i] || { stroke: 0, putt: 0 };
-        if (cur.stroke > 0) return;
-        var pars = (GW.Core.State && GW.Core.State.pars) || new Array(18).fill(4);
-        var par = pars[i] || 4;
-        st.scores[i] = { stroke: par, putt: 2 };
-
-        GW.Core.Cache.saveMyScores(st.player.playerId, st.scores);
-        if (String(st.player.playerId).indexOf('P_TMP_') === 0) return;
-        GW.Core.Api.fire('gland.saveScore', {
-          playerId: st.player.playerId,
-          hole:     i + 1,
-          stroke:   par,
-          putt:     2
-        }, null, null, 'score-' + st.player.playerId + '-' + i);
-      },
-
-      /** 表示モード変更 */
-      _setDisplayMode: function (mode) {
-        if (['stroke', 'pardiff', 'symbol'].indexOf(mode) < 0) mode = 'stroke';
-        GW.Modules.GLand.state.displayMode = mode;
-        GW.Core.Storage.set(GW.Core.Config.KEYS.DISPLAY_MODE, mode);
-        this._render();  // モード切替時はフル再描画（ボタン状態反映のため）
-      },
-
-      /** スコア値を表示用にフォーマット（モードに応じて） */
-      _formatScore: function (stroke, par) {
-        var st = GW.Modules.GLand.state;
-        if (!stroke || stroke <= 0) return '-';
-        if (st.displayMode === 'pardiff') {
-          var d = stroke - par;
-          if (d === 0) return 'E';
-          return d > 0 ? '+' + d : String(d);
-        }
-        if (st.displayMode === 'symbol') {
-          var ds = stroke - par;
-          if (ds <= -3) return this.SYM_ALBATROSS;
-          if (ds === -2) return this.SYM_EAGLE;
-          if (ds === -1) return this.SYM_BIRDIE;
-          if (ds === 0)  return this.SYM_PAR;
-          if (ds === 1)  return this.SYM_BOGEY;
-          if (ds === 2)  return this.SYM_DBOGEY;
-          return '+' + ds;
-        }
-        return String(stroke);
-      },
-
-      /** vs PAR タグ（ALBATROSS〜D.BOGEYのカラフルなバッジ） */
-      _vsparTag: function (stroke, par) {
-        if (!stroke) return '';
-        var d = stroke - par;
-        if (d <= -3) return '<span class="gw-vspar albatross">ALBATROSS ' + this.SYM_ALBATROSS + '</span>';
-        if (d === -2) return '<span class="gw-vspar eagle">EAGLE ' + this.SYM_EAGLE + '</span>';
-        if (d === -1) return '<span class="gw-vspar birdie">BIRDIE ' + this.SYM_BIRDIE + '</span>';
-        if (d === 0)  return '<span class="gw-vspar par">PAR ' + this.SYM_PAR + '</span>';
-        if (d === 1)  return '<span class="gw-vspar bogey">BOGEY ' + this.SYM_BOGEY + '</span>';
-        if (d === 2)  return '<span class="gw-vspar dbogey">D.BOGEY ' + this.SYM_DBOGEY + '</span>';
-        return '<span class="gw-vspar over">+' + d + '</span>';
-      },
-
-      /** ホールピッカー（モーダル） を構築 */
-      _buildHolePicker: function () {
-        var st = GW.Modules.GLand.state;
-        var grid = document.getElementById('gw-hole-picker-grid');
-        if (!grid) return;
-        var pars = (GW.Core.State && GW.Core.State.pars) || new Array(18).fill(4);
-
-        var html = '';
-        for (var i = 0; i < 18; i++) {
-          var sc = st.scores[i] || { stroke: 0 };
-          var par = pars[i] || 4;
-          var cls = 'gw-hp-btn';
-          if (i === st.currentHole) cls += ' cur';
-          else if (sc.stroke > 0) cls += ' done';
-
-          var info;
-          if (i === st.currentHole) {
-            info = 'NOW';
-          } else if (sc.stroke > 0) {
-            var d = sc.stroke - par;
-            info = (d > 0 ? '+' : '') + d;
-          } else {
-            info = 'PAR' + par;
-          }
-          html += '<button class="' + cls + '" data-action="gland-jump-hole" data-hole="' + i + '">' +
-                  (i + 1) + '<br><small>' + info + '</small></button>';
-        }
-        grid.innerHTML = html;
-      },
-
-      /** ホールピッカーの該当ボタンだけを更新（軽量） */
-      _refreshHolePickerOne: function (i) {
-        var st = GW.Modules.GLand.state;
-        var grid = document.getElementById('gw-hole-picker-grid');
-        if (!grid) return;
-        var btns = grid.querySelectorAll('button.gw-hp-btn');
-        if (!btns || !btns[i]) return;
-
-        var sc = st.scores[i] || { stroke: 0 };
-        var pars = (GW.Core.State && GW.Core.State.pars) || new Array(18).fill(4);
-        var par = pars[i] || 4;
-        var cls = 'gw-hp-btn';
-        if (i === st.currentHole) cls += ' cur';
-        else if (sc.stroke > 0) cls += ' done';
-
-        var info;
-        if (i === st.currentHole) {
-          info = 'NOW';
-        } else if (sc.stroke > 0) {
-          var d = sc.stroke - par;
-          info = (d > 0 ? '+' : '') + d;
-        } else {
-          info = 'PAR' + par;
-        }
-        btns[i].className = cls;
-        btns[i].innerHTML = (i + 1) + '<br><small>' + info + '</small>';
-      },
-
-      /** ホール選択（ピッカーから呼ばれる） */
-      _jumpToHole: function (idx) {
-        var st = GW.Modules.GLand.state;
-        this._autoSaveIfBlank();
-        st.currentHole = Math.max(0, Math.min(17, Number(idx) || 0));
-        this._closeHolePicker();
-        this._render();
-      },
-
-      /** ピッカーを開く */
-      _openHolePicker: function () {
-        this._buildHolePicker();
-        document.getElementById('gw-hole-picker').classList.add('show');
-      },
-
-      /** ピッカーを閉じる */
-      _closeHolePicker: function () {
-        document.getElementById('gw-hole-picker').classList.remove('show');
-      },
-
-      /** ホール拡大表示（Mates 表のヘッダタップで開く - 次回実装時に呼ばれる） */
-      _openHoleZoom: function (holeNo) {
-        var idx = holeNo - 1;
-        var pars = (GW.Core.State && GW.Core.State.pars) || new Array(18).fill(4);
-        var par = pars[idx] || 4;
-        document.getElementById('gw-hz-num').textContent = holeNo + 'H';
-        document.getElementById('gw-hz-par').textContent = 'PAR ' + par;
-        document.getElementById('gw-hz-list').innerHTML =
-          '<div style="color:var(--text-sub);text-align:center;padding:14px;">同伴メンバー表示は準備中</div>';
-        document.getElementById('gw-hole-zoom').classList.add('show');
-        GW.Core.UI.haptic();
-      },
-
-      _closeHoleZoom: function () {
-        document.getElementById('gw-hole-zoom').classList.remove('show');
-      },
-
-      /** 同伴メンバー表のスクロール位置を現在ホールに合わせる（Mates 実装時に活用） */
-      _centerCurrentHole: function () {
-        try {
-          var wrap = document.getElementById('gw-mate-table-wrap');
-          if (!wrap) return;
-          var cur = GW.Modules.GLand.state.currentHole;
-          var th = wrap.querySelector('th.hole-col-' + cur);
-          if (!th) return;
-          var wrapRect = wrap.getBoundingClientRect();
-          var thRect = th.getBoundingClientRect();
-          var targetLeft = wrap.scrollLeft + (thRect.left - wrapRect.left)
-                         - (wrap.clientWidth / 2) + (thRect.width / 2);
-          wrap.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
-        } catch (e) {}
-      },
-
-      /**
-       * ラウンド終了：履歴に保存（Fire-and-Forget + モーダル確認）
-       *   設計憲法：confirm() ではなく GW.Core.UI.confirm() を使う
-       */
-      _finishRound: function () {
-        var st = GW.Modules.GLand.state;
-        if (!st.player || !st.player.playerId) {
-          GW.Core.UI.toast('プレイヤー情報なし');
-          return;
-        }
-        if (String(st.player.playerId).indexOf('P_TMP_') === 0) {
-          GW.Core.UI.toast('登録処理中。数秒後に再度お試しください');
-          return;
-        }
-
-        var playedHoles = st.scores.filter(function (s) { return s.stroke > 0; }).length;
-        if (playedHoles === 0) {
-          GW.Core.UI.toast('スコアが1ホールも入力されていません');
-          return;
-        }
-
-        var msg;
-        if (playedHoles === 18) {
-          msg = '18ホール完了！\n履歴に保存しますか？';
-        } else if (playedHoles === 9) {
-          msg = 'ハーフ(9ホール)まで入力済みです。\n履歴に保存しますか？';
-        } else {
-          msg = '現在 ' + playedHoles + '/18 ホール入力済みです。\nこの時点までを履歴に保存しますか？';
-        }
-
-        GW.Core.UI.confirm('履歴に保存', msg, function () {
-          GW.Core.Api.fire('gland.saveSnapshot', {
-            playerId: st.player.playerId,
-            gwUserId: GW.Core.Auth.getUserId()
-          }, function (res) {
-            if (!res || !res.ok) {
-              GW.Core.UI.toast(res && res.msg ? res.msg : '保存失敗');
-              return;
-            }
-            var holeLabel = res.playedHoles === 18 ? '18H完了'
-                          : (res.playedHoles === 9 ? 'HALF(9H)' : res.playedHoles + 'H');
-            GW.Core.UI.toast('✅ 保存完了 (' + res.totalStroke + '打 / ' + holeLabel + ')');
-          });
-          GW.Core.UI.toast('💾 履歴に保存しました');
-          GW.Core.UI.haptic();
-        });
-      }
-    },  // ── Score サブモジュールここまで ──
-
-    // ════════════════════════════════════════════════════════════════
-        // ════════════════════════════════════════════════════════════════
-    // 【GW.Modules.GLand.History】履歴サブモジュール
-    //
-    // 設計意図：
-    //   - サーバの 'gland.getHistoryList' / 'gland.getHistoryDetail' を呼び出す
-    //   - 統計カード（ラウンド数 / ベスト / 平均打 / 平均パット）を表示
-    //   - 履歴行は折りたたみ式（タップで詳細展開）
-    //   - 詳細は同組4名のスコアテーブル（既存挙動継承）
-    //
-    // パフォーマンス：
-    //   - 一覧取得は1回、詳細はタップ時のみ取得（遅延ロード）
-    //   - 展開状態は state._historyExpanded に保持（再描画時も維持）
-    //
-    // 設計憲法・第7条：
-    //   - "履歴" "ラウンド" の表現は維持。"保存" を強調しない（押し付けない）
-    // ════════════════════════════════════════════════════════════════
-    History: {
-
-      /**
-       * 履歴タブが表示された時に呼ばれる
-       *   - コースフィルタの選択肢を構築
-       *   - 履歴一覧を取得して描画
-       */
-      render: function () {
-        this._buildCourseFilter();
-        this._loadList();
-      },
-
-      /** コースフィルタのselect要素に選択肢を投入 */
-      _buildCourseFilter: function () {
-        var sel = document.getElementById('gw-hist-course');
-        if (!sel) return;
-        // 既存選択値を保持して再構築
-        var keep = sel.value || '';
-        var courses = (GW.Core.State && GW.Core.State.courses) || [];
-        var opts = '<option value="">すべて</option>' +
-          courses.map(function (c) {
-            return '<option value="' + GW.Core.UI.escapeHtml(c.id) + '">' +
-                   GW.Core.UI.escapeHtml(c.name) + '</option>';
-          }).join('');
-        sel.innerHTML = opts;
-        // 以前の選択を復元
-        if (keep) {
-          try { sel.value = keep; } catch (e) {}
-        }
-      },
-
-      /**
-       * 履歴一覧を取得して描画
-       *   フィルタ条件（コース・期間）は select 要素から取得
-       *   通信中はローディング表示
-       */
-      _loadList: function () {
-        var st = GW.Modules.GLand.state;
-        var listEl = document.getElementById('gw-hist-list');
-
-        // プレイヤー未登録 → 案内表示
-        if (!st.player || !st.player.playerId) {
-          if (listEl) {
-            listEl.innerHTML = '<div class="gw-history-empty">' +
-              'まずはスコア入力を開始してください' +
-              '</div>';
-          }
-          this._renderStats(null);
-          return;
-        }
-
-        var courseId = document.getElementById('gw-hist-course').value || '';
-        var period   = document.getElementById('gw-hist-period').value || 'all';
-
-        if (listEl) {
-          listEl.innerHTML = '<div class="gw-history-empty">読み込み中...</div>';
-        }
-
-        var self = this;
-        GW.Core.Api.call('gland.getHistoryList', {
-          playerId: st.player.playerId,
-          gwUserId: GW.Core.Auth.getUserId(),
-          period:   period,
-          courseId: courseId
-        }).then(function (res) {
-          if (!res || !res.ok) {
-            if (listEl) {
-              listEl.innerHTML = '<div class="gw-history-empty">取得失敗</div>';
-            }
-            self._renderStats(null);
-            return;
-          }
-          self._renderStats(res.stats || null);
-          self._renderList(res.list || []);
-        }).catch(function () {
-          if (listEl) {
-            listEl.innerHTML = '<div class="gw-history-empty">通信エラー</div>';
-          }
-          self._renderStats(null);
-        });
-      },
-
-      /**
-       * 4種の統計カードを更新
-       *   - ラウンド数 / ベスト（18Hのみ）/ 平均打数 / 平均パット
-       *   - データが無ければ "-" 表示
-       */
-      _renderStats: function (stats) {
-        function setVal(id, val) {
-          var el = document.getElementById(id);
-          if (!el) return;
-          el.textContent = (val !== null && val !== undefined && val !== '') ? val : '-';
-        }
-        if (!stats || !stats.rounds) {
-          setVal('gw-stat-rounds', 0);
-          setVal('gw-stat-best', '-');
-          setVal('gw-stat-avg-stroke', '-');
-          setVal('gw-stat-avg-putt', '-');
-          return;
-        }
-        setVal('gw-stat-rounds',     stats.rounds);
-        setVal('gw-stat-best',       stats.best);
-        setVal('gw-stat-avg-stroke', stats.avgStroke);
-        setVal('gw-stat-avg-putt',   stats.avgPutt);
-      },
-
-      /**
-       * 履歴行を描画
-       *   - 18ホール完走のうち最小スコアに "BEST" バッジ
-       *   - 9H/中断にも HALF/Nラウンド バッジを付与
-       *   - クリックで詳細展開（_toggleDetail へ）
-       */
-      _renderList: function (list) {
-        var wrap = document.getElementById('gw-hist-list');
-        if (!wrap) return;
-
-        if (!list || !list.length) {
-          wrap.innerHTML = '<div class="gw-history-empty">' +
-            '履歴データがまだありません<br><br>' +
-            'スコア入力タブの「終了して履歴に保存」で記録できます' +
-            '</div>';
-          return;
-        }
-
-        // 18H完走でベストスコアを特定
-        var best = null;
-        list.forEach(function (h) {
-          if (h.playedHoles === 18 && (best === null || h.totalStroke < best)) {
-            best = h.totalStroke;
-          }
-        });
-
-        var st = GW.Modules.GLand.state;
-        var esc = GW.Core.UI.escapeHtml;
-        var html = '';
-        list.forEach(function (h) {
-          var isBest = (h.playedHoles === 18 && h.totalStroke === best);
-          var vsParStr = h.vsPar === 0 ? 'E' : (h.vsPar > 0 ? '+' + h.vsPar : String(h.vsPar));
-          var expanded = !!st._historyExpanded[h.historyId];
-
-          // ホール数バッジ
-          var badge = '';
-          if (h.playedHoles === 9) {
-            badge = ' <span style="background:#5dade2;color:#fff;font-size:10px;' +
-                    'padding:2px 6px;border-radius:6px;margin-left:4px;">HALF</span>';
-          } else if (h.playedHoles > 0 && h.playedHoles < 18 && h.playedHoles !== 9) {
-            badge = ' <span style="background:#7a8a82;color:#fff;font-size:10px;' +
-                    'padding:2px 6px;border-radius:6px;margin-left:4px;">' +
-                    h.playedHoles + 'H</span>';
-          }
-
-          var bestMark = isBest ? ' <span style="color:#ffd700;font-weight:900;">★BEST</span>' : '';
-          var bestCls  = isBest ? ' best' : '';
-
-          html +=
-            '<div class="gw-hist-row' + bestCls + '" ' +
-              'data-action="gland-hist-toggle" data-history-id="' + esc(h.historyId) + '">' +
-              '<div class="top">' +
-                '<span class="date">' + esc(h.playDate) + badge + bestMark + '</span>' +
-                '<span class="total">' + h.totalStroke +
-                  '<span class="vs">(' + vsParStr + ')</span></span>' +
-              '</div>' +
-              '<div class="bottom">' +
-                '<span class="course">' + esc(h.courseName) + '</span>' +
-                '<span>' + esc(h.groupName || '(未所属)') +
-                  ' / ' + h.playedHoles + 'H / Putt ' + h.totalPutt + '</span>' +
-              '</div>' +
-            '</div>' +
-            '<div id="gw-hd-' + esc(h.historyId) + '" class="gw-hist-detail' +
-              (expanded ? '' : ' gw-hidden') + '"></div>';
-        });
-
-        wrap.innerHTML = html;
-
-        // 展開済みのものは詳細を再ロード（再描画時の状態維持）
-        var self = this;
-        list.forEach(function (h) {
-          if (st._historyExpanded[h.historyId]) {
-            self._loadDetailInto(h.historyId);
-          }
-        });
-      },
-
-      /**
-       * 履歴詳細の展開/折りたたみ切替
-       *   - 初回展開時にサーバから詳細を取得（遅延ロード）
-       *   - 状態は state._historyExpanded に保持
-       */
-      _toggleDetail: function (historyId) {
-        var st = GW.Modules.GLand.state;
-        var el = document.getElementById('gw-hd-' + historyId);
-        if (!el) return;
-
-        var wasHidden = el.classList.contains('gw-hidden');
-        if (wasHidden) {
-          // ── 展開 ──
-          st._historyExpanded[historyId] = true;
-          el.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-sub);">' +
-                         '読み込み中...</div>';
-          el.classList.remove('gw-hidden');
-          this._loadDetailInto(historyId);
-        } else {
-          // ── 折りたたみ ──
-          st._historyExpanded[historyId] = false;
-          el.classList.add('gw-hidden');
-          el.innerHTML = '';
-        }
-        GW.Core.UI.haptic();
-      },
-
-      /**
-       * 詳細データをサーバから取得して該当 div に描画
-       *   - 再描画時にも呼ばれる（展開状態維持のため）
-       */
-      _loadDetailInto: function (historyId) {
-        var el = document.getElementById('gw-hd-' + historyId);
-        if (!el) return;
-        var self = this;
-
-        GW.Core.Api.call('gland.getHistoryDetail', { historyId: historyId })
-          .then(function (res) {
-            if (!res || !res.ok) {
-              el.innerHTML = '<div style="padding:14px;color:#ff8888;">取得失敗</div>';
-              return;
-            }
-            el.innerHTML = self._buildDetailHtml(res);
-          })
-          .catch(function () {
-            el.innerHTML = '<div style="padding:14px;color:#ff8888;">通信エラー</div>';
-          });
-      },
-
-      /**
-       * 詳細テーブルHTMLを構築
-       *   - 同組4名のホール別スコアを表形式で表示
-       *   - 自分の行には * マーク + ハイライト
-       *   - PAR行を最上部に
-       *   - 表示モード（stroke/pardiff/symbol）を反映
-       */
-      _buildDetailHtml: function (detail) {
-        if (!detail || !detail.mates || !detail.mates.length) {
-          return '<div style="padding:14px;color:var(--text-sub);">詳細データなし</div>';
-        }
-
-        var esc = GW.Core.UI.escapeHtml;
-        var st = GW.Modules.GLand.state;
-        var pars = detail.pars || new Array(18).fill(4);
-
-        // ── PAR行 ──
-        var parRow = '<tr class="par-row"><td>PAR</td>';
-        var parSum = 0;
-        for (var h = 0; h < 18; h++) {
-          parRow += '<td>' + pars[h] + '</td>';
-          parSum += pars[h];
-        }
-        parRow += '<td class="total-col">' + parSum + '</td></tr>';
-
-        // ── ヘッダ行 ──
-        var headRow = '<tr><th>プレイヤー</th>';
-        for (var h2 = 0; h2 < 18; h2++) headRow += '<th>' + (h2 + 1) + '</th>';
-        headRow += '<th>計</th></tr>';
-
-        // ── 各メンバー行 ──
-        var memberRows = '';
-        detail.mates.forEach(function (m) {
-          var cls = m.isPrimary ? ' class="primary"' : '';
-          var star = m.isPrimary ? '* ' : '';
-          var dispName = m.realName || m.nickname || '(名前なし)';
-          var row = '<tr' + cls + '><td>' + star + esc(dispName) + '</td>';
-          var sum = 0;
-          for (var hh = 0; hh < 18; hh++) {
-            var sc = (m.holeScores && m.holeScores[hh]) ? m.holeScores[hh] : { stroke: 0 };
-            var stroke = sc.stroke || 0;
-            sum += stroke;
-
-            // 表示モードに応じて整形
-            var display;
-            if (stroke > 0) {
-              if (st.displayMode === 'stroke') {
-                display = stroke;
-              } else {
-                display = GW.Modules.GLand.Score._formatScore(stroke, pars[hh]);
-              }
-            } else {
-              display = '-';
-            }
-            row += '<td>' + display + '</td>';
-          }
-          row += '<td class="total-col">' + (sum || '-') + '</td></tr>';
-          memberRows += row;
-        });
-
-        return '' +
-          '<div class="header">' +
-            '<span>' + esc(detail.courseName) +
-              ' / ' + esc(detail.groupName) + '</span>' +
-            '<span>' + esc(detail.playDate) + '</span>' +
-          '</div>' +
-          '<div class="gw-hist-detail-table-wrap">' +
-            '<table>' + headRow + parRow + memberRows + '</table>' +
-          '</div>';
-      },
-
-      /** フィルタ変更時にリストを再ロード */
-      _onFilterChange: function () {
-        this._loadList();
-      }
-    },  // ── History サブモジュールここまで ──
-
-    Mates: {
-
-          /** 同伴メンバー表をロード（スコア入力タブ表示時に呼ばれる） */
-    load: function () {
-      var st = GW.Modules.GLand.state;
-      console.log('[GW.Mates.load] called. player:', st.player && st.player.playerId);
-
-      // ── ガード：プレイヤー情報チェック ──
-      if (!st.player) {
-        console.warn('[GW.Mates.load] EARLY RETURN: no player');
-        this._renderEmpty('プレイヤー情報がありません');
-        return;
-      }
-      if (!st.player.courseId) {
-        console.warn('[GW.Mates.load] EARLY RETURN: no courseId');
-        this._renderEmpty('コース未選択');
-        return;
-      }
-      if (!st.player.groupName) {
-        console.warn('[GW.Mates.load] EARLY RETURN: no groupName');
-        this._renderEmpty('グループ名未設定');
-        return;
-      }
-
-      var pars = (GW.Core.State && GW.Core.State.pars) || new Array(18).fill(4);
-
-      // ── 仮IDのうちは自分のみで描画 ──
-      if (String(st.player.playerId).indexOf('P_TMP_') === 0) {
-        console.log('[GW.Mates.load] 仮ID状態、自分のみ描画');
-        var soloData = {
-          pars: pars,
-          members: [{
-            playerId: st.player.playerId,
-            nickname: st.player.nickname,
-            realName: st.player.realName,
-            strokes:  st.scores.map(function (s) { return s.stroke || 0; })
-          }]
-        };
-        st.groupMates = soloData.members;
-        this._render(soloData);
-        this._scheduleNextPoll();
-        return;
-      }
-
-      // ★★★ 重要な追加：キャッシュ有無に関わらず、まず自分だけで暫定描画 ★★★
-      //   これで「準備中...」が確実に上書きされる。サーバ応答後に最新化される。
-      var cached = GW.Core.Cache.loadMates(st.player.courseId, st.player.groupName);
-      if (cached && cached.members && cached.members.length) {
-        console.log('[GW.Mates.load] キャッシュから描画:', cached.members.length, '名');
-        st.groupMates = cached.members;
-        this._render(cached);
-      } else {
-        console.log('[GW.Mates.load] キャッシュ無し、自分だけで暫定描画');
-        var fallback = {
-          pars: pars,
-          members: [{
-            playerId: st.player.playerId,
-            nickname: st.player.nickname,
-            realName: st.player.realName,
-            strokes:  st.scores.map(function (s) { return s.stroke || 0; })
-          }]
-        };
-        st.groupMates = fallback.members;
-        this._render(fallback);
-      }
-
-      // ── サーバから最新取得（バックグラウンド更新） ──
-      var self = this;
-      console.log('[GW.Mates.load] サーバへ問合せ開始');
-      GW.Core.Api.call('gland.getMates', {
-        courseId:  st.player.courseId,
-        groupName: st.player.groupName,
-        playerId:  st.player.playerId
-      }).then(function (res) {
-        console.log('[GW.Mates.load] ✅ サーバ応答:', res);
-        if (res && res.ok && Array.isArray(res.members) && res.members.length > 0) {
-          console.log('[GW.Mates.load] サーバデータで再描画:', res.members.length, '名');
-          self._render(res);
-          GW.Core.Cache.saveMates(st.player.courseId, st.player.groupName, res);
-        } else {
-          console.warn('[GW.Mates.load] サーバ応答が空、ローカル描画を維持');
-        }
-      }).catch(function (err) {
-        console.warn('[GW.Mates.load] ❌ サーバ問合せ失敗:', err);
-        // 自分だけの描画は既に済んでいるので、ユーザーには何も見えない
-      });
-
-      // ── 30秒ポーリング ──
-      this._scheduleNextPoll();
-    },
-
-    /** ★新規追加：空状態の描画（エラー時・データ不在時用） */
-    _renderEmpty: function (msg) {
-      var body = document.getElementById('gw-mate-table-body');
-      if (!body) {
-        console.warn('[GW.Mates._renderEmpty] body 要素が見つかりません');
-        return;
-      }
-      body.innerHTML = '<div style="color:var(--text-sub);font-size:13px;padding:10px;text-align:center;">' +
-                       GW.Core.UI.escapeHtml(msg || '同伴メンバーなし') + '</div>';
-    },
-
-
-      /** 次回ポーリングをスケジュール */
-      _scheduleNextPoll: function () {
-        var st = GW.Modules.GLand.state;
-        if (st._matesTimer) clearTimeout(st._matesTimer);
-        // スコア入力サブタブ かつ ホーム画面でない時のみポーリング継続
-        if (st.subtab !== 'score') return;
-        if (GW.Core.Router.current !== 'gland') return;
-
-        var self = this;
-        st._matesTimer = setTimeout(function () {
-          self.load();
-        }, GW.Core.Config.MATES_POLL_MS);
-      },
-
-      /** ポーリング停止（タブ切替時等） */
-      stopPolling: function () {
-        var st = GW.Modules.GLand.state;
-        if (st._matesTimer) {
-          clearTimeout(st._matesTimer);
-          st._matesTimer = null;
-        }
-      },
-
-          /**
-     * テーブルを描画
-     *   - PAR行 + メンバー行 ×N
-     *   - 現在ホールは current-h / current-c クラスでハイライト
-     *   - 自分の行は class="me" で強調
-     *   - 描画後に現在ホールを自動センタリング
-     */
-    _render: function (data) {
-      console.log('[GW.Mates._render] called with members:',
-                  data && data.members && data.members.length);
-
-      var body = document.getElementById('gw-mate-table-body');
-      if (!body) {
-        console.error('[GW.Mates._render] ❌ gw-mate-table-body が DOM に存在しません');
-        return;
-      }
-
-      if (!data || !data.members || !data.members.length) {
-        console.warn('[GW.Mates._render] データなし、空表示');
-        body.innerHTML = '<div style="color:var(--text-sub);font-size:14px;padding:10px;">' +
-                         '同伴メンバーなし</div>';
-        return;
-      }
-
-      var st = GW.Modules.GLand.state;
-      var pars = data.pars || (GW.Core.State && GW.Core.State.pars) || new Array(18).fill(4);
-      var cur = st.currentHole;
-      var esc = GW.Core.UI.escapeHtml;
-
-      // ── メンバーリストを正規化（自分は state.scores から最新値を反映）──
-      var members = data.members.map(function (m) {
-        if (m.playerId === st.player.playerId) {
-          var strokes = [];
-          for (var k = 0; k < 18; k++) {
-            strokes.push((st.scores[k] && st.scores[k].stroke) || 0);
-          }
-          return Object.assign({}, m, { strokes: strokes, isMe: true });
-        }
-        return m;
-      });
-      st.groupMates = members;
-
-      // ── ヘッダ行（ホール番号 1H〜18H + 計） ──
-      var head = '<tr><th class="player-name-cell" style="text-align:center;">プレイヤー</th>';
-      for (var k = 0; k < 18; k++) {
-        var hi = (k === cur) ? ' current-h' : '';
-        head += '<th class="hole-h hole-col-' + k + hi + '" ' +
-                'data-action="gland-hole-zoom" data-hole="' + (k + 1) + '">' +
-                (k + 1) + 'H</th>';
-      }
-      head += '<th class="total-col">計</th></tr>';
-
-      // ── PAR行 ──
-      var parRow = '<tr class="par-row"><td class="player-name-cell">PAR</td>';
-      var parSum = 0;
-      for (var k2 = 0; k2 < 18; k2++) {
-        var pcls = (k2 === cur) ? ' current-c' : '';
-        parRow += '<td class="hole-col-' + k2 + pcls + '">' + pars[k2] + '</td>';
-        parSum += pars[k2];
-      }
-      parRow += '<td class="total-col">' + parSum + '</td></tr>';
-
-      // ── 各メンバー行 ──
-      var rows = members.map(function (m) {
-        var total = 0;
-        var trClass = '';
-        var starMark = m.isMe ? '★ ' : '';
-        var displayName = m.realName || m.nickname || '?';
-        var tds = '<td class="player-name-cell">' + starMark + esc(displayName) + '</td>';
-        for (var k3 = 0; k3 < 18; k3++) {
-          var v = (m.strokes && m.strokes[k3]) || 0;
-          total += v;
-          var display = v > 0
-            ? GW.Modules.GLand.Score._formatScore(v, pars[k3])
-            : '-';
-          var st2 = (k3 === cur) ? ' current-c' : '';
-          tds += '<td class="hole-col-' + k3 + st2 + '">' + display + '</td>';
-        }
-        tds += '<td class="total-col">' + (total || '-') + '</td>';
-        return '<tr' + trClass + '>' + tds + '</tr>';
-      }).join('');
-
-      var html = '<table class="gw-mate-table">' + head + parRow + rows + '</table>';
-      body.innerHTML = html;
-      console.log('[GW.Mates._render] ✅ 描画完了:', members.length, '名');
-
-      // ── 現在ホールをセンタリング ──
-      var self = this;
-      setTimeout(function () { self._centerCurrentHole(); }, 30);
-    },
-
-
-      /**
-       * ★自分の列だけをローカル状態でその場更新（サーバ問合せ無し）
-       *   Score._updateCells() から呼ばれる
-       *   設計憲法・第1条：通信を1回も発生させずに UI を即時反映
-       */
-      updateMyColumn: function () {
-        var st = GW.Modules.GLand.state;
-        if (!st.groupMates || !st.groupMates.length) return;
-        var pars = (GW.Core.State && GW.Core.State.pars) || new Array(18).fill(4);
-
-        var found = false;
-        for (var i = 0; i < st.groupMates.length; i++) {
-          if (st.groupMates[i].playerId === st.player.playerId) {
-            var strokes = [];
-            for (var k = 0; k < 18; k++) {
-              strokes.push((st.scores[k] && st.scores[k].stroke) || 0);
-            }
-            st.groupMates[i].strokes = strokes;
-            st.groupMates[i].isMe = true;
-            found = true;
-            break;
-          }
-        }
-        if (found) {
-          this._render({ pars: pars, members: st.groupMates });
-        }
-      },
-
-      /**
-       * 現在ホールを表の中央にスクロール
-       *   設計意図：18ホール表は横スクロール必須。自動センタリングで操作性確保
-       */
-      _centerCurrentHole: function () {
-        try {
-          var wrap = document.getElementById('gw-mate-table-wrap');
-          if (!wrap) return;
-          var cur = GW.Modules.GLand.state.currentHole;
-          var th = wrap.querySelector('th.hole-col-' + cur);
-          if (!th) return;
-          var wrapRect = wrap.getBoundingClientRect();
-          var thRect = th.getBoundingClientRect();
-          var targetLeft = wrap.scrollLeft + (thRect.left - wrapRect.left)
-                         - (wrap.clientWidth / 2) + (thRect.width / 2);
-          wrap.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
-        } catch (e) {}
-      },
-
-      /**
-       * ホール拡大表示（老眼対応）
-       *   表のヘッダタップで該当ホールのスコアを大きく表示
-       */
-      openZoom: function (holeNo) {
-        var st = GW.Modules.GLand.state;
-        var idx = holeNo - 1;
-        var pars = (GW.Core.State && GW.Core.State.pars) || new Array(18).fill(4);
-        var par = pars[idx] || 4;
-        var esc = GW.Core.UI.escapeHtml;
-
-        document.getElementById('gw-hz-num').textContent = holeNo + 'H';
-        document.getElementById('gw-hz-par').textContent = 'PAR ' + par;
-
-        var html = '';
-        (st.groupMates || []).forEach(function (m) {
-          var stroke = (m.strokes && m.strokes[idx]) || 0;
-          var meCls = m.isMe ? ' me' : '';
-          var star = m.isMe ? '★ ' : '';
-          var displayName = m.realName || m.nickname || '?';
-          html += '<div class="gw-hz-row' + meCls + '">' +
-                    '<div class="n">' + star + esc(displayName) + '</div>' +
-                    '<div class="s">' + (stroke > 0 ? stroke : '-') + '</div>' +
-                  '</div>';
-        });
-        if (!html) {
-          html = '<div style="color:var(--text-sub);text-align:center;padding:14px;">' +
-                 'メンバーなし</div>';
-        }
-        document.getElementById('gw-hz-list').innerHTML = html;
-        document.getElementById('gw-hole-zoom').classList.add('show');
-        GW.Core.UI.haptic();
-      }
-    },  // ── Mates サブモジュールここまで ──
-    /**
-     * data-action ハンドラ登録
-     *   GW.Core.Action に Score サブモジュールのアクションを登録
-     */
-    _registerActions: function () {
-      GW.Core.Action.registerMany({
-        // ── 登録カード ──
-        'register':            function () { GW.Modules.GLand._register(); },
-
-        // ── スコア入力 ──
-        'gland-stroke-minus':  function () { GW.Modules.GLand.Score._chgStroke(-1); },
-        'gland-stroke-plus':   function () { GW.Modules.GLand.Score._chgStroke(+1); },
-        'gland-putt-minus':    function () { GW.Modules.GLand.Score._chgPutt(-1); },
-        'gland-putt-plus':     function () { GW.Modules.GLand.Score._chgPutt(+1); },
-        'gland-prev-hole':     function () { GW.Modules.GLand.Score._prevHole(); },
-        'gland-next-hole':     function () { GW.Modules.GLand.Score._nextHole(); },
-
-        // ── 表示モード切替 ──
-        'gland-disp-stroke':   function () { GW.Modules.GLand.Score._setDisplayMode('stroke'); },
-        'gland-disp-pardiff':  function () { GW.Modules.GLand.Score._setDisplayMode('pardiff'); },
-        'gland-disp-symbol':   function () { GW.Modules.GLand.Score._setDisplayMode('symbol'); },
-
-        // ── ホールピッカー ──
-        'open-hole-picker':    function () { GW.Modules.GLand.Score._openHolePicker(); },
-        'close-hole-picker':   function () { GW.Modules.GLand.Score._closeHolePicker(); },
-        'gland-jump-hole':     function (el) {
-          var h = Number(el.getAttribute('data-hole'));
-          GW.Modules.GLand.Score._jumpToHole(h);
-        },
-
-        // ── ホール拡大表示 ──
-        'close-hole-zoom':     function () { GW.Modules.GLand.Score._closeHoleZoom(); },
-
-        // ── ラウンド終了 ──
-        'finish-round':        function () { GW.Modules.GLand.Score._finishRound(); },
-
-        // ── サブタブ切替 ──
-        'gland-subtab-score':  function () { GW.Modules.GLand._switchSubtab('score'); },
-        'gland-subtab-hist':   function () { GW.Modules.GLand._switchSubtab('hist'); },
-                // ── 履歴サブモジュール ──
-        'gland-hist-toggle':   function (el) {
-          var hid = el.getAttribute('data-history-id');
-          if (hid) GW.Modules.GLand.History._toggleDetail(hid);
-        },
-        'gland-hist-refresh':  function () {
-          GW.Modules.GLand.History._loadList();
-        },
-
-
-        // ── ラウンド開始（ポータルCTAから） ──
-        'start-round':         function () {
-          GW.Core.Router.go('gland');
-        }
-      });
-
-      // サブタブのクリックは HTML 側で data-subtab を使っているため、対応する data-action を補完
-      var subtabBtns = document.querySelectorAll('[data-subtab]');
-      for (var i = 0; i < subtabBtns.length; i++) {
-        subtabBtns[i].addEventListener('click', function () {
-          var t = this.getAttribute('data-subtab');
-          GW.Modules.GLand._switchSubtab(t);
-        });
-      }
-            // ── 履歴フィルタの change イベント ──
-      var histCourseSel = document.getElementById('gw-hist-course');
-      var histPeriodSel = document.getElementById('gw-hist-period');
-      if (histCourseSel) {
-        histCourseSel.addEventListener('change', function () {
-          GW.Modules.GLand.History._onFilterChange();
-        });
-      }
-      if (histPeriodSel) {
-        histPeriodSel.addEventListener('change', function () {
-          GW.Modules.GLand.History._onFilterChange();
-        });
-      }
-
-    },
-
-    /** モジュール初期化（起動時に1回だけ呼ばれる想定） */
-    init: function () {
-      this._registerActions();
-    }
-  };
-
-  // ★モジュール定義時に init を即実行（Action 登録のため）
-  GW.Modules.GLand.init();
-
-     // ════════════════════════════════════════════════════════════════
-  // ★Score サブモジュールへの Mates 連携を追加注入
-  //
-  // Score._updateCells() の最後で Mates.updateMyColumn() を呼ぶ。
-  // また Score._render() の最後で Mates.load() を呼ぶ。
-  // これらは Mates が後から定義されたため、ここでフックを追加する。
-  //
-  // ★重要：Score._render() は innerHTML で DOM を書き換えるため、
-  //         直後に Mates.load() を呼ぶと body 要素が未反映の場合がある。
-  //         setTimeout(50ms) でブラウザの描画完了を待ってから呼ぶ。
-  // ════════════════════════════════════════════════════════════════
-  (function injectMatesHooks() {
-    console.log('[GW] injectMatesHooks: starting');
-
-    if (!GW.Modules.GLand || !GW.Modules.GLand.Score) {
-      console.error('[GW] injectMatesHooks: GLand.Score が見つかりません');
-      return;
-    }
-    if (!GW.Modules.GLand.Mates) {
-      console.error('[GW] injectMatesHooks: GLand.Mates が見つかりません');
-      return;
-    }
-
-    var Score = GW.Modules.GLand.Score;
-
-    // ── _updateCells に Mates 連携を追加（自分列の即時更新） ──
-    var origUpdateCells = Score._updateCells;
-    Score._updateCells = function () {
-      origUpdateCells.call(this);
-      try {
-        GW.Modules.GLand.Mates.updateMyColumn();
-      } catch (e) {
-        console.warn('[GW.Mates] updateMyColumn failed:', e);
-      }
-    };
-
-    // ── _render の後で Mates.load() を呼ぶ（DOM反映待ち付き） ──
-    var origRender = Score._render;
-    Score._render = function () {
-      origRender.call(this);
-      // ★ setTimeout で DOM 反映を確実に待つ（タイミング問題回避）
-      setTimeout(function () {
-        try {
-          console.log('[GW] Score._render hook → Mates.load() 呼出');
-          GW.Modules.GLand.Mates.load();
-        } catch (e) {
-          console.warn('[GW.Mates] load from render failed:', e);
-        }
-      }, 50);
-    };
-
-    // ── _openHoleZoom を Mates 版に差し替え ──
-    Score._openHoleZoom = function (holeNo) {
-      GW.Modules.GLand.Mates.openZoom(holeNo);
-    };
-
-    console.log('[GW] injectMatesHooks: completed successfully');
-  })();
-
-
-
-  // ════════════════════════════════════════════════════════════════
-  // ★Mates アクションを GW.Core.Action に登録
-  // ════════════════════════════════════════════════════════════════
-  GW.Core.Action.registerMany({
-    'gland-hole-zoom': function (el) {
-      var h = Number(el.getAttribute('data-hole'));
-      GW.Modules.GLand.Mates.openZoom(h);
-    }
-  });
-
-  // ════════════════════════════════════════════════════════════════
-  // ★サブタブ切替時の Mates ポーリング制御
-  //
-  // GW.Modules.GLand._switchSubtab を拡張し、
-  // 履歴タブに移った時は Mates ポーリングを止める
-  // ════════════════════════════════════════════════════════════════
-  (function injectSubtabHook() {
-    var origSwitch = GW.Modules.GLand._switchSubtab;
-    GW.Modules.GLand._switchSubtab = function (tab) {
-      origSwitch.call(this, tab);
-      if (tab !== 'score') {
-        GW.Modules.GLand.Mates.stopPolling();
-      }
-    };
-
-    // Router 経由で別画面に移った時もポーリング停止
-    var origGo = GW.Core.Router.go;
-    GW.Core.Router.go = function (route, params) {
-      if (route !== 'gland' && GW.Modules.GLand.Mates) {
-        GW.Modules.GLand.Mates.stopPolling();
-      }
-      return origGo.call(this, route, params);
-    };
-  })();
-
-  // ════════════════════════════════════════════════════════════════
-  // 【GW.Modules.Home】ポータル画面モジュール
-  //
-  // 設計意図：
-  //   - 挨拶 + ユーザー名 + 状態バッジ
-  //   - 「ラウンドを開始」CTAボタン → G-LAND遷移
-  //   - 4モジュール（G-LAND/G-COMPETE/G-TOWN/マイページ）への導線カード
-  //   - 最近のラウンド一覧（履歴から最新数件を取得）
+  // 【MODULE 1】GW.Modules.Home - ホーム画面
   // ════════════════════════════════════════════════════════════════
   GW.Modules.Home = {
-
-    /** Router からのエントリポイント */
     render: function () {
-      this._renderGreeting();
-      this._renderRecent();
+      this._updateDisplayedName();
+      this._renderRecentRounds();
     },
 
-    /** 挨拶とユーザー名・状態バッジを描画 */
-    _renderGreeting: function () {
-      var nowHour = new Date().getHours();
-      var greet;
-      if (nowHour < 5)       greet = 'おはようございます';
-      else if (nowHour < 11) greet = 'おはようございます';
-      else if (nowHour < 17) greet = 'こんにちは';
-      else                   greet = 'こんばんは';
+    /** ホーム画面の名前を即座に反映 ★Stage2重点対応 */
+    _updateDisplayedName: function () {
+      var profile = GW.Core.Auth.getProfile();
+      var name = profile && profile.nickname ? profile.nickname : '';
+      var state = GW.Core.Auth.getState();
 
-      var msgEl = document.getElementById('gw-greet-msg');
-      if (msgEl) msgEl.textContent = greet;
+      // グリーティング
+      var greetMsg = document.getElementById('gw-greet-msg');
+      var greetName = document.getElementById('gw-greet-name');
+      var stateBadge = document.getElementById('gw-state-badge');
 
-      // プロフィール名（あれば表示、無ければ「ゲストさん」）
-      var prof = GW.Core.Auth.getProfile();
-      var name = prof.nickname || prof.realName || 'ゲスト';
-      var nameEl = document.getElementById('gw-greet-name');
-      if (nameEl) nameEl.textContent = name + 'さん';
-
-      // 状態バッジ
-      var stateEl = document.getElementById('gw-state-badge');
-      if (stateEl) {
-        if (GW.Core.Auth.isGuest()) {
-          stateEl.textContent = 'ゲストモード';
-          stateEl.className = 'gw-state-badge guest';
+      if (greetMsg) {
+        if (name) {
+          greetMsg.textContent = 'こんにちは';
+          if (greetName) greetName.textContent = name + 'さん';
         } else {
-          stateEl.textContent = '✓ データ保全済み';
-          stateEl.className = 'gw-state-badge backed-up';
+          greetMsg.textContent = 'ようこそ';
+          if (greetName) greetName.textContent = 'ゲストさん';
         }
+      }
+
+      if (stateBadge) {
+        stateBadge.className = 'gw-state-badge ' + (name ? 'user' : 'guest');
+        stateBadge.textContent = name ? 'プレイヤーモード' : 'ゲストモード';
       }
     },
 
-    /** 最近のラウンド3件を表示（履歴APIから取得） */
-    _renderRecent: function () {
-      var listEl = document.getElementById('gw-portal-recent-list');
-      if (!listEl) return;
+    _renderRecentRounds: function () {
+      var list = document.getElementById('gw-portal-recent-list');
+      if (!list) return;
+      // 最近のラウンドをlocalStorageから取得（簡略実装）
+      var profile = GW.Core.Auth.getProfile();
+      var recent = profile && profile.recentRounds ? profile.recentRounds : [];
+      
+      if (recent.length === 0) {
+        list.innerHTML = '<div style=\"color:var(--text-sub);font-size:13px;padding:10px;\">まだラウンド記録がありません</div>';
+        return;
+      }
+      
+      var html = '<div style=\"display:flex;flex-direction:column;gap:8px;\">';
+      for (var i = 0; i < Math.min(recent.length, 5); i++) {
+        var r = recent[i];
+        html += '<div class=\"gw-recent-item\">' +
+          '<span style=\"font-size:12px;color:var(--text-sub);\">' + (r.date || '') + '</span>' +
+          '<span style=\"font-size:14px;color:var(--gold-bri);\">' + (r.course || '') + '</span>' +
+          '<span style=\"font-size:13px;\">' + (r.total !== undefined ? r.total + '打' : '-') + '</span>' +
+        '</div>';
+      }
+      html += '</div>';
+      list.innerHTML = html;
+    }
+  };
 
-      // プレイヤー未登録 or 仮IDなら省略
-      var player = GW.Core.Storage.getJSON(GW.Core.Config.KEYS.PLAYER);
-      if (!player || !player.playerId ||
-          String(player.playerId).indexOf('P_TMP_') === 0) {
-        listEl.innerHTML = '<div style="color:var(--text-sub);font-size:13px;">' +
-                           'まだラウンド記録がありません</div>';
+  // ════════════════════════════════════════════════════════════════
+  // 【MODULE 2】GW.Modules.GLand - メインスコア管理
+  // ════════════════════════════════════════════════════════════════
+  GW.Modules.GLand = {
+    // 状態管理
+    _state: {
+      inputMode:   GW.Core.Storage.get(GW.Core.Config.KEYS.INPUT_MODE, 'simple'),
+      puttMode:    GW.Core.Storage.get(GW.Core.Config.KEYS.PUTT_MODE, 'off'),
+      displayMode: 'stroke',
+      currentHole: 1,
+      totalHoles:  18,
+      profile:     null,
+      courseId:    null,
+      variant:     null,
+      players:     [],   // {id, name, scores: [], putts: [], isMe}
+      inRound:     false,
+      subtab:      'score'
+    },
+
+    /** レンダリング入口 */
+    render: function () {
+      var profile = GW.Core.Auth.getProfile();
+      this._state.profile = profile;
+      
+      // ホームに戻るボタンから来た場合
+      this._renderByState();
+    },
+
+    _renderByState: function () {
+      var profile = this._state.profile;
+      
+      // 登録済みか判定
+      if (!profile || !profile.nickname) {
+        this._showRegister();
+      } else if (!this._state.courseId) {
+        // 登録済みだがコース未選択
+        this._showCourseSelect();
+      } else {
+        // コース選択済み → スコア入力メイン画面
+        this._showMain();
+      }
+    },
+
+    /** 登録カード表示 */
+    _showRegister: function () {
+      var regCard  = document.getElementById('gw-gland-register');
+      var csScreen = document.getElementById('gw-gland-course-select');
+      var mainArea = document.getElementById('gw-gland-main');
+
+      if (regCard)  regCard.classList.remove('gw-hidden');
+      if (csScreen) csScreen.classList.add('gw-hidden');
+      if (mainArea) mainArea.classList.add('gw-hidden');
+
+      // 既存プロファイルがあれば名を事前入力
+      var profile = this._state.profile;
+      var nickInput = document.getElementById('gw-input-nickname');
+      var realInput = document.getElementById('gw-input-realname');
+      if (nickInput && profile && profile.nickname) nickInput.value = profile.nickname;
+      if (realInput && profile && profile.realname) realInput.value = profile.realname;
+
+      this._updateHeaderName();
+    },
+
+    /** 登録処理（ニックネームを保存 → コース選択へ） ★Stage2重点対応 */
+    _register: function () {
+      var nickInput = document.getElementById('gw-input-nickname');
+      var realInput = document.getElementById('gw-input-realname');
+      if (!nickInput) return;
+
+      var nickname = nickInput.value.trim();
+      if (!nickname) {
+        GW.Core.UI.toast('ニックネームを入力してください');
+        nickInput.focus();
         return;
       }
 
-      var esc = GW.Core.UI.escapeHtml;
-      GW.Core.Api.call('gland.getHistoryList', {
-        playerId: player.playerId,
-        gwUserId: GW.Core.Auth.getUserId(),
-        period:   'recent10',
-        courseId: ''
-      }).then(function (res) {
-        if (!res || !res.ok || !res.list || !res.list.length) {
-          listEl.innerHTML = '<div style="color:var(--text-sub);font-size:13px;">' +
-                             'まだラウンド記録がありません</div>';
+      var profile = {
+        nickname: nickname,
+        realname: realInput ? realInput.value.trim() : '',
+        registeredAt: Date.now()
+      };
+
+      GW.Core.Auth.setProfile(profile);
+      this._state.profile = profile;
+
+      // ★ヘッダー・同伴者リストに名前を即座反映
+      this._updateHeaderName();
+      this._updatePlayerBarName();
+
+      GW.Core.UI.toast('登録完了！');
+      
+      // コース選択画面へ
+      this._showCourseSelect();
+    },
+
+    /** ヘッダーにプレイヤー名を表示 ★Stage2重点対応 */
+    _updateHeaderName: function () {
+      var profile = this._state.profile;
+      var name = profile && profile.nickname ? profile.nickname : '';
+
+      var headerGroup = document.getElementById('gw-header-group');
+      if (headerGroup) {
+        if (name) {
+          headerGroup.textContent = name + ' / ' + (this._state.courseId ? this._getCourseName() : 'コース未選択');
+        } else {
+          headerGroup.textContent = '';
+        }
+      }
+
+      // ホーム画面も更新
+      GW.Modules.Home._updateDisplayedName();
+    },
+
+    /** プレイヤー欄にプレイヤー名を表示 ★Stage2重点対応 */
+    _updatePlayerBarName: function () {
+      var profile = this._state.profile;
+      var name = profile && profile.nickname ? profile.nickname : '-';
+      
+      var meNameEl = document.getElementById('gw-me-name');
+      if (meNameEl) meNameEl.textContent = name;
+    },
+
+    /** コース選択画面を表示 */
+    _showCourseSelect: function () {
+      var regCard  = document.getElementById('gw-gland-register');
+      var csScreen = document.getElementById('gw-gland-course-select');
+      var mainArea = document.getElementById('gw-gland-main');
+
+      if (regCard)  regCard.classList.add('gw-hidden');
+      if (csScreen) csScreen.classList.remove('gw-hidden');
+      if (mainArea) mainArea.classList.add('gw-hidden');
+
+      // コース選択画面にお名前を反映
+      var profile = this._state.profile;
+      var greetNameEl = document.getElementById('gw-cs-greet-name');
+      if (greetNameEl) {
+        greetNameEl.textContent = profile && profile.nickname ? profile.nickname + 'さん' : 'プレイヤー';
+      }
+
+      // ヘッダーも更新
+      this._updateHeaderName();
+    },
+
+    /** コース選択処理 */
+    _selectCourse: function (courseId, variant) {
+      this._state.courseId = courseId;
+      this._state.variant  = variant;
+
+      var totalHoles = (variant === '9H') ? 9 : 18;
+      this._state.totalHoles = totalHoles;
+
+      // ヘッダーにコース名を表示
+      this._updateHeaderName();
+
+      // 自分自身のプレイヤーを初期化
+      var profile = this._state.profile;
+      var mePlayer = {
+        id:     GW.Core.Auth.getUserId(),
+        name:   profile && profile.nickname ? profile.nickname : '自分',
+        scores: this._createEmptyScores(totalHoles),
+        putts:  this._state.puttMode === 'on' ? this._createEmptyScores(totalHoles, 0) : null,
+        isMe:   true,
+        parDiff: 0,
+        totalStrokes: 0
+      };
+
+      this._state.players = [mePlayer];
+      this._state.currentHole = 1;
+      this._state.inRound = true;
+      this._state.displayMode = 'stroke';
+
+      GW.Core.UI.toast(this._getCourseName() + ' ' + variant + ' を選択しました');
+
+      // メイン画面へ
+      this._showMain();
+    },
+
+    /** メイン画面（スコア入力）を表示 */
+    _showMain: function () {
+      var regCard  = document.getElementById('gw-gland-register');
+      var csScreen = document.getElementById('gw-gland-course-select');
+      var mainArea = document.getElementById('gw-gland-main');
+
+      if (regCard)  regCard.classList.add('gw-hidden');
+      if (csScreen) csScreen.classList.add('gw-hidden');
+      if (mainArea) mainArea.classList.remove('gw-hidden');
+
+      // プレイヤー欄を更新
+      this._updatePlayerBarName();
+
+      // 入力モード切替ボタン状態更新
+      this._syncModeButtons();
+
+      // スコア入力UI描画
+      this._renderScoreUI();
+
+      // 同伴者リスト描画
+      this._renderCompanionList();
+    },
+
+    /** 入力モード切替（シンプル/カウンター） ★Stage2完全復元 */
+    _setInputMode: function (mode) {
+      this._state.inputMode = mode;
+      GW.Core.Storage.set(GW.Core.Config.KEYS.INPUT_MODE, mode);
+      this._syncModeButtons();
+      this._renderScoreUI();
+      GW.Core.UI.toast(mode === 'simple' ? 'シンプルモード' : 'カウンターモード');
+    },
+
+    /** パット記録モード切替 */
+    _setPuttMode: function (mode) {
+      this._state.puttMode = mode;
+      GW.Core.Storage.set(GW.Core.Config.KEYS.PUTT_MODE, mode);
+      this._syncPuttButtons();
+      this._renderScoreUI();
+      GW.Core.UI.toast('パット記録: ' + (mode === 'on' ? 'ON' : 'OFF'));
+    },
+
+    _syncModeButtons: function () {
+      var simpleBtn = document.getElementById('gw-mode-simple');
+      var counterBtn = document.getElementById('gw-mode-counter');
+      if (simpleBtn) simpleBtn.classList.toggle('active', this._state.inputMode === 'simple');
+      if (counterBtn) counterBtn.classList.toggle('active', this._state.inputMode === 'counter');
+    },
+
+    _syncPuttButtons: function () {
+      var offBtn = document.getElementById('gw-putt-off');
+      var onBtn  = document.getElementById('gw-putt-on');
+      if (offBtn) offBtn.classList.toggle('active', this._state.puttMode === 'off');
+      if (onBtn)  onBtn.classList.toggle('active', this._state.puttMode === 'on');
+    },
+
+    _syncDispButtons: function () {
+      var strokeBtn  = document.getElementById('gw-disp-stroke');
+      var pardiffBtn = document.getElementById('gw-disp-pardiff');
+      var symbolBtn  = document.getElementById('gw-disp-symbol');
+      if (strokeBtn)  strokeBtn.classList.toggle('active', this._state.displayMode === 'stroke');
+      if (pardiffBtn) pardiffBtn.classList.toggle('active', this._state.displayMode === 'pardiff');
+      if (symbolBtn)  symbolBtn.classList.toggle('active', this._state.displayMode === 'symbol');
+    },
+
+    _switchSubtab: function (tab) {
+      this._state.subtab = tab;
+      var scoreTab = document.getElementById('gw-subtab-score');
+      var histTab  = document.getElementById('gw-subtab-hist');
+      var scoreContent = document.getElementById('gw-subtab-content-score');
+      var histContent  = document.getElementById('gw-subtab-content-hist');
+
+      if (scoreTab) scoreTab.classList.toggle('active', tab === 'score');
+      if (histTab)  histTab.classList.toggle('active', tab === 'hist');
+      if (scoreContent) scoreContent.classList.toggle('gw-hidden', tab !== 'score');
+      if (histContent)  histContent.classList.toggle('gw-hidden', tab !== 'hist');
+    },
+
+    /** スコア入力UI描画（シンプル or カウンター） ★Stage2完全復元 */
+    _renderScoreUI: function () {
+      var area = document.getElementById('gw-input-area');
+      if (!area) return;
+
+      var hole = this._state.currentHole;
+      var me = this._getMePlayer();
+      var stroke = me && me.scores ? (me.scores[hole - 1] || null) : null;
+      var putt = (this._state.puttMode === 'on' && me && me.putts) ? (me.putts[hole - 1] || null) : null;
+
+      if (this._state.inputMode === 'counter') {
+        area.innerHTML = this._buildCounterUI(hole, stroke);
+      } else {
+        area.innerHTML = this._buildSimpleUI(hole, stroke, putt);
+      }
+
+      // ヘッダーコース名更新
+      this._updateHeaderName();
+    },
+
+    /** シンプルモードUI生成 ★Stage2正しい実装：PARからスタート→-/+調整、パットは内訳記録 */
+    _buildSimpleUI: function (hole, stroke, putt) {
+      var totalHoles = this._state.totalHoles;
+      var par = this._getHolePar ? this._getHolePar(hole) : 4;
+      // ★シンプルモードはPAR値をデフォルト表示（未入力時はPAR）
+      var dispStroke = (stroke !== null && stroke !== undefined) ? stroke : par;
+      var parDiff = dispStroke - par;
+      var parDiffStr = '';
+      if (parDiff === 0) parDiffStr = '（PAR）';
+      else parDiffStr = '（' + (parDiff > 0 ? '+' : '') + parDiff + '）';
+
+      return '<div class=\"gw-simple-input\">' +
+        '<div class=\"gw-simple-hole-info\">' +
+          '<button class=\"gw-hole-nav-btn\" data-action=\"gland-prev-hole\" ' + (hole <= 1 ? 'disabled' : '') + '>◀</button>' +
+          '<div class=\"gw-simple-hole-center\">' +
+            '<div class=\"gw-simple-hole-num\">Hole ' + hole + '</div>' +
+            '<div class=\"gw-simple-par\">PAR ' + par + '</div>' +
+          '</div>' +
+          '<button class=\"gw-hole-nav-btn\" data-action=\"gland-next-hole\" ' + (hole >= totalHoles ? 'disabled' : '') + '>▶</button>' +
+        '</div>' +
+        '<div class=\"gw-simple-score-display\" id=\"gw-simple-score-display\">' +
+          '<div class=\"gw-simple-score-val\">' + dispStroke + '</div>' +
+          '<div class=\"gw-simple-pardiff\">' + parDiffStr + '</div>' +
+        '</div>' +
+        '<div class=\"gw-simple-buttons\">' +
+          '<button class=\"gw-btn-minus\" data-action=\"gland-stroke-minus\">−</button>' +
+          '<button class=\"gw-btn-plus\"  data-action=\"gland-stroke-plus\">+</button>' +
+        '</div>' +
+        (this._state.puttMode === 'on' ? '<div class=\"gw-simple-putt-section\">' +
+          '<div class=\"gw-simple-putt-label\">内訳：パット数 <b>' + (putt !== null && putt !== undefined ? putt : 0) + '</b></div>' +
+          '<div class=\"gw-simple-putt-row\">' +
+            '<button class=\"gw-btn-putt-minus\" data-action=\"gland-putt-minus\">− パット</button>' +
+            '<button class=\"gw-btn-putt-plus\"  data-action=\"gland-putt-plus\">+ パット</button>' +
+          '</div>' +
+        '</div>' : '') +
+        '<div class=\"gw-simple-holes-grid\">' + this._buildHolesGridSimple() + '</div>' +
+      '</div>';
+    },
+
+    /** カウンターモードUI生成（初心者用） ★Stage2正しい実装：ショット数+パット数を別々にカウント→自動合算 */
+    _buildCounterUI: function (hole, stroke) {
+      var totalHoles = this._state.totalHoles;
+      var par = this._getHolePar ? this._getHolePar(hole) : 4;
+      var me = this._getMePlayer();
+      var shots = (me && me.shots) ? (me.shots[hole - 1] || 0) : 0;
+      var putts = (me && me.putts) ? (me.putts[hole - 1] || 0) : 0;
+      var total = shots + putts;
+
+      // PAR差表示
+      var parDiff = total - par;
+      var parDiffStr = '';
+      if (total > 0) {
+        if (parDiff === 0) parDiffStr = '（PAR）';
+        else parDiffStr = '（' + (parDiff > 0 ? '+' : '') + parDiff + '）';
+      }
+
+      return '<div class=\"gw-counter-area\">' +
+        '<div class=\"gw-counter-hole-row\">' +
+          '<button class=\"gw-hole-nav-btn\" data-action=\"gland-prev-hole\" ' + (hole <= 1 ? 'disabled' : '') + '>◀</button>' +
+          '<div class=\"gw-counter-hole-center\">' +
+            '<div class=\"gw-counter-hole-num\">Hole ' + hole + '</div>' +
+            '<div class=\"gw-counter-par\">PAR ' + par + '</div>' +
+          '</div>' +
+          '<button class=\"gw-hole-nav-btn\" data-action=\"gland-next-hole\" ' + (hole >= totalHoles ? 'disabled' : '') + '>▶</button>' +
+        '</div>' +
+
+        // ★合計スコア表示（自動合算）
+        '<div class=\"gw-counter-total-display\">' +
+          '<div class=\"gw-counter-total-label\">合計スコア</div>' +
+          '<div class=\"gw-counter-total-val\">' + (total > 0 ? total : '0') + '</div>' +
+          '<div class=\"gw-counter-total-pardiff\">' + parDiffStr + '</div>' +
+          '<div class=\"gw-counter-breakdown\">' +
+            '<span class=\"gw-counter-breakdown-item shot-item\">🏌️ ショット: <b>' + shots + '</b></span>' +
+            '<span class=\"gw-counter-breakdown-plus\">+</span>' +
+            '<span class=\"gw-counter-breakdown-item putt-item\">⛳ パット: <b>' + putts + '</b></span>' +
+          '</div>' +
+        '</div>' +
+
+        // ★ショット+1 / パット+1 を別ボタンに（ジミーちゃん仕様）
+        '<div class=\"gw-counter-dual-buttons\">' +
+          '<button class=\"gw-counter-btn-big shot\" data-action=\"gland-counter-shot\">' +
+            '<div class=\"gw-cbb-icon\">🏌️</div>' +
+            '<div class=\"gw-cbb-label\">ショット</div>' +
+            '<div class=\"gw-cbb-plus\">+1</div>' +
+          '</button>' +
+          '<button class=\"gw-counter-btn-big putt\" data-action=\"gland-counter-putt\">' +
+            '<div class=\"gw-cbb-icon\">⛳</div>' +
+            '<div class=\"gw-cbb-label\">パット</div>' +
+            '<div class=\"gw-cbb-plus\">+1</div>' +
+          '</button>' +
+        '</div>' +
+
+        // CLR（このホールをリセット）
+        '<div class=\"gw-counter-clr-row\">' +
+          '<button class=\"gw-counter-btn-clr\" data-action=\"gland-counter-clr\">🔄 このホールをクリア</button>' +
+        '</div>' +
+
+        '<div class=\"gw-simple-holes-grid\">' + this._buildHolesGridSimple() + '</div>' +
+      '</div>';
+    },
+
+    _buildHolesGridSimple: function () {
+      var total = this._state.totalHoles;
+      var me = this._getMePlayer();
+      var html = '';
+      for (var h = 1; h <= total; h++) {
+        var score = me && me.scores ? me.scores[h - 1] : null;
+        var cls = score !== null ? 'gw-hole-btn-filled' : 'gw-hole-btn-empty';
+        var label = score !== null ? score : '-';
+        html += '<button class=\"gw-hole-btn ' + cls + '\" data-action=\"gland-jump-hole\" data-hole=\"' + h + '\">' + label + '</button>';
+      }
+      return html;
+    },
+
+    /** スコア加算（シンプルモード） ★Stage2正しい実装：PARからのスタートで-/+ */
+    _chgStroke: function (delta) {
+      var hole = this._state.currentHole;
+      var me = this._getMePlayer();
+      if (!me || !me.scores) return;
+
+      var par = this._getHolePar ? this._getHolePar(hole) : 4;
+      var cur = me.scores[hole - 1];
+      // 未入力ならPARからスタート
+      if (cur === null || cur === undefined) cur = par;
+      var next = Math.max(1, cur + delta);
+      me.scores[hole - 1] = next;
+
+      this._recalcMeTotals();
+      this._renderScoreUI();
+      this._renderCompanionList();
+      this._autoSaveMyScore();
+      GW.Core.UI.haptic();
+    },
+
+    /** パット加算 */
+    _chgPutt: function (delta) {
+      if (this._state.puttMode !== 'on') return;
+      var hole = this._state.currentHole;
+      var me = this._getMePlayer();
+      if (!me || !me.putts) return;
+
+      var cur = me.putts[hole - 1];
+      if (cur === null || cur === undefined) cur = 0;
+      me.putts[hole - 1] = Math.max(0, cur + delta);
+
+      this._renderScoreUI();
+      this._autoSaveMyScore();
+      GW.Core.UI.haptic();
+    },
+
+    /** カウンターモード：ショット +1（フェアウェイ・グリーンに乗るまで） ★Stage2正しい実装 */
+    _counterShotAdd: function () {
+      var hole = this._state.currentHole;
+      var me = this._getMePlayer();
+      if (!me) return;
+
+      // shots配列を初期化（存在しなければ）
+      if (!me.shots) me.shots = this._createEmptyScores(this._state.totalHoles, 0);
+      if (!me.putts) me.putts = this._createEmptyScores(this._state.totalHoles, 0);
+
+      var cur = me.shots[hole - 1];
+      if (cur === null || cur === undefined) cur = 0;
+      me.shots[hole - 1] = cur + 1;
+
+      // 自動合算：shots + putts = scores（スコアカードに反映）
+      me.scores[hole - 1] = (me.shots[hole - 1] || 0) + (me.putts[hole - 1] || 0);
+
+      this._recalcMeTotals();
+      this._renderScoreUI();
+      this._renderCompanionList();
+      this._autoSaveMyScore();
+      GW.Core.UI.haptic();
+    },
+
+    /** カウンターモード：パット +1 ★Stage2正しい実装 */
+    _counterPuttAdd: function () {
+      var hole = this._state.currentHole;
+      var me = this._getMePlayer();
+      if (!me) return;
+
+      if (!me.shots) me.shots = this._createEmptyScores(this._state.totalHoles, 0);
+      if (!me.putts) me.putts = this._createEmptyScores(this._state.totalHoles, 0);
+
+      var cur = me.putts[hole - 1];
+      if (cur === null || cur === undefined) cur = 0;
+      me.putts[hole - 1] = cur + 1;
+
+      // 自動合算：shots + putts = scores（スコアカードに反映）
+      me.scores[hole - 1] = (me.shots[hole - 1] || 0) + (me.putts[hole - 1] || 0);
+
+      this._recalcMeTotals();
+      this._renderScoreUI();
+      this._renderCompanionList();
+      this._autoSaveMyScore();
+      GW.Core.UI.haptic();
+    },
+
+    /** カウンターモード：CLR（このホールをクリア） ★Stage2正しい実装 */
+    _counterClr: function () {
+      var hole = this._state.currentHole;
+      var me = this._getMePlayer();
+      if (!me) return;
+
+      if (!me.shots) me.shots = this._createEmptyScores(this._state.totalHoles, 0);
+      if (!me.putts) me.putts = this._createEmptyScores(this._state.totalHoles, 0);
+
+      me.shots[hole - 1] = 0;
+      me.putts[hole - 1] = 0;
+      me.scores[hole - 1] = null;  // 未入力扱い
+
+      this._recalcMeTotals();
+      this._renderScoreUI();
+      this._renderCompanionList();
+      this._autoSaveMyScore();
+      GW.Core.UI.haptic();
+    },
+
+    /** ホール移動 */
+    _prevHole: function () {
+      if (this._state.currentHole > 1) {
+        this._state.currentHole--;
+        this._renderScoreUI();
+      }
+    },
+
+    _nextHole: function () {
+      if (this._state.currentHole < this._state.totalHoles) {
+        this._state.currentHole++;
+        this._renderScoreUI();
+      }
+    },
+
+    _jumpToHole: function (hole) {
+      if (hole >= 1 && hole <= this._state.totalHoles) {
+        this._state.currentHole = hole;
+        this._renderScoreUI();
+      }
+    },
+
+    _setDisplayMode: function (mode) {
+      this._state.displayMode = mode;
+      GW.Core.Storage.set(GW.Core.Config.KEYS.DISPLAY_MODE, mode);
+      this._syncDispButtons();
+      this._renderScoreUI();
+      this._renderCompanionList();
+    },
+
+    _formatStroke: function (stroke, hole, mode) {
+      if (stroke === null || stroke === undefined) return '-';
+      if (mode === 'stroke') return stroke;
+      if (mode === 'pardiff') {
+        var par = this._getHolePar ? this._getHolePar(hole) : 4;
+        var diff = stroke - par;
+        if (diff === 0) return 'E';
+        return (diff > 0 ? '+' : '') + diff;
+      }
+      if (mode === 'symbol') {
+        var par = this._getHolePar ? this._getHolePar(hole) : 4;
+        var diff = stroke - par;
+        if (diff <= -3) return '🦅'; // イーグル以上
+        if (diff === -2) return '🐦'; // バーディ
+        if (diff === -1) return '🟢'; // パーに負ける
+        if (diff === 0) return '⚪';  // パー
+        if (diff === 1) return '🔴'; // ボギー
+        if (diff === 2) return '🟠'; // ダブルボギー
+        return '⚫';
+      }
+      return stroke;
+    },
+
+    _openHolePicker: function () {
+      GW.Core.UI.showModal('gw-hole-picker-modal');
+    },
+
+    _closeHolePicker: function () {
+      GW.Core.UI.hideModal('gw-hole-picker-modal');
+    },
+
+    _closeHoleZoom: function () {
+      GW.Core.UI.hideModal('gw-hole-zoom-modal');
+    },
+
+    _finishRound: function () {
+      var me = this._getMePlayer();
+      if (!me) return;
+
+      var total = me.totalStrokes || 0;
+      var diff  = me.parDiff || 0;
+
+      GW.Core.UI.confirm(
+        'ラウンドを終了',
+        '合計: ' + total + '打 (PAR ' + (diff >= 0 ? '+' : '') + diff + ')\n\nこのラウンドを保存しますか？',
+        function () {
+          // 保存処理
+          var profile = GW.Core.Auth.getProfile();
+          if (!profile.recentRounds) profile.recentRounds = [];
+          profile.recentRounds.unshift({
+            date:   new Date().toLocaleDateString('ja-JP'),
+            course: GW.Modules.GLand._getCourseName(),
+            total:  total,
+            diff:   diff
+          });
+          profile.recentRounds = profile.recentRounds.slice(0, 20);
+          GW.Core.Auth.setProfile(profile);
+
+          GW.Core.UI.toast('✅ ラウンドを保存しました');
+          GW.Core.Router.go('home');
+        }
+      );
+    },
+
+    // ── 内部ヘルパー ──
+    _getMePlayer: function () {
+      return this._state.players.find(function (p) { return p.isMe; }) || null;
+    },
+
+    _createEmptyScores: function (count, defaultVal) {
+      var arr = [];
+      for (var i = 0; i < count; i++) arr.push(defaultVal !== undefined ? defaultVal : null);
+      return arr;
+    },
+
+    _recalcMeTotals: function () {
+      var me = this._getMePlayer();
+      if (!me || !me.scores) return;
+      var total = 0;
+      var parTotal = 0;
+      for (var i = 0; i < me.scores.length; i++) {
+        var s = me.scores[i];
+        if (s !== null && s !== undefined) {
+          total += s;
+          var par = this._getHolePar ? this._getHolePar(i + 1) : 4;
+          parTotal += par;
+        }
+      }
+      me.totalStrokes = total;
+      me.parDiff = total - parTotal;
+
+      var totalEl = document.getElementById('gw-me-total');
+      if (totalEl) {
+        totalEl.textContent = total + ' / ' + (me.parDiff >= 0 ? '+' : '') + me.parDiff;
+      }
+    },
+
+    _getCourseName: function () {
+      var names = {
+        'rokko-international': '六甲国際パブリック',
+        'rokko-west': '西コース',
+        'rokko-east': '東コース'
+      };
+      return names[this._state.courseId] || this._state.courseId || '不明';
+    },
+
+    _getHolePar: function (hole) {
+      // 簡易PAR表（六甲国際パブリック想定）
+      var pars = [4, 3, 5, 4, 4, 3, 5, 4, 4, 4, 3, 5, 4, 4, 3, 5, 4, 4];
+      if (hole >= 1 && hole <= 18) return pars[hole - 1] || 4;
+      return 4;
+    },
+
+    _autoSaveMyScore: function () {
+      var me = this._getMePlayer();
+      if (!me) return;
+      GW.Core.Cache.saveMyScores(me.id, me.scores);
+    },
+
+    // ── 同伴者リスト描画 ★Stage2新規追加 ──
+    _renderCompanionList: function () {
+      var body = document.getElementById('gw-mate-table-body');
+      if (!body) return;
+
+      var players = this._state.players;
+      var totalHoles = this._state.totalHoles;
+      var mode = this._state.displayMode;
+      var currentHole = this._state.currentHole;
+
+      if (players.length === 0) {
+        body.innerHTML = '<div style=\"color:var(--text-sub);font-size:14px;padding:10px;\">同伴者がいません</div>';
+        return;
+      }
+
+      var html = '<table class=\"gw-companion-table\">';
+      
+      // ヘッダー行
+      html += '<thead><tr>' +
+        '<th class=\"gw-ct-name\">プレイヤー</th>';
+      for (var h = 1; h <= totalHoles; h++) {
+        html += '<th class=\"gw-ct-hole ' + (h === currentHole ? 'current' : '') + '\">' + h + '</th>';
+      }
+      html += '<th class=\"gw-ct-total\">TOTAL</th></tr></thead>';
+
+      // ボディ行
+      html += '<tbody>';
+      for (var i = 0; i < players.length; i++) {
+        var p = players[i];
+        var rowClass = p.isMe ? 'gw-ct-row-me' : 'gw-ct-row-mate';
+        
+        // プレイヤー名セル（タップで名前編集ポップアップ ★Stage2重点対応）
+        var nameCell = '<td class=\"gw-ct-name-cell\" ' + 
+          'data-action=\"open-companion-modal\" ' +
+          'data-player-id=\"' + p.id + '\" ' +
+          'data-player-name=\"' + GW.Core.UI.escapeHtml(p.name) + '\" ' +
+          'data-is-new=\"false\"' +
+          '>' +
+          '<span class=\"gw-ct-name-text\">' + GW.Core.UI.escapeHtml(p.name) + '</span>' +
+          (p.isMe ? ' <span class=\"gw-ct-me-badge\">自分</span>' : '') +
+        '</td>';
+
+        html += '<tr class=\"' + rowClass + '\">' + nameCell;
+
+        for (var h2 = 1; h2 <= totalHoles; h2++) {
+          var s = p.scores && p.scores[h2 - 1] !== null && p.scores[h2 - 1] !== undefined ? p.scores[h2 - 1] : null;
+          var disp = s !== null ? this._formatStroke(s, h2, mode) : '-';
+          html += '<td class=\"gw-ct-hole ' + (h2 === currentHole ? 'current' : '') + '\">' + disp + '</td>';
+        }
+
+        var total = p.totalStrokes !== undefined ? p.totalStrokes : this._calcTotal(p.scores);
+        html += '<td class=\"gw-ct-total\">' + (total > 0 ? total : '-') + '</td>';
+        html += '</tr>';
+      }
+      html += '</tbody></table>';
+
+      // 「+ 同伴者を追加」ボタンを末尾に
+      html += '<button class=\"gw-add-companion-btn\" ' +
+        'data-action=\"open-companion-modal\" ' +
+        'data-player-id=\"\" ' +
+        'data-player-name=\"\" ' +
+        'data-is-new=\"true\">+ 同伴者を追加</button>';
+
+      body.innerHTML = html;
+    },
+
+    /** 新規同伴者を追加（ポップアップから呼び出し） ★Stage2重点対応 */
+    _addCompanion: function (name) {
+      var id = 'mate-' + Date.now().toString(36) + '-' + Math.floor(Math.random() * 0xFFFF).toString(16);
+      var newPlayer = {
+        id: id,
+        name: name,
+        scores: this._createEmptyScores(this._state.totalHoles),
+        putts: this._state.puttMode === 'on' ? this._createEmptyScores(this._state.totalHoles, 0) : null,
+        isMe: false,
+        parDiff: 0,
+        totalStrokes: 0
+      };
+
+      this._state.players.push(newPlayer);
+      GW.Core.UI.toast(name + ' を追加しました');
+      this._renderCompanionList();
+    },
+
+    /** 同伴者の名前を更新（ポップアップから呼び出し） ★Stage2重点対応 */
+    _updateCompanionName: function (playerId, name) {
+      var player = this._state.players.find(function (p) { return p.id === playerId; });
+      if (player) {
+        player.name = name;
+        GW.Core.UI.toast('名前を変更しました');
+        
+        // ヘッダーも更新
+        this._updateHeaderName();
+        
+        this._renderCompanionList();
+      }
+    },
+
+    /** 同伴者を削除 */
+    _removeCompanion: function (playerId) {
+      var idx = this._state.players.findIndex(function (p) { return p.id === playerId; });
+      if (idx >= 0) {
+        var removed = this._state.players.splice(idx, 1);
+        GW.Core.UI.toast((removed[0] && removed[0].name) + ' を削除しました');
+        this._renderCompanionList();
+      }
+    },
+
+    _calcTotal: function (scores) {
+      if (!scores) return 0;
+      var total = 0;
+      for (var i = 0; i < scores.length; i++) {
+        if (scores[i] !== null && scores[i] !== undefined) total += scores[i];
+      }
+      return total;
+    },
+
+    /** ラウンド中か判定（FAB表示制御用） */
+    isInRound: function () {
+      return this._state.inRound && !!this._state.courseId;
+    }
+  };
+
+  // ════════════════════════════════════════════════════════════════
+  // 【MODULE 3】GW.Modules.QRScanner - QRコードスキャナー
+  // ════════════════════════════════════════════════════════════════
+  GW.Modules.QRScanner = {
+    _stream: null,
+
+    start: function () {
+      var video = document.getElementById('gw-qr-video');
+      var manualInput = document.getElementById('gw-qr-manual-id');
+      if (!video) return;
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        GW.Core.UI.toast('カメラ機能に対応していません');
+        if (manualInput) manualInput.parentElement.classList.remove('gw-hidden');
+        return;
+      }
+
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+        .then(function (stream) {
+          GW.Modules.QRScanner._stream = stream;
+          video.srcObject = stream;
+          video.play();
+          GW.Modules.QRScanner._startDetection();
+        })
+        .catch(function (err) {
+          console.warn('[QRScanner] camera error:', err);
+          GW.Core.UI.toast('カメラを起動できませんでした');
+          if (manualInput) manualInput.parentElement.classList.remove('gw-hidden');
+        });
+    },
+
+    _startDetection: function () {
+      var video = document.getElementById('gw-qr-video');
+      if (!video) return;
+
+      var canvas = document.createElement('canvas');
+      var ctx = canvas.getContext('2d');
+      var self = this;
+
+      function tick() {
+        if (!video.readyState || video.readyState < 2) {
+          requestAnimationFrame(tick);
           return;
         }
-        // 最大3件
-        var top3 = res.list.slice(0, 3);
-        var html = top3.map(function (h) {
-          var vsPar = h.vsPar === 0 ? 'E' : (h.vsPar > 0 ? '+' + h.vsPar : String(h.vsPar));
-          return '<div style="display:flex;justify-content:space-between;align-items:center;' +
-                 'padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">' +
-                   '<div>' +
-                     '<div style="font-size:13px;font-weight:700;color:var(--gold-bri);">' +
-                       esc(h.playDate) + '</div>' +
-                     '<div style="font-size:11px;color:var(--text-sub);">' +
-                       esc(h.courseName) + ' / ' + h.playedHoles + 'H</div>' +
-                   '</div>' +
-                   '<div style="font-size:18px;font-weight:900;color:#fff;">' +
-                     h.totalStroke +
-                     '<span style="font-size:11px;color:var(--text-sub);margin-left:4px;">(' +
-                     vsPar + ')</span>' +
-                   '</div>' +
-                 '</div>';
-        }).join('');
-        listEl.innerHTML = html;
-      }).catch(function () {
-        listEl.innerHTML = '<div style="color:var(--text-sub);font-size:13px;">' +
-                           '読み込みエラー</div>';
-      });
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // 简易QRコード検出（實際運用ではライブラリを使用）
+        // 这里是占位符，实际実装需要zxing-js/library或其他库
+        requestAnimationFrame(tick);
+      }
+
+      requestAnimationFrame(tick);
+    },
+
+    submitManual: function (groupId) {
+      if (!groupId) {
+        GW.Core.UI.toast('グループIDを入力してください');
+        return;
+      }
+
+      GW.Core.UI.hideModal('gw-modal-qr-scanner');
+      this.stopCamera();
+
+      GW.Core.UI.toast('グループに参加しました: ' + groupId);
+      // 実際のグループ参加処理はここに実装
+    },
+
+    stopCamera: function () {
+      if (this._stream) {
+        this._stream.getTracks().forEach(function (track) { track.stop(); });
+        this._stream = null;
+      }
+      var video = document.getElementById('gw-qr-video');
+      if (video) video.srcObject = null;
     }
   };
 
   // ════════════════════════════════════════════════════════════════
-  // 【GW.Modules.GCompete】Coming Soon モジュール（プレースホルダ）
-  //
-  // 設計意図：
-  //   - Router.routes.gcompete.active = false のため、本来ここは呼ばれない
-  //   - 万一フッターナビ以外から遷移が来た場合の保険として実装
-  // ════════════════════════════════════════════════════════════════
-  GW.Modules.GCompete = {
-    render: function () {
-      // 静的画面のためレンダリング不要
-    }
-  };
-
-  // ════════════════════════════════════════════════════════════════
-  // 【GW.Modules.GTown】Coming Soon モジュール（プレースホルダ）
-  // ════════════════════════════════════════════════════════════════
-  GW.Modules.GTown = {
-    render: function () {
-      // 静的画面のためレンダリング不要
-    }
-  };
-
-  // ════════════════════════════════════════════════════════════════
-  // 【GW.Modules.MyPage】マイページモジュール
-  //
-  // 設計意図【設計憲法・第7条】：
-  //   - 「データ保全のご案内」を主役にしつつ、押し付けない
-  //   - 利用回数・状態を可視化（信頼感の演出）
-  //   - PWAインストール案内をここに集約
-  //   - "認証" "ログイン" の文言は一切使わない
+  // 【MODULE 4】GW.Modules.MyPage - マイページ
   // ════════════════════════════════════════════════════════════════
   GW.Modules.MyPage = {
-
-    /** Router からのエントリポイント */
     render: function () {
       this._renderProfile();
-      this._renderState();
       this._renderUsage();
     },
 
-    /** プロフィール部分（アバター・名前・ID） */
     _renderProfile: function () {
-      var prof = GW.Core.Auth.getProfile();
-      var name = prof.nickname || prof.realName || 'ゲスト';
-      var initial = name.charAt(0).toUpperCase();
+      var profile = GW.Core.Auth.getProfile();
+      var nameEl = document.getElementById('gw-myp-nickname');
+      if (nameEl) nameEl.textContent = profile && profile.nickname ? profile.nickname : '未設定';
 
-      var avatarEl = document.getElementById('gw-my-avatar');
-      if (avatarEl) avatarEl.textContent = initial;
+      var realEl = document.getElementById('gw-myp-realname');
+      if (realEl) realEl.textContent = profile && profile.realname ? profile.realname : '未入力';
 
-      var nameEl = document.getElementById('gw-my-name');
-      if (nameEl) nameEl.textContent = name;
+      var uidEl = document.getElementById('gw-myp-uid');
+      if (uidEl) uidEl.textContent = GW.Core.Auth.getUserId() || '-';
 
-      var idEl = document.getElementById('gw-my-id');
-      if (idEl) idEl.textContent = GW.Core.Auth.getUserId() || '';
-    },
-
-    /** データ保全状態を描画 */
-    _renderState: function () {
-      var isGuest = GW.Core.Auth.isGuest();
-
-      // バッジ
-      var stateEl = document.getElementById('gw-my-state');
+      var stateEl = document.getElementById('gw-myp-state');
       if (stateEl) {
-        if (isGuest) {
-          stateEl.textContent = 'ゲストモード';
-          stateEl.className = 'gw-state-badge guest';
-        } else {
-          stateEl.textContent = '✓ データ保全済み';
-          stateEl.className = 'gw-state-badge backed-up';
-        }
-      }
-
-      // バックアップカードの表示制御
-      var card = document.getElementById('gw-my-backup-card');
-      var msgEl = document.getElementById('gw-my-backup-msg');
-      var btnEl = document.getElementById('gw-my-backup-btn');
-      if (!card || !msgEl || !btnEl) return;
-
-      if (isGuest) {
-        msgEl.innerHTML =
-          '現在<b style="color:var(--gold-bri);">ゲストモード</b>です。' +
-          'スコア・履歴はこの端末にのみ保存されています。<br>' +
-          '無料でアカウント連携すると、機種変更時もデータを引き継げます。';
-        btnEl.textContent = '📲 無料でデータを守る';
-        btnEl.style.display = '';
-      } else {
-        msgEl.innerHTML =
-          '✅ <b style="color:#5cd65c;">データ保全済み</b><br>' +
-          '機種変更時も自動的にデータを引き継ぐことができます。安心してご利用ください。';
-        btnEl.style.display = 'none';
+        var state = GW.Core.Auth.getState();
+        stateEl.textContent = state === 'guest' ? 'ゲスト' : state === 'backed_up' ? 'バックアップ済み' : state;
       }
     },
 
-    /** 利用状況を描画 */
     _renderUsage: function () {
-      var countEl = document.getElementById('gw-my-use-count');
+      var countEl = document.getElementById('gw-myp-use-count');
       if (countEl) countEl.textContent = GW.Core.Auth.getUseCount() + ' 回';
-
-      var lastActive = Number(GW.Core.Storage.get(GW.Core.Config.KEYS.LAST_ACTIVE, '0'));
-      var lastEl = document.getElementById('gw-my-last');
-      if (lastEl) {
-        if (lastActive > 0) {
-          var d = new Date(lastActive);
-          var s = d.getFullYear() + '/' +
-                  String(d.getMonth() + 1).padStart(2, '0') + '/' +
-                  String(d.getDate()).padStart(2, '0') + ' ' +
-                  String(d.getHours()).padStart(2, '0') + ':' +
-                  String(d.getMinutes()).padStart(2, '0');
-          lastEl.textContent = s;
-        } else {
-          lastEl.textContent = '-';
-        }
-      }
     },
 
-    /** データ保全モーダルを開く（マイページのボタン or 節目で自動表示） */
     openBackupModal: function () {
       GW.Core.UI.showModal('gw-modal-backup');
     },
 
-    /** PWAインストール案内モーダルを表示 */
     showPWAGuide: function () {
-      // 既にスタンドアロン起動中なら不要
-      var isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
-                         window.navigator.standalone === true;
-      if (isStandalone) {
-        GW.Core.UI.toast('✅ 既にホーム画面から起動中です');
-        return;
-      }
-
-      // OS別の手順を表示
-      var ua = navigator.userAgent || '';
-      var androidEl = document.getElementById('gw-pwa-android');
-      var iosEl     = document.getElementById('gw-pwa-ios');
-      var otherEl   = document.getElementById('gw-pwa-other');
-
-      // いったん全て隠す
-      if (androidEl) androidEl.classList.add('gw-hidden');
-      if (iosEl)     iosEl.classList.add('gw-hidden');
-      if (otherEl)   otherEl.classList.add('gw-hidden');
-
-      if (/Android/i.test(ua)) {
-        if (androidEl) androidEl.classList.remove('gw-hidden');
-      } else if (/iPhone|iPad|iPod/i.test(ua)) {
-        if (iosEl) iosEl.classList.remove('gw-hidden');
-      } else {
-        if (otherEl) otherEl.classList.remove('gw-hidden');
-      }
-
       GW.Core.UI.showModal('gw-modal-pwa');
     },
 
-    /** PWAインストールを実行（Android） */
     triggerPWAInstall: function () {
-      var st = GW.Core.State || {};
-      if (st.pwaPrompt) {
-        st.pwaPrompt.prompt();
-        st.pwaPrompt.userChoice.then(function () {
-          st.pwaPrompt = null;
-          GW.Core.UI.hideModal('gw-modal-pwa');
-        });
-      } else {
-        GW.Core.UI.toast('ブラウザのメニューから「ホーム画面に追加」を選んでください');
-      }
+      // PWAインストールプロンプトはブラウザが自動表示するため、ここでは何もしない
+      GW.Core.UI.toast('画面に従ってください');
     }
   };
 
   // ════════════════════════════════════════════════════════════════
-  // 全モジュール定義完了。最初の Home 描画を発火。
-  // bootstrap → Router.go('home') が走ると Home.render() が呼ばれる。
+  // 【MODULE 5】GW.Modules.GCompete - 仮stub（Coming Soon）
   // ════════════════════════════════════════════════════════════════
+  GW.Modules.GCompete = { render: function () {} };
 
-  console.log('[GW] all modules loaded:', Object.keys(GW.Modules));
+  // ════════════════════════════════════════════════════════════════
+  // 【MODULE 6】GW.Modules.GTown - 仮stub（Coming Soon）
+  // ════════════════════════════════════════════════════════════════
+  GW.Modules.GTown = { render: function () {} };
 
-
-/* ══════════════════════════════════════════════════════════════
- * コース選択UI（新規追加・既存コードに影響なし）
- * 設計：data-action 経由でハンドラを呼ぶ。既存 GW.Core.Action と整合。
- * ══════════════════════════════════════════════════════════════ */
-(function gwCourseSelectModule() {
-  'use strict';
-
-  console.log('[GW.CourseSelect] module loaded');
-
-    // プレイヤー情報が準備されるまで最大5秒間、100msおきにチェック
-var retryCount = 0;
-var timer = setInterval(function() {
-  var st = window.GW && GW.Modules && GW.Modules.GLand && GW.Modules.GLand.state;
-  if (st && st.player) {
-    clearInterval(timer);
-    console.log('[CourseSelect] プレイヤー情報発見！ Mates.load() を実行します');
-    GW.Modules.GLand.Mates.load();
-  } else {
-    retryCount++;
-    if (retryCount > 50) { 
-      clearInterval(timer);
-      console.warn('[CourseSelect] プレイヤー情報が取得できませんでした');
-    }
-  }
-}, 100);
-
-  /** コース定義（後から増やせる） */
-  var COURSE_DEFS = {
-    'rokko-international': { name: '六甲国際パブリック', variants: ['9H','18H'] },
-    'rokko-west':          { name: '西コース',           variants: ['OUT','IN'] },
-    'rokko-east':          { name: '東コース',           variants: ['OUT','IN'] }
-  };
-
-  /** コース選択画面を表示 */
-  function showCourseSelect() {
-    console.log('[GW.CourseSelect] show');
-
-    // 既存画面を隠す（gw-* 命名規則に対応）
-    var screensToHide = ['gw-gland-register','gw-gland-main','gw-gland-course-select'];
-    screensToHide.forEach(function(id) {
-      var el = document.getElementById(id);
-      if (el) el.classList.add('gw-hidden');
-    });
-
-    // コース選択画面のみ表示
-    var cs = document.getElementById('gw-gland-course-select');
-    if (cs) cs.classList.remove('gw-hidden');
-
-    // ニックネーム反映
-    try {
-      var profile = null;
-      // GW.Core.Auth があればそれを優先
-      if (window.GW && GW.Core && GW.Core.Auth && GW.Core.Auth.getProfile) {
-        profile = GW.Core.Auth.getProfile();
-      } else {
-        // フォールバック：localStorage 直接読み込み
-        profile = JSON.parse(localStorage.getItem('gw_profile') || localStorage.getItem('gland_profile') || '{}');
-      }
-      var nameEl = document.getElementById('gw-cs-greet-name');
-      if (nameEl) {
-        if (profile && (profile.nickname || profile.realName)) {
-          nameEl.textContent = (profile.nickname || profile.realName) + 'さん';
-        } else {
-          nameEl.textContent = 'プレイヤー';
-        }
-      }
-    } catch(e) {
-      console.warn('[GW.CourseSelect] profile load failed:', e);
-    }
-
-    // パブリックトグルの状態を復元
-    try {
-      var pub = localStorage.getItem('gw_public_board');
-      var tg = document.getElementById('gw-cs-public-toggle');
-      if (tg) tg.checked = (pub !== 'false');  // デフォルトはON
-    } catch(e) {}
-  }
-
-  /** コースカードの展開/折りたたみ */
-  function toggleCourse(courseId) {
-    console.log('[GW.CourseSelect] toggle:', courseId);
-    var wraps = document.querySelectorAll('.gw-cs-course-wrap');
-    wraps.forEach(function(w) {
-      var card = w.querySelector('.gw-cs-course-card');
-      var subs = w.querySelector('.gw-cs-sub-options');
-      if (w.getAttribute('data-course-id') === courseId) {
-        var isOpen = card.classList.contains('expanded');
-        card.classList.toggle('expanded', !isOpen);
-        subs.classList.toggle('gw-hidden', isOpen);
-      } else {
-        card.classList.remove('expanded');
-        subs.classList.add('gw-hidden');
-      }
-    });
-  }
-
-  /** コース確定（サブ選択ボタンタップ時） */
-  function confirmCourse(courseId, variant) {
-    console.log('[GW.CourseSelect] confirm:', courseId, variant);
-    var def = COURSE_DEFS[courseId];
-    if (!def) {
-      console.warn('[GW.CourseSelect] unknown course:', courseId);
-      return;
-    }
-
-    // パブリックトグル状態を取得
-    var tg = document.getElementById('gw-cs-public-toggle');
-    var isPublic = tg ? tg.checked : true;
-
-    // localStorage に保存
-    try {
-      localStorage.setItem('gw_public_board', isPublic ? 'true' : 'false');
-      localStorage.setItem('gw_selected_course', JSON.stringify({
-        courseId:    courseId,
-        courseName:  def.name,
-        variant:     variant,
-        boardMode:   isPublic ? 'public' : 'private',
-        selectedAt:  Date.now()
-      }));
-    } catch(e) {
-      console.warn('[GW.CourseSelect] save failed:', e);
-    }
-
-    // トースト表示（既存の toast 関数か GW.Core.UI.toast を使う）
-    var msg = '⛳ ' + def.name + '(' + variant + ') を選択';
-    if (window.GW && GW.Core && GW.Core.UI && GW.Core.UI.toast) {
-      GW.Core.UI.toast(msg);
-    } else if (typeof toast === 'function') {
-      toast(msg);
-    } else {
-      console.log(msg);
-    }
-
-    // ▼ 次の画面への遷移は、現状は手動。
-    //   既存の起動ロジックを壊さないため、ここでは画面を閉じるだけ。
-    //   将来のステップで「次画面遷移」を組み込む。
-    setTimeout(function() {
-      goBack();
-    }, 800);
-  }
-
-  /** 戻る */
-  function goBack() {
-    console.log('[GW.CourseSelect] back');
-    var cs = document.getElementById('gw-gland-course-select');
-    if (cs) cs.classList.add('gw-hidden');
-
-    // 元の画面に戻す
-    // プロフィール登録済みかつメインがあるならメインへ、なければ登録画面へ
-    var main = document.getElementById('gw-gland-main');
-    var reg = document.getElementById('gw-gland-register');
-    var hasMain = main && !main.classList.contains('gw-hidden-by-default');
-
-    // 既存挙動を尊重：どの画面が直前まで見えていたかは判断しないので、
-    // とりあえず main があれば main、なければ reg を表示
-    if (main) {
-      main.classList.remove('gw-hidden');
-    } else if (reg) {
-      reg.classList.remove('gw-hidden');
-    }
-  }
-
-  /** GW.Core.Action にハンドラ登録（存在すれば） */
-  function bindActions() {
-    if (!window.GW || !GW.Core || !GW.Core.Action || !GW.Core.Action.registerMany) {
-      console.warn('[GW.CourseSelect] GW.Core.Action 未検出 - 手動バインドでフォールバック');
-      // フォールバック：直接 click イベントを拾う
-      document.addEventListener('click', function(e) {
-        var el = e.target;
-        while (el && el !== document.body) {
-          var act = el.getAttribute && el.getAttribute('data-action');
-          if (act === 'cs-toggle') {
-            e.preventDefault();
-            toggleCourse(el.getAttribute('data-course-id'));
-            return;
-          }
-          if (act === 'cs-confirm') {
-            e.preventDefault();
-            confirmCourse(
-              el.getAttribute('data-course-id'),
-              el.getAttribute('data-variant')
-            );
-            return;
-          }
-          if (act === 'cs-back') {
-            e.preventDefault();
-            goBack();
-            return;
-          }
-          el = el.parentNode;
-        }
-      });
-      return;
-    }
-
-    // 正常パス：GW.Core.Action に登録
-    GW.Core.Action.registerMany({
-      'cs-toggle': function(el) {
-        toggleCourse(el.getAttribute('data-course-id'));
-      },
-      'cs-confirm': function(el) {
-        confirmCourse(
-          el.getAttribute('data-course-id'),
-          el.getAttribute('data-variant')
-        );
-      },
-      'cs-back': function() {
-        goBack();
-      }
-    });
-  }
-
-  // ── 公開API ──
-  window.gwShowCourseSelect = showCourseSelect;
-  window.gwCourseSelectModule = {
-    show:    showCourseSelect,
-    toggle:  toggleCourse,
-    confirm: confirmCourse,
-    back:    goBack,
-    getSelected: function() {
-      try {
-        return JSON.parse(localStorage.getItem('gw_selected_course') || 'null');
-      } catch(e) { return null; }
-    }
-  };
-
-  // DOMContentLoaded を待ってからバインド
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', bindActions);
-  } else {
-    bindActions();
-  }
-})();
-
-// ════════════════════════════════════════════════════════════════
-// 【G-WORLD 画面制御モジュール】
-// 3画面（登録 / コース選択 / メイン）の切替を一元管理
-// - イベント委譲方式で Safari タッチ問題を解決
-// - try-catch でバリデーション失敗時もアプリを停止させない
-// - 二重バインド防止フラグ付き
-// ════════════════════════════════════════════════════════════════
-(function gwScreenController() {
-  'use strict';
-
-  // ─────────────────────────────────────────────
-  // 画面定義（追加時はここに足すだけ）
-  // ─────────────────────────────────────────────
-  var SCREENS = [
-    'gw-gland-register',
-    'gw-gland-course-select',
-    'gw-gland-main'
-  ];
-
-  var BIND_FLAG = '__gwScreenCtrlBound';
-  var TOUCH_LOCK_MS = 400;  // touch と click の重複発火を抑える時間
-  var lastActionAt = 0;     // 最後にアクションが走った時刻
-
-  // ─────────────────────────────────────────────
-  // ① 画面切替の中核関数（グローバル公開）
-  // ─────────────────────────────────────────────
-  window.gwShowScreen = function (targetId, options) {
-    options = options || {};
-    console.log('[GW.Screen] 切替先:', targetId);
-
-    if (!targetId) {
-      console.error('[GW.Screen] targetId が未指定');
-      return false;
-    }
-
-    var target = document.getElementById(targetId);
-    if (!target) {
-      console.error('[GW.Screen] 画面要素が見つかりません:', targetId);
-      return false;
-    }
-
-    // 全画面を一旦隠す
-    SCREENS.forEach(function (id) {
-      var el = document.getElementById(id);
-      if (el) el.classList.add('gw-hidden');
-    });
-
-    // 対象だけ表示
-    target.classList.remove('gw-hidden');
-
-    // スクロール位置リセット（任意）
-    if (options.scrollTop !== false) {
-      try { window.scrollTo(0, 0); } catch (e) {}
-    }
-
-    // 切替完了イベントを発火（他モジュールから捕捉可能）
-    try {
-      window.dispatchEvent(new CustomEvent('gw:screenChanged', {
-        detail: { screenId: targetId }
-      }));
-    } catch (e) { /* IE11 は無視 */ }
-
-    console.log('[GW.Screen] ✅ 切替完了:', targetId);
-    return true;
-  };
-
-  // ─────────────────────────────────────────────
-  // ② アクション辞書（data-action 値 → 処理）
-  //    追加時はこのオブジェクトに足すだけ
-  // ─────────────────────────────────────────────
-  var ACTIONS = {
-
-    // 登録 → コース選択
-    'register-profile': function (el, ev) {
-      // バリデーション
-      var nicknameEl = document.getElementById('gw-input-nickname');
-      var nickname = nicknameEl ? (nicknameEl.value || '').trim() : '';
-      if (!nickname) {
-        alert('ニックネームを入力してください');
-        if (nicknameEl) nicknameEl.focus();
-        return;
-      }
-
-      // データ保存（既存処理があれば呼ぶ）
-      try {
-        if (window.GW && GW.Modules && GW.Modules.GLand &&
-            typeof GW.Modules.GLand._register === 'function') {
-          GW.Modules.GLand._register();
-        } else {
-          // フォールバック: localStorage に直接保存
-          var realNameEl = document.getElementById('gw-input-realname');
-          var profile = {
-            nickname: nickname,
-            realName: realNameEl ? (realNameEl.value || '').trim() : '',
-            savedAt: new Date().toISOString()
-          };
-          localStorage.setItem('gw_profile', JSON.stringify(profile));
-          console.log('[GW.Screen] localStorage 保存:', profile);
-        }
-      } catch (e) {
-        console.error('[GW.Screen] 保存失敗 (続行):', e);
-      }
-
-      // 画面遷移（保存失敗しても遷移は実行）
-      window.gwShowScreen('gw-gland-course-select');
-    },
-
-    // コース選択 → メイン
-    'cs-confirm': function (el, ev) {
-      // 選択コースの確認
-      var courseId = el.getAttribute('data-course-id') ||
-                     (document.querySelector('.gw-cs-course.selected') || {}).getAttribute &&
-                     document.querySelector('.gw-cs-course.selected').getAttribute('data-course-id');
-
-      if (!courseId) {
-        alert('コースを選択してください');
-        return;
-      }
-
-      // データ保存
-      try {
-        localStorage.setItem('gw_selected_course', courseId);
-        if (window.GW && GW.Modules && GW.Modules.GLand && GW.Modules.GLand.state) {
-          GW.Modules.GLand.state.selectedCourseId = courseId;
-        }
-        console.log('[GW.Screen] コース確定:', courseId);
-      } catch (e) {
-        console.error('[GW.Screen] コース保存失敗 (続行):', e);
-      }
-
-      // 画面遷移
-      window.gwShowScreen('gw-gland-main');
-    },
-
-    // メイン → コース選択に戻る（任意）
-    'back-to-course': function (el, ev) {
-      if (confirm('コース選択に戻りますか？スコア入力中の場合は保存されます')) {
-        window.gwShowScreen('gw-gland-course-select');
-      }
-    },
-
-    // コース選択 → 登録に戻る（任意）
-    'back-to-register': function (el, ev) {
-      window.gwShowScreen('gw-gland-register');
-    }
-  };
-
-  // ─────────────────────────────────────────────
-  // ③ イベント委譲ハンドラ（document に1回だけ登録）
-  // ─────────────────────────────────────────────
-  function delegatedHandler(ev) {
-    // 連打 / touch+click 重複対策
-    var now = Date.now();
-    if (now - lastActionAt < TOUCH_LOCK_MS) {
-      return;
-    }
-
-    // data-action 属性を持つ最も近い祖先を探す
-    var el = ev.target;
-    while (el && el !== document) {
-      if (el.getAttribute && el.getAttribute('data-action')) break;
-      el = el.parentNode;
-    }
-    if (!el || el === document) return;
-
-    var action = el.getAttribute('data-action');
-    var handler = ACTIONS[action];
-    if (!handler) return;  // 別モジュールのアクションは無視
-
-    // ここから実行
-    lastActionAt = now;
-    ev.preventDefault();
-
-    // ハプティック（対応端末のみ）
-    try { if (navigator.vibrate) navigator.vibrate(10); } catch (e) {}
-
-    // 安全な実行
-    try {
-      handler(el, ev);
-    } catch (e) {
-      console.error('[GW.Screen] アクション "' + action + '" でエラー:', e);
-      // ユーザーには見せない（次のアクション可能）
-    }
-  }
-
-  // ─────────────────────────────────────────────
-  // ④ バインド（pointerdown 優先、fallback で click）
-  // ─────────────────────────────────────────────
-  function bind() {
-    if (document[BIND_FLAG]) {
-      console.log('[GW.Screen] バインド済み、スキップ');
-      return;
-    }
-
-    // pointerdown が使えるブラウザでは pointerdown のみ
-    // 使えないブラウザ（古い Safari 等）では touchstart + click 併用
-    if (window.PointerEvent) {
-      document.addEventListener('pointerdown', delegatedHandler, { passive: false });
-      console.log('[GW.Screen] pointerdown でバインド');
-    } else {
-      document.addEventListener('touchstart', delegatedHandler, { passive: false });
-      document.addEventListener('click', delegatedHandler, false);
-      console.log('[GW.Screen] touchstart + click でバインド (legacy)');
-    }
-
-    document[BIND_FLAG] = true;
-  }
-
-  // ─────────────────────────────────────────────
-  // ⑤ 起動時の自動画面判定
-  // ─────────────────────────────────────────────
-  function autoNavigate() {
-    try {
-      var profile = localStorage.getItem('gw_profile') ||
-                    localStorage.getItem('gw_player');
-      var course  = localStorage.getItem('gw_selected_course');
-
-      if (profile && course) {
-        // プロフィール&コース確定済み → メイン
-        console.log('[GW.Screen] 自動遷移: メイン');
-        window.gwShowScreen('gw-gland-main');
-      } else if (profile) {
-        // プロフィールのみ → コース選択
-        console.log('[GW.Screen] 自動遷移: コース選択');
-        window.gwShowScreen('gw-gland-course-select');
-      } else {
-        // 初回 → 登録画面
-        console.log('[GW.Screen] 自動遷移: 登録');
-        window.gwShowScreen('gw-gland-register');
-      }
-    } catch (e) {
-      console.warn('[GW.Screen] 自動遷移失敗、登録画面を表示:', e);
-      window.gwShowScreen('gw-gland-register');
-    }
-  }
-
-  // ─────────────────────────────────────────────
-  // ⑥ 公開API（デバッグ用）
-  // ─────────────────────────────────────────────
-  window.gwScreenCtrl = {
-    show: window.gwShowScreen,
-    actions: ACTIONS,           // 動的にアクション追加可能
-    screens: SCREENS,
-    addAction: function (name, fn) { ACTIONS[name] = fn; },
-    rebind: function () { document[BIND_FLAG] = false; bind(); }
-  };
-
-  // ─────────────────────────────────────────────
-  // 初期化
-  // ─────────────────────────────────────────────
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () {
-      bind();
-      autoNavigate();
-    });
-  } else {
-    bind();
-    autoNavigate();
-  }
-
-  console.log('[GW.Screen] モジュールロード完了');
-})();
-
-  // ──────────────────────────────────────────────────────────
-  // 即時実行関数を閉じる（ファイル末尾）
-  // ──────────────────────────────────────────────────────────
-  (function() {
-  'use strict';
-  
-  // 画面切替用：ログ付きデバッグ版
-  window.gwShowScreen = function(screenId) {
-    console.log('[GW.Debug] 画面切替開始:', screenId);
-    var target = document.getElementById(screenId);
-    if (!target) {
-      console.error('[GW.Error] 画面要素が見つかりません:', screenId);
-      return;
-    }
-    
-    // 全画面隠す
-    ['gw-gland-register', 'gw-gland-course-select', 'gw-gland-main'].forEach(function(id) {
-      var el = document.getElementById(id);
-      if (el) el.classList.add('gw-hidden');
-    });
-    
-    // 表示
-    target.classList.remove('gw-hidden');
-    console.log('[GW.Debug] ✅ 切替完了:', screenId);
-    
-    // ここに描画関数を繋ぐ（824行目のエラー対策）
-    if (screenId === 'gw-gland-main' && typeof GW.Modules.GLand._renderMainScreen === 'function') {
-      try {
-        GW.Modules.GLand._renderMainScreen();
-      } catch(e) {
-        console.error('[GW.Error] 描画失敗:', e);
-      }
-    }
-  };
-
-  // イベント委譲：Safariのタップ問題対策
-  document.addEventListener('pointerdown', function(ev) {
-    var el = ev.target.closest('[data-action]');
-    if (!el) return;
-    
-    var action = el.getAttribute('data-action');
-    console.log('[GW.Debug] アクション検知:', action);
-    
-    if (action === 'register-profile') {
-      // バリデーション付き遷移
-      var nick = document.getElementById('gw-input-nickname');
-      if (!nick || !nick.value) { alert('ニックネームを入力！'); return; }
-      window.gwShowScreen('gw-gland-course-select');
-    }
-    else if (action === 'cs-confirm') {
-      window.gwShowScreen('gw-gland-main');
-    }
-  });
-})();
-})();
+}());

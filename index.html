@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a3d2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="G-WORLD">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<title>G-WORLD</title>
+
+<style>
+/* ═══════════════════════════════════════════════════════
+   G-WORLD Stage 2 Ultra - 全部入り1ファイル版 CSS
+═══════════════════════════════════════════════════════ */
+*{box-sizing:border-box;}
+html,body{
+  margin:0;padding:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;
+  background:linear-gradient(160deg,#0a3d2e 0%,#0f5f47 60%,#0a3d2e 100%);
+  color:#fff;
+  min-height:100vh;
+  -webkit-tap-highlight-color:transparent;
+}
+.hidden{display:none !important;}
+
+/* ヘッダー */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(10,61,46,0.95);
+  backdrop-filter:blur(10px);
+  padding:12px 16px;
+  display:flex;justify-content:space-between;align-items:center;
+  border-bottom:1px solid rgba(245,200,66,0.2);
+}
+.header h1{
+  margin:0;font-size:18px;font-weight:900;color:#f5c842;
+  letter-spacing:1px;
+}
+.header h1 .sub{
+  font-size:10px;opacity:0.7;margin-left:4px;
+}
+.header-info{
+  text-align:right;font-size:11px;color:rgba(255,255,255,0.7);
+}
+.header-info .name{color:#ffe082;font-weight:700;}
+
+/* コンテナ */
+.container{
+  padding:16px;
+  padding-bottom:90px;
+  max-width:600px;
+  margin:0 auto;
+}
+.screen{display:none;}
+.screen.active{display:block;}
+
+/* ホーム画面 */
+.portal-hero{
+  text-align:center;padding:20px 0;
+}
+.greeting{font-size:14px;color:rgba(255,255,255,0.7);}
+.user-name{
+  font-size:28px;font-weight:900;color:#f5c842;
+  margin:6px 0;
+}
+.state-badge{
+  display:inline-block;
+  padding:4px 12px;border-radius:20px;
+  font-size:11px;font-weight:700;
+  background:rgba(245,200,66,0.2);
+  color:#ffe082;
+  border:1px solid rgba(245,200,66,0.4);
+}
+.cta-btn{
+  display:block;width:100%;
+  margin:20px 0;padding:18px;
+  background:linear-gradient(180deg,#f5c842,#d4a017);
+  color:#000;
+  border:none;border-radius:14px;
+  font-size:18px;font-weight:900;
+  cursor:pointer;
+  box-shadow:0 5px 0 rgba(0,0,0,0.3);
+}
+.cta-btn:active{transform:translateY(2px);box-shadow:0 3px 0 rgba(0,0,0,0.3);}
+
+.portal-modules{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin:20px 0;
+}
+.portal-module{
+  padding:18px 10px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:14px;
+  text-align:center;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.portal-module:active{transform:scale(0.96);background:rgba(245,200,66,0.1);}
+.portal-module.coming-soon{opacity:0.5;}
+.mod-icon{font-size:32px;margin-bottom:6px;}
+.mod-name{font-size:14px;font-weight:800;color:#f5c842;}
+.mod-desc{font-size:11px;color:rgba(255,255,255,0.6);margin-top:2px;}
+.mod-badge{
+  display:inline-block;margin-top:4px;
+  font-size:9px;padding:2px 6px;
+  background:#FF6B6B;color:#fff;
+  border-radius:6px;
+}
+
+.portal-recent{
+  margin-top:24px;padding:16px;
+  background:rgba(0,0,0,0.2);
+  border-radius:12px;
+}
+.portal-recent h3{
+  margin:0 0 10px;font-size:14px;color:#ffe082;
+}
+
+/* カード共通 */
+.card{
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:14px;
+  padding:18px;
+  margin-bottom:16px;
+}
+
+/* 登録カード */
+.register-card label{
+  display:block;font-size:12px;color:#ffe082;
+  margin:14px 0 6px;font-weight:700;
+}
+.register-card input{
+  width:100%;padding:14px;
+  background:rgba(0,0,0,0.3);
+  border:1px solid rgba(255,255,255,0.2);
+  border-radius:10px;
+  color:#fff;font-size:16px;
+}
+.register-card input:focus{
+  outline:none;border-color:#f5c842;
+}
+.btn-primary{
+  display:block;width:100%;
+  padding:16px;margin-top:18px;
+  background:linear-gradient(180deg,#f5c842,#d4a017);
+  color:#000;border:none;border-radius:12px;
+  font-size:16px;font-weight:900;cursor:pointer;
+  box-shadow:0 4px 0 rgba(0,0,0,0.3);
+}
+.btn-primary:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,0.3);}
+.btn-ghost{
+  display:block;width:100%;
+  padding:12px;margin-top:8px;
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.3);
+  color:#fff;border-radius:10px;
+  font-size:14px;cursor:pointer;
+}
+
+/* コース選択 */
+.course-greeting{
+  text-align:center;padding:14px 0;
+  font-size:18px;color:#f5c842;font-weight:800;
+}
+.course-card{
+  display:flex;align-items:center;
+  width:100%;padding:16px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:12px;
+  color:#fff;cursor:pointer;
+  margin-bottom:10px;
+  font-family:inherit;
+}
+.course-card .icon{font-size:28px;margin-right:14px;}
+.course-card .info{flex:1;text-align:left;}
+.course-card .info .name{font-size:16px;font-weight:800;color:#f5c842;}
+.course-card .info .sub{font-size:11px;color:rgba(255,255,255,0.6);margin-top:2px;}
+.course-card .arrow{font-size:14px;color:#ffe082;transition:transform 0.3s;}
+.course-card.expanded .arrow{transform:rotate(180deg);}
+.sub-options{
+  display:none;
+  grid-template-columns:1fr 1fr;gap:8px;
+  margin:0 0 12px;
+}
+.sub-options.show{display:grid;}
+.sub-btn{
+  padding:14px;
+  background:rgba(245,200,66,0.15);
+  border:1px solid #f5c842;
+  border-radius:10px;
+  color:#f5c842;font-weight:800;cursor:pointer;
+  font-family:inherit;
+}
+.sub-btn:active{background:#f5c842;color:#000;}
+
+/* プレイヤーバー */
+.player-bar{
+  display:flex;justify-content:space-between;
+  padding:14px;
+  background:rgba(245,200,66,0.1);
+  border:1px solid rgba(245,200,66,0.3);
+  border-radius:12px;
+  margin-bottom:16px;
+}
+.player-bar .lbl{font-size:10px;color:rgba(255,255,255,0.6);}
+.player-bar .name{font-size:18px;font-weight:900;color:#f5c842;}
+.player-bar .total{font-size:18px;font-weight:900;color:#fff;}
+
+/* ─── カウンターモード ─── */
+.counter-area{padding:8px;}
+.hole-nav{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;margin-bottom:16px;
+}
+.hole-nav-btn{
+  width:44px;height:44px;border-radius:50%;
+  background:rgba(245,200,66,0.15);
+  border:1px solid #f5c842;
+  color:#f5c842;font-size:18px;font-weight:900;cursor:pointer;
+}
+.hole-nav-btn:disabled{opacity:0.3;}
+.hole-center{flex:1;text-align:center;}
+.hole-num{font-size:22px;font-weight:900;color:#ffe082;}
+.hole-par{font-size:13px;color:rgba(255,255,255,0.6);margin-top:2px;}
+
+.total-display{
+  text-align:center;padding:18px;
+  background:linear-gradient(180deg,rgba(245,200,66,0.2),rgba(245,200,66,0.05));
+  border:1px solid rgba(245,200,66,0.4);
+  border-radius:16px;
+  margin-bottom:14px;
+}
+.total-label{font-size:11px;color:rgba(255,255,255,0.6);font-weight:700;letter-spacing:1px;}
+.total-val{
+  font-size:60px;font-weight:900;color:#fff;
+  line-height:1;margin:6px 0;
+  text-shadow:0 2px 8px rgba(245,200,66,0.4);
+}
+.total-pardiff{font-size:14px;color:#ffe082;font-weight:800;margin-bottom:10px;}
+.breakdown{
+  display:flex;align-items:center;justify-content:center;
+  gap:10px;padding:10px;
+  background:rgba(0,0,0,0.3);border-radius:10px;
+  font-size:13px;
+}
+.breakdown .shot b{color:#ffcc22;font-size:18px;font-weight:900;}
+.breakdown .putt b{color:#FF8C00;font-size:18px;font-weight:900;}
+.breakdown .plus{color:rgba(255,255,255,0.5);font-weight:900;}
+
+.dual-buttons{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin-bottom:12px;
+}
+.dual-btn{
+  padding:20px 10px;
+  border:none;border-radius:16px;
+  cursor:pointer;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:4px;
+  font-family:inherit;
+  box-shadow:0 5px 0 rgba(0,0,0,0.3);
+}
+.dual-btn.shot{background:linear-gradient(180deg,#ffd84d,#ffb700);color:#000;}
+.dual-btn.putt{background:linear-gradient(180deg,#FFA94D,#FF7A00);color:#fff;}
+.dual-btn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,0.3);}
+.dual-btn .icon{font-size:28px;line-height:1;}
+.dual-btn .label{font-size:12px;font-weight:800;opacity:0.85;}
+.dual-btn .plus{font-size:22px;font-weight:900;}
+
+.clr-btn{
+  width:100%;padding:12px;margin-bottom:14px;
+  background:rgba(231,76,60,0.15);
+  border:1px solid rgba(231,76,60,0.4);
+  border-radius:10px;
+  color:#ff8a7a;font-size:13px;font-weight:700;
+  cursor:pointer;
+}
+
+/* ─── シンプルモード ─── */
+.simple-area{padding:8px;}
+.simple-score{
+  text-align:center;padding:14px 0;
+}
+.simple-val{font-size:64px;font-weight:900;color:#fff;line-height:1;}
+.simple-pardiff{font-size:16px;color:#ffe082;font-weight:800;margin-top:4px;}
+.simple-buttons{
+  display:flex;gap:12px;margin-bottom:14px;
+}
+.btn-minus,.btn-plus{
+  flex:1;padding:20px;
+  border:none;border-radius:14px;
+  font-size:32px;font-weight:900;
+  cursor:pointer;
+  box-shadow:0 4px 0 rgba(0,0,0,0.3);
+}
+.btn-minus{background:linear-gradient(180deg,#e74c3c,#c0392b);color:#fff;}
+.btn-plus{background:linear-gradient(180deg,#ffe082,#f5c842);color:#000;}
+.btn-minus:active,.btn-plus:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,0.3);}
+
+.putt-section{
+  margin-bottom:14px;padding:12px;
+  background:rgba(0,0,0,0.25);
+  border:1px solid rgba(255,140,0,0.3);
+  border-radius:12px;
+}
+.putt-label{
+  text-align:center;font-size:12px;color:rgba(255,255,255,0.6);
+  margin-bottom:8px;
+}
+.putt-label b{color:#FFB347;font-size:16px;font-weight:900;}
+.putt-row{display:flex;gap:10px;}
+.putt-btn{
+  flex:1;padding:10px;
+  background:rgba(255,140,0,0.2);
+  border:1px solid rgba(255,140,0,0.4);
+  color:#FFB347;
+  border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;
+}
+
+/* ─── ホール一覧グリッド ─── */
+.holes-grid{
+  display:grid;grid-template-columns:repeat(9,1fr);gap:4px;
+  margin-top:10px;
+}
+.hole-btn{
+  padding:8px 0;
+  background:rgba(0,0,0,0.3);
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:6px;
+  color:rgba(255,255,255,0.7);
+  font-size:11px;font-weight:700;cursor:pointer;
+}
+.hole-btn.filled{
+  background:rgba(245,200,66,0.2);
+  color:#ffe082;
+  border-color:rgba(245,200,66,0.4);
+}
+.hole-btn.current{
+  background:#f5c842;color:#000;
+}
+
+/* 同伴者テーブル */
+.companion-wrap{margin-top:20px;}
+.companion-wrap h4{
+  margin:0 0 10px;color:#ffe082;font-size:14px;
+}
+.companion-table{
+  width:100%;
+  border-collapse:separate;border-spacing:0;
+  font-size:11px;
+  background:rgba(0,0,0,0.25);
+  border-radius:10px;
+  overflow:hidden;
+}
+.companion-table th{
+  background:rgba(245,200,66,0.15);
+  color:#ffe082;
+  padding:8px 4px;text-align:center;
+  font-size:10px;font-weight:700;
+}
+.companion-table th.name-h{text-align:left;padding-left:10px;min-width:80px;}
+.companion-table th.total-h{background:rgba(245,200,66,0.25);color:#fff;}
+.companion-table th.current{background:rgba(245,200,66,0.4);color:#fff;}
+.companion-table td{
+  padding:10px 4px;text-align:center;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.companion-table td.hole-cell{font-size:12px;font-weight:600;}
+.companion-table td.hole-cell.current{
+  background:rgba(245,200,66,0.12);color:#ffe082;
+}
+.companion-table td.total-cell{
+  background:rgba(245,200,66,0.08);
+  color:#ffe082;font-weight:800;font-size:13px;
+}
+.row-me{background:rgba(245,200,66,0.05);}
+.row-me td.name-cell .name-text{color:#ffe082;font-weight:700;}
+
+.name-cell{
+  text-align:left !important;padding-left:10px !important;
+  cursor:pointer;position:relative;
+  transition:background 0.15s;font-weight:600;
+}
+.name-cell:active{background:rgba(245,200,66,0.2);}
+.name-cell::after{
+  content:"✎";position:absolute;right:4px;top:50%;
+  transform:translateY(-50%);font-size:10px;
+  opacity:0.4;color:#ffe082;
+}
+.me-badge{
+  display:inline-block;
+  font-size:9px;padding:1px 6px;
+  background:#f5c842;color:#000;
+  border-radius:8px;margin-left:4px;font-weight:800;
+}
+
+.add-companion-btn{
+  display:block;width:100%;
+  margin-top:12px;padding:14px;
+  background:linear-gradient(180deg,rgba(245,200,66,0.15),rgba(245,200,66,0.05));
+  border:2px dashed rgba(245,200,66,0.4);
+  border-radius:12px;
+  color:#ffe082;
+  font-size:14px;font-weight:700;cursor:pointer;
+  font-family:inherit;
+}
+.add-companion-btn:active{
+  transform:scale(0.98);
+  background:rgba(245,200,66,0.25);
+}
+
+/* 設定パネル */
+.settings-panel{
+  margin-top:20px;padding:14px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.05);
+  border-radius:12px;
+}
+.setting-row{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:12px;
+}
+.setting-row:last-child{margin-bottom:0;}
+.setting-label{font-size:13px;color:#fff;}
+.toggle-group{
+  display:flex;background:rgba(0,0,0,0.4);
+  border-radius:20px;padding:2px;
+}
+.toggle-group button{
+  padding:8px 14px;border:none;
+  background:transparent;color:rgba(255,255,255,0.6);
+  border-radius:18px;font-size:11px;
+  cursor:pointer;font-family:inherit;
+}
+.toggle-group button.active{
+  background:#f5c842;color:#000;font-weight:800;
+}
+
+/* 終了ボタン */
+.finish-btn{
+  display:block;width:100%;margin-top:20px;padding:16px;
+  background:linear-gradient(180deg,#2ecc71,#27ae60);
+  color:#fff;border:none;border-radius:12px;
+  font-size:15px;font-weight:900;cursor:pointer;
+  box-shadow:0 4px 0 rgba(0,0,0,0.3);
+}
+.finish-btn:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,0.3);}
+
+/* フッターナビ */
+.footer-nav{
+  position:fixed;bottom:0;left:0;width:100%;
+  height:65px;
+  background:rgba(10,61,46,0.98);
+  backdrop-filter:blur(10px);
+  display:flex;
+  border-top:1px solid rgba(255,255,255,0.1);
+  z-index:50;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.footer-nav button{
+  flex:1;background:none;border:none;
+  color:rgba(255,255,255,0.6);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:3px;
+  font-size:10px;cursor:pointer;font-family:inherit;
+}
+.footer-nav button.active{color:#f5c842;}
+.footer-nav .nav-icon{font-size:22px;}
+
+/* モーダル */
+.modal-bg{
+  display:none;
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.7);
+  z-index:1000;
+  align-items:center;justify-content:center;
+  padding:20px;
+}
+.modal-bg.show{display:flex;}
+.modal{
+  background:#1a4d3e;
+  padding:24px;border-radius:18px;
+  width:100%;max-width:400px;
+  border:1px solid rgba(245,200,66,0.3);
+}
+.modal h3{
+  margin:0 0 12px;color:#f5c842;text-align:center;font-size:18px;
+}
+.modal-icon{
+  text-align:center;font-size:42px;margin-bottom:8px;
+}
+.modal-desc{
+  text-align:center;font-size:12px;
+  color:rgba(255,255,255,0.7);
+  line-height:1.6;margin-bottom:16px;
+}
+.modal input{
+  width:100%;padding:14px;
+  background:rgba(0,0,0,0.4);
+  border:2px solid rgba(245,200,66,0.4);
+  border-radius:10px;
+  color:#fff;font-size:18px;
+  text-align:center;font-weight:700;
+}
+.modal-buttons{
+  display:flex;gap:10px;margin-top:18px;
+}
+.modal-buttons button{flex:1;}
+
+/* Toast */
+.toast{
+  position:fixed;bottom:90px;left:50%;
+  transform:translateX(-50%);
+  background:rgba(0,0,0,0.85);color:#fff;
+  padding:10px 20px;border-radius:24px;
+  font-size:13px;font-weight:600;
+  opacity:0;transition:opacity 0.3s;
+  pointer-events:none;z-index:2000;
+}
+.toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<!-- ヘッダー -->
+<header class="header">
+  <h1>G-WORLD<span class="sub">PORTAL</span></h1>
+  <div class="header-info">
+    <div id="header-course"></div>
+    <div class="name" id="header-name"></div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- 画面①：ホーム -->
+  <section id="screen-home" class="screen active">
+    <div class="portal-hero">
+      <div class="greeting" id="greet-msg">こんにちは</div>
+      <div class="user-name" id="greet-name">ゲストさん</div>
+      <div class="state-badge" id="state-badge">ゲストモード</div>
+      <button class="cta-btn" data-action="start-round">⛳ ラウンドを開始する</button>
+    </div>
+    <div class="portal-modules">
+      <div class="portal-module" data-route="gland">
+        <div class="mod-icon">⛳</div>
+        <div class="mod-name">G-LAND</div>
+        <div class="mod-desc">スコア管理</div>
+      </div>
+      <div class="portal-module coming-soon">
+        <div class="mod-icon">🏆</div>
+        <div class="mod-name">G-COMPETE</div>
+        <div class="mod-badge">Coming Soon</div>
+      </div>
+      <div class="portal-module coming-soon">
+        <div class="mod-icon">🏘</div>
+        <div class="mod-name">G-TOWN</div>
+        <div class="mod-badge">Coming Soon</div>
+      </div>
+      <div class="portal-module" data-route="mypage">
+        <div class="mod-icon">👤</div>
+        <div class="mod-name">マイページ</div>
+        <div class="mod-desc">設定</div>
+      </div>
+    </div>
+    <div class="portal-recent">
+      <h3>📋 最近のラウンド</h3>
+      <div id="recent-list" style="font-size:13px;color:rgba(255,255,255,0.7);">まだラウンド記録がありません</div>
+    </div>
+  </section>
+
+  <!-- 画面②：G-LAND -->
+  <section id="screen-gland" class="screen">
+    <!-- 登録カード -->
+    <div id="register-card" class="card register-card">
+      <h2 style="margin:0 0 8px;color:#f5c842;">⛳ はじめまして</h2>
+      <p style="font-size:13px;color:rgba(255,255,255,0.7);margin:0 0 14px;line-height:1.6;">
+        まずはお名前を教えてください。<br>1度だけの登録です。
+      </p>
+      <label>ニックネーム</label>
+      <input type="text" id="input-nickname" placeholder="例: タロウ">
+      <button class="btn-primary" data-action="register">次へ →</button>
+    </div>
+
+    <!-- コース選択 -->
+    <div id="course-select" class="hidden">
+      <div class="course-greeting" id="cs-greet">プレイヤー</div>
+      <h2 style="text-align:center;color:#f5c842;margin:0 0 14px;font-size:18px;">本日のコースを選択</h2>
+      <div id="course-list"></div>
+    </div>
+
+    <!-- スコア入力メイン -->
+    <div id="score-main" class="hidden">
+      <div class="player-bar">
+        <div>
+          <div class="lbl">プレイヤー</div>
+          <div class="name" id="me-name">-</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="lbl">合計 / PAR差</div>
+          <div class="total" id="me-total">- / -</div>
+        </div>
+      </div>
+
+      <div id="input-area"></div>
+
+      <div class="companion-wrap">
+        <h4>👥 同伴メンバー スコア表</h4>
+        <div id="companion-body"></div>
+      </div>
+
+      <div class="settings-panel">
+        <div class="setting-row">
+          <div class="setting-label">入力モード</div>
+          <div class="toggle-group">
+            <button data-action="mode-simple" id="btn-simple" class="active">シンプル</button>
+            <button data-action="mode-counter" id="btn-counter">カウンター</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-label">パット記録</div>
+          <div class="toggle-group">
+            <button data-action="putt-off" id="btn-putt-off" class="active">OFF</button>
+            <button data-action="putt-on" id="btn-putt-on">ON</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="finish-btn" data-action="finish-round">✅ ラウンド終了 / 保存</button>
+    </div>
+  </section>
+
+  <!-- 画面⑤：マイページ -->
+  <section id="screen-mypage" class="screen">
+    <div class="card" style="text-align:center;">
+      <div style="font-size:48px;margin-bottom:8px;">👤</div>
+      <div id="my-name" style="font-size:20px;font-weight:900;color:#f5c842;">-</div>
+      <div id="my-id" style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:4px;">-</div>
+    </div>
+    <div class="card">
+      <h3 style="margin:0 0 12px;color:#f5c842;font-size:15px;">⚙️ 設定</h3>
+      <button class="btn-ghost" data-action="logout">🚪 別のプレイヤーで使用</button>
+    </div>
+    <div style="text-align:center;font-size:11px;color:rgba(255,255,255,0.5);margin-top:24px;">
+      G-WORLD v2.0.0 Ultra<br>永久無料 golfインフラ
+    </div>
+  </section>
+</div>
+
+<!-- フッターナビ -->
+<nav class="footer-nav">
+  <button data-route="home" class="active">
+    <span class="nav-icon">🏠</span><span>ホーム</span>
+  </button>
+  <button data-route="gland">
+    <span class="nav-icon">⛳</span><span>G-LAND</span>
+  </button>
+  <button data-route="mypage">
+    <span class="nav-icon">👤</span><span>マイ</span>
+  </button>
+</nav>
+
+<!-- 同伴者ポップアップ -->
+<div id="modal-companion" class="modal-bg">
+  <div class="modal">
+    <div class="modal-icon">👥</div>
+    <h3 id="companion-title">同伴者を追加</h3>
+    <p class="modal-desc">
+      QRをお持ちでない方のスコアもここから入力できます<br>
+      <span style="font-size:11px;opacity:0.85;">あとから名前を変更することもできます</span>
+    </p>
+    <input type="text" id="companion-input" placeholder="例: 田中さん" maxlength="20">
+    <div class="modal-buttons">
+      <button class="btn-ghost" data-action="close-companion">キャンセル</button>
+      <button class="btn-primary" data-action="confirm-companion">確定</button>
+    </div>
+  </div>
+</div>
+
+<!-- 確認モーダル -->
+<div id="modal-confirm" class="modal-bg">
+  <div class="modal">
+    <h3 id="confirm-title">確認</h3>
+    <div id="confirm-body" style="color:rgba(255,255,255,0.8);text-align:center;font-size:14px;line-height:1.7;"></div>
+    <div class="modal-buttons">
+      <button class="btn-ghost" data-action="confirm-cancel">いいえ</button>
+      <button class="btn-primary" data-action="confirm-ok">はい</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   G-WORLD Stage 2 Ultra - 全部入り1ファイル版 JavaScript
+═══════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+
+  // ─── データ層 ───
+  var STORAGE = {
+    PROFILE: 'gw_profile',
+    INPUT_MODE: 'gw_input_mode',
+    PUTT_MODE: 'gw_putt_mode',
+    RECENT_ROUNDS: 'gw_recent_rounds'
+  };
+
+  var Store = {
+    get: function(k){ try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null; } },
+    set: function(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} },
+    getStr: function(k,d){ return localStorage.getItem(k) || d; },
+    setStr: function(k,v){ localStorage.setItem(k, v); }
+  };
+
+  // ─── UI ヘルパー ───
+  var UI = {
+    toast: function(msg){
+      var t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(t._timer);
+      t._timer = setTimeout(function(){ t.classList.remove('show'); }, 2000);
+    },
+    showModal: function(id){ document.getElementById(id).classList.add('show'); },
+    hideModal: function(id){ document.getElementById(id).classList.remove('show'); },
+    haptic: function(){ if(navigator.vibrate) navigator.vibrate(10); },
+    confirm: function(title, body, onOk){
+      document.getElementById('confirm-title').textContent = title;
+      document.getElementById('confirm-body').innerHTML = body;
+      State.confirmCb = onOk;
+      UI.showModal('modal-confirm');
+    }
+  };
+
+  // ─── 状態 ───
+  var State = {
+    profile: Store.get(STORAGE.PROFILE),
+    inputMode: Store.getStr(STORAGE.INPUT_MODE, 'simple'),
+    puttMode: Store.getStr(STORAGE.PUTT_MODE, 'off'),
+    currentRoute: 'home',
+    currentHole: 1,
+    totalHoles: 18,
+    courseId: null,
+    variant: null,
+    players: [],
+    confirmCb: null,
+    companionEditId: null
+  };
+
+  // PAR表（六甲国際パブリック想定）
+  var PARS = [4,3,5,4,4,3,5,4,4,4,3,5,4,4,3,5,4,4];
+  function getPar(hole){ return PARS[hole-1] || 4; }
+
+  function getCourseName(){
+    var names = {
+      'rokko-international': '六甲国際パブリック',
+      'rokko-west': '西コース',
+      'rokko-east': '東コース'
+    };
+    return names[State.courseId] || '';
+  }
+
+  // ─── ルーター ───
+  var Router = {
+    go: function(route){
+      document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+      var target = document.getElementById('screen-' + route);
+      if(target) target.classList.add('active');
+
+      document.querySelectorAll('.footer-nav button').forEach(function(b){
+        b.classList.toggle('active', b.getAttribute('data-route') === route);
+      });
+
+      State.currentRoute = route;
+
+      if(route === 'home') Home.render();
+      else if(route === 'gland') GLand.render();
+      else if(route === 'mypage') MyPage.render();
+    }
+  };
+
+  // ─── Home モジュール ───
+  var Home = {
+    render: function(){
+      var p = State.profile;
+      var greetName = document.getElementById('greet-name');
+      var greetMsg = document.getElementById('greet-msg');
+      var stateBadge = document.getElementById('state-badge');
+      
+      if(p && p.nickname){
+        greetMsg.textContent = 'こんにちは';
+        greetName.textContent = p.nickname + 'さん';
+        stateBadge.textContent = 'プレイヤーモード';
+      } else {
+        greetMsg.textContent = 'ようこそ';
+        greetName.textContent = 'ゲストさん';
+        stateBadge.textContent = 'ゲストモード';
+      }
+
+      // 最近のラウンド
+      var recent = Store.get(STORAGE.RECENT_ROUNDS) || [];
+      var list = document.getElementById('recent-list');
+      if(recent.length === 0){
+        list.innerHTML = 'まだラウンド記録がありません';
+      } else {
+        var html = '';
+        for(var i=0; i<Math.min(5, recent.length); i++){
+          var r = recent[i];
+          html += '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);">' +
+            '<span>' + escapeHtml(r.course) + '</span>' +
+            '<span style="color:#ffe082;font-weight:700;">' + r.total + '打</span>' +
+          '</div>';
+        }
+        list.innerHTML = html;
+      }
+    }
+  };
+
+  // ─── GLand モジュール ───
+  var GLand = {
+    render: function(){
+      if(!State.profile || !State.profile.nickname){
+        this.showRegister();
+      } else if(!State.courseId){
+        this.showCourseSelect();
+      } else {
+        this.showMain();
+      }
+      this.updateHeader();
+    },
+
+    updateHeader: function(){
+      var p = State.profile;
+      var nameEl = document.getElementById('header-name');
+      var courseEl = document.getElementById('header-course');
+      if(nameEl){
+        nameEl.textContent = p && p.nickname ? p.nickname : '';
+      }
+      if(courseEl){
+        courseEl.textContent = State.courseId ? getCourseName() : '';
+      }
+    },
+
+    showRegister: function(){
+      document.getElementById('register-card').classList.remove('hidden');
+      document.getElementById('course-select').classList.add('hidden');
+      document.getElementById('score-main').classList.add('hidden');
+
+      // 既存の名前を予め入れる
+      if(State.profile && State.profile.nickname){
+        document.getElementById('input-nickname').value = State.profile.nickname;
+      }
+    },
+
+    register: function(){
+      var nick = document.getElementById('input-nickname').value.trim();
+      if(!nick){
+        UI.toast('ニックネームを入力してください');
+        return;
+      }
+      State.profile = { nickname: nick, registeredAt: Date.now() };
+      Store.set(STORAGE.PROFILE, State.profile);
+      UI.toast('登録完了！');
+      this.updateHeader();
+      Home.render();
+      this.showCourseSelect();
+    },
+
+    showCourseSelect: function(){
+      document.getElementById('register-card').classList.add('hidden');
+      document.getElementById('course-select').classList.remove('hidden');
+      document.getElementById('score-main').classList.add('hidden');
+
+      document.getElementById('cs-greet').textContent = 
+        (State.profile && State.profile.nickname ? State.profile.nickname + 'さん、' : '') + 'こんにちは';
+
+      this.renderCourseList();
+    },
+
+    renderCourseList: function(){
+      var courses = [
+        { id: 'rokko-international', icon: '🏌', name: '六甲国際パブリック', sub: '9H / 18H 選択可', variants: [
+          { v: '9H', label: '🟢 9ホール' },
+          { v: '18H', label: '🔵 18ホール' }
+        ]},
+        { id: 'rokko-west', icon: '⛳', name: '西コース', sub: 'OUT / IN 選択', variants: [
+          { v: 'OUT', label: '➡️ OUT' },
+          { v: 'IN', label: '⬅️ IN' }
+        ]},
+        { id: 'rokko-east', icon: '⛳', name: '東コース', sub: 'OUT / IN 選択', variants: [
+          { v: 'OUT', label: '➡️ OUT' },
+          { v: 'IN', label: '⬅️ IN' }
+        ]}
+      ];
+
+      var html = '';
+      courses.forEach(function(c){
+        html += '<div class="course-wrap" data-course-id="' + c.id + '">' +
+          '<button class="course-card" data-action="cs-toggle" data-course-id="' + c.id + '">' +
+            '<div class="icon">' + c.icon + '</div>' +
+            '<div class="info">' +
+              '<div class="name">' + c.name + '</div>' +
+              '<div class="sub">' + c.sub + '</div>' +
+            '</div>' +
+            '<div class="arrow">▼</div>' +
+          '</button>' +
+          '<div class="sub-options">';
+        c.variants.forEach(function(vr){
+          html += '<button class="sub-btn" data-action="cs-confirm" data-course-id="' + c.id + '" data-variant="' + vr.v + '">' + vr.label + '</button>';
+        });
+        html += '</div></div>';
+      });
+      document.getElementById('course-list').innerHTML = html;
+    },
+
+    csToggle: function(courseId){
+      var wraps = document.querySelectorAll('.course-wrap');
+      wraps.forEach(function(w){
+        if(w.getAttribute('data-course-id') === courseId){
+          var card = w.querySelector('.course-card');
+          var opts = w.querySelector('.sub-options');
+          var wasExpanded = card.classList.contains('expanded');
+          // 全部閉じる
+          document.querySelectorAll('.course-card').forEach(function(c){ c.classList.remove('expanded'); });
+          document.querySelectorAll('.sub-options').forEach(function(o){ o.classList.remove('show'); });
+          if(!wasExpanded){
+            card.classList.add('expanded');
+            opts.classList.add('show');
+          }
+        }
+      });
+    },
+
+    selectCourse: function(courseId, variant){
+      State.courseId = courseId;
+      State.variant = variant;
+      State.totalHoles = (variant === '9H') ? 9 : 18;
+      State.currentHole = 1;
+
+      // 自分を最初のプレイヤーに
+      State.players = [{
+        id: 'me',
+        name: State.profile.nickname,
+        scores: new Array(State.totalHoles).fill(null),
+        shots: new Array(State.totalHoles).fill(0),
+        putts: new Array(State.totalHoles).fill(0),
+        isMe: true
+      }];
+
+      UI.toast(getCourseName() + ' ' + variant + ' を選択');
+      this.updateHeader();
+      this.showMain();
+    },
+
+    showMain: function(){
+      document.getElementById('register-card').classList.add('hidden');
+      document.getElementById('course-select').classList.add('hidden');
+      document.getElementById('score-main').classList.remove('hidden');
+
+      document.getElementById('me-name').textContent = State.profile.nickname;
+      this.syncToggles();
+      this.renderScoreUI();
+      this.renderCompanionList();
+      this.updateTotal();
+    },
+
+    syncToggles: function(){
+      document.getElementById('btn-simple').classList.toggle('active', State.inputMode === 'simple');
+      document.getElementById('btn-counter').classList.toggle('active', State.inputMode === 'counter');
+      document.getElementById('btn-putt-off').classList.toggle('active', State.puttMode === 'off');
+      document.getElementById('btn-putt-on').classList.toggle('active', State.puttMode === 'on');
+    },
+
+    setInputMode: function(mode){
+      State.inputMode = mode;
+      Store.setStr(STORAGE.INPUT_MODE, mode);
+      this.syncToggles();
+      this.renderScoreUI();
+      UI.toast(mode === 'simple' ? 'シンプルモード' : 'カウンターモード');
+    },
+
+    setPuttMode: function(mode){
+      State.puttMode = mode;
+      Store.setStr(STORAGE.PUTT_MODE, mode);
+      this.syncToggles();
+      this.renderScoreUI();
+      UI.toast('パット記録: ' + mode.toUpperCase());
+    },
+
+    renderScoreUI: function(){
+      var area = document.getElementById('input-area');
+      var hole = State.currentHole;
+      var me = State.players[0];
+      if(!me) return;
+      
+      if(State.inputMode === 'counter'){
+        area.innerHTML = this.buildCounterUI(hole, me);
+      } else {
+        area.innerHTML = this.buildSimpleUI(hole, me);
+      }
+    },
+
+    buildCounterUI: function(hole, me){
+      var par = getPar(hole);
+      var shots = me.shots[hole-1] || 0;
+      var putts = me.putts[hole-1] || 0;
+      var total = shots + putts;
+      var parDiff = total - par;
+      var parDiffStr = '';
+      if(total > 0){
+        if(parDiff === 0) parDiffStr = '（PAR）';
+        else parDiffStr = '（' + (parDiff > 0 ? '+' : '') + parDiff + '）';
+      }
+
+      return '<div class="counter-area">' +
+        '<div class="hole-nav">' +
+          '<button class="hole-nav-btn" data-action="prev-hole"' + (hole <= 1 ? ' disabled' : '') + '>◀</button>' +
+          '<div class="hole-center">' +
+            '<div class="hole-num">Hole ' + hole + '</div>' +
+            '<div class="hole-par">PAR ' + par + '</div>' +
+          '</div>' +
+          '<button class="hole-nav-btn" data-action="next-hole"' + (hole >= State.totalHoles ? ' disabled' : '') + '>▶</button>' +
+        '</div>' +
+        '<div class="total-display">' +
+          '<div class="total-label">合計スコア</div>' +
+          '<div class="total-val">' + (total > 0 ? total : '0') + '</div>' +
+          '<div class="total-pardiff">' + parDiffStr + '</div>' +
+          '<div class="breakdown">' +
+            '<span class="shot">🏌️ ショット: <b>' + shots + '</b></span>' +
+            '<span class="plus">+</span>' +
+            '<span class="putt">⛳ パット: <b>' + putts + '</b></span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="dual-buttons">' +
+          '<button class="dual-btn shot" data-action="counter-shot">' +
+            '<div class="icon">🏌️</div>' +
+            '<div class="label">ショット</div>' +
+            '<div class="plus">+1</div>' +
+          '</button>' +
+          '<button class="dual-btn putt" data-action="counter-putt">' +
+            '<div class="icon">⛳</div>' +
+            '<div class="label">パット</div>' +
+            '<div class="plus">+1</div>' +
+          '</button>' +
+        '</div>' +
+        '<button class="clr-btn" data-action="counter-clr">🔄 このホールをクリア</button>' +
+        '<div class="holes-grid">' + this.buildHolesGrid() + '</div>' +
+      '</div>';
+    },
+
+    buildSimpleUI: function(hole, me){
+      var par = getPar(hole);
+      var stroke = me.scores[hole-1];
+      var dispVal = (stroke !== null && stroke !== undefined) ? stroke : par;
+      var parDiff = dispVal - par;
+      var parDiffStr = parDiff === 0 ? '（PAR）' : '（' + (parDiff > 0 ? '+' : '') + parDiff + '）';
+      var putts = me.putts[hole-1] || 0;
+
+      return '<div class="simple-area">' +
+        '<div class="hole-nav">' +
+          '<button class="hole-nav-btn" data-action="prev-hole"' + (hole <= 1 ? ' disabled' : '') + '>◀</button>' +
+          '<div class="hole-center">' +
+            '<div class="hole-num">Hole ' + hole + '</div>' +
+            '<div class="hole-par">PAR ' + par + '</div>' +
+          '</div>' +
+          '<button class="hole-nav-btn" data-action="next-hole"' + (hole >= State.totalHoles ? ' disabled' : '') + '>▶</button>' +
+        '</div>' +
+        '<div class="simple-score">' +
+          '<div class="simple-val">' + dispVal + '</div>' +
+          '<div class="simple-pardiff">' + parDiffStr + '</div>' +
+        '</div>' +
+        '<div class="simple-buttons">' +
+          '<button class="btn-minus" data-action="stroke-minus">−</button>' +
+          '<button class="btn-plus" data-action="stroke-plus">+</button>' +
+        '</div>' +
+        (State.puttMode === 'on' ? '<div class="putt-section">' +
+          '<div class="putt-label">内訳：パット数 <b>' + putts + '</b></div>' +
+          '<div class="putt-row">' +
+            '<button class="putt-btn" data-action="putt-minus">− パット</button>' +
+            '<button class="putt-btn" data-action="putt-plus">+ パット</button>' +
+          '</div>' +
+        '</div>' : '') +
+        '<div class="holes-grid">' + this.buildHolesGrid() + '</div>' +
+      '</div>';
+    },
+
+    buildHolesGrid: function(){
+      var me = State.players[0];
+      var html = '';
+      for(var h=1; h<=State.totalHoles; h++){
+        var s = me.scores[h-1];
+        var cls = (h === State.currentHole) ? 'hole-btn current' : (s !== null ? 'hole-btn filled' : 'hole-btn');
+        var label = (s !== null && s !== undefined) ? s : '-';
+        html += '<button class="' + cls + '" data-action="jump-hole" data-hole="' + h + '">' + label + '</button>';
+      }
+      return html;
+    },
+
+    // ─── スコア操作 ───
+    chgStroke: function(delta){
+      var me = State.players[0];
+      var h = State.currentHole;
+      var par = getPar(h);
+      var cur = me.scores[h-1];
+      if(cur === null || cur === undefined) cur = par;
+      var next = Math.max(1, cur + delta);
+      me.scores[h-1] = next;
+      this.renderScoreUI();
+      this.renderCompanionList();
+      this.updateTotal();
+      UI.haptic();
+    },
+
+    chgPutt: function(delta){
+      var me = State.players[0];
+      var h = State.currentHole;
+      var cur = me.putts[h-1] || 0;
+      me.putts[h-1] = Math.max(0, cur + delta);
+      this.renderScoreUI();
+      UI.haptic();
+    },
+
+    counterShot: function(){
+      var me = State.players[0];
+      var h = State.currentHole;
+      me.shots[h-1]++;
+      me.scores[h-1] = me.shots[h-1] + me.putts[h-1];
+      this.renderScoreUI();
+      this.renderCompanionList();
+      this.updateTotal();
+      UI.haptic();
+    },
+
+    counterPutt: function(){
+      var me = State.players[0];
+      var h = State.currentHole;
+      me.putts[h-1]++;
+      me.scores[h-1] = me.shots[h-1] + me.putts[h-1];
+      this.renderScoreUI();
+      this.renderCompanionList();
+      this.updateTotal();
+      UI.haptic();
+    },
+
+    counterClr: function(){
+      var me = State.players[0];
+      var h = State.currentHole;
+      me.shots[h-1] = 0;
+      me.putts[h-1] = 0;
+      me.scores[h-1] = null;
+      this.renderScoreUI();
+      this.renderCompanionList();
+      this.updateTotal();
+      UI.haptic();
+    },
+
+    prevHole: function(){
+      if(State.currentHole > 1){
+        State.currentHole--;
+        this.renderScoreUI();
+      }
+    },
+
+    nextHole: function(){
+      if(State.currentHole < State.totalHoles){
+        State.currentHole++;
+        this.renderScoreUI();
+      }
+    },
+
+    jumpHole: function(hole){
+      State.currentHole = hole;
+      this.renderScoreUI();
+    },
+
+    updateTotal: function(){
+      var me = State.players[0];
+      var total = 0, parTotal = 0;
+      for(var i=0; i<me.scores.length; i++){
+        if(me.scores[i] !== null && me.scores[i] !== undefined){
+          total += me.scores[i];
+          parTotal += getPar(i+1);
+        }
+      }
+      var diff = total - parTotal;
+      document.getElementById('me-total').textContent = total + ' / ' + (diff >= 0 ? '+' : '') + diff;
+    },
+
+    renderCompanionList: function(){
+      var body = document.getElementById('companion-body');
+      if(State.players.length === 0){
+        body.innerHTML = '<div style="color:rgba(255,255,255,0.6);font-size:13px;padding:10px;">同伴者がいません</div>';
+        return;
+      }
+
+      var html = '<table class="companion-table"><thead><tr>';
+      html += '<th class="name-h">プレイヤー</th>';
+      // 簡略表示（OUT/INまたは全ホール）
+      var showHoles = State.totalHoles <= 9 ? State.totalHoles : 9;
+      for(var h=1; h<=showHoles; h++){
+        html += '<th class="' + (h === State.currentHole ? 'current' : '') + '">' + h + '</th>';
+      }
+      html += '<th class="total-h">計</th></tr></thead><tbody>';
+
+      State.players.forEach(function(p){
+        var rowCls = p.isMe ? 'row-me' : '';
+        html += '<tr class="' + rowCls + '">';
+        html += '<td class="name-cell" data-action="edit-companion" data-player-id="' + p.id + '">';
+        html += '<span class="name-text">' + escapeHtml(p.name) + '</span>';
+        if(p.isMe) html += ' <span class="me-badge">自分</span>';
+        html += '</td>';
+        for(var h=1; h<=showHoles; h++){
+          var s = p.scores[h-1];
+          var cellCls = (h === State.currentHole) ? 'hole-cell current' : 'hole-cell';
+          html += '<td class="' + cellCls + '">' + (s !== null && s !== undefined ? s : '-') + '</td>';
+        }
+        var totalP = 0;
+        p.scores.forEach(function(s){ if(s !== null && s !== undefined) totalP += s; });
+        html += '<td class="total-cell">' + (totalP > 0 ? totalP : '-') + '</td>';
+        html += '</tr>';
+      });
+      html += '</tbody></table>';
+      html += '<button class="add-companion-btn" data-action="add-companion">+ 同伴者を追加</button>';
+      body.innerHTML = html;
+    },
+
+    openCompanionModal: function(playerId){
+      State.companionEditId = playerId;
+      var title = document.getElementById('companion-title');
+      var input = document.getElementById('companion-input');
+      if(playerId){
+        var p = State.players.find(function(x){ return x.id === playerId; });
+        if(p){
+          title.textContent = '名前を変更';
+          input.value = p.name;
+        }
+      } else {
+        title.textContent = '同伴者を追加';
+        input.value = '';
+      }
+      UI.showModal('modal-companion');
+      setTimeout(function(){ input.focus(); }, 100);
+    },
+
+    confirmCompanion: function(){
+      var input = document.getElementById('companion-input');
+      var name = input.value.trim();
+      if(!name){
+        UI.toast('名前を入力してください');
+        return;
+      }
+      if(State.companionEditId){
+        // 編集
+        var p = State.players.find(function(x){ return x.id === State.companionEditId; });
+        if(p){
+          p.name = name;
+          if(p.isMe){
+            State.profile.nickname = name;
+            Store.set(STORAGE.PROFILE, State.profile);
+            this.updateHeader();
+            document.getElementById('me-name').textContent = name;
+          }
+        }
+        UI.toast('名前を変更しました');
+      } else {
+        // 新規追加
+        var newId = 'mate-' + Date.now();
+        State.players.push({
+          id: newId,
+          name: name,
+          scores: new Array(State.totalHoles).fill(null),
+          shots: new Array(State.totalHoles).fill(0),
+          putts: new Array(State.totalHoles).fill(0),
+          isMe: false
+        });
+        UI.toast(name + ' を追加しました');
+      }
+      UI.hideModal('modal-companion');
+      this.renderCompanionList();
+    },
+
+    finishRound: function(){
+      var me = State.players[0];
+      var total = 0;
+      me.scores.forEach(function(s){ if(s !== null) total += s; });
+      
+      UI.confirm(
+        'ラウンドを終了',
+        '合計 <b style="color:#ffe082;font-size:18px;">' + total + '打</b><br>このラウンドを保存しますか？',
+        function(){
+          var recent = Store.get(STORAGE.RECENT_ROUNDS) || [];
+          recent.unshift({
+            date: new Date().toISOString().slice(0,10),
+            course: getCourseName(),
+            variant: State.variant,
+            total: total
+          });
+          recent = recent.slice(0, 20);
+          Store.set(STORAGE.RECENT_ROUNDS, recent);
+          UI.toast('✅ 保存しました');
+          State.courseId = null;
+          State.players = [];
+          Router.go('home');
+        }
+      );
+    }
+  };
+
+  // ─── MyPage モジュール ───
+  var MyPage = {
+    render: function(){
+      var p = State.profile;
+      document.getElementById('my-name').textContent = p && p.nickname ? p.nickname : '未登録';
+      document.getElementById('my-id').textContent = 'G-WORLD User';
+    }
+  };
+
+  // ─── ユーティリティ ───
+  function escapeHtml(s){
+    if(s == null) return '';
+    return String(s).replace(/[&<>"']/g, function(m){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[m];
+    });
+  }
+
+  // ─── イベント委譲 ───
+  document.body.addEventListener('click', function(e){
+    var el = e.target;
+    while(el && el !== document.body){
+      var action = el.getAttribute && el.getAttribute('data-action');
+      var route = el.getAttribute && el.getAttribute('data-route');
+      
+      if(route){
+        e.preventDefault();
+        UI.haptic();
+        Router.go(route);
+        return;
+      }
+      
+      if(action){
+        e.preventDefault();
+        handleAction(action, el);
+        return;
+      }
+      el = el.parentNode;
+    }
+  });
+
+  function handleAction(action, el){
+    switch(action){
+      case 'start-round': Router.go('gland'); break;
+      case 'register': GLand.register(); break;
+      case 'cs-toggle': GLand.csToggle(el.getAttribute('data-course-id')); break;
+      case 'cs-confirm': 
+        GLand.selectCourse(el.getAttribute('data-course-id'), el.getAttribute('data-variant'));
+        break;
+      case 'mode-simple': GLand.setInputMode('simple'); break;
+      case 'mode-counter': GLand.setInputMode('counter'); break;
+      case 'putt-off': GLand.setPuttMode('off'); break;
+      case 'putt-on': GLand.setPuttMode('on'); break;
+      case 'stroke-plus': GLand.chgStroke(1); break;
+      case 'stroke-minus': GLand.chgStroke(-1); break;
+      case 'putt-plus': GLand.chgPutt(1); break;
+      case 'putt-minus': GLand.chgPutt(-1); break;
+      case 'counter-shot': GLand.counterShot(); break;
+      case 'counter-putt': GLand.counterPutt(); break;
+      case 'counter-clr': GLand.counterClr(); break;
+      case 'prev-hole': GLand.prevHole(); break;
+      case 'next-hole': GLand.nextHole(); break;
+      case 'jump-hole': GLand.jumpHole(parseInt(el.getAttribute('data-hole'),10)); break;
+      case 'edit-companion': GLand.openCompanionModal(el.getAttribute('data-player-id')); break;
+      case 'add-companion': GLand.openCompanionModal(null); break;
+      case 'close-companion': UI.hideModal('modal-companion'); break;
+      case 'confirm-companion': GLand.confirmCompanion(); break;
+      case 'finish-round': GLand.finishRound(); break;
+      case 'confirm-ok':
+        UI.hideModal('modal-confirm');
+        if(State.confirmCb) State.confirmCb();
+        State.confirmCb = null;
+        break;
+      case 'confirm-cancel':
+        UI.hideModal('modal-confirm');
+        State.confirmCb = null;
+        break;
+      case 'logout':
+        UI.confirm('プレイヤーリセット', 'すべてのデータが消えます。よろしいですか？', function(){
+          localStorage.clear();
+          location.reload();
+        });
+        break;
+    }
+  }
+
+  // ─── 起動 ───
+  Router.go('home');
+  console.log('[G-WORLD] Stage 2 Ultra v2.0.0 started');
+})();
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
