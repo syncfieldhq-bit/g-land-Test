@@ -1,0 +1,165 @@
+/* ═══════════════════════════════════════════════════════
+   G-WORLD Phase 1 - styles/base.css
+   骨組みの最小スタイル（リセット・変数・共通レイアウト）
+═══════════════════════════════════════════════════════ */
+
+/* CSS変数（カラーパレット） */
+:root {
+  --bg-grad: linear-gradient(160deg, #0a3d2e 0%, #0f5f47 60%, #0a3d2e 100%);
+  --gold: #f5c842;
+  --gold-bright: #ffe082;
+  --gold-dark: #d4a017;
+  --text-main: #ffffff;
+  --text-sub: rgba(255, 255, 255, 0.7);
+  --danger: #e74c3c;
+}
+
+/* リセット */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+  background: var(--bg-grad);
+  color: var(--text-main);
+  min-height: 100vh;
+}
+
+/* ヘッダー */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10, 61, 46, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(245, 200, 66, 0.2);
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 1px;
+}
+
+.header h1 .sub {
+  font-size: 10px;
+  opacity: 0.7;
+  margin-left: 4px;
+}
+
+.header-info {
+  text-align: right;
+  font-size: 11px;
+  color: var(--text-sub);
+}
+
+/* メインコンテナ */
+.container {
+  padding: 16px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* 起動プレースホルダ */
+.boot-placeholder {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.boot-spinner {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 20px;
+  border: 4px solid rgba(245, 200, 66, 0.2);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.boot-text {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+
+.boot-sub {
+  font-size: 12px;
+  color: var(--text-sub);
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 2000;
+}
+
+.toast.show {
+  opacity: 1;
+}
+
+/* 起動成功時のメッセージカード */
+.success-card {
+  background: rgba(46, 204, 113, 0.15);
+  border: 1px solid rgba(46, 204, 113, 0.5);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.success-card .icon {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.success-card .title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #2ecc71;
+  margin-bottom: 8px;
+}
+
+.success-card .desc {
+  font-size: 13px;
+  color: var(--text-sub);
+  line-height: 1.6;
+}
+
+.success-card .module-list {
+  margin-top: 14px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 11px;
+  text-align: left;
+  color: var(--gold-bright);
+  line-height: 1.8;
+}
