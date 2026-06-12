@@ -28,7 +28,8 @@
 
   // ── Router 互換のため、サブモジュールは内部参照も維持 ──
   //   旧コードが GW.Modules.GLand.Score のように直接アクセスしていたパターンを救う
-  Golf.Widget.state = Golf.state;
+  // ❌ 31行目：これを削除するか、以下のようにコメントアウト（無効化）してください
+  //Golf.Widget.state = Golf.state;
 
   // ── レジストリへ登録（Router の 'GLand' から呼ばれる） ──
   GW.Core.WidgetRegistry.register('GLand', Golf.Widget);
