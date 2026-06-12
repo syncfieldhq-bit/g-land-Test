@@ -1,9 +1,8 @@
 # すべてを無視する
 **/*
 
-# backendフォルダとfrontendフォルダは送る
+# backendフォルダだけは許可する
 !backend/**
-!frontend/**
 
-# 設定ファイルも送る
+# 設定ファイルも許可する
 !appsscript.json
