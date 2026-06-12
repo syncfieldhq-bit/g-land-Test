@@ -75,5 +75,8 @@
   // 名前空間に登録
   global.GW.Widgets.Base = BaseWidget;
 
-  console.log('[GW] _BaseWidget loaded');
+  // ★ここに新しく追加（ショートカットを作ってあげる）
+global.GW.Widgets.extend = BaseWidget.extend;
+
+  console.log('[GW] BaseWidget loaded');
 })(window);
