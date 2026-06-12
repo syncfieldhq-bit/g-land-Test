@@ -1,8 +1,0 @@
-# すべてを無視する
-**/*
-
-# backendフォルダだけは許可する
-!backend/**
-
-# 設定ファイルも許可する
-!appsscript.json
