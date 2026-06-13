@@ -1102,3 +1102,349 @@ body {
   .gw-si-confirm-big { font-size: 19px; padding: 18px 12px; }
   .gw-topbar-qr-btn { padding: 7px 9px; font-size: 11px; }
 }
+
+/* =============================================================
+   Phase 7d: Coming Soon UI 統一スタイル
+   ============================================================= */
+
+/* ========== ポータル：セクションラベル ========== */
+.gw-portal-section-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 24px 4px 10px;
+  font-size: 13px;
+  font-weight: 800;
+  color: rgba(255,255,255,0.9);
+  letter-spacing: 0.5px;
+}
+.gw-portal-label-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.gw-portal-label-dot.is-ready {
+  background: #2ecc71;
+  box-shadow: 0 0 8px rgba(46,204,113,0.6);
+}
+.gw-portal-label-dot.is-soon {
+  background: #9b59b6;
+  box-shadow: 0 0 8px rgba(155,89,182,0.6);
+}
+.gw-portal-label-hint {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.5);
+}
+
+/* ========== モジュールカードのタグ（READY/SOON） ========== */
+.gw-portal-module {
+  position: relative;
+  overflow: visible;
+}
+.gw-mod-tag {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  padding: 2px 7px;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  border-radius: 6px;
+  z-index: 2;
+}
+.gw-tag-ready {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  color: #fff;
+  box-shadow: 0 1px 4px rgba(46,204,113,0.5);
+}
+.gw-tag-soon {
+  background: linear-gradient(135deg, #9b59b6, #8e44ad);
+  color: #fff;
+}
+
+/* 利用可能モジュール：ホバーで強調 */
+.gw-portal-module.is-ready {
+  border: 1px solid rgba(46,204,113,0.3);
+  background: linear-gradient(135deg, rgba(46,204,113,0.05), rgba(255,255,255,0.08));
+}
+.gw-portal-module.is-ready:active {
+  transform: scale(0.97);
+  background: linear-gradient(135deg, rgba(46,204,113,0.15), rgba(255,255,255,0.12));
+}
+
+/* Coming Soon モジュール：薄く・破線・鍵 */
+.gw-portal-module.is-coming-soon {
+  opacity: 0.6;
+  background: rgba(255,255,255,0.03);
+  border: 1.5px dashed rgba(155,89,182,0.5);
+}
+.gw-portal-module.is-coming-soon:active {
+  opacity: 0.85;
+}
+.gw-portal-module .gw-mod-lock {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  font-size: 14px;
+  z-index: 2;
+  filter: drop-shadow(0 0 4px rgba(0,0,0,0.6));
+}
+
+/* 旧バッジは継続使用 */
+.gw-portal-module .gw-badge-active {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  background: #2ecc71;
+  color: #fff;
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+/* ポータルフッター情報 */
+.gw-portal-footer-info {
+  text-align: center;
+  margin-top: 24px;
+  padding: 12px;
+  color: rgba(255,255,255,0.5);
+  font-size: 11px;
+}
+
+/* ========== G-COMPETE：カード ========== */
+.gw-gc-cards {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+.gw-gc-card {
+  position: relative;
+  background: rgba(255,255,255,0.08);
+  padding: 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.12);
+  overflow: hidden;
+}
+.gw-gc-card h3 {
+  margin: 8px 0 8px;
+  color: #f5c842;
+  font-size: 17px;
+}
+.gw-gc-card p {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.6;
+}
+.gw-gc-card input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+/* 動作中カード：緑のグラデ縁取り */
+.gw-gc-card-active {
+  border: 2px solid rgba(46,204,113,0.4);
+  background: linear-gradient(135deg, rgba(46,204,113,0.08), rgba(255,255,255,0.08));
+  box-shadow: 0 4px 16px rgba(46,204,113,0.15);
+}
+
+/* Coming Soon カード：薄く・破線・鍵 */
+.gw-gc-card-soon {
+  opacity: 0.6;
+  background: rgba(255,255,255,0.03);
+  border: 1.5px dashed rgba(155,89,182,0.5);
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.gw-gc-card-soon:active { opacity: 0.85; }
+.gw-gc-card-soon h3 { color: rgba(245,200,66,0.7); }
+.gw-gc-card-soon p { color: rgba(255,255,255,0.55); }
+.gw-gc-lock-icon {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  font-size: 18px;
+  filter: drop-shadow(0 0 4px rgba(0,0,0,0.6));
+}
+
+/* 共通バッジ */
+.gw-gc-card-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+}
+.gw-gc-badge-ready {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  color: #fff;
+}
+.gw-gc-badge-soon {
+  background: linear-gradient(135deg, #9b59b6, #8e44ad);
+  color: #fff;
+}
+
+/* Coming Soon ボタン */
+.gw-btn-soon {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  background: rgba(155,89,182,0.15);
+  color: rgba(155,89,182,1);
+  border: 1px dashed rgba(155,89,182,0.5);
+  border-radius: 10px;
+  cursor: not-allowed;
+  margin-top: 6px;
+}
+
+/* G-COMPETE 情報ボックス */
+.gw-gc-info-box {
+  margin-top: 18px;
+  padding: 14px;
+  background: rgba(52,152,219,0.1);
+  border: 1px solid rgba(52,152,219,0.3);
+  border-radius: 10px;
+}
+.gw-gc-info-box p {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.6;
+}
+.gw-gc-info-box strong { color: #3498db; }
+
+/* G-COMPETE 内の Coming Soon 行（アクティブ画面用） */
+.gw-gc-soon-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  margin: 12px 0;
+  background: rgba(155,89,182,0.08);
+  border: 1.5px dashed rgba(155,89,182,0.5);
+  border-radius: 10px;
+  cursor: pointer;
+  opacity: 0.85;
+}
+.gw-gc-soon-row .gw-gc-lock-icon {
+  position: static;
+  font-size: 20px;
+}
+.gw-gc-soon-text { flex: 1; }
+.gw-gc-soon-text strong {
+  display: block;
+  font-size: 14px;
+  color: #f5c842;
+  margin-bottom: 2px;
+}
+.gw-gc-soon-text small {
+  font-size: 11px;
+  color: rgba(255,255,255,0.6);
+}
+.gw-gc-soon-badge {
+  background: linear-gradient(135deg, #9b59b6, #8e44ad);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+/* ========== マイページ：セクションバッジ ========== */
+.gw-mp-section {
+  position: relative;
+  overflow: hidden;
+}
+.gw-mp-section-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 3px 9px;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  border-radius: 8px;
+  z-index: 2;
+}
+.gw-mp-badge-ready {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  color: #fff;
+}
+.gw-mp-badge-soon {
+  background: linear-gradient(135deg, #9b59b6, #8e44ad);
+  color: #fff;
+}
+
+/* マイページ Coming Soon ヘッダー */
+.gw-mp-soon-header {
+  margin: 28px 4px 12px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, rgba(155,89,182,0.15), rgba(155,89,182,0.05));
+  border-left: 4px solid #9b59b6;
+  border-radius: 8px;
+}
+.gw-mp-soon-header span {
+  display: block;
+  font-size: 14px;
+  font-weight: 900;
+  color: #c39bd3;
+}
+.gw-mp-soon-header small {
+  display: block;
+  font-size: 11px;
+  color: rgba(255,255,255,0.6);
+  margin-top: 2px;
+}
+
+/* マイページ Coming Soon セクション */
+.gw-mp-soon-section {
+  opacity: 0.65;
+  background: rgba(255,255,255,0.03) !important;
+  border: 1.5px dashed rgba(155,89,182,0.4);
+  cursor: pointer;
+  transition: opacity 0.2s;
+  position: relative;
+  padding-left: 44px !important;
+}
+.gw-mp-soon-section:active { opacity: 0.85; }
+.gw-mp-soon-section h2 {
+  color: rgba(245,200,66,0.7) !important;
+  font-size: 16px !important;
+}
+.gw-mp-lock {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  font-size: 20px;
+  filter: drop-shadow(0 0 4px rgba(0,0,0,0.5));
+}
+.gw-mp-soon-desc {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.6;
+}
+
+/* マイページフッター */
+.gw-mp-footer {
+  text-align: center;
+  margin-top: 30px;
+  padding: 16px;
+  color: rgba(255,255,255,0.35);
+  font-size: 11px;
+}

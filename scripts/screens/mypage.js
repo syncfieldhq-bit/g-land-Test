@@ -1,5 +1,5 @@
 // =============================================================
-// mypage.js - マイページ（Phase 7b：本名フィールド追加版）
+// mypage.js - マイページ（Phase 7d：Coming Soon 機能の明示化）
 // =============================================================
 import * as Store from '../core/storage.js';
 import { toast } from '../ui/toast.js';
@@ -17,7 +17,9 @@ export function renderMyPage() {
   const history = Store.getRoundHistory();
 
   _root.innerHTML = `
+    <!-- ✅ プロフィール（動作中） -->
     <div class="gw-mp-section">
+      <div class="gw-mp-section-badge gw-mp-badge-ready">✓ 利用可能</div>
       <h2>👤 プロフィール</h2>
       ${profile ? `
         <div class="gw-mp-field">
@@ -39,7 +41,9 @@ export function renderMyPage() {
       ` : '<p>未登録です。G-LANDから登録してください。</p>'}
     </div>
 
+    <!-- ✅ 表示設定（動作中） -->
     <div class="gw-mp-section">
+      <div class="gw-mp-section-badge gw-mp-badge-ready">✓ 利用可能</div>
       <h2>⚙️ 表示設定</h2>
       <div class="gw-mp-row">
         <span>入力モード</span>
@@ -65,20 +69,93 @@ export function renderMyPage() {
       <button class="gw-btn-primary" data-action="save-settings">設定を保存</button>
     </div>
 
+    <!-- ✅ ラウンド履歴（動作中） -->
     <div class="gw-mp-section">
+      <div class="gw-mp-section-badge gw-mp-badge-ready">✓ 利用可能</div>
       <h2>📋 ラウンド履歴（${history.length}件）</h2>
       ${history.length === 0 ? '<p style="color:#aaa;">まだ履歴がありません</p>' : renderHistory(history)}
       ${history.length ? '<button class="gw-btn-secondary" data-action="clear-history">履歴をすべて削除</button>' : ''}
     </div>
 
+    <!-- 🔒 Coming Soon セクション -->
+    <div class="gw-mp-soon-header">
+      <span>🚀 開発中の機能</span>
+      <small>順次リリース予定！お楽しみに</small>
+    </div>
+
+    <!-- 🔒 統計分析 -->
+    <div class="gw-mp-section gw-mp-soon-section" data-action="coming-soon" data-feature="統計分析">
+      <span class="gw-mp-lock">🔒</span>
+      <div class="gw-mp-section-badge gw-mp-badge-soon">Coming Soon</div>
+      <h2>📊 統計分析</h2>
+      <p class="gw-mp-soon-desc">
+        平均スコア・パット数・アンダー率など、<br>
+        あなたのプレースタイルを可視化します。
+      </p>
+    </div>
+
+    <!-- 🔒 アチーブメント -->
+    <div class="gw-mp-section gw-mp-soon-section" data-action="coming-soon" data-feature="アチーブメント">
+      <span class="gw-mp-lock">🔒</span>
+      <div class="gw-mp-section-badge gw-mp-badge-soon">Coming Soon</div>
+      <h2>🏅 アチーブメント</h2>
+      <p class="gw-mp-soon-desc">
+        初バーディ・ホールインワン・100切りなど、<br>
+        達成した記録を称号として獲得！
+      </p>
+    </div>
+
+    <!-- 🔒 クラブ・スコア詳細 -->
+    <div class="gw-mp-section gw-mp-soon-section" data-action="coming-soon" data-feature="クラブ別記録">
+      <span class="gw-mp-lock">🔒</span>
+      <div class="gw-mp-section-badge gw-mp-badge-soon">Coming Soon</div>
+      <h2>🏌️ クラブ別記録</h2>
+      <p class="gw-mp-soon-desc">
+        使用クラブ・飛距離・OB位置などを記録して<br>
+        コース攻略に活かせます。
+      </p>
+    </div>
+
+    <!-- 🔒 バックアップ・復元 -->
+    <div class="gw-mp-section gw-mp-soon-section" data-action="coming-soon" data-feature="クラウドバックアップ">
+      <span class="gw-mp-lock">🔒</span>
+      <div class="gw-mp-section-badge gw-mp-badge-soon">Coming Soon</div>
+      <h2>☁️ クラウドバックアップ</h2>
+      <p class="gw-mp-soon-desc">
+        データをクラウドに保存して<br>
+        機種変更時も安心して引き継ぎ。
+      </p>
+    </div>
+
+    <!-- 🔒 ハンディキャップ -->
+    <div class="gw-mp-section gw-mp-soon-section" data-action="coming-soon" data-feature="ハンディキャップ">
+      <span class="gw-mp-lock">🔒</span>
+      <div class="gw-mp-section-badge gw-mp-badge-soon">Coming Soon</div>
+      <h2>📐 ハンディキャップ管理</h2>
+      <p class="gw-mp-soon-desc">
+        JGA準拠のハンディキャップ算出。<br>
+        コンペで公平な競技を実現。
+      </p>
+    </div>
+
+    <!-- ✅ メンテナンス（動作中） -->
     <div class="gw-mp-section">
+      <div class="gw-mp-section-badge gw-mp-badge-ready">✓ 利用可能</div>
       <h2>🛠 メンテナンス</h2>
       <button class="gw-btn-danger" data-action="logout">ログアウト（全データ削除）</button>
+    </div>
+
+    <div class="gw-mp-footer">
+      <small>G-WORLD v7.0.0 — Made with ⛳</small>
     </div>
   `;
 
   _root.querySelectorAll('[data-action]').forEach(el => {
-    el.addEventListener('click', () => handle(el.dataset.action));
+    el.addEventListener('click', (e) => {
+      // Coming Soon カード内の子要素クリック対応
+      e.stopPropagation();
+      handle(el.dataset.action, el);
+    });
   });
 }
 
@@ -100,8 +177,13 @@ function renderHistory(history) {
   return html;
 }
 
-function handle(action) {
+function handle(action, el) {
   switch (action) {
+    case 'coming-soon': {
+      const feature = el.dataset.feature || 'この機能';
+      toast(`「${feature}」は近日公開予定です 🚀`, 'info', 2500);
+      break;
+    }
     case 'save-profile': {
       const name = document.getElementById('gw-mp-name').value.trim();
       const realName = document.getElementById('gw-mp-realname').value.trim();

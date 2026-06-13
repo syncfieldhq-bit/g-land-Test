@@ -1,5 +1,5 @@
 // =============================================================
-// home.js - ポータル画面（Phase 7b：Gタウン・Gプロアマ追加版）
+// home.js - ポータル画面（Phase 7d：✓利用可能 / 🔒近日公開 を明示）
 // =============================================================
 import * as Store from '../core/storage.js';
 import { State } from '../core/state.js';
@@ -17,8 +17,6 @@ export function renderHome() {
   const draft = Store.getRoundDraft();
   const history = Store.getRoundHistory();
   const group = Store.getGroup() || State.getGroup();
-
-  // 進行中ラウンドの有無を判定（コース＆プレイヤーが存在するか）
   const hasResumable = !!(draft && draft.course && draft.players && draft.players.length > 0);
 
   _root.innerHTML = `
@@ -37,51 +35,84 @@ export function renderHome() {
       <button class="gw-portal-cta" data-action="start-round">⛳ ラウンドを開始する</button>
     </div>
 
+    <!-- ✅ 利用可能機能 -->
+    <div class="gw-portal-section-label">
+      <span class="gw-portal-label-dot is-ready"></span>
+      <span>利用可能な機能</span>
+    </div>
     <div class="gw-portal-modules">
-      <button class="gw-portal-module" data-route="gland">
+      <button class="gw-portal-module is-ready" data-route="gland">
+        <span class="gw-mod-tag gw-tag-ready">✓ READY</span>
         <div class="gw-mod-icon">⛳</div>
         <div class="gw-mod-name">G-LAND</div>
         <div class="gw-mod-desc">スコア管理</div>
       </button>
-      <button class="gw-portal-module" data-route="gcompete">
+      <button class="gw-portal-module is-ready" data-route="gcompete">
+        <span class="gw-mod-tag gw-tag-ready">✓ READY</span>
         <div class="gw-mod-icon">🏆</div>
         <div class="gw-mod-name">G-COMPETE</div>
-        <div class="gw-mod-desc">仲間内コンペ</div>
+        <div class="gw-mod-desc">仲間内QR共有</div>
         ${group ? '<span class="gw-mod-badge gw-badge-active">参加中</span>' : ''}
       </button>
-      <button class="gw-portal-module is-coming-soon" data-action="coming-soon" data-name="Gタウン">
-        <div class="gw-mod-icon">🏘️</div>
-        <div class="gw-mod-name">Gタウン</div>
-        <div class="gw-mod-desc">地域とつながる</div>
-        <span class="gw-mod-lock">🔒</span>
-        <span class="gw-mod-badge gw-badge-soon">Coming Soon</span>
-      </button>
-      <button class="gw-portal-module is-coming-soon" data-action="coming-soon" data-name="Gプロアマコンペ">
-        <div class="gw-mod-icon">🏌️‍♂️</div>
-        <div class="gw-mod-name">Gプロアマ</div>
-        <div class="gw-mod-desc">プロアマコンペ</div>
-        <span class="gw-mod-lock">🔒</span>
-        <span class="gw-mod-badge gw-badge-soon">Coming Soon</span>
-      </button>
-      <button class="gw-portal-module" data-route="mypage">
+      <button class="gw-portal-module is-ready" data-route="mypage">
+        <span class="gw-mod-tag gw-tag-ready">✓ READY</span>
         <div class="gw-mod-icon">👤</div>
         <div class="gw-mod-name">マイページ</div>
         <div class="gw-mod-desc">設定・履歴</div>
       </button>
     </div>
 
+    <!-- 🔒 開発中の機能 -->
+    <div class="gw-portal-section-label">
+      <span class="gw-portal-label-dot is-soon"></span>
+      <span>開発中の機能</span>
+      <small class="gw-portal-label-hint">タップで詳細</small>
+    </div>
+    <div class="gw-portal-modules">
+      <button class="gw-portal-module is-coming-soon" data-action="coming-soon" data-name="Gタウン">
+        <span class="gw-mod-lock">🔒</span>
+        <span class="gw-mod-tag gw-tag-soon">SOON</span>
+        <div class="gw-mod-icon">🏘️</div>
+        <div class="gw-mod-name">Gタウン</div>
+        <div class="gw-mod-desc">地域とつながる</div>
+      </button>
+      <button class="gw-portal-module is-coming-soon" data-action="coming-soon" data-name="Gプロアマコンペ">
+        <span class="gw-mod-lock">🔒</span>
+        <span class="gw-mod-tag gw-tag-soon">SOON</span>
+        <div class="gw-mod-icon">🏌️‍♂️</div>
+        <div class="gw-mod-name">Gプロアマ</div>
+        <div class="gw-mod-desc">プロアマコンペ</div>
+      </button>
+      <button class="gw-portal-module is-coming-soon" data-action="coming-soon" data-name="Gレッスン">
+        <span class="gw-mod-lock">🔒</span>
+        <span class="gw-mod-tag gw-tag-soon">SOON</span>
+        <div class="gw-mod-icon">🎓</div>
+        <div class="gw-mod-name">Gレッスン</div>
+        <div class="gw-mod-desc">プロのレッスン</div>
+      </button>
+      <button class="gw-portal-module is-coming-soon" data-action="coming-soon" data-name="Gショップ">
+        <span class="gw-mod-lock">🔒</span>
+        <span class="gw-mod-tag gw-tag-soon">SOON</span>
+        <div class="gw-mod-icon">🛍️</div>
+        <div class="gw-mod-name">Gショップ</div>
+        <div class="gw-mod-desc">用品ショップ</div>
+      </button>
+    </div>
+
     ${history.length ? renderRecent(history.slice(0, 3)) : ''}
+
+    <div class="gw-portal-footer-info">
+      <small>※ 🔒マークは開発中の機能です。順次リリース予定 🚀</small>
+    </div>
   `;
 
   bindEvents();
 }
 
 function bindEvents() {
-  // ルート遷移ボタン
   _root.querySelectorAll('[data-route]').forEach(el => {
     el.addEventListener('click', () => Router.go(el.dataset.route));
   });
-  // アクションボタン
   _root.querySelectorAll('[data-action]').forEach(el => {
     el.addEventListener('click', () => handle(el.dataset.action, el));
   });
@@ -90,23 +121,19 @@ function bindEvents() {
 function handle(action, el) {
   switch (action) {
     case 'resume-round': {
-      // 🔧 バグ修正: ドラフトを State に確実に復元してから遷移
       const draft = Store.getRoundDraft();
       if (!draft || !draft.course) {
         toast('進行中のラウンドが見つかりません', 'error');
         return;
       }
       try {
-        // State をリセットしてからドラフトを復元（重複登録防止）
         State.reset();
         State.restore(draft);
-        // 念のためコース・ホール・アクティブプレイヤーを確実に設定
         if (draft.course) State.setCourse(draft.course);
         if (typeof draft.currentHole === 'number') State.setHole(draft.currentHole);
         const self = draft.players?.find(p => p.isSelf);
         if (self) State.setActivePlayer(self.id);
         toast('ラウンドを再開します', 'success');
-        // 確実に gland 画面に遷移
         Router.go('gland');
       } catch (e) {
         console.error('[Resume] failed:', e);
@@ -115,7 +142,6 @@ function handle(action, el) {
       break;
     }
     case 'start-round': {
-      // 新規ラウンド開始 → 既存ドラフトがあれば確認
       const draft = Store.getRoundDraft();
       if (draft && draft.course) {
         if (!confirm('進行中のラウンドがあります。新しく始めますか？\n（現在のラウンドは破棄されます）')) return;
@@ -127,7 +153,7 @@ function handle(action, el) {
     }
     case 'coming-soon': {
       const name = el.dataset.name || 'この機能';
-      toast(`${name} は近日公開予定です 🚀`, 'info', 2500);
+      toast(`「${name}」は近日公開予定です 🚀`, 'info', 2500);
       break;
     }
   }
