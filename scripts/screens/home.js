@@ -13,7 +13,6 @@
 
 import { State } from '../core/state.js';
 import { Store } from '../core/storage.js';
-import { STORAGE_KEYS } from '../core/config.js';
 
 export const HomeScreen = {
   /**
@@ -24,7 +23,9 @@ export const HomeScreen = {
     const profile = State.profile;
     const name = profile && profile.nickname ? profile.nickname : 'ゲスト';
     const isGuest = !profile || !profile.nickname;
-    const recent = Store.get(STORAGE_KEYS.RECENT_ROUNDS, []) || [];
+    // 🆕 Phase 5：Store の専用API経由で取得
+    const recent = Store.getRoundHistory();
+    const hasDraft = !!Store.loadRoundDraft();
 
     container.innerHTML = `
       <div class="home-hero">
@@ -33,7 +34,9 @@ export const HomeScreen = {
         <div class="state-badge ${isGuest ? 'guest' : 'user'}">
           ${isGuest ? 'ゲストモード' : 'プレイヤーモード'}
         </div>
-        <button class="btn-cta" data-action="start-round">⛳ ラウンドを開始する</button>
+        <button class="btn-cta" data-action="start-round">
+          ${hasDraft ? '⏯️ 進行中のラウンドを続ける' : '⛳ ラウンドを開始する'}
+        </button>
       </div>
 
       <div class="home-modules">
@@ -79,8 +82,8 @@ function renderRecent(recent) {
   return recent.slice(0, 5).map((r) => `
     <div class="recent-item">
       <span class="recent-date">${escapeHtml(r.date || '')}</span>
-      <span class="recent-course">${escapeHtml(r.course || '')}</span>
-      <span class="recent-total">${r.total || '-'}打</span>
+      <span class="recent-course">${escapeHtml(r.course || '')} ${escapeHtml(r.variant || '')}</span>
+      <span class="recent-total">${r.total || '-'}打 <small style="color:#ffe082;">(${r.diffStr || ''})</small></span>
     </div>
   `).join('');
 }

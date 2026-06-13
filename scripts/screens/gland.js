@@ -14,14 +14,20 @@
 import { State } from '../core/state.js';
 import { Store } from '../core/storage.js';
 import { STORAGE_KEYS } from '../core/config.js';
+import { Calculator } from '../core/calculator.js';
 import { toast } from '../ui/toast.js';
+import { confirm } from '../ui/modal.js';
 import { renderScore } from '../widgets/score.js';
 
 export const GLandScreen = {
   /**
    * G-LAND画面を描画（状態に応じて分岐）
+   * Phase 5: 起動時にドラフトを自動復元
    */
   render(container) {
+    // 🆕 Phase 5：ドラフトを復元（初回のみ）
+    this._tryRestoreDraft();
+
     if (!State.profile || !State.profile.nickname) {
       this._renderRegister(container);
     } else if (!State.courseId) {
@@ -29,6 +35,25 @@ export const GLandScreen = {
     } else {
       this._renderScoreMain(container);
     }
+  },
+
+  /**
+   * 🆕 Phase 5：進行中ラウンドのドラフトを復元
+   * State がまだコース未選択で、かつドラフトが存在する場合のみ復元
+   */
+  _tryRestoreDraft() {
+    if (State.courseId) return; // 既に読み込み済み
+    const draft = Store.loadRoundDraft();
+    if (!draft) return;
+
+    State.courseId = draft.courseId;
+    State.variant = draft.variant;
+    State.totalHoles = draft.totalHoles || 18;
+    State.currentHole = draft.currentHole || 1;
+    State.players = draft.players || [];
+    if (draft.inputMode) State.inputMode = draft.inputMode;
+    if (draft.puttMode) State.puttMode = draft.puttMode;
+    console.log('[gland] draft restored:', draft.courseId, draft.variant);
   },
 
   /** ① 登録カード */
@@ -216,18 +241,76 @@ export const GLandScreen = {
     document.getElementById('mode-counter')?.classList.toggle('active', mode === 'counter');
   },
 
-  /** コース変更（State を一部リセット） */
-  changeCourse() {
+  /** コース変更（State + ドラフトをリセット） */
+  async changeCourse() {
+    const ok = await confirm(
+      'コース変更',
+      '現在の入力中スコアは破棄されます。<br>本当にコースを変更しますか？'
+    );
+    if (!ok) return;
+
+    // ドラフトも削除
+    Store.clearRoundDraft();
     State.courseId = null;
     State.variant = null;
     State.players = [];
+    State.currentHole = 1;
     const container = document.getElementById('app-root');
     if (container) this.render(container);
   },
 
-  /** ラウンド終了（最近のラウンドに保存） */
-  finishRound() {
-    toast('Phase 4 で完全実装予定');
+  /**
+   * 🆕 Phase 5：ラウンド終了 → 確認 → 履歴保存 → ドラフト削除
+   */
+  async finishRound() {
+    const me = State.players[0];
+    if (!me) {
+      toast('プレイヤー情報がありません', { type: 'error' });
+      return;
+    }
+
+    const summary = Calculator.summarize(me);
+    const ok = await confirm(
+      'ラウンドを終了',
+      `合計 <b style="color:#ffe082;font-size:18px;">${summary.strokes}打</b> ` +
+      `(PAR差 <b>${summary.diffStr}</b>)<br>` +
+      `プレイ済 ${summary.playedHoles}/${summary.totalHoles}ホール<br><br>` +
+      `このラウンドを履歴に保存しますか？`
+    );
+
+    if (!ok) return;
+
+    // 履歴に追加
+    Store.appendRound({
+      date: new Date().toISOString().slice(0, 10),
+      course: getCourseName(State.courseId),
+      variant: State.variant,
+      total: summary.strokes,
+      diff: summary.diff,
+      diffStr: summary.diffStr,
+      playedHoles: summary.playedHoles,
+      totalHoles: summary.totalHoles
+    });
+
+    // ドラフトを削除
+    Store.clearRoundDraft();
+
+    // State をリセット
+    State.courseId = null;
+    State.variant = null;
+    State.players = [];
+    State.currentHole = 1;
+
+    toast('✅ 履歴に保存しました', { type: 'success' });
+
+    // ホームへ遷移
+    setTimeout(() => {
+      const container = document.getElementById('app-root');
+      // Router 経由でホームに戻す（main.js から渡されるルーターが必要だが、
+      // ここでは location.hash を使ってホームへ）
+      location.hash = '#home';
+      location.reload();
+    }, 1000);
   },
 
   /** 登録画面に戻る */

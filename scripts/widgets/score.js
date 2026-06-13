@@ -1,51 +1,69 @@
 /**
  * ═══════════════════════════════════════════════════════
- * scripts/widgets/score.js - スコア入力ウィジェット（Phase 4：Calculator連携版）
+ * scripts/widgets/score.js - スコア入力ウィジェット（Phase 5）
  *
- * Phase 4 の追加：
- *   - Calculator を import して、合計・PAR差をリアルタイム計算
- *   - 実際のスコア更新ロジックを実装（State に書き込み）
- *   - 内訳ヘッダー（合計/OUT/IN）を表示
- *   - PAR起点シンプル、ショット+パット カウンター モード両方対応
+ * Phase 5 の追加：
+ *   - hole-grid（18ホールジャンプ）を統合
+ *   - companion-list（同伴者表）を統合（簡易版・自分のみ）
+ *   - スコア変更のたびに Round Draft を自動保存
+ *   - 同伴者名タップで companion-modal を開く
  * ═══════════════════════════════════════════════════════
  */
 
 import { State } from '../core/state.js';
+import { Store } from '../core/storage.js';
 import { getPar } from '../core/config.js';
 import { Calculator } from '../core/calculator.js';
 import { toast } from '../ui/toast.js';
+import { renderHoleGrid } from './hole-grid.js';
+import { openCompanionModal } from './companion-modal.js';
 
 /**
  * スコアウィジェットを描画
  *
  * @param {HTMLElement} container - 描画先要素
- * @param {Object} [opts]
- * @param {number} [opts.hole] - 表示するホール番号（省略時 State.currentHole）
  */
-export function renderScore(container, opts = {}) {
+export function renderScore(container) {
   if (!container) return;
 
-  const hole = opts.hole ?? State.currentHole;
+  const hole = State.currentHole;
   const mode = State.inputMode;
 
   container.innerHTML = `
     ${buildSummary()}
     ${mode === 'counter' ? buildCounterUI(hole) : buildSimpleUI(hole)}
+    <div id="score-hole-grid-mount"></div>
+    <div id="score-companion-mount"></div>
   `;
 
   bindEvents(container);
+
+  // ホールグリッドをマウント
+  const gridMount = container.querySelector('#score-hole-grid-mount');
+  if (gridMount) {
+    renderHoleGrid(gridMount, {
+      onJump: (h) => {
+        State.currentHole = h;
+        renderScore(container);
+      }
+    });
+  }
+
+  // 同伴者リストをマウント
+  const compMount = container.querySelector('#score-companion-mount');
+  if (compMount) {
+    renderCompanionList(compMount, container);
+  }
 }
 
 /**
- * サマリヘッダー（合計 / PAR差 / OUT / IN）
+ * サマリヘッダー（合計・PAR差・OUT/IN）
  */
 function buildSummary() {
   const me = State.players[0];
   if (!me) return '';
 
   const summary = Calculator.summarize(me);
-
-  // 18ホールの場合のみ OUT/IN を表示
   const showHalves = State.totalHoles === 18;
 
   return `
@@ -82,7 +100,6 @@ function buildSummary() {
   `;
 }
 
-/** diff の値からCSSクラスを決定 */
 function diffClass(diff) {
   if (diff < 0) return 'diff-under';
   if (diff === 0) return 'diff-even';
@@ -90,7 +107,7 @@ function diffClass(diff) {
 }
 
 /**
- * シンプルモードUI（PARからの ± 調整）
+ * シンプルモードUI
  */
 function buildSimpleUI(hole) {
   const par = getPar(hole);
@@ -127,7 +144,7 @@ function buildSimpleUI(hole) {
 }
 
 /**
- * カウンターモードUI（ショット + パット の自動合算）
+ * カウンターモードUI
  */
 function buildCounterUI(hole) {
   const par = getPar(hole);
@@ -174,7 +191,113 @@ function buildCounterUI(hole) {
 }
 
 /**
- * イベントリスナーをバインド
+ * 同伴者リスト（プレイヤー一覧）
+ */
+function renderCompanionList(mount, parentContainer) {
+  const players = State.players;
+  const totalHoles = State.totalHoles;
+  const currentHole = State.currentHole;
+
+  // 表示するホール範囲（コンパクト化のため5ホール分のみ表示）
+  const showStart = Math.max(1, currentHole - 2);
+  const showEnd = Math.min(totalHoles, showStart + 4);
+
+  let html = '<div class="companion-section">';
+  html += '<h3 class="companion-title">👥 プレイヤー一覧</h3>';
+  html += '<table class="companion-table"><thead><tr>';
+  html += '<th class="ct-name">プレイヤー</th>';
+  for (let h = showStart; h <= showEnd; h++) {
+    html += `<th class="ct-hole ${h === currentHole ? 'is-current' : ''}">${h}</th>`;
+  }
+  html += '<th class="ct-total">計</th>';
+  html += '</tr></thead><tbody>';
+
+  players.forEach((p) => {
+    const summary = Calculator.summarize(p);
+    html += `<tr class="${p.isMe ? 'row-me' : ''}">`;
+    html += `<td class="ct-name-cell" data-companion-edit="${p.id}">
+      <span class="ct-name-text">${escapeHtml(p.name)}</span>
+      ${p.isMe ? '<span class="me-badge">自分</span>' : ''}
+    </td>`;
+    for (let h = showStart; h <= showEnd; h++) {
+      const s = p.scores && p.scores[h - 1];
+      const cellCls = (h === currentHole) ? 'ct-hole is-current' : 'ct-hole';
+      html += `<td class="${cellCls}">${(s !== null && s !== undefined) ? s : '-'}</td>`;
+    }
+    html += `<td class="ct-total">${summary.strokes || '-'}</td>`;
+    html += '</tr>';
+  });
+
+  html += '</tbody></table>';
+  html += '<button class="add-companion-btn" data-companion-add>+ 同伴者を追加</button>';
+  html += '</div>';
+
+  mount.innerHTML = html;
+
+  // 名前クリック → 編集モーダル
+  mount.querySelectorAll('[data-companion-edit]').forEach((cell) => {
+    cell.addEventListener('click', () => {
+      const playerId = cell.getAttribute('data-companion-edit');
+      const player = State.players.find((p) => p.id === playerId);
+      if (!player) return;
+
+      openCompanionModal({
+        mode: 'edit',
+        player: player,
+        onSave: (newName) => {
+          player.name = newName;
+          // 自分の場合はプロファイルも更新
+          if (player.isMe && State.profile) {
+            State.profile.nickname = newName;
+            Store.set('gw_profile', State.profile);
+            // ヘッダー更新
+            const headerName = document.getElementById('header-name');
+            if (headerName) headerName.textContent = newName + 'さん';
+          }
+          autoSaveDraft();
+          renderScore(parentContainer);
+          toast('名前を変更しました', { type: 'success' });
+        },
+        onDelete: () => {
+          const idx = State.players.findIndex((p) => p.id === playerId);
+          if (idx >= 0) {
+            const removed = State.players.splice(idx, 1)[0];
+            autoSaveDraft();
+            renderScore(parentContainer);
+            toast(`${removed.name} を削除しました`);
+          }
+        }
+      });
+    });
+  });
+
+  // 「+ 同伴者を追加」ボタン
+  const addBtn = mount.querySelector('[data-companion-add]');
+  if (addBtn) {
+    addBtn.addEventListener('click', () => {
+      openCompanionModal({
+        mode: 'add',
+        onSave: (name) => {
+          const newId = 'mate-' + Date.now() + '-' + Math.floor(Math.random() * 0xFFFF).toString(16);
+          State.players.push({
+            id: newId,
+            name: name,
+            scores: new Array(State.totalHoles).fill(null),
+            shots: new Array(State.totalHoles).fill(0),
+            putts: new Array(State.totalHoles).fill(0),
+            isMe: false
+          });
+          autoSaveDraft();
+          renderScore(parentContainer);
+          toast(`${name} を追加しました`, { type: 'success' });
+        }
+      });
+    });
+  }
+}
+
+/**
+ * イベントリスナーをバインド（スコア入力部分のみ）
  */
 function bindEvents(container) {
   container.querySelectorAll('[data-score-action]').forEach((btn) => {
@@ -186,7 +309,7 @@ function bindEvents(container) {
 }
 
 /**
- * Phase 4：実際のスコア更新ロジック
+ * スコア更新ロジック
  */
 function handleAction(action, container) {
   const me = State.players[0];
@@ -200,7 +323,6 @@ function handleAction(action, container) {
 
   switch (action) {
     case 'plus': {
-      // シンプル：未入力なら PAR から、入力済なら +1
       const cur = me.scores[idx];
       const par = getPar(hole);
       const base = (cur === null || cur === undefined) ? par : cur;
@@ -215,7 +337,6 @@ function handleAction(action, container) {
       break;
     }
     case 'shot': {
-      // カウンター：ショット +1 → 合計を再計算
       if (!me.shots) me.shots = new Array(State.totalHoles).fill(0);
       if (!me.putts) me.putts = new Array(State.totalHoles).fill(0);
       me.shots[idx] = (me.shots[idx] || 0) + 1;
@@ -246,14 +367,35 @@ function handleAction(action, container) {
     }
   }
 
-  // 再描画（同じ container に上書き）
-  renderScore(container);
+  // 🆕 Phase 5：変更のたびにドラフト自動保存
+  autoSaveDraft();
 
-  // 外部リスナー（screen 側）にも通知できるようカスタムイベント発火
-  container.dispatchEvent(new CustomEvent('score:updated', {
-    bubbles: true,
-    detail: { hole, action }
-  }));
+  // 再描画
+  renderScore(container);
 }
 
-console.log('[widgets/score] loaded (Phase 4: Calculator-integrated)');
+/**
+ * 進行中ラウンドのドラフトを自動保存
+ */
+function autoSaveDraft() {
+  if (!State.courseId) return;
+  Store.saveRoundDraft({
+    courseId: State.courseId,
+    variant: State.variant,
+    totalHoles: State.totalHoles,
+    currentHole: State.currentHole,
+    inputMode: State.inputMode,
+    puttMode: State.puttMode,
+    players: State.players
+  });
+}
+
+/** HTMLエスケープ */
+function escapeHtml(s) {
+  if (s == null) return '';
+  return String(s).replace(/[&<>"']/g, (m) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[m]);
+}
+
+console.log('[widgets/score] loaded (Phase 5: hole-grid + companion + auto-save)');

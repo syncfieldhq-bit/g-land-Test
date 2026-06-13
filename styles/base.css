@@ -1011,3 +1011,272 @@ html, body {
   letter-spacing: 1px;
   margin-top: 2px;
 }
+
+/* ═══════════════════════════════════════════
+   Phase 5 追加：ホールグリッド・同伴者・companion-modal
+═══════════════════════════════════════════ */
+
+/* ─── ホールグリッド（3列） ─── */
+.hole-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.hole-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 4px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: var(--text-sub);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  min-height: 70px;
+}
+
+.hole-cell:active {
+  transform: scale(0.96);
+}
+
+.hole-cell .hc-num {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--gold-bright);
+  line-height: 1;
+}
+
+.hole-cell .hc-par {
+  font-size: 10px;
+  color: var(--text-sub);
+  margin-top: 2px;
+}
+
+.hole-cell .hc-score {
+  font-size: 20px;
+  font-weight: 900;
+  color: #fff;
+  margin-top: 4px;
+  line-height: 1;
+}
+
+/* 状態別カラー */
+.hole-cell.is-filled {
+  background: rgba(245, 200, 66, 0.12);
+  border-color: rgba(245, 200, 66, 0.4);
+}
+
+.hole-cell.is-current {
+  background: linear-gradient(180deg, var(--gold), var(--gold-dark));
+  border-color: var(--gold-bright);
+  box-shadow: 0 0 0 2px var(--gold-bright);
+}
+
+.hole-cell.is-current .hc-num,
+.hole-cell.is-current .hc-par,
+.hole-cell.is-current .hc-score {
+  color: #000;
+}
+
+.hole-cell.is-under .hc-score {
+  color: #ff6b6b;
+}
+
+.hole-cell.is-par .hc-score {
+  color: var(--gold-bright);
+}
+
+.hole-cell.is-over .hc-score {
+  color: #87ceeb;
+}
+
+/* ─── 同伴者セクション ─── */
+.companion-section {
+  margin-top: 22px;
+  padding: 14px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.companion-title {
+  margin: 0 0 10px;
+  font-size: 14px;
+  color: var(--gold-bright);
+}
+
+.companion-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.companion-table th {
+  background: rgba(245, 200, 66, 0.15);
+  color: var(--gold-bright);
+  padding: 6px 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.companion-table th.ct-name {
+  text-align: left;
+  padding-left: 10px;
+  min-width: 90px;
+}
+
+.companion-table th.ct-total {
+  background: rgba(245, 200, 66, 0.25);
+  color: #fff;
+}
+
+.companion-table th.ct-hole.is-current {
+  background: var(--gold);
+  color: #000;
+}
+
+.companion-table td {
+  padding: 8px 4px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+  font-size: 12px;
+}
+
+.companion-table td.ct-hole {
+  font-weight: 600;
+}
+
+.companion-table td.ct-hole.is-current {
+  background: rgba(245, 200, 66, 0.15);
+  color: var(--gold-bright);
+}
+
+.companion-table td.ct-total {
+  background: rgba(245, 200, 66, 0.1);
+  color: var(--gold-bright);
+  font-weight: 800;
+}
+
+.row-me {
+  background: rgba(245, 200, 66, 0.06);
+}
+
+/* 名前セル（タップで編集） */
+.ct-name-cell {
+  text-align: left !important;
+  padding-left: 10px !important;
+  cursor: pointer;
+  position: relative;
+  font-weight: 600;
+  transition: background 0.15s;
+}
+
+.ct-name-cell:active {
+  background: rgba(245, 200, 66, 0.2);
+}
+
+.ct-name-cell::after {
+  content: "✎";
+  margin-left: 6px;
+  font-size: 10px;
+  opacity: 0.5;
+  color: var(--gold-bright);
+}
+
+.row-me .ct-name-text {
+  color: var(--gold-bright);
+  font-weight: 700;
+}
+
+.me-badge {
+  display: inline-block;
+  font-size: 9px;
+  padding: 1px 6px;
+  background: var(--gold);
+  color: #000;
+  border-radius: 8px;
+  margin-left: 4px;
+  font-weight: 800;
+  vertical-align: middle;
+}
+
+/* 同伴者追加ボタン */
+.add-companion-btn {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px;
+  background: linear-gradient(180deg, rgba(245,200,66,0.15), rgba(245,200,66,0.05));
+  border: 2px dashed rgba(245, 200, 66, 0.4);
+  border-radius: 10px;
+  color: var(--gold-bright);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.add-companion-btn:active {
+  transform: scale(0.98);
+  background: rgba(245, 200, 66, 0.25);
+}
+
+/* ─── companion-modal ─── */
+.companion-modal {
+  text-align: center;
+}
+
+.companion-icon {
+  font-size: 48px;
+  margin-bottom: 6px;
+}
+
+#companion-modal-input {
+  width: 100%;
+  padding: 14px;
+  margin-top: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(245, 200, 66, 0.4);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+#companion-modal-input:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+.btn-delete {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  background: rgba(231, 76, 60, 0.1);
+  border: 1px solid rgba(231, 76, 60, 0.4);
+  border-radius: 8px;
+  color: #ff8a7a;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.btn-delete.hidden {
+  display: none;
+}
