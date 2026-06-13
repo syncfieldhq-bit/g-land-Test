@@ -1,9 +1,9 @@
 /* ═══════════════════════════════════════════════════════
-   G-WORLD Phase 1 - styles/base.css
-   骨組みの最小スタイル（リセット・変数・共通レイアウト）
+   G-WORLD Phase 2 - styles/base.css
+   骨組み + UI部品（Toast/Modal/Button/ScoreWidget）
 ═══════════════════════════════════════════════════════ */
 
-/* CSS変数（カラーパレット） */
+/* CSS変数 */
 :root {
   --bg-grad: linear-gradient(160deg, #0a3d2e 0%, #0f5f47 60%, #0a3d2e 100%);
   --gold: #f5c842;
@@ -12,6 +12,10 @@
   --text-main: #ffffff;
   --text-sub: rgba(255, 255, 255, 0.7);
   --danger: #e74c3c;
+  --success: #2ecc71;
+  --info: #3498db;
+  --shot: #ffcc22;
+  --putt: #ff8c00;
 }
 
 /* リセット */
@@ -102,35 +106,13 @@ html, body {
   color: var(--text-sub);
 }
 
-/* Toast */
-.toast {
-  position: fixed;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.85);
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 24px;
-  font-size: 13px;
-  font-weight: 600;
-  opacity: 0;
-  transition: opacity 0.3s;
-  pointer-events: none;
-  z-index: 2000;
-}
-
-.toast.show {
-  opacity: 1;
-}
-
-/* 起動成功時のメッセージカード */
+/* 起動成功カード */
 .success-card {
   background: rgba(46, 204, 113, 0.15);
   border: 1px solid rgba(46, 204, 113, 0.5);
   border-radius: 12px;
   padding: 20px;
-  margin-top: 20px;
+  margin-bottom: 20px;
   text-align: center;
 }
 
@@ -142,7 +124,7 @@ html, body {
 .success-card .title {
   font-size: 18px;
   font-weight: 800;
-  color: #2ecc71;
+  color: var(--success);
   margin-bottom: 8px;
 }
 
@@ -162,4 +144,296 @@ html, body {
   text-align: left;
   color: var(--gold-bright);
   line-height: 1.8;
+}
+
+/* ═══════════════════════════════════════════
+   Phase 2 追加：UI部品
+═══════════════════════════════════════════ */
+
+/* ─── Toast ─── */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 12px 22px;
+  border-radius: 24px;
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 2000;
+  max-width: 90%;
+  text-align: center;
+}
+
+.toast.show {
+  opacity: 1;
+}
+
+.toast--success {
+  background: rgba(46, 204, 113, 0.95);
+}
+
+.toast--error {
+  background: rgba(231, 76, 60, 0.95);
+}
+
+.toast--info {
+  background: rgba(52, 152, 219, 0.95);
+}
+
+/* ─── ボタン共通 ─── */
+.btn-primary {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 8px;
+  background: linear-gradient(180deg, var(--gold), var(--gold-dark));
+  color: #000;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.3);
+  font-family: inherit;
+}
+
+.btn-primary:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.btn-ghost {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: var(--text-main);
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* ─── Modal ─── */
+.modal-bg {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-bg.show {
+  display: flex;
+}
+
+.modal {
+  background: #1a4d3e;
+  padding: 24px;
+  border-radius: 18px;
+  width: 100%;
+  max-width: 400px;
+  border: 1px solid rgba(245, 200, 66, 0.3);
+}
+
+.modal h3 {
+  margin: 0 0 12px;
+  color: var(--gold);
+  text-align: center;
+  font-size: 18px;
+}
+
+.modal-body {
+  color: var(--text-sub);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.modal-buttons button {
+  flex: 1;
+  margin: 0;
+}
+
+/* ─── デモセクション ─── */
+.demo-section {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.demo-section h3 {
+  margin: 0 0 12px;
+  color: var(--gold-bright);
+  font-size: 14px;
+}
+
+/* ─── Score Widget ─── */
+.score-widget {
+  padding: 14px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+}
+
+.score-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.hole-num {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--gold-bright);
+}
+
+.hole-par {
+  font-size: 12px;
+  color: var(--text-sub);
+  background: rgba(245, 200, 66, 0.15);
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+/* シンプルモード */
+.score-display {
+  text-align: center;
+  padding: 14px 0;
+}
+
+.score-val {
+  font-size: 56px;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+}
+
+.score-diff {
+  font-size: 14px;
+  color: var(--gold-bright);
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.score-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-score {
+  flex: 1;
+  padding: 18px;
+  border: none;
+  border-radius: 14px;
+  font-size: 28px;
+  font-weight: 900;
+  cursor: pointer;
+  color: #000;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
+  font-family: inherit;
+}
+
+.btn-minus {
+  background: linear-gradient(180deg, #e74c3c, #c0392b);
+  color: #fff;
+}
+
+.btn-plus {
+  background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+}
+
+.btn-score:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* カウンターモード */
+.score-total {
+  text-align: center;
+  padding: 14px;
+  background: linear-gradient(180deg, rgba(245, 200, 66, 0.15), rgba(245, 200, 66, 0.03));
+  border: 1px solid rgba(245, 200, 66, 0.3);
+  border-radius: 12px;
+  margin-bottom: 14px;
+}
+
+.score-total-label {
+  font-size: 11px;
+  color: var(--text-sub);
+  letter-spacing: 1px;
+}
+
+.score-total-val {
+  font-size: 48px;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+  margin: 4px 0;
+}
+
+.score-breakdown {
+  font-size: 13px;
+  color: var(--text-sub);
+  margin-top: 6px;
+}
+
+.score-breakdown b {
+  color: var(--gold-bright);
+  font-size: 16px;
+}
+
+.score-dual {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.btn-shot {
+  background: linear-gradient(180deg, #ffd84d, var(--shot));
+  font-size: 13px;
+  padding: 16px 8px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.btn-putt {
+  background: linear-gradient(180deg, #ffa94d, var(--putt));
+  color: #fff;
+  font-size: 13px;
+  padding: 16px 8px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.btn-clear {
+  width: 100%;
+  padding: 10px;
+  background: rgba(231, 76, 60, 0.15);
+  border: 1px solid rgba(231, 76, 60, 0.4);
+  border-radius: 10px;
+  color: #ff8a7a;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
 }
