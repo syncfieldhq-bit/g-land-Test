@@ -263,10 +263,13 @@ function renderMain() {
       <div id="gw-gland-tabs"></div>
       <div id="gw-gland-input"></div>
 
-      <details class="gw-gland-cardwrap" open>
-        <summary>📊 スコアカード（全員のスコア）</summary>
+      <div class="gw-gland-cardwrap-fixed">
+        <div class="gw-gland-cardtitle">
+          <span>📊 デジタルスコアカード</span>
+          <span class="gw-gland-cardtitle-sub" id="gw-gland-sync-status">全員リアルタイム表示</span>
+        </div>
         <div id="gw-gland-card"></div>
-      </details>
+      </div>
 
       <div class="gw-gland-actions">
         <button class="gw-btn-primary" data-action="finish">✅ ラウンド終了して保存</button>

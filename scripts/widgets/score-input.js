@@ -1,6 +1,7 @@
 // =============================================================
-// score-input.js - スコア入力UI（Phase 7c：視線移動ゼロの最適配置）
-// 構成：打数入力 → パット入力(小) → 確定ボタン(大)
+// score-input.js - スコア入力UI（Phase 7f：画面圧縮版）
+// レイアウト：[−][大きな打数][＋] → パット → 確定ボタン
+// 親指移動距離を最短化、画面下部の空きスペース排除
 // =============================================================
 import { State } from '../core/state.js';
 import { EventBus } from '../core/event-bus.js';
@@ -13,7 +14,7 @@ let _container = null;
 function build() {
   if (_container) return _container;
   _container = document.createElement('div');
-  _container.className = 'gw-score-input';
+  _container.className = 'gw-score-input gw-score-input-compact';
   return _container;
 }
 
@@ -33,54 +34,47 @@ function render() {
   const display = formatScore(stroke, par, settings.displayMode);
   const diff = stroke != null ? stroke - par : null;
   const diffStr = diff == null ? '' : (diff === 0 ? 'E' : (diff > 0 ? `+${diff}` : String(diff)));
-  const diffColor = diff != null ? diffToColor(diff) : '#888';
+  const diffColor = diff != null ? diffToColor(diff) : '#f5c842';
   const scoreName = diff != null ? diffToName(diff) : '';
   const isLastHole = hole === course.holes - 1;
+  const current = stroke != null ? stroke : par;
 
   _container.innerHTML = `
-    <!-- ホール表示・移動 -->
+    <!-- ホール移動バー -->
     <div class="gw-si-top">
       <button class="gw-si-prev" data-action="prev-hole">◀</button>
       <button class="gw-si-hole-label gw-si-hole-current" data-action="open-jump">
         <div class="gw-si-hole-num">${hole + 1}H</div>
         <div class="gw-si-hole-par">PAR ${par}</div>
-        <span class="gw-si-hole-hint">タップでジャンプ</span>
       </button>
       <button class="gw-si-next" data-action="next-hole">▶</button>
     </div>
 
-    <div class="gw-si-player">${escapeHtml(active.name)} ${active.isSelf ? '👤' : ''}</div>
-
-    <!-- 現在打数の大表示 -->
-    <div class="gw-si-display" style="border-color:${diffColor};">
-      <div class="gw-si-big" style="color:${diffColor};">${display}</div>
-      <div class="gw-si-sub">
-        <span class="gw-si-diff" style="color:${diffColor};">${diffStr}</span>
-        ${scoreName ? `<span class="gw-si-name">${scoreName}</span>` : ''}
-      </div>
-      <button class="gw-si-cycle" data-action="cycle-display">表示: ${DISPLAY_LABELS[settings.displayMode]}</button>
+    <!-- プレイヤー名・スコア名（コンパクト） -->
+    <div class="gw-si-player-row">
+      <span class="gw-si-player-name">${escapeHtml(active.name)} ${active.isSelf ? '👤' : ''}</span>
+      ${scoreName ? `<span class="gw-si-score-name" style="background:${diffColor}20;color:${diffColor};">${scoreName} ${diffStr}</span>` : ''}
     </div>
 
-    <!-- ① 打数入力エリア（メイン）-->
-    ${settings.inputMode === 'simple' ? renderSimpleMode(par, stroke) : renderCounterMode(stroke, putt)}
+    ${settings.inputMode === 'simple' ? renderSimpleCompact(current, diffColor, display) : renderCounterCompact(stroke, putt)}
 
-    <!-- ② パット入力（小・直下に配置）-->
     ${settings.puttEnabled && settings.inputMode === 'simple' ? renderPuttRow(putt) : ''}
 
-    <!-- ③ 確定ボタン（大・最下部・視線移動なし）-->
+    <!-- 確定ボタン -->
     <button class="gw-si-confirm-big ${isLastHole ? 'is-final' : ''}" data-action="${settings.inputMode === 'simple' ? 'confirm-simple' : 'confirm-counter'}">
       ${isLastHole ? '✅ 最終ホール 入力完了' : '✓ 確定して次のホールへ →'}
     </button>
 
-    <!-- 設定切替・クリア（折り畳み風）-->
+    <!-- 設定・表示切替（小さく下部） -->
     <div class="gw-si-settings">
+      <button class="gw-si-cycle-mini" data-action="cycle-display">表示: ${DISPLAY_LABELS[settings.displayMode]}</button>
       <div class="gw-si-toggle">
         <button class="${settings.inputMode === 'simple' ? 'is-on' : ''}" data-action="mode-simple">シンプル</button>
         <button class="${settings.inputMode === 'counter' ? 'is-on' : ''}" data-action="mode-counter">カウンター</button>
       </div>
       <label class="gw-si-switch">
         <input type="checkbox" data-action="toggle-putt" ${settings.puttEnabled ? 'checked' : ''}>
-        <span>パット入力</span>
+        <span>パット</span>
       </label>
       <button class="gw-si-clear-mini" data-action="clear-hole">クリア</button>
     </div>
@@ -89,29 +83,33 @@ function render() {
   bindEvents();
 }
 
-function renderSimpleMode(par, stroke) {
-  const current = stroke != null ? stroke : par;
+/** ⚡ 圧縮シンプルモード：[−][大きな数字][＋] を1行で */
+function renderSimpleCompact(current, diffColor, display) {
   return `
-    <div class="gw-si-simple">
-      <button class="gw-si-bigbtn gw-si-minus" data-action="dec">−</button>
-      <div class="gw-si-current">${current}</div>
-      <button class="gw-si-bigbtn gw-si-plus" data-action="inc">＋</button>
+    <div class="gw-si-compact-row">
+      <button class="gw-si-side-btn gw-si-minus" data-action="dec">−</button>
+      <div class="gw-si-center-display" style="border-color:${diffColor};">
+        <div class="gw-si-big-number" style="color:${diffColor};">${current}</div>
+        <div class="gw-si-display-alt" style="color:${diffColor};">${display}</div>
+      </div>
+      <button class="gw-si-side-btn gw-si-plus" data-action="inc">＋</button>
     </div>
   `;
 }
 
-function renderCounterMode(stroke, putt) {
+/** ⚡ 圧縮カウンターモード：ショット/パットを横並びコンパクト */
+function renderCounterCompact(stroke, putt) {
   const shots = (stroke != null && putt != null) ? (stroke - putt) : (stroke != null ? stroke : 0);
   const putts = putt != null ? putt : 0;
   const total = shots + putts;
   return `
-    <div class="gw-si-counter">
-      <div class="gw-si-counter-row">
+    <div class="gw-si-counter-compact">
+      <div class="gw-si-counter-cell">
         <div class="gw-si-counter-label">ショット</div>
         <div class="gw-si-counter-val">${shots}</div>
         <button class="gw-si-counter-btn" data-action="shot-plus">+1</button>
       </div>
-      <div class="gw-si-counter-row">
+      <div class="gw-si-counter-cell">
         <div class="gw-si-counter-label">パット</div>
         <div class="gw-si-counter-val">${putts}</div>
         <button class="gw-si-counter-btn" data-action="putt-plus">+1</button>
@@ -127,7 +125,7 @@ function renderCounterMode(stroke, putt) {
 function renderPuttRow(putt) {
   return `
     <div class="gw-si-putt-row gw-si-putt-compact">
-      <span class="gw-si-putt-label">🥅 パット</span>
+      <span class="gw-si-putt-label">🥅 パット数</span>
       <button class="gw-si-putt-btn" data-action="putt-dec">−</button>
       <span class="gw-si-putt-val">${putt != null ? putt : 0}</span>
       <button class="gw-si-putt-btn" data-action="putt-inc">＋</button>
@@ -246,5 +244,5 @@ export function mountScoreInput(host) {
   render();
 }
 
-[EVENTS.SCORE_UPDATED, EVENTS.HOLE_CHANGED, EVENTS.PLAYER_CHANGED, 'putt:updated', 'settings:changed', 'course:changed', 'state:restored']
+[EVENTS.SCORE_UPDATED, EVENTS.HOLE_CHANGED, EVENTS.PLAYER_CHANGED, 'putt:updated', 'settings:changed', 'course:changed', 'state:restored', EVENTS.GROUP_SYNCED]
   .forEach(ev => EventBus.on(ev, render));

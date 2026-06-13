@@ -1547,3 +1547,236 @@ body {
 .gw-scorecard-xl .gw-sc-cell.is-current {
   scroll-snap-align: center;
 }
+
+/* =============================================================
+   Phase 7f: 画面圧縮レイアウト + リアルタイム同期UI
+   ============================================================= */
+
+/* ========== 圧縮シンプルモード：[−][数字][＋] を横並び ========== */
+.gw-score-input-compact { padding: 12px !important; }
+
+.gw-si-player-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 8px 0;
+  padding: 0 4px;
+}
+.gw-si-player-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: #f5c842;
+}
+.gw-si-score-name {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  padding: 4px 10px;
+  border-radius: 10px;
+  background: rgba(245,200,66,0.15);
+}
+
+/* メインの入力行：[−][中央表示][＋] */
+.gw-si-compact-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 8px 0;
+}
+.gw-si-side-btn {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  font-size: 42px;
+  font-weight: 900;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  transition: transform 0.1s;
+}
+.gw-si-side-btn:active { transform: scale(0.92); }
+.gw-si-minus {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: #fff;
+}
+.gw-si-plus {
+  background: linear-gradient(135deg, #f5c842, #e6a02e);
+  color: #0a3d2e;
+}
+
+.gw-si-center-display {
+  flex: 1;
+  text-align: center;
+  padding: 10px 6px;
+  background: rgba(0,0,0,0.35);
+  border: 3px solid #888;
+  border-radius: 16px;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.gw-si-big-number {
+  font-size: 64px;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+.gw-si-display-alt {
+  font-size: 14px;
+  font-weight: 700;
+  margin-top: 4px;
+  opacity: 0.7;
+  letter-spacing: 1px;
+}
+
+/* 旧 .gw-si-simple / .gw-si-display / .gw-si-bigbtn / .gw-si-current を打ち消し */
+.gw-score-input-compact .gw-si-simple,
+.gw-score-input-compact .gw-si-display { display: none !important; }
+
+/* ========== 圧縮カウンターモード ========== */
+.gw-si-counter-compact {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 8px 0;
+}
+.gw-si-counter-cell {
+  background: rgba(255,255,255,0.06);
+  padding: 12px 10px;
+  border-radius: 12px;
+  text-align: center;
+}
+.gw-si-counter-cell .gw-si-counter-label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 4px;
+}
+.gw-si-counter-cell .gw-si-counter-val {
+  font-size: 36px;
+  font-weight: 900;
+  color: #f5c842;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.gw-si-counter-cell .gw-si-counter-btn {
+  padding: 8px 16px;
+  font-size: 15px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #f5c842, #e6a02e);
+  color: #0a3d2e;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.gw-si-counter-compact .gw-si-counter-total {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  background: rgba(245,200,66,0.15);
+  border-radius: 10px;
+  margin-top: 4px;
+}
+.gw-si-counter-compact .gw-si-counter-total strong {
+  font-size: 26px;
+  color: #f5c842;
+  font-weight: 900;
+}
+
+/* ========== 設定行（最下部・極小） ========== */
+.gw-score-input-compact .gw-si-settings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 6px 8px;
+  background: rgba(0,0,0,0.25);
+  border-radius: 8px;
+  align-items: center;
+  font-size: 11px;
+}
+.gw-si-cycle-mini {
+  padding: 6px 10px;
+  font-size: 11px;
+  background: rgba(255,255,255,0.1);
+  color: #ddd;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+/* パット入力エリア（繰り上がり） */
+.gw-score-input-compact .gw-si-putt-row.gw-si-putt-compact {
+  margin: 8px 0 0;
+  padding: 10px 14px;
+}
+
+/* ========== スコアカード常時表示（アコーディオン廃止） ========== */
+.gw-gland-cardwrap-fixed {
+  margin-top: 14px;
+}
+.gw-gland-cardtitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, rgba(245,200,66,0.18), rgba(245,200,66,0.05));
+  border: 1px solid rgba(245,200,66,0.3);
+  border-radius: 10px 10px 0 0;
+  font-weight: 800;
+  font-size: 15px;
+  color: #f5c842;
+}
+.gw-gland-cardtitle-sub {
+  font-size: 10px;
+  font-weight: 700;
+  color: #2ecc71;
+  background: rgba(46,204,113,0.15);
+  padding: 3px 8px;
+  border-radius: 8px;
+  letter-spacing: 0.5px;
+  position: relative;
+  padding-left: 18px;
+}
+.gw-gland-cardtitle-sub::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #2ecc71;
+  box-shadow: 0 0 8px #2ecc71;
+  animation: gwSyncDot 1.6s ease-in-out infinite;
+}
+@keyframes gwSyncDot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* スコアカード本体を上部タイトルと一体化 */
+.gw-gland-cardwrap-fixed .gw-scorecard-xl {
+  margin-top: 0;
+  border-radius: 0 0 14px 14px;
+  border-top: none;
+}
+
+/* ========== 旧アコーディオン廃止対応 ========== */
+.gw-gland-cardwrap { display: none; }
+
+/* ========== 小画面対応 ========== */
+@media (max-width: 380px) {
+  .gw-si-side-btn { width: 68px; height: 68px; font-size: 36px; }
+  .gw-si-big-number { font-size: 56px; }
+  .gw-si-center-display { min-height: 88px; padding: 8px 4px; }
+}
