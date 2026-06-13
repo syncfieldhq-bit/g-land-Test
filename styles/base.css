@@ -437,3 +437,446 @@ html, body {
   cursor: pointer;
   font-family: inherit;
 }
+
+/* ═══════════════════════════════════════════
+   Phase 3 追加：画面・ナビゲーション
+═══════════════════════════════════════════ */
+
+/* ─── フッターナビ ─── */
+.footer-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 65px;
+  background: rgba(10, 61, 46, 0.98);
+  backdrop-filter: blur(10px);
+  display: flex;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 50;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.footer-nav button {
+  flex: 1;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-size: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.2s;
+}
+
+.footer-nav button.active {
+  color: var(--gold);
+}
+
+.footer-nav .nav-icon {
+  font-size: 22px;
+}
+
+/* メインに余白（フッター分） */
+.container {
+  padding-bottom: 90px;
+}
+
+/* ─── ホーム画面 ─── */
+.home-hero {
+  text-align: center;
+  padding: 24px 0;
+}
+
+.greeting {
+  font-size: 14px;
+  color: var(--text-sub);
+}
+
+.user-name {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--gold);
+  margin: 6px 0;
+}
+
+.state-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(245, 200, 66, 0.2);
+  color: var(--gold-bright);
+  border: 1px solid rgba(245, 200, 66, 0.4);
+  margin-bottom: 16px;
+}
+
+.state-badge.guest {
+  background: rgba(128, 128, 128, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-cta {
+  display: block;
+  width: 100%;
+  padding: 18px;
+  background: linear-gradient(180deg, var(--gold), var(--gold-dark));
+  color: #000;
+  border: none;
+  border-radius: 14px;
+  font-size: 18px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.3);
+  font-family: inherit;
+}
+
+.btn-cta:active {
+  transform: translateY(2px);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.3);
+}
+
+.home-modules {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.home-module {
+  position: relative;
+  padding: 20px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  text-align: center;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--text-main);
+  transition: all 0.2s;
+}
+
+.home-module:active {
+  transform: scale(0.96);
+  background: rgba(245, 200, 66, 0.1);
+}
+
+.home-module.coming-soon {
+  opacity: 0.55;
+}
+
+.mod-icon {
+  font-size: 32px;
+  margin-bottom: 6px;
+}
+
+.mod-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--gold);
+}
+
+.mod-desc {
+  font-size: 11px;
+  color: var(--text-sub);
+  margin-top: 2px;
+}
+
+.mod-badge {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 9px;
+  padding: 2px 6px;
+  background: #FF6B6B;
+  color: #fff;
+  border-radius: 6px;
+}
+
+.home-recent {
+  margin-top: 24px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+}
+
+.home-recent h3 {
+  margin: 0 0 10px;
+  font-size: 14px;
+  color: var(--gold-bright);
+}
+
+.recent-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 13px;
+}
+
+.recent-item:last-child {
+  border-bottom: none;
+}
+
+.recent-date {
+  color: var(--text-sub);
+}
+
+.recent-course {
+  color: var(--gold-bright);
+}
+
+.recent-total {
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.empty {
+  font-size: 13px;
+  color: var(--text-sub);
+  text-align: center;
+  padding: 12px;
+}
+
+/* ─── カード共通 ─── */
+.card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.card-title {
+  margin: 0 0 8px;
+  color: var(--gold);
+  font-size: 20px;
+}
+
+.card-desc {
+  color: var(--text-sub);
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.card-note {
+  color: var(--text-sub);
+  font-size: 11px;
+  text-align: center;
+  margin-top: 14px;
+}
+
+.register-card label {
+  display: block;
+  font-size: 12px;
+  color: var(--gold-bright);
+  margin: 14px 0 6px;
+  font-weight: 700;
+}
+
+.register-card input {
+  width: 100%;
+  padding: 14px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 16px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.register-card input:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+/* ─── コース選択 ─── */
+.course-greet {
+  text-align: center;
+  padding: 14px 0;
+  font-size: 18px;
+  color: var(--gold);
+  font-weight: 800;
+}
+
+.screen-title {
+  text-align: center;
+  color: var(--gold);
+  font-size: 20px;
+  margin: 14px 0;
+}
+
+.course-wrap {
+  margin-bottom: 10px;
+}
+
+.course-card {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: var(--text-main);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.course-icon {
+  font-size: 28px;
+  margin-right: 14px;
+}
+
+.course-info {
+  flex: 1;
+  text-align: left;
+}
+
+.course-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--gold);
+}
+
+.course-arrow {
+  font-size: 14px;
+  color: var(--gold-bright);
+  transition: transform 0.3s;
+}
+
+.course-wrap.open .course-arrow {
+  transform: rotate(180deg);
+}
+
+.course-options {
+  display: none;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.course-wrap.open .course-options {
+  display: grid;
+}
+
+.course-variant {
+  padding: 14px;
+  background: rgba(245, 200, 66, 0.15);
+  border: 1px solid var(--gold);
+  border-radius: 10px;
+  color: var(--gold);
+  font-weight: 800;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.course-variant:active {
+  background: var(--gold);
+  color: #000;
+}
+
+/* ─── スコア入力メイン ─── */
+.player-bar {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px;
+  background: rgba(245, 200, 66, 0.1);
+  border: 1px solid rgba(245, 200, 66, 0.3);
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.player-bar .lbl {
+  font-size: 10px;
+  color: var(--text-sub);
+}
+
+.player-bar .me-name,
+.player-bar .me-course {
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--gold);
+}
+
+/* ─── 設定パネル ─── */
+.settings-panel {
+  margin-top: 16px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+}
+
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.setting-label {
+  font-size: 13px;
+  color: var(--text-main);
+}
+
+.toggle-group {
+  display: flex;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 20px;
+  padding: 2px;
+}
+
+.toggle-group button {
+  padding: 8px 14px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  border-radius: 18px;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.toggle-group button.active {
+  background: var(--gold);
+  color: #000;
+  font-weight: 800;
+}
+
+/* ─── マイページ ─── */
+.mypage-card {
+  text-align: center;
+  padding: 28px;
+}
+
+.avatar {
+  font-size: 56px;
+  margin-bottom: 10px;
+}
+
+.my-name {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--gold);
+}
+
+.my-state {
+  font-size: 12px;
+  color: var(--text-sub);
+  margin-top: 4px;
+}
+
+.version-info {
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-sub);
+  margin-top: 24px;
+  line-height: 1.6;
+}

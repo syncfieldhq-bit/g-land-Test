@@ -1,27 +1,30 @@
 /**
  * ═══════════════════════════════════════════════════════
- * scripts/main.js - 起動エントリーポイント（Phase 2）
+ * scripts/main.js - 起動エントリーポイント（Phase 3）
  *
- * Phase 2 の追加：
- *   - ./ui/toast.js を import
- *   - ./ui/modal.js を import
- *   - ./widgets/score.js を import
- *   - UI部品の動作確認用ボタンを描画
+ * Phase 3 の追加：
+ *   - Router（画面遷移管理）
+ *   - Events（data-action 集中処理）
+ *   - 3つの画面モジュール（Home / GLand / MyPage）
+ *   - ボタン1つで画面切替が動く
  * ═══════════════════════════════════════════════════════
  */
 
 // ─── core レイヤー ───
 import { CONFIG } from './core/config.js';
 import { State } from './core/state.js';
+import { Router } from './core/router.js';
+import { Events } from './core/events.js';
 
-// ─── ui レイヤー（Phase 2 で追加） ───
+// ─── ui レイヤー ───
 import { toast } from './ui/toast.js';
-import { confirm } from './ui/modal.js';
 
-// ─── widgets レイヤー（Phase 2 で追加） ───
-import { renderScore } from './widgets/score.js';
+// ─── screens レイヤー（Phase 3 で追加） ───
+import { HomeScreen } from './screens/home.js';
+import { GLandScreen } from './screens/gland.js';
+import { MyPageScreen } from './screens/mypage.js';
 
-console.log('[G-WORLD] main.js loaded (Phase 2)');
+console.log('[G-WORLD] main.js loaded (Phase 3)');
 
 /**
  * 起動シーケンス
@@ -32,28 +35,90 @@ function bootstrap() {
   // 1. 状態を初期化
   State.init();
 
-  // 2. テスト用ダミープレイヤーを設定（Phase 2のテストのみ）
-  if (State.players.length === 0) {
-    State.players = [{
-      id: 'me',
-      name: State.profile?.nickname || 'テスト',
-      scores: new Array(18).fill(null),
-      shots: new Array(18).fill(0),
-      putts: new Array(18).fill(0),
-      isMe: true
-    }];
-  }
-
-  // 3. ヘッダーに名前を反映
+  // 2. ヘッダー名前を反映
   updateHeader();
 
-  // 4. メイン領域に Phase 2 デモを描画
-  renderPhase2Demo();
+  // 3. 画面モジュールを Router に登録
+  Router.register('home',   HomeScreen);
+  Router.register('gland',  GLandScreen);
+  Router.register('mypage', MyPageScreen);
+
+  // 4. Events に画面遷移ハンドラを差し込む
+  Events.setRouteHandler((route) => {
+    Router.go(route);
+  });
+
+  // 5. アクションハンドラを一括登録
+  registerActions();
+
+  // 6. グローバルクリックリスナーを起動
+  Events.bind();
+
+  // 7. 初期画面を決定して遷移
+  const initial = Router.resolveInitial();
+  Router.go(initial);
 
   console.log('[G-WORLD] ✅ bootstrap complete');
 }
 
-/** ヘッダーに現在のプレイヤー名を表示 */
+/**
+ * 全アクションを一括登録
+ */
+function registerActions() {
+  Events.registerMany({
+    // ─── ホーム画面 ───
+    'start-round': () => {
+      Router.go('gland');
+    },
+    'coming-soon': (el) => {
+      const name = el.getAttribute('data-name') || '機能';
+      toast(`🔔 ${name} は近日公開予定です`);
+    },
+
+    // ─── G-LAND：登録 ───
+    'register-profile': () => {
+      GLandScreen.registerProfile();
+      // ヘッダーも更新
+      updateHeader();
+    },
+    'back-to-register': () => {
+      GLandScreen.backToRegister();
+      updateHeader();
+    },
+
+    // ─── G-LAND：コース選択 ───
+    'cs-toggle': (el) => {
+      GLandScreen.toggleCourse(el.getAttribute('data-course-id'));
+    },
+    'cs-confirm': (el) => {
+      GLandScreen.confirmCourse(
+        el.getAttribute('data-course-id'),
+        el.getAttribute('data-variant')
+      );
+    },
+    'change-course': () => {
+      GLandScreen.changeCourse();
+    },
+
+    // ─── G-LAND：モード切替 ───
+    'set-mode-simple':  () => GLandScreen.setInputMode('simple'),
+    'set-mode-counter': () => GLandScreen.setInputMode('counter'),
+
+    // ─── G-LAND：終了 ───
+    'finish-round': () => {
+      GLandScreen.finishRound();
+    },
+
+    // ─── マイページ ───
+    'logout': () => {
+      MyPageScreen.logout();
+    }
+  });
+}
+
+/**
+ * ヘッダーに現在のプレイヤー名を表示
+ */
 function updateHeader() {
   const headerName = document.getElementById('header-name');
   if (!headerName) return;
@@ -61,75 +126,6 @@ function updateHeader() {
   headerName.textContent = profile && profile.nickname
     ? profile.nickname + 'さん'
     : 'ゲスト';
-}
-
-/**
- * Phase 2 デモ画面：UI部品とウィジェットの動作確認
- */
-function renderPhase2Demo() {
-  const root = document.getElementById('app-root');
-  if (!root) return;
-
-  root.innerHTML = `
-    <div class="success-card">
-      <div class="icon">🎨</div>
-      <div class="title">Phase 2 起動成功！</div>
-      <div class="desc">
-        UI部品（Toast / Modal）と<br>
-        スコアウィジェットが読み込まれました
-      </div>
-      <div class="module-list">
-        ✅ ./scripts/ui/toast.js<br>
-        ✅ ./scripts/ui/modal.js<br>
-        ✅ ./scripts/widgets/score.js
-      </div>
-    </div>
-
-    <div class="demo-section">
-      <h3>🧪 UI部品テスト</h3>
-      <button id="btn-test-toast-info" class="btn-primary">📢 Toast（情報）を表示</button>
-      <button id="btn-test-toast-success" class="btn-primary">✅ Toast（成功）を表示</button>
-      <button id="btn-test-toast-error" class="btn-primary">⚠️ Toast（エラー）を表示</button>
-      <button id="btn-test-confirm" class="btn-primary">❓ Confirm モーダルを表示</button>
-    </div>
-
-    <div class="demo-section">
-      <h3>⛳ スコアウィジェット（シンプル）</h3>
-      <div id="score-widget-simple"></div>
-    </div>
-
-    <div class="demo-section">
-      <h3>🎯 スコアウィジェット（カウンター）</h3>
-      <div id="score-widget-counter"></div>
-    </div>
-  `;
-
-  // ─── テストボタンのイベント ───
-  document.getElementById('btn-test-toast-info').addEventListener('click', () => {
-    toast('情報メッセージです');
-  });
-  document.getElementById('btn-test-toast-success').addEventListener('click', () => {
-    toast('保存に成功しました', { type: 'success' });
-  });
-  document.getElementById('btn-test-toast-error').addEventListener('click', () => {
-    toast('エラーが発生しました', { type: 'error', duration: 3000 });
-  });
-  document.getElementById('btn-test-confirm').addEventListener('click', async () => {
-    const ok = await confirm('テスト確認', 'この操作を実行しますか？<br>（Phase 2デモ）');
-    toast(ok ? '✅ OKが押されました' : '❌ キャンセルされました');
-  });
-
-  // ─── スコアウィジェットを2モードで描画 ───
-  // シンプルモード
-  State.inputMode = 'simple';
-  renderScore(document.getElementById('score-widget-simple'));
-
-  // カウンターモード
-  State.inputMode = 'counter';
-  renderScore(document.getElementById('score-widget-counter'));
-
-  // Toast で起動成功を通知
-  toast('🎉 Phase 2 起動完了', { type: 'success' });
 }
 
 // ─── DOM 準備完了を待って起動 ───

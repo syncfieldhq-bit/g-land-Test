@@ -16,7 +16,6 @@
 <link rel="apple-touch-icon" href="./icon.png">
 <link rel="manifest" href="./manifest.webmanifest">
 
-<!-- ★Phase 1：ルート直下の styles/ を参照 -->
 <link rel="stylesheet" href="./styles/base.css">
 </head>
 <body>
@@ -29,20 +28,34 @@
   </div>
 </header>
 
-<!-- メインコンテナ：ここに各画面が表示される -->
+<!-- メインコンテナ：Routerが各画面を描画する -->
 <main id="app-root" class="container">
-  <!-- Phase 1：起動確認用プレースホルダ -->
   <div class="boot-placeholder">
     <div class="boot-spinner"></div>
     <div class="boot-text">G-WORLD 起動中...</div>
-    <div class="boot-sub" id="boot-status">JavaScriptモジュールを読み込んでいます</div>
+    <div class="boot-sub">画面モジュールを読み込んでいます</div>
   </div>
 </main>
+
+<!-- フッターナビ -->
+<nav class="footer-nav">
+  <button data-route="home">
+    <span class="nav-icon">🏠</span>
+    <span class="nav-label">ホーム</span>
+  </button>
+  <button data-route="gland">
+    <span class="nav-icon">⛳</span>
+    <span class="nav-label">G-LAND</span>
+  </button>
+  <button data-route="mypage">
+    <span class="nav-icon">👤</span>
+    <span class="nav-label">マイ</span>
+  </button>
+</nav>
 
 <!-- Toast -->
 <div id="toast" class="toast"></div>
 
-<!-- ★Phase 1：ES Modules でメインスクリプトを読み込み（ルート直下の scripts/） -->
 <script type="module" src="./scripts/main.js"></script>
 
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
