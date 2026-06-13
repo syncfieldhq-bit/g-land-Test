@@ -690,3 +690,415 @@ body {
 
 /* スコア表示のサブテキスト調整 */
 .gw-si-hole-label .gw-si-hole-num { font-weight: 900; }
+
+/* =============================================================
+   Phase 7c 追加スタイル：現場直結最強視認性
+   ============================================================= */
+
+/* ========== G-LAND トップバー（コース名・招待QR・変更） ========== */
+.gw-gland-topbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, rgba(245,200,66,0.12), rgba(245,200,66,0.05));
+  border: 1px solid rgba(245,200,66,0.3);
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+.gw-gland-courseinfo-name {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.gw-gland-courseicon { font-size: 18px; }
+.gw-gland-coursename {
+  font-size: 15px;
+  font-weight: 800;
+  color: #f5c842;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gw-gland-coursevariant {
+  font-size: 11px;
+  color: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.1);
+  padding: 2px 6px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+.gw-gland-topbar-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.gw-topbar-qr-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #2ecc71, #16a085);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(46,204,113,0.4);
+  animation: gwQrPulse 2.5s ease-in-out infinite;
+}
+@keyframes gwQrPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+.gw-topbar-qr-btn:active { transform: scale(0.95); }
+.gw-qr-icon { font-size: 16px; }
+
+/* ========== 確定ボタン（大型） ========== */
+.gw-si-confirm-big {
+  display: block;
+  width: 100%;
+  padding: 22px 16px;
+  margin-top: 14px;
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(46,204,113,0.4);
+  transition: transform 0.1s;
+}
+.gw-si-confirm-big:active {
+  transform: scale(0.97);
+  box-shadow: 0 3px 10px rgba(46,204,113,0.5);
+}
+.gw-si-confirm-big.is-final {
+  background: linear-gradient(135deg, #f5c842, #e6a02e);
+  color: #0a3d2e;
+  animation: gwFinalGlow 1.6s ease-in-out infinite;
+}
+@keyframes gwFinalGlow {
+  0%, 100% { box-shadow: 0 6px 18px rgba(245,200,66,0.4); }
+  50% { box-shadow: 0 6px 30px rgba(245,200,66,0.8); }
+}
+
+/* ========== パット入力（コンパクト・打数直下） ========== */
+.gw-si-putt-row.gw-si-putt-compact {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 10px 14px;
+  margin: 10px 0 0;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+}
+.gw-si-putt-row.gw-si-putt-compact .gw-si-putt-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #f5c842;
+  flex-shrink: 0;
+}
+.gw-si-putt-row.gw-si-putt-compact .gw-si-putt-btn {
+  width: 44px;
+  height: 44px;
+  font-size: 22px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #f5c842, #e6a02e);
+  color: #0a3d2e;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(245,200,66,0.3);
+}
+.gw-si-putt-row.gw-si-putt-compact .gw-si-putt-btn:active { transform: scale(0.9); }
+.gw-si-putt-row.gw-si-putt-compact .gw-si-putt-val {
+  font-size: 28px;
+  font-weight: 900;
+  color: #fff;
+  min-width: 36px;
+  text-align: center;
+}
+
+/* ========== 設定パネル（小さく折り畳み風） ========== */
+.gw-si-settings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 8px 10px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 10px;
+  align-items: center;
+  font-size: 11px;
+}
+.gw-si-clear-mini {
+  padding: 6px 10px;
+  font-size: 11px;
+  background: rgba(231,76,60,0.15);
+  color: #e74c3c;
+  border: 1px solid rgba(231,76,60,0.3);
+  border-radius: 6px;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+/* ========== スコアカード 巨大化（XL版） ========== */
+.gw-scorecard-xl .gw-sc-header-corner {
+  font-size: 14px;
+  padding: 10px 14px;
+  height: 56px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, rgba(245,200,66,0.25), rgba(245,200,66,0.1));
+}
+
+.gw-scorecard-xl .gw-sc-row-name {
+  padding: 12px 14px;
+  font-size: 17px;
+  font-weight: 800;
+  min-width: 120px;
+  max-width: 160px;
+  height: 56px;
+  border-bottom: 2px solid rgba(255,255,255,0.12);
+  color: #fff;
+  background: rgba(0,0,0,0.15);
+}
+.gw-scorecard-xl .gw-sc-row-name.is-active {
+  background: linear-gradient(90deg, rgba(245,200,66,0.35), rgba(245,200,66,0.15));
+  color: #f5c842;
+  border-left: 4px solid #f5c842;
+  padding-left: 10px;
+}
+
+.gw-scorecard-xl .gw-sc-th,
+.gw-scorecard-xl .gw-sc-cell {
+  width: 60px;
+  height: 56px;
+  font-size: 22px;
+  font-weight: 900;
+  border-bottom: 2px solid rgba(255,255,255,0.12);
+  border-right: 1px solid rgba(255,255,255,0.08);
+}
+.gw-scorecard-xl .gw-sc-th {
+  background: rgba(255,255,255,0.08);
+  color: #f5c842;
+  font-size: 18px;
+}
+.gw-scorecard-xl .gw-sc-th-num { font-size: 17px; font-weight: 900; }
+.gw-scorecard-xl .gw-sc-th-par { font-size: 11px; opacity: 0.85; margin-top: 2px; }
+
+.gw-scorecard-xl .gw-sc-cell {
+  background: rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.4);
+}
+.gw-scorecard-xl .gw-sc-cell.is-filled {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* スコア色（より鮮明に） */
+.gw-scorecard-xl .gw-sc-cell.is-birdie { color: #f39c12; background: rgba(243,156,18,0.15); }
+.gw-scorecard-xl .gw-sc-cell.is-under2 { color: #e74c3c; background: rgba(231,76,60,0.2); font-size: 24px; }
+.gw-scorecard-xl .gw-sc-cell.is-par { color: #f5c842; }
+.gw-scorecard-xl .gw-sc-cell.is-bogey { color: #5dade2; background: rgba(93,173,226,0.1); }
+.gw-scorecard-xl .gw-sc-cell.is-double { color: #2980b9; background: rgba(41,128,185,0.15); }
+.gw-scorecard-xl .gw-sc-cell.is-over { color: #95a5a6; }
+
+/* 合計・PAR差列を強調 */
+.gw-scorecard-xl .gw-sc-th-total,
+.gw-scorecard-xl .gw-sc-th-diff {
+  width: 72px;
+  background: linear-gradient(135deg, rgba(245,200,66,0.35), rgba(245,200,66,0.2));
+  color: #f5c842;
+  font-weight: 900;
+}
+.gw-scorecard-xl .gw-sc-cell-total,
+.gw-scorecard-xl .gw-sc-cell-diff {
+  width: 72px;
+  background: rgba(245,200,66,0.1);
+  font-size: 24px;
+  font-weight: 900;
+  color: #f5c842;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+}
+
+/* 行の縞模様（コントラスト強化） */
+.gw-scorecard-xl .gw-sc-row:nth-child(even) .gw-sc-cell {
+  background: rgba(255,255,255,0.02);
+}
+.gw-scorecard-xl .gw-sc-row:nth-child(even) .gw-sc-cell.is-filled {
+  background: rgba(255,255,255,0.06);
+}
+.gw-scorecard-xl .gw-sc-fixed-rows .gw-sc-row-name:nth-child(even) {
+  background: rgba(0,0,0,0.25);
+}
+
+/* アクティブ行の強調 */
+.gw-scorecard-xl .gw-sc-row.is-active .gw-sc-cell {
+  background: rgba(245,200,66,0.08);
+  border-bottom-color: rgba(245,200,66,0.3);
+}
+.gw-scorecard-xl .gw-sc-row.is-active .gw-sc-cell.is-filled {
+  background: rgba(245,200,66,0.18);
+}
+
+/* 現在ホールの超強調（黄色光彩・脈動） */
+.gw-scorecard-xl .gw-sc-th.is-current {
+  background: linear-gradient(180deg, #ffe680, #f5c842, #e6a02e) !important;
+  color: #0a3d2e !important;
+  font-weight: 900;
+  box-shadow: 0 0 0 3px #fff5c4 inset, 0 4px 16px rgba(245,200,66,0.7);
+  z-index: 2;
+  position: relative;
+  animation: gwHolePulse 1.5s ease-in-out infinite;
+}
+@keyframes gwHolePulse {
+  0%, 100% { box-shadow: 0 0 0 3px #fff5c4 inset, 0 4px 16px rgba(245,200,66,0.7); }
+  50% { box-shadow: 0 0 0 3px #fff5c4 inset, 0 6px 24px rgba(245,200,66,1); }
+}
+.gw-scorecard-xl .gw-sc-th.is-current .gw-sc-th-num {
+  color: #0a3d2e;
+  font-size: 19px;
+}
+.gw-scorecard-xl .gw-sc-th.is-current .gw-sc-th-par {
+  color: rgba(10,61,46,0.85);
+  font-weight: 800;
+}
+.gw-scorecard-xl .gw-sc-cell.is-current {
+  background: linear-gradient(180deg, rgba(245,200,66,0.3), rgba(245,200,66,0.15)) !important;
+  border-left: 3px solid #f5c842;
+  border-right: 3px solid #f5c842;
+  position: relative;
+}
+.gw-scorecard-xl .gw-sc-row.is-active .gw-sc-cell.is-current {
+  background: linear-gradient(180deg, rgba(245,200,66,0.5), rgba(245,200,66,0.3)) !important;
+}
+
+/* スコアカード全体の枠を強化 */
+.gw-scorecard-xl {
+  background: linear-gradient(180deg, rgba(0,0,0,0.4), rgba(0,0,0,0.25));
+  border: 2px solid rgba(245,200,66,0.25);
+  border-radius: 14px;
+  margin-top: 10px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  overflow: hidden;
+}
+
+/* スコアカード見出し */
+.gw-gland-cardwrap summary {
+  padding: 14px 16px;
+  background: linear-gradient(135deg, rgba(245,200,66,0.18), rgba(245,200,66,0.05));
+  border: 1px solid rgba(245,200,66,0.3);
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 15px;
+  color: #f5c842;
+  list-style: none;
+}
+.gw-gland-cardwrap summary::-webkit-details-marker { display: none; }
+.gw-gland-cardwrap summary::before { content: '▼ '; }
+.gw-gland-cardwrap[open] summary::before { content: '▲ '; }
+
+/* ========== 招待QRモーダル ========== */
+.gw-invite-qr-modal {
+  position: fixed; inset: 0; z-index: 6000; pointer-events: none;
+}
+.gw-invite-qr-modal.is-open { pointer-events: auto; }
+.gw-invite-qr-backdrop {
+  position: absolute; inset: 0; background: rgba(0,0,0,0.7);
+  opacity: 0; transition: opacity 0.3s;
+}
+.gw-invite-qr-modal.is-open .gw-invite-qr-backdrop { opacity: 1; }
+.gw-invite-qr-sheet {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(180deg, #1a4d3e, #0a3d2e);
+  border-radius: 24px 24px 0 0;
+  padding: 20px;
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.gw-invite-qr-modal.is-open .gw-invite-qr-sheet { transform: translateY(0); }
+.gw-invite-qr-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 14px;
+}
+.gw-invite-qr-header h3 { margin: 0; color: #f5c842; font-size: 18px; }
+.gw-invite-qr-close {
+  width: 36px; height: 36px; font-size: 22px;
+  background: rgba(255,255,255,0.1); color: #fff;
+  border: none; border-radius: 50%; cursor: pointer;
+}
+.gw-invite-qr-info { text-align: center; margin-bottom: 14px; }
+.gw-invite-qr-groupname { font-size: 16px; font-weight: 800; color: #f5c842; }
+.gw-invite-qr-groupid { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 4px; }
+.gw-invite-qr-image {
+  background: #fff;
+  padding: 16px;
+  border-radius: 16px;
+  display: flex;
+  justify-content: center;
+  margin: 14px auto;
+  max-width: 280px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+}
+.gw-invite-qr-image svg { width: 100%; max-width: 240px; height: auto; }
+.gw-invite-qr-hint {
+  text-align: center;
+  font-size: 13px;
+  color: rgba(255,255,255,0.8);
+  line-height: 1.6;
+  margin: 12px 0;
+}
+.gw-invite-qr-url { display: flex; gap: 6px; }
+.gw-invite-qr-url input {
+  flex: 1; padding: 10px 12px; font-size: 11px;
+  background: rgba(255,255,255,0.08); color: #ddd;
+  border: 1px solid rgba(255,255,255,0.15); border-radius: 8px;
+}
+.gw-invite-qr-url button {
+  padding: 10px 16px;
+  background: #f5c842; color: #0a3d2e;
+  border: none; border-radius: 8px;
+  font-weight: 800; cursor: pointer;
+}
+.gw-invite-qr-actions { margin-top: 12px; }
+.gw-invite-qr-share {
+  display: block; width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: #fff; border: none; border-radius: 12px;
+  font-size: 16px; font-weight: 800;
+  cursor: pointer;
+}
+.gw-invite-qr-loading,
+.gw-invite-qr-error {
+  text-align: center; padding: 30px 20px;
+  color: rgba(255,255,255,0.7);
+}
+.gw-invite-qr-error { color: #e74c3c; }
+
+/* ========== レスポンシブ調整（小型機種） ========== */
+@media (max-width: 380px) {
+  .gw-scorecard-xl .gw-sc-row-name { min-width: 100px; font-size: 15px; padding: 10px 10px; }
+  .gw-scorecard-xl .gw-sc-th,
+  .gw-scorecard-xl .gw-sc-cell { width: 52px; font-size: 19px; }
+  .gw-scorecard-xl .gw-sc-cell-total,
+  .gw-scorecard-xl .gw-sc-cell-diff,
+  .gw-scorecard-xl .gw-sc-th-total,
+  .gw-scorecard-xl .gw-sc-th-diff { width: 62px; font-size: 21px; }
+  .gw-si-confirm-big { font-size: 19px; padding: 18px 12px; }
+  .gw-topbar-qr-btn { padding: 7px 9px; font-size: 11px; }
+}

@@ -1,5 +1,6 @@
 // =============================================================
-// score-input.js - スコア入力UI（Phase 7b：オートスライド対応）
+// score-input.js - スコア入力UI（Phase 7c：視線移動ゼロの最適配置）
+// 構成：打数入力 → パット入力(小) → 確定ボタン(大)
 // =============================================================
 import { State } from '../core/state.js';
 import { EventBus } from '../core/event-bus.js';
@@ -34,8 +35,10 @@ function render() {
   const diffStr = diff == null ? '' : (diff === 0 ? 'E' : (diff > 0 ? `+${diff}` : String(diff)));
   const diffColor = diff != null ? diffToColor(diff) : '#888';
   const scoreName = diff != null ? diffToName(diff) : '';
+  const isLastHole = hole === course.holes - 1;
 
   _container.innerHTML = `
+    <!-- ホール表示・移動 -->
     <div class="gw-si-top">
       <button class="gw-si-prev" data-action="prev-hole">◀</button>
       <button class="gw-si-hole-label gw-si-hole-current" data-action="open-jump">
@@ -45,8 +48,10 @@ function render() {
       </button>
       <button class="gw-si-next" data-action="next-hole">▶</button>
     </div>
+
     <div class="gw-si-player">${escapeHtml(active.name)} ${active.isSelf ? '👤' : ''}</div>
 
+    <!-- 現在打数の大表示 -->
     <div class="gw-si-display" style="border-color:${diffColor};">
       <div class="gw-si-big" style="color:${diffColor};">${display}</div>
       <div class="gw-si-sub">
@@ -56,10 +61,18 @@ function render() {
       <button class="gw-si-cycle" data-action="cycle-display">表示: ${DISPLAY_LABELS[settings.displayMode]}</button>
     </div>
 
+    <!-- ① 打数入力エリア（メイン）-->
     ${settings.inputMode === 'simple' ? renderSimpleMode(par, stroke) : renderCounterMode(stroke, putt)}
 
+    <!-- ② パット入力（小・直下に配置）-->
     ${settings.puttEnabled && settings.inputMode === 'simple' ? renderPuttRow(putt) : ''}
 
+    <!-- ③ 確定ボタン（大・最下部・視線移動なし）-->
+    <button class="gw-si-confirm-big ${isLastHole ? 'is-final' : ''}" data-action="${settings.inputMode === 'simple' ? 'confirm-simple' : 'confirm-counter'}">
+      ${isLastHole ? '✅ 最終ホール 入力完了' : '✓ 確定して次のホールへ →'}
+    </button>
+
+    <!-- 設定切替・クリア（折り畳み風）-->
     <div class="gw-si-settings">
       <div class="gw-si-toggle">
         <button class="${settings.inputMode === 'simple' ? 'is-on' : ''}" data-action="mode-simple">シンプル</button>
@@ -69,6 +82,7 @@ function render() {
         <input type="checkbox" data-action="toggle-putt" ${settings.puttEnabled ? 'checked' : ''}>
         <span>パット入力</span>
       </label>
+      <button class="gw-si-clear-mini" data-action="clear-hole">クリア</button>
     </div>
   `;
 
@@ -82,10 +96,6 @@ function renderSimpleMode(par, stroke) {
       <button class="gw-si-bigbtn gw-si-minus" data-action="dec">−</button>
       <div class="gw-si-current">${current}</div>
       <button class="gw-si-bigbtn gw-si-plus" data-action="inc">＋</button>
-    </div>
-    <div class="gw-si-actions">
-      <button class="gw-si-clear" data-action="clear-hole">クリア</button>
-      <button class="gw-si-ok" data-action="confirm-simple">この打数で確定→次へ</button>
     </div>
   `;
 }
@@ -110,21 +120,17 @@ function renderCounterMode(stroke, putt) {
         <span>合計</span>
         <strong>${total}</strong>
       </div>
-      <div class="gw-si-actions">
-        <button class="gw-si-clear" data-action="clear-hole">クリア</button>
-        <button class="gw-si-ok" data-action="confirm-counter">確定→次へ</button>
-      </div>
     </div>
   `;
 }
 
 function renderPuttRow(putt) {
   return `
-    <div class="gw-si-putt-row">
-      <span>パット数:</span>
+    <div class="gw-si-putt-row gw-si-putt-compact">
+      <span class="gw-si-putt-label">🥅 パット</span>
       <button class="gw-si-putt-btn" data-action="putt-dec">−</button>
       <span class="gw-si-putt-val">${putt != null ? putt : 0}</span>
-      <button class="gw-si-putt-btn" data-action="putt-inc">+</button>
+      <button class="gw-si-putt-btn" data-action="putt-inc">＋</button>
     </div>
   `;
 }
@@ -136,18 +142,13 @@ function bindEvents() {
   });
 }
 
-/** 🎯 確定時に次ホールへ自動移動 */
 function autoAdvance() {
   const course = State.getCourse();
   const hole = State.getHole();
   if (course && hole < course.holes - 1) {
-    setTimeout(() => State.setHole(hole + 1), 200);
+    setTimeout(() => State.setHole(hole + 1), 180);
   } else if (course && hole === course.holes - 1) {
-    // 最終ホール
-    setTimeout(() => {
-      // トーストでお知らせ（toast.jsを動的importしない代わりにイベント発火）
-      EventBus.emit('round:lasthole-confirmed');
-    }, 200);
+    setTimeout(() => EventBus.emit('round:lasthole-confirmed'), 200);
   }
 }
 
@@ -196,13 +197,11 @@ function handle(action, e) {
       break;
     }
     case 'confirm-simple': {
-      // PAR で確定（未入力なら）→ 次ホールへ
       if (active.scores[hole] == null) State.setScore(active.id, hole, par);
       autoAdvance();
       break;
     }
     case 'confirm-counter': {
-      // カウンターは累積値を確定 → 次ホールへ
       autoAdvance();
       break;
     }
@@ -215,12 +214,16 @@ function handle(action, e) {
       State.setScore(active.id, hole, cur + 1);
       break;
     }
-    case 'putt-plus':
-    case 'putt-inc': {
+    case 'putt-plus': {
       const curS = active.scores[hole] ?? 0;
       const curP = active.putts[hole] ?? 0;
       State.setPutt(active.id, hole, curP + 1);
-      if (action === 'putt-plus') State.setScore(active.id, hole, curS + 1);
+      State.setScore(active.id, hole, curS + 1);
+      break;
+    }
+    case 'putt-inc': {
+      const curP = active.putts[hole] ?? 0;
+      State.setPutt(active.id, hole, curP + 1);
       break;
     }
     case 'putt-dec': {

@@ -1,5 +1,5 @@
 // =============================================================
-// gland.js - G-LAND画面（Phase 7b：タップ即遷移・ドラフト即復帰）
+// gland.js - G-LAND画面（Phase 7c：招待QRボタン最上部配置）
 // =============================================================
 import { State } from '../core/state.js';
 import { EventBus } from '../core/event-bus.js';
@@ -9,6 +9,7 @@ import { toast } from '../ui/toast.js';
 import { mountScoreInput } from '../widgets/score-input.js';
 import { mountScorecard } from '../widgets/scorecard.js';
 import { mountPlayerTabs } from '../widgets/player-tabs.js';
+import { openInviteQR } from '../widgets/invite-qr.js';
 
 let _root = null;
 let _mounted = false;
@@ -25,7 +26,6 @@ export function renderGLand() {
     return;
   }
 
-  // 自分をプレイヤーとして登録（未登録時のみ）
   ensureSelfPlayer(profile);
 
   const course = State.getCourse();
@@ -35,7 +35,6 @@ export function renderGLand() {
     return;
   }
 
-  // メイン画面（コースが選択済 = ドラフト復帰時は即ここに飛ぶ）
   if (!_mounted || !_root.querySelector('#gw-gland-input')) {
     _root.innerHTML = renderMain();
     mountPlayerTabs(document.getElementById('gw-gland-tabs'));
@@ -70,12 +69,7 @@ function bindRegisterEvents() {
     const realName = document.getElementById('gw-input-realname').value.trim();
     const isPublic = document.getElementById('gw-input-public').checked;
     if (!name) { toast('ニックネームを入力してください', 'error'); return; }
-    Store.saveProfile({
-      name,
-      realName,
-      isPublic,
-      createdAt: Date.now(),
-    });
+    Store.saveProfile({ name, realName, isPublic, createdAt: Date.now() });
     toast(`ようこそ、${name}さん！`, 'success');
     renderGLand();
   });
@@ -130,10 +124,8 @@ function bindCourseEvents() {
     btn.addEventListener('click', () => {
       const id = btn.dataset.course;
       const c = COURSES[id];
-      // 🚀 タップ即遷移: コース設定 → 即メイン画面描画（確認なし）
       State.setCourse({ id, ...c });
       toast(`${c.name} ${c.variant} スタート！`, 'success', 1500);
-      // _mountedをリセットして強制再描画
       _mounted = false;
       renderGLand();
     });
@@ -144,16 +136,30 @@ function renderMain() {
   const course = State.getCourse();
   return `
     <div class="gw-gland-main">
-      <div class="gw-gland-courseinfo">
-        <span>⛳ ${escapeHtml(course.name)} <small>(${escapeHtml(course.variant)})</small></span>
-        <button class="gw-mini-btn" data-action="change-course">変更</button>
+      <!-- 🎯 最上部バー：コース名 / 招待QR / 変更 -->
+      <div class="gw-gland-topbar">
+        <div class="gw-gland-courseinfo-name">
+          <span class="gw-gland-courseicon">⛳</span>
+          <span class="gw-gland-coursename">${escapeHtml(course.name)}</span>
+          <span class="gw-gland-coursevariant">${escapeHtml(course.variant)}</span>
+        </div>
+        <div class="gw-gland-topbar-actions">
+          <button class="gw-topbar-qr-btn" data-action="open-invite-qr">
+            <span class="gw-qr-icon">📲</span>
+            <span class="gw-qr-text">招待QR</span>
+          </button>
+          <button class="gw-mini-btn" data-action="change-course">変更</button>
+        </div>
       </div>
+
       <div id="gw-gland-tabs"></div>
       <div id="gw-gland-input"></div>
+
       <details class="gw-gland-cardwrap" open>
-        <summary>📊 スコアカード（タップで開閉）</summary>
+        <summary>📊 スコアカード（全員のスコア）</summary>
         <div id="gw-gland-card"></div>
       </details>
+
       <div class="gw-gland-actions">
         <button class="gw-btn-primary" data-action="finish">✅ ラウンド終了して保存</button>
       </div>
@@ -169,12 +175,14 @@ function bindMainEvents() {
 
 function handleMain(action) {
   switch (action) {
+    case 'open-invite-qr':
+      openInviteQR();
+      break;
     case 'change-course':
       if (confirm('コースを変更しますか？\n（現在のスコアは破棄されます）')) {
         State.reset();
         Store.clearRoundDraft();
         _mounted = false;
-        // 自分のプロフィールを再登録
         const profile = Store.getProfile();
         if (profile) ensureSelfPlayer(profile);
         renderGLand();
@@ -193,7 +201,6 @@ function handleMain(action) {
         _mounted = false;
         toast('履歴に保存しました 🎉', 'success');
         EventBus.emit(EVENTS.ROUND_FINISHED);
-        // ホームに戻る
         location.hash = '#home';
       }
       break;
@@ -214,10 +221,6 @@ function escapeHtml(s) {
     if (snap.course) Store.saveRoundDraft(snap);
   }));
 
-// 画面外からのhash遷移時にもmount状態を維持／更新
 EventBus.on('route:changed', (name) => {
-  if (name === 'gland') {
-    // すでにマウント済みなら再mountしないが、コース変更検知のため一応再描画判定
-    renderGLand();
-  }
+  if (name === 'gland') renderGLand();
 });

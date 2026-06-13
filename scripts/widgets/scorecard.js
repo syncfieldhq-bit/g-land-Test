@@ -1,5 +1,5 @@
 // =============================================================
-// scorecard.js - スコアカード（Phase 7b：現在ホール中央固定+オートスライド）
+// scorecard.js - スコアカード（Phase 7c：強制中央追従・巨大文字版）
 // =============================================================
 import { State } from '../core/state.js';
 import { EventBus } from '../core/event-bus.js';
@@ -7,14 +7,15 @@ import { EVENTS, formatScore } from '../core/constants.js';
 
 let _container = null;
 let _editingCell = null;
+let _autoScrollTimer = null;
 
 function buildSkeleton() {
   if (_container) return _container;
   _container = document.createElement('div');
-  _container.className = 'gw-scorecard';
+  _container.className = 'gw-scorecard gw-scorecard-xl';
   _container.innerHTML = `
     <div class="gw-sc-fixed">
-      <div class="gw-sc-header-corner">プレイヤー</div>
+      <div class="gw-sc-header-corner">PLAYER</div>
       <div class="gw-sc-fixed-rows" id="gw-sc-fixed-rows"></div>
     </div>
     <div class="gw-sc-scroll" id="gw-sc-scroll">
@@ -58,7 +59,7 @@ function renderRows() {
   const mode = State.getSettings().displayMode || 'number';
   const cur = State.getHole();
 
-  // 左固定列（プレイヤー名）
+  // 左固定列
   const fixedRows = _container.querySelector('#gw-sc-fixed-rows');
   let fixedHtml = '';
   players.forEach(p => {
@@ -77,7 +78,7 @@ function renderRows() {
     });
   });
 
-  // 右スクロール列（スコア）
+  // 右スクロール列
   const body = _container.querySelector('#gw-sc-body');
   let bodyHtml = '';
   players.forEach(p => {
@@ -114,33 +115,36 @@ function renderRows() {
     });
   });
 
-  // 🎯 オートスライド: 現在ホールを中央に
-  scrollToCurrentHole();
+  // 🎯 強制中央追従：複数回トライして確実に中央配置
+  forceScrollToCurrentHole();
 }
 
-/** 🎯 現在ホールを横スクロールエリアの中央に持ってくる */
-function scrollToCurrentHole() {
+/** 🎯 現在ホールを横スクロール中央に強制追従 */
+function forceScrollToCurrentHole() {
   if (!_container) return;
-  const scroll = _container.querySelector('#gw-sc-scroll');
-  if (!scroll) return;
-  const cur = State.getHole();
-  const currentCells = scroll.querySelectorAll(`.gw-sc-th[data-hole="${cur}"]`);
-  if (!currentCells.length) return;
-  const target = currentCells[0];
+  if (_autoScrollTimer) clearTimeout(_autoScrollTimer);
 
-  // 中央に来るようなscrollLeftを計算
-  const containerWidth = scroll.clientWidth;
-  const targetLeft = target.offsetLeft;
-  const targetWidth = target.offsetWidth;
-  const desiredScroll = targetLeft - (containerWidth / 2) + (targetWidth / 2);
+  const doScroll = () => {
+    const scroll = _container.querySelector('#gw-sc-scroll');
+    if (!scroll) return;
+    const cur = State.getHole();
+    const target = scroll.querySelector(`.gw-sc-th[data-hole="${cur}"]`);
+    if (!target) return;
 
-  // スムーズスクロール
-  requestAnimationFrame(() => {
+    const containerWidth = scroll.clientWidth;
+    const targetLeft = target.offsetLeft;
+    const targetWidth = target.offsetWidth;
+    const desiredScroll = targetLeft - (containerWidth / 2) + (targetWidth / 2);
+
     scroll.scrollTo({
       left: Math.max(0, desiredScroll),
       behavior: 'smooth',
     });
-  });
+  };
+
+  // 即時 + 確実に DOM 配置後にもう一度
+  requestAnimationFrame(doScroll);
+  _autoScrollTimer = setTimeout(doScroll, 350); // smooth完了後に念押し
 }
 
 function diffClass(diff) {
@@ -189,10 +193,9 @@ function openCellEditor(cell) {
     else if (act === 'ok') {
       State.setScore(playerId, holeIdx, val);
       closeCellEditor();
-      // 🎯 オートスライド: 自分の入力なら次ホールへ自動移動
       const isSelfActive = player.isSelf || playerId === State.getActiveId();
       if (isSelfActive && holeIdx === State.getHole() && holeIdx < course.holes - 1) {
-        setTimeout(() => State.setHole(holeIdx + 1), 250);
+        setTimeout(() => State.setHole(holeIdx + 1), 200);
       }
     }
     else if (act === 'cancel') closeCellEditor();
@@ -223,6 +226,9 @@ export function mountScorecard(host) {
   buildSkeleton();
   host.appendChild(_container);
   render();
+  // 画面リサイズ・回転時にも中央追従
+  window.addEventListener('resize', forceScrollToCurrentHole);
+  window.addEventListener('orientationchange', forceScrollToCurrentHole);
 }
 
 export function render() {
