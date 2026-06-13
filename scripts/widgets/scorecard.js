@@ -1,5 +1,6 @@
 // =============================================================
-// scorecard.js - スコアカード（Phase 7c：強制中央追従・巨大文字版）
+// scorecard.js - 完全中央追従版（Phase 7e）
+// 現在ホールが常に画面中央。隠れない・見逃さない・リズムを刻む。
 // =============================================================
 import { State } from '../core/state.js';
 import { EventBus } from '../core/event-bus.js';
@@ -7,7 +8,8 @@ import { EVENTS, formatScore } from '../core/constants.js';
 
 let _container = null;
 let _editingCell = null;
-let _autoScrollTimer = null;
+let _scrollTimers = [];
+let _intersectionObs = null;
 
 function buildSkeleton() {
   if (_container) return _container;
@@ -73,9 +75,7 @@ function renderRows() {
   });
   fixedRows.innerHTML = fixedHtml;
   fixedRows.querySelectorAll('.gw-sc-row-name').forEach(el => {
-    el.addEventListener('click', () => {
-      State.setActivePlayer(el.dataset.player);
-    });
+    el.addEventListener('click', () => State.setActivePlayer(el.dataset.player));
   });
 
   // 右スクロール列
@@ -115,21 +115,27 @@ function renderRows() {
     });
   });
 
-  // 🎯 強制中央追従：複数回トライして確実に中央配置
-  forceScrollToCurrentHole();
+  // 🎯 強制中央追従：複数タイミングで確実に中央配置
+  centerCurrentHole();
 }
 
-/** 🎯 現在ホールを横スクロール中央に強制追従 */
-function forceScrollToCurrentHole() {
+/**
+ * 🎯 現在ホールを横スクロールの中央に強制配置
+ * 複数のタイミングで実行し、確実に中央を維持する
+ */
+function centerCurrentHole(behavior = 'smooth') {
   if (!_container) return;
-  if (_autoScrollTimer) clearTimeout(_autoScrollTimer);
+  // 既存タイマーをクリア
+  _scrollTimers.forEach(t => clearTimeout(t));
+  _scrollTimers = [];
 
-  const doScroll = () => {
+  const doScroll = (b) => {
     const scroll = _container.querySelector('#gw-sc-scroll');
     if (!scroll) return;
     const cur = State.getHole();
     const target = scroll.querySelector(`.gw-sc-th[data-hole="${cur}"]`);
     if (!target) return;
+    if (scroll.clientWidth === 0) return; // 表示前はスキップ
 
     const containerWidth = scroll.clientWidth;
     const targetLeft = target.offsetLeft;
@@ -138,13 +144,18 @@ function forceScrollToCurrentHole() {
 
     scroll.scrollTo({
       left: Math.max(0, desiredScroll),
-      behavior: 'smooth',
+      behavior: b,
     });
   };
 
-  // 即時 + 確実に DOM 配置後にもう一度
-  requestAnimationFrame(doScroll);
-  _autoScrollTimer = setTimeout(doScroll, 350); // smooth完了後に念押し
+  // ① 即時（DOM配置直後）
+  requestAnimationFrame(() => doScroll(behavior));
+  // ② 100ms後（レイアウト確定後）
+  _scrollTimers.push(setTimeout(() => doScroll(behavior), 100));
+  // ③ 400ms後（smooth完了後の念押し）
+  _scrollTimers.push(setTimeout(() => doScroll(behavior), 400));
+  // ④ 800ms後（折り畳みdetails展開後など、遅延描画対応）
+  _scrollTimers.push(setTimeout(() => doScroll(behavior), 800));
 }
 
 function diffClass(diff) {
@@ -226,9 +237,28 @@ export function mountScorecard(host) {
   buildSkeleton();
   host.appendChild(_container);
   render();
-  // 画面リサイズ・回転時にも中央追従
-  window.addEventListener('resize', forceScrollToCurrentHole);
-  window.addEventListener('orientationchange', forceScrollToCurrentHole);
+
+  // 🎯 リサイズ・回転・details展開に追従
+  window.addEventListener('resize', () => centerCurrentHole('auto'));
+  window.addEventListener('orientationchange', () => centerCurrentHole('smooth'));
+
+  // 🎯 details の open/close も検知（折り畳みでスコアカードを開いたら中央化）
+  const detailsEl = host.closest('details');
+  if (detailsEl) {
+    detailsEl.addEventListener('toggle', () => {
+      if (detailsEl.open) centerCurrentHole('smooth');
+    });
+  }
+
+  // 🎯 IntersectionObserver でスコアカードが画面に入った瞬間にも追従
+  if ('IntersectionObserver' in window) {
+    _intersectionObs = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) centerCurrentHole('auto');
+      }
+    }, { threshold: 0.3 });
+    _intersectionObs.observe(_container);
+  }
 }
 
 export function render() {
@@ -237,8 +267,15 @@ export function render() {
   renderRows();
 }
 
+// ホール変更・スコア更新の瞬間にも中央追従
+EventBus.on(EVENTS.HOLE_CHANGED, () => {
+  render();
+  // 念のため二重呼び出し（renderRows内でも呼ばれるが、確実性のため）
+  centerCurrentHole('smooth');
+});
+
 [
-  EVENTS.SCORE_UPDATED, EVENTS.HOLE_CHANGED, EVENTS.PLAYER_CHANGED,
+  EVENTS.SCORE_UPDATED, EVENTS.PLAYER_CHANGED,
   EVENTS.PLAYER_ADDED, EVENTS.PLAYER_REMOVED, EVENTS.DISPLAY_MODE_CHANGED,
   'player:renamed', 'course:changed', 'state:restored'
 ].forEach(ev => EventBus.on(ev, render));

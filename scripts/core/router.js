@@ -1,5 +1,5 @@
 // =============================================================
-// router.js - 画面遷移（hashベース）
+// router.js - 画面遷移（Phase 7e：QR ダイレクト参加対応）
 // =============================================================
 import { EventBus } from './event-bus.js';
 
@@ -16,7 +16,6 @@ export const Router = {
       return;
     }
     location.hash = `#${name}`;
-    // hashchange イベントで処理される
   },
   _activate(name) {
     document.querySelectorAll('.gw-screen').forEach(el => el.classList.remove('active'));
@@ -33,22 +32,36 @@ export const Router = {
   current() { return _current; },
   start() {
     window.addEventListener('hashchange', () => {
-      const name = parseHash();
-      if (_screens.has(name)) this._activate(name);
+      const { screen, joinId } = parseHash();
+      if (joinId) {
+        // QR経由の参加リクエストを保存して、即座に gland に直行
+        sessionStorage.setItem('gworld.pendingJoin', joinId);
+        if (_screens.has('gland')) this._activate('gland');
+        return;
+      }
+      if (_screens.has(screen)) this._activate(screen);
     });
-    // QRリンク経由の参加処理
-    const joinMatch = location.hash.match(/#join=(\S+)/);
-    if (joinMatch) {
-      sessionStorage.setItem('gworld.pendingJoin', joinMatch[1]);
-      location.hash = '#gcompete';
+
+    // 🎯 初回ロード時：URLハッシュに #join=xxx があれば最優先で gland に直行
+    const { screen, joinId } = parseHash();
+    if (joinId) {
+      sessionStorage.setItem('gworld.pendingJoin', joinId);
+      // hash を gland に書き換え（履歴汚染を避けるため replaceState）
+      history.replaceState(null, '', location.pathname + location.search + '#gland');
+      this._activate('gland');
+      return;
     }
-    const initial = parseHash() || 'home';
+    const initial = screen || 'home';
     this._activate(initial);
   },
 };
 
 function parseHash() {
   const h = location.hash.replace('#', '');
-  if (h.startsWith('join=')) return 'gcompete';
-  return h.split('?')[0] || 'home';
+  const joinMatch = h.match(/^join=([^&]+)/);
+  if (joinMatch) {
+    return { screen: 'gland', joinId: joinMatch[1] };
+  }
+  const screen = h.split('?')[0] || 'home';
+  return { screen, joinId: null };
 }

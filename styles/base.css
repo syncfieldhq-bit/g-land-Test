@@ -1448,3 +1448,102 @@ body {
   color: rgba(255,255,255,0.35);
   font-size: 11px;
 }
+
+/* =============================================================
+   Phase 7e: QR ダイレクト参加 + 中央追従強化
+   ============================================================= */
+
+/* ========== QR参加バナー ========== */
+.gw-join-card {
+  border: 2px solid #2ecc71 !important;
+  background: linear-gradient(135deg, rgba(46,204,113,0.12), rgba(255,255,255,0.06)) !important;
+  box-shadow: 0 6px 24px rgba(46,204,113,0.25);
+  animation: gwJoinAppear 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes gwJoinAppear {
+  0% { opacity: 0; transform: translateY(20px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.gw-join-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  margin: -8px -8px 16px;
+  background: linear-gradient(135deg, rgba(46,204,113,0.25), rgba(46,204,113,0.05));
+  border-radius: 12px;
+  border-left: 4px solid #2ecc71;
+}
+.gw-join-icon {
+  font-size: 36px;
+  animation: gwJoinPulse 1.8s ease-in-out infinite;
+}
+@keyframes gwJoinPulse {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.15) rotate(-5deg); }
+}
+.gw-join-title {
+  font-size: 17px;
+  font-weight: 900;
+  color: #2ecc71;
+  letter-spacing: 0.5px;
+}
+.gw-join-subtitle {
+  font-size: 12px;
+  color: rgba(255,255,255,0.75);
+  margin-top: 2px;
+}
+.gw-btn-join-go {
+  background: linear-gradient(135deg, #2ecc71, #16a085) !important;
+  color: #fff !important;
+  font-size: 18px !important;
+  padding: 18px !important;
+  box-shadow: 0 4px 16px rgba(46,204,113,0.4);
+  animation: gwJoinBtnGlow 2s ease-in-out infinite;
+}
+@keyframes gwJoinBtnGlow {
+  0%, 100% { box-shadow: 0 4px 16px rgba(46,204,113,0.4); }
+  50% { box-shadow: 0 4px 24px rgba(46,204,113,0.7); }
+}
+.gw-join-hint {
+  text-align: center;
+  font-size: 11px;
+  color: rgba(255,255,255,0.6);
+  margin: 10px 0 0;
+}
+
+/* ========== グループ参加中タグ（トップバー内） ========== */
+.gw-gland-group-tag {
+  display: inline-block;
+  padding: 3px 8px;
+  margin-left: 6px;
+  background: linear-gradient(135deg, #2ecc71, #16a085);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  border-radius: 8px;
+  letter-spacing: 0.5px;
+  vertical-align: middle;
+  box-shadow: 0 2px 6px rgba(46,204,113,0.4);
+  animation: gwGroupTagPulse 2.5s ease-in-out infinite;
+  white-space: nowrap;
+}
+@keyframes gwGroupTagPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* ========== 中央追従の視覚強化 ========== */
+.gw-scorecard-xl {
+  /* 中央指標：常に中央にうっすら縦線を表示してユーザーに「ここが中央」を意識させる */
+  position: relative;
+}
+.gw-scorecard-xl .gw-sc-scroll {
+  scroll-behavior: smooth;
+  /* スクロール中もくっきり見えるよう、スナップ */
+  scroll-snap-type: x proximity;
+}
+.gw-scorecard-xl .gw-sc-th.is-current,
+.gw-scorecard-xl .gw-sc-cell.is-current {
+  scroll-snap-align: center;
+}
