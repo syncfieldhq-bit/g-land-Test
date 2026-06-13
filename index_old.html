@@ -2,7 +2,6 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<base target="_top">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0a3d2e">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -10,39 +9,55 @@
 <meta name="apple-mobile-web-app-title" content="G-WORLD">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="format-detection" content="telephone=no">
+
 <title>G-WORLD</title>
+
 <link rel="icon" href="./icon.png">
 <link rel="apple-touch-icon" href="./icon.png">
 <link rel="manifest" href="./manifest.webmanifest">
+
 <link rel="stylesheet" href="./styles/base.css">
 </head>
 <body>
 
-<div id="gw-boot-overlay" class="gw-boot-overlay">
-  <div class="gw-boot-spinner"></div>
-  <div class="gw-boot-text">G-WORLD</div>
-  <div class="gw-boot-sub">起動中...</div>
-</div>
-
-<header class="gw-header">
-  <h1>G-WORLD<span class="gw-logo-sub">PORTAL</span></h1>
+<!-- ヘッダー -->
+<header class="header">
+  <h1>G-WORLD<span class="sub">PORTAL</span></h1>
+  <div class="header-info">
+    <div id="header-name"></div>
+  </div>
 </header>
 
-<main class="gw-container">
-  <section id="gw-screen-home" class="gw-screen"></section>
-  <section id="gw-screen-gland" class="gw-screen"></section>
-  <section id="gw-screen-gcompete" class="gw-screen"></section>
-  <section id="gw-screen-mypage" class="gw-screen"></section>
+<!-- メインコンテナ：Routerが各画面を描画する -->
+<main id="app-root" class="container">
+  <div class="boot-placeholder">
+    <div class="boot-spinner"></div>
+    <div class="boot-text">G-WORLD 起動中...</div>
+    <div class="boot-sub">画面モジュールを読み込んでいます</div>
+  </div>
 </main>
 
-<nav class="gw-footer-nav">
-  <button data-route="home"><span>🏠</span>ホーム</button>
-  <button data-route="gland"><span>⛳</span>G-LAND</button>
-  <button data-route="gcompete"><span>🏆</span>コンペ</button>
-  <button data-route="mypage"><span>👤</span>マイ</button>
+<!-- フッターナビ -->
+<nav class="footer-nav">
+  <button data-route="home">
+    <span class="nav-icon">🏠</span>
+    <span class="nav-label">ホーム</span>
+  </button>
+  <button data-route="gland">
+    <span class="nav-icon">⛳</span>
+    <span class="nav-label">G-LAND</span>
+  </button>
+  <button data-route="mypage">
+    <span class="nav-icon">👤</span>
+    <span class="nav-label">マイ</span>
+  </button>
 </nav>
 
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
 <script type="module" src="./scripts/main.js"></script>
+
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>

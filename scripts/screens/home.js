@@ -1,99 +1,72 @@
-/**
- * ═══════════════════════════════════════════════════════
- * scripts/screens/home.js - ホーム画面（ポータル）
- *
- * 役割：
- *   - 挨拶（こんにちは ○○さん）
- *   - ステータス表示（ゲスト / プレイヤー）
- *   - 「ラウンド開始」ボタン
- *   - ポータルモジュール一覧（G-LAND / マイページ等）
- *   - 最近のラウンド履歴
- * ═══════════════════════════════════════════════════════
- */
-
+// =============================================================
+// home.js - ホーム画面（ポータル）
+// =============================================================
+import * as Store from '../core/storage.js';
 import { State } from '../core/state.js';
-import { Store } from '../core/storage.js';
+import { Router } from '../core/router.js';
 
-export const HomeScreen = {
-  /**
-   * ホーム画面を描画
-   * @param {HTMLElement} container - 描画先（通常 #app-root）
-   */
-  render(container) {
-    const profile = State.profile;
-    const name = profile && profile.nickname ? profile.nickname : 'ゲスト';
-    const isGuest = !profile || !profile.nickname;
-    // 🆕 Phase 5：Store の専用API経由で取得
-    const recent = Store.getRoundHistory();
-    const hasDraft = !!Store.loadRoundDraft();
+let _root = null;
 
-    container.innerHTML = `
-      <div class="home-hero">
-        <div class="greeting">こんにちは</div>
-        <div class="user-name">${escapeHtml(name)}さん</div>
-        <div class="state-badge ${isGuest ? 'guest' : 'user'}">
-          ${isGuest ? 'ゲストモード' : 'プレイヤーモード'}
-        </div>
-        <button class="btn-cta" data-action="start-round">
-          ${hasDraft ? '⏯️ 進行中のラウンドを続ける' : '⛳ ラウンドを開始する'}
-        </button>
+export function renderHome() {
+  if (!_root) {
+    _root = document.getElementById('gw-screen-home');
+    if (!_root) return;
+  }
+  const profile = Store.getProfile();
+  const draft = Store.getRoundDraft();
+  const history = Store.getRoundHistory();
+  const group = Store.getGroup() || State.getGroup();
+
+  _root.innerHTML = `
+    <div class="gw-portal-hero">
+      <div class="gw-greeting">こんにちは</div>
+      <div class="gw-user-name">${profile ? profile.name + 'さん' : 'ゲストさん'}</div>
+      <div class="gw-state-badge ${profile ? 'is-user' : 'is-guest'}">
+        ${profile ? '登録済' : 'ゲストモード'}
       </div>
+      ${draft ? `<button class="gw-portal-cta gw-cta-resume" data-route="gland">▶ 進行中のラウンドを続ける</button>` : ''}
+      <button class="gw-portal-cta" data-route="gland">⛳ ラウンドを開始する</button>
+    </div>
+    <div class="gw-portal-modules">
+      <button class="gw-portal-module" data-route="gland">
+        <div class="gw-mod-icon">⛳</div>
+        <div class="gw-mod-name">G-LAND</div>
+        <div class="gw-mod-desc">スコア管理</div>
+      </button>
+      <button class="gw-portal-module" data-route="gcompete">
+        <div class="gw-mod-icon">🏆</div>
+        <div class="gw-mod-name">G-COMPETE</div>
+        <div class="gw-mod-desc">仲間内コンペ</div>
+        ${group ? '<span class="gw-mod-badge">参加中</span>' : ''}
+      </button>
+      <button class="gw-portal-module" data-route="mypage">
+        <div class="gw-mod-icon">👤</div>
+        <div class="gw-mod-name">マイページ</div>
+        <div class="gw-mod-desc">設定・履歴</div>
+      </button>
+    </div>
+    ${history.length ? renderRecent(history.slice(0, 3)) : ''}
+  `;
 
-      <div class="home-modules">
-        <button class="home-module" data-route="gland">
-          <div class="mod-icon">⛳</div>
-          <div class="mod-name">G-LAND</div>
-          <div class="mod-desc">スコア管理</div>
-        </button>
-        <button class="home-module coming-soon" data-action="coming-soon" data-name="G-COMPETE">
-          <div class="mod-icon">🏆</div>
-          <div class="mod-name">G-COMPETE</div>
-          <div class="mod-desc">コンペ運営</div>
-          <span class="mod-badge">Coming Soon</span>
-        </button>
-        <button class="home-module coming-soon" data-action="coming-soon" data-name="G-TOWN">
-          <div class="mod-icon">🏘</div>
-          <div class="mod-name">G-TOWN</div>
-          <div class="mod-desc">地域連携</div>
-          <span class="mod-badge">Coming Soon</span>
-        </button>
-        <button class="home-module" data-route="mypage">
-          <div class="mod-icon">👤</div>
-          <div class="mod-name">マイページ</div>
-          <div class="mod-desc">設定</div>
-        </button>
-      </div>
+  _root.querySelectorAll('[data-route]').forEach(el => {
+    el.addEventListener('click', () => Router.go(el.dataset.route));
+  });
+}
 
-      <div class="home-recent">
-        <h3>📋 最近のラウンド</h3>
-        ${renderRecent(recent)}
+function renderRecent(rounds) {
+  let html = '<div class="gw-portal-recent"><h3>📋 最近のラウンド</h3>';
+  for (const r of rounds) {
+    const me = r.players?.find(p => p.isSelf);
+    const total = me ? me.scores.reduce((s, v) => s + (v || 0), 0) : 0;
+    const date = new Date(r.savedAt).toLocaleDateString('ja-JP');
+    html += `
+      <div class="gw-recent-item">
+        <span>${date}</span>
+        <span>${r.course?.name || '-'}</span>
+        <span class="gw-recent-score">${total || '-'}</span>
       </div>
     `;
-
-    console.log('[screens/home] rendered');
   }
-};
-
-/** 最近のラウンドを描画 */
-function renderRecent(recent) {
-  if (!recent || recent.length === 0) {
-    return '<div class="empty">まだラウンド記録がありません</div>';
-  }
-  return recent.slice(0, 5).map((r) => `
-    <div class="recent-item">
-      <span class="recent-date">${escapeHtml(r.date || '')}</span>
-      <span class="recent-course">${escapeHtml(r.course || '')} ${escapeHtml(r.variant || '')}</span>
-      <span class="recent-total">${r.total || '-'}打 <small style="color:#ffe082;">(${r.diffStr || ''})</small></span>
-    </div>
-  `).join('');
+  html += '</div>';
+  return html;
 }
-
-/** HTMLエスケープ */
-function escapeHtml(s) {
-  if (s == null) return '';
-  return String(s).replace(/[&<>"']/g, (m) => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-  })[m]);
-}
-
-console.log('[screens/home] loaded');

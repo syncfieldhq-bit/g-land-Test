@@ -1,201 +1,172 @@
-/**
- * ═══════════════════════════════════════════════════════
- * scripts/core/constants.js - UI設定・表示ルール（外部化）
- *
- * 【目的】
- *   UIの「マジックナンバー・記号・コース定義」を1箇所に集約。
- *   ジミーちゃんが「記号を変えたい」「コースを追加したい」と思ったら、
- *   このファイルだけ編集すれば良い。
- *
- * 【追加・変更の手順】
- *   1. このファイルの該当する定数を編集
- *   2. 他のファイルは触らない（参照側が自動的に追従）
- * ═══════════════════════════════════════════════════════
- */
+// =============================================================
+// constants.js - 設定・定数の一元管理（Phase 7 完全版）
+// UI/UXに関わる全ての設定をここに集約。
+// ロジックを触らずに見た目・ルールを変更できる。
+// =============================================================
 
-// ═══════════════════════════════════════════
-// スコア表示記号（ジミーちゃんのこだわりUI用）
-// ═══════════════════════════════════════════
+// --- アプリ情報 ---
+export const APP = {
+  NAME: 'G-WORLD',
+  VERSION: '7.0.0',
+  MAX_PLAYERS: 16,      // 最大同時プレイヤー数
+  MAX_HOLES: 18,
+  AUTOSAVE_INTERVAL: 3000, // ms
+};
 
-/**
- * スコア名（diff から決定）
- * 表示モード 'name' の時に使用
- */
+// --- スコア表示モード ---
+// 数字 → PAR差 → 記号 で循環
+export const DISPLAY_MODES = ['number', 'pardiff', 'symbol'];
+export const DISPLAY_LABELS = {
+  number: '数字',
+  pardiff: '±',
+  symbol: '記号',
+};
+
+// --- ゴルフ記号定義（PAR差ベース） ---
+// PAR差 → 表示記号 のマップ
+export const SCORE_SYMBOLS = {
+  '-3': '⭐',   // アルバトロス（3アンダー）
+  '-2': '◎',   // イーグル
+  '-1': '◯',   // バーディ
+  '0':  '━',   // パー
+  '1':  '△',   // ボギー
+  '2':  '□',   // ダブルボギー
+  '3+': '▣',   // トリプル以上
+};
+
+// --- スコア名（PAR差ベース） ---
 export const SCORE_NAMES = {
   '-3': 'ALBATROSS',
   '-2': 'EAGLE',
   '-1': 'BIRDIE',
   '0':  'PAR',
   '1':  'BOGEY',
-  '2':  'DOUBLE BOGEY',
-  '3':  'TRIPLE BOGEY'
+  '2':  'DOUBLE',
+  '3':  'TRIPLE',
+  '4+': '+',
 };
 
-/**
- * スコア記号（diff から決定）
- * 表示モード 'symbol' の時に使用
- * 👉 ジミーちゃんが好きな絵文字に変えてOK！
- */
-export const SCORE_SYMBOLS = {
-  '-3': '🦅', // ALBATROSS
-  '-2': '🦅', // EAGLE
-  '-1': '🐦', // BIRDIE
-  '0':  '⚪', // PAR
-  '1':  '🔴', // BOGEY
-  '2':  '🟠', // DOUBLE BOGEY
-  '3':  '⚫'  // TRIPLE BOGEY
+// --- スコア色（PAR差ベース） ---
+export const SCORE_COLORS = {
+  under: '#e74c3c',   // -2以下（赤・燃え）
+  birdie: '#f39c12',  // -1（オレンジ）
+  par:    '#f5c842',  // 0（金）
+  bogey:  '#5dade2',  // +1（水色）
+  double: '#2980b9',  // +2（青）
+  over:   '#7f8c8d',  // +3以上（灰）
 };
 
-/**
- * PAR差カラー（CSSクラス名）
- */
-export const DIFF_COLORS = {
-  UNDER: 'diff-under',  // アンダーパー（赤）
-  EVEN:  'diff-even',   // PAR（金）
-  OVER:  'diff-over'    // オーバーパー（青）
-};
-
-// ═══════════════════════════════════════════
-// コース定義（追加はここだけ！）
-// ═══════════════════════════════════════════
-
-/**
- * 利用可能なコース一覧
- * 新しいゴルフ場を追加する時は、この配列に1つ追加するだけ
- */
-export const COURSES = [
-  {
-    id: 'rokko-international',
-    icon: '🏌',
+// --- コース定義 ---
+export const COURSES = {
+  'rokko-18': {
     name: '六甲国際パブリック',
-    subtitle: '9H / 18H 選択可',
-    variants: [
-      { v: '9H',  label: '🟢 9ホール',  holes: 9 },
-      { v: '18H', label: '🔵 18ホール', holes: 18 }
-    ],
-    // コース別 PAR（18ホール分）
-    pars: [4, 3, 5, 4, 4, 3, 5, 4, 4, 4, 3, 5, 4, 4, 3, 5, 4, 4]
+    variant: '18H',
+    holes: 18,
+    pars: [4, 4, 3, 5, 4, 4, 3, 5, 4, 4, 4, 3, 5, 4, 4, 3, 5, 4],
   },
-  {
-    id: 'rokko-west',
-    icon: '⛳',
-    name: '西コース',
-    subtitle: 'OUT / IN スタート選択',
-    variants: [
-      { v: 'OUT', label: '➡️ OUTスタート', holes: 18 },
-      { v: 'IN',  label: '⬅️ INスタート',  holes: 18 }
-    ],
-    pars: [4, 5, 3, 4, 4, 3, 5, 4, 4, 4, 4, 3, 5, 4, 3, 4, 5, 4]
+  'rokko-9': {
+    name: '六甲国際パブリック',
+    variant: '9H',
+    holes: 9,
+    pars: [4, 4, 3, 5, 4, 4, 3, 5, 4],
   },
-  {
-    id: 'rokko-east',
-    icon: '⛳',
-    name: '東コース',
-    subtitle: 'OUT / IN スタート選択',
-    variants: [
-      { v: 'OUT', label: '➡️ OUTスタート', holes: 18 },
-      { v: 'IN',  label: '⬅️ INスタート',  holes: 18 }
-    ],
-    pars: [4, 4, 3, 5, 4, 3, 4, 5, 4, 4, 3, 5, 4, 4, 3, 5, 4, 4]
-  }
-];
-
-/**
- * コースIDからコース定義を取得
- */
-export function getCourse(courseId) {
-  return COURSES.find((c) => c.id === courseId) || null;
-}
-
-/**
- * コースIDから表示用の名前を取得
- */
-export function getCourseName(courseId) {
-  const c = getCourse(courseId);
-  return c ? c.name : '';
-}
-
-/**
- * コースIDとホール番号から PAR を取得
- * （フォールバック：六甲国際の PAR）
- */
-export function getParFor(courseId, hole) {
-  const c = getCourse(courseId);
-  if (!c || !c.pars || hole < 1 || hole > c.pars.length) return 4;
-  return c.pars[hole - 1];
-}
-
-// ═══════════════════════════════════════════
-// UI 表示ルール
-// ═══════════════════════════════════════════
-
-/**
- * UI の表示制限
- */
-export const UI_LIMITS = {
-  /** 履歴に保持する最大ラウンド数 */
-  MAX_HISTORY_ROUNDS: 30,
-  /** ホームに表示する最近のラウンド件数 */
-  RECENT_ROUNDS_ON_HOME: 5,
-  /** 同伴者テーブルの一度に表示するホール数 */
-  COMPANION_TABLE_HOLES: 5,
-  /** 同伴者の名前最大文字数 */
-  MAX_COMPANION_NAME_LENGTH: 20,
-  /** Toast 表示時間（ms） */
-  TOAST_DURATION_MS: 2000,
-  /** Toast エラー時の表示時間（ms） */
-  TOAST_ERROR_DURATION_MS: 3000
+  'west-out': {
+    name: '西コース OUT',
+    variant: 'OUT 9H',
+    holes: 9,
+    pars: [4, 5, 4, 3, 4, 4, 3, 5, 4],
+  },
+  'west-in': {
+    name: '西コース IN',
+    variant: 'IN 9H',
+    holes: 9,
+    pars: [4, 4, 3, 5, 4, 4, 3, 5, 4],
+  },
+  'east-out': {
+    name: '東コース OUT',
+    variant: 'OUT 9H',
+    holes: 9,
+    pars: [5, 4, 4, 3, 4, 5, 3, 4, 4],
+  },
+  'east-in': {
+    name: '東コース IN',
+    variant: 'IN 9H',
+    holes: 9,
+    pars: [4, 4, 3, 4, 5, 4, 3, 5, 4],
+  },
 };
 
-/**
- * 表示モード（スコアカード）
- */
-export const DISPLAY_MODES = {
-  STROKE: 'stroke',   // 数字（4, 5, 6...）
-  PARDIFF: 'pardiff', // PAR差（E, +1, -2）
-  SYMBOL: 'symbol'    // 記号（🐦, ⚪, 🔴）
+// --- 入力モード ---
+export const INPUT_MODES = ['simple', 'counter'];
+
+// --- localStorage キー ---
+export const STORAGE_KEYS = {
+  PROFILE: 'gworld.profile',
+  ROUND_DRAFT: 'gworld.round.draft',
+  ROUND_HISTORY: 'gworld.round.history',
+  SETTINGS: 'gworld.settings',
+  GROUP: 'gworld.group',
 };
 
-/**
- * 入力モード
- */
-export const INPUT_MODES = {
-  SIMPLE: 'simple',     // PARから±調整
-  COUNTER: 'counter'    // ショット+パットの自動合算
-};
+// --- GAS連携 ---
+export const GAS_URL = 'https://script.google.com/macros/s/AKfycbyJbjVYmqATkJe2Ial5XOK_CYXCfkPWEIpKOtZziwDQ490l-AfNNF43gwls20y1N2FHgg/exec';
 
-// ═══════════════════════════════════════════
-// ルート定義（画面遷移）
-// ═══════════════════════════════════════════
-
-export const ROUTES = {
-  HOME:   'home',
-  GLAND:  'gland',
-  MYPAGE: 'mypage'
-};
-
-// ═══════════════════════════════════════════
-// EventBus イベント名（タイポ防止）
-// ═══════════════════════════════════════════
-
+// --- イベント名 ---
 export const EVENTS = {
-  // スコア関連
-  SCORE_UPDATED:    'score:updated',
-  HOLE_CHANGED:     'hole:changed',
-  ROUND_FINISHED:   'round:finished',
-
-  // プレイヤー関連
-  PROFILE_CHANGED:  'profile:changed',
-  COMPANION_ADDED:  'companion:added',
-  COMPANION_EDITED: 'companion:edited',
-  COMPANION_REMOVED:'companion:removed',
-
-  // 画面関連
-  ROUTE_CHANGED:    'route:changed',
-
-  // データ関連
-  DRAFT_SAVED:      'draft:saved',
-  DRAFT_RESTORED:   'draft:restored'
+  SCORE_UPDATED: 'score:updated',
+  HOLE_CHANGED: 'hole:changed',
+  PLAYER_CHANGED: 'player:changed',
+  PLAYER_ADDED: 'player:added',
+  PLAYER_REMOVED: 'player:removed',
+  ROUND_SAVED: 'round:saved',
+  ROUND_FINISHED: 'round:finished',
+  GROUP_JOINED: 'group:joined',
+  GROUP_SYNCED: 'group:synced',
+  DISPLAY_MODE_CHANGED: 'display:mode-changed',
 };
 
-console.log('[core/constants] loaded');
+// --- PAR差→記号変換ヘルパー ---
+export function diffToSymbol(diff) {
+  if (diff <= -3) return SCORE_SYMBOLS['-3'];
+  if (diff === -2) return SCORE_SYMBOLS['-2'];
+  if (diff === -1) return SCORE_SYMBOLS['-1'];
+  if (diff === 0) return SCORE_SYMBOLS['0'];
+  if (diff === 1) return SCORE_SYMBOLS['1'];
+  if (diff === 2) return SCORE_SYMBOLS['2'];
+  return SCORE_SYMBOLS['3+'];
+}
+
+// --- PAR差→色変換 ---
+export function diffToColor(diff) {
+  if (diff <= -2) return SCORE_COLORS.under;
+  if (diff === -1) return SCORE_COLORS.birdie;
+  if (diff === 0) return SCORE_COLORS.par;
+  if (diff === 1) return SCORE_COLORS.bogey;
+  if (diff === 2) return SCORE_COLORS.double;
+  return SCORE_COLORS.over;
+}
+
+// --- PAR差→名前 ---
+export function diffToName(diff) {
+  if (diff <= -3) return SCORE_NAMES['-3'];
+  if (diff === -2) return SCORE_NAMES['-2'];
+  if (diff === -1) return SCORE_NAMES['-1'];
+  if (diff === 0) return SCORE_NAMES['0'];
+  if (diff === 1) return SCORE_NAMES['1'];
+  if (diff === 2) return SCORE_NAMES['2'];
+  if (diff === 3) return SCORE_NAMES['3'];
+  return SCORE_NAMES['4+'];
+}
+
+// --- 表示変換（モード別） ---
+export function formatScore(stroke, par, mode) {
+  if (stroke == null) return '-';
+  if (mode === 'number') return String(stroke);
+  const diff = stroke - par;
+  if (mode === 'pardiff') {
+    if (diff === 0) return 'E';
+    return diff > 0 ? `+${diff}` : String(diff);
+  }
+  if (mode === 'symbol') return diffToSymbol(diff);
+  return String(stroke);
+}

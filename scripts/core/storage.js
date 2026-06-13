@@ -1,162 +1,105 @@
-/**
- * ═══════════════════════════════════════════════════════
- * scripts/core/storage.js - データ永続化レイヤ（Phase 5 拡張版）
- *
- * 役割：
- *   - localStorage の薄いラッパー（基本 get/set）
- *   - 進行中ラウンドの自動保存・復元（Round Draft）
- *   - 完了済みラウンドの履歴管理（Round History）
- *
- * 設計原則：
- *   - すべてのデータ I/O はこのモジュール経由（GAS 連携への布石）
- *   - 失敗しても例外を投げず、デフォルト値で復帰
- *   - JSON シリアライズで型崩れを防ぐ
- * ═══════════════════════════════════════════════════════
- */
+// =============================================================
+// storage.js - localStorage ラッパー（Phase 7 完全版）
+// 全データI/Oをここに集約。将来のGAS連携も同じAPI経由でOK。
+// =============================================================
+import { STORAGE_KEYS } from './constants.js';
 
-import { STORAGE_KEYS } from './config.js';
-
-// ─── 追加するキーをここで一元管理 ───
-const KEYS = {
-  ...STORAGE_KEYS,
-  ROUND_DRAFT: 'gw_round_draft',  // 進行中ラウンドの一時保存
-};
-
-export const Store = {
-
-  // ═══════════════════════════════════════════
-  // 基本 I/O（Phase 1 から維持）
-  // ═══════════════════════════════════════════
-
-  getStr(key, defaultValue = null) {
-    try {
-      return localStorage.getItem(key) ?? defaultValue;
-    } catch (e) {
-      return defaultValue;
-    }
-  },
-
-  setStr(key, value) {
-    try {
-      localStorage.setItem(key, String(value));
-      return true;
-    } catch (e) {
-      console.warn('[Store] setStr failed:', e);
-      return false;
-    }
-  },
-
-  get(key, defaultValue = null) {
-    try {
-      const raw = localStorage.getItem(key);
-      if (raw === null) return defaultValue;
-      return JSON.parse(raw);
-    } catch (e) {
-      return defaultValue;
-    }
-  },
-
-  set(key, value) {
-    try {
-      localStorage.setItem(key, JSON.stringify(value));
-      return true;
-    } catch (e) {
-      console.warn('[Store] set failed:', e);
-      return false;
-    }
-  },
-
-  remove(key) {
-    try { localStorage.removeItem(key); } catch (e) {}
-  },
-
-  clear() {
-    try { localStorage.clear(); } catch (e) {}
-  },
-
-  // ═══════════════════════════════════════════
-  // 🆕 Phase 5：ラウンド永続化 API
-  // ═══════════════════════════════════════════
-
-  /**
-   * 進行中ラウンドのドラフト保存
-   * 「アプリを閉じても、次に開いた時に続きから入力できる」ための保存
-   *
-   * @param {Object} draft - { courseId, variant, totalHoles, currentHole, players, savedAt }
-   */
-  saveRoundDraft(draft) {
-    if (!draft || !draft.courseId) return false;
-    return this.set(KEYS.ROUND_DRAFT, {
-      ...draft,
-      savedAt: Date.now()
-    });
-  },
-
-  /**
-   * 進行中ラウンドのドラフト読み込み
-   * @returns {Object|null} ドラフトがあれば返す、なければ null
-   */
-  loadRoundDraft() {
-    const draft = this.get(KEYS.ROUND_DRAFT);
-    if (!draft || !draft.courseId) return null;
-    return draft;
-  },
-
-  /**
-   * 進行中ラウンドのドラフトを削除（ラウンド終了時）
-   */
-  clearRoundDraft() {
-    this.remove(KEYS.ROUND_DRAFT);
-  },
-
-  /**
-   * 完了済みラウンドを履歴に追加
-   *
-   * @param {Object} round - { date, course, variant, total, diff, players? }
-   * @returns {Array} 更新後の履歴配列
-   */
-  appendRound(round) {
-    if (!round) return [];
-    const history = this.get(KEYS.RECENT_ROUNDS, []) || [];
-    history.unshift({
-      ...round,
-      savedAt: Date.now()
-    });
-    // 直近30ラウンドのみ保持
-    const trimmed = history.slice(0, 30);
-    this.set(KEYS.RECENT_ROUNDS, trimmed);
-    return trimmed;
-  },
-
-  /**
-   * 全ラウンド履歴を取得
-   * @returns {Array} 履歴配列（新しい順）
-   */
-  getRoundHistory() {
-    return this.get(KEYS.RECENT_ROUNDS, []) || [];
-  },
-
-  /**
-   * 履歴を全消去
-   */
-  clearRoundHistory() {
-    this.remove(KEYS.RECENT_ROUNDS);
-  },
-
-  // ═══════════════════════════════════════════
-  // デバッグ用
-  // ═══════════════════════════════════════════
-
-  /** 現在の保存状況を一覧表示（コンソール用） */
-  inspect() {
-    return {
-      profile: this.get(STORAGE_KEYS.PROFILE),
-      inputMode: this.getStr(STORAGE_KEYS.INPUT_MODE),
-      puttMode: this.getStr(STORAGE_KEYS.PUTT_MODE),
-      roundDraft: this.loadRoundDraft(),
-      historyCount: this.getRoundHistory().length
-    };
+// --- 低レベルAPI ---
+function readJSON(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch (e) {
+    console.warn('[Store] read failed:', key, e);
+    return fallback;
   }
-};
+}
+function writeJSON(key, data) {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+    return true;
+  } catch (e) {
+    console.warn('[Store] write failed:', key, e);
+    return false;
+  }
+}
 
-console.log('[core/storage] loaded (Phase 5: round persistence enabled)');
+// --- プロフィール ---
+export function getProfile() {
+  return readJSON(STORAGE_KEYS.PROFILE, null);
+}
+export function saveProfile(profile) {
+  return writeJSON(STORAGE_KEYS.PROFILE, profile);
+}
+export function clearProfile() {
+  localStorage.removeItem(STORAGE_KEYS.PROFILE);
+}
+
+// --- 設定 ---
+export function getSettings() {
+  return readJSON(STORAGE_KEYS.SETTINGS, {
+    inputMode: 'simple',
+    displayMode: 'number',
+    puttEnabled: false,
+    isPublic: true,
+  });
+}
+export function saveSettings(settings) {
+  return writeJSON(STORAGE_KEYS.SETTINGS, settings);
+}
+export function updateSetting(key, value) {
+  const s = getSettings();
+  s[key] = value;
+  return saveSettings(s);
+}
+
+// --- ラウンド進行中ドラフト ---
+export function getRoundDraft() {
+  return readJSON(STORAGE_KEYS.ROUND_DRAFT, null);
+}
+export function saveRoundDraft(draft) {
+  draft.updatedAt = Date.now();
+  return writeJSON(STORAGE_KEYS.ROUND_DRAFT, draft);
+}
+export function clearRoundDraft() {
+  localStorage.removeItem(STORAGE_KEYS.ROUND_DRAFT);
+}
+
+// --- ラウンド履歴 ---
+export function getRoundHistory() {
+  return readJSON(STORAGE_KEYS.ROUND_HISTORY, []);
+}
+export function appendRound(round) {
+  const history = getRoundHistory();
+  round.id = round.id || `r_${Date.now()}`;
+  round.savedAt = Date.now();
+  history.unshift(round);
+  // 直近50件のみ保持
+  if (history.length > 50) history.length = 50;
+  return writeJSON(STORAGE_KEYS.ROUND_HISTORY, history);
+}
+export function clearRoundHistory() {
+  localStorage.removeItem(STORAGE_KEYS.ROUND_HISTORY);
+}
+
+// --- グループ（コンペ）情報 ---
+export function getGroup() {
+  return readJSON(STORAGE_KEYS.GROUP, null);
+}
+export function saveGroup(group) {
+  return writeJSON(STORAGE_KEYS.GROUP, group);
+}
+export function clearGroup() {
+  localStorage.removeItem(STORAGE_KEYS.GROUP);
+}
+
+// --- デバッグ用 ---
+export function inspect() {
+  return {
+    profile: getProfile(),
+    settings: getSettings(),
+    draft: getRoundDraft(),
+    history: getRoundHistory(),
+    group: getGroup(),
+  };
+}

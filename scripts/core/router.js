@@ -1,106 +1,54 @@
-/**
- * ═══════════════════════════════════════════════════════
- * scripts/core/router.js - 画面遷移ルーター
- *
- * 役割：
- *   - 画面（screen）の表示切替
- *   - 各画面モジュールの render() を呼び出す
- *   - URLハッシュ（#home, #gland）と同期
- *
- * 使い方:
- *   import { Router } from './core/router.js';
- *   Router.register('home', HomeModule);
- *   Router.go('home');
- * ═══════════════════════════════════════════════════════
- */
+// =============================================================
+// router.js - 画面遷移（hashベース）
+// =============================================================
+import { EventBus } from './event-bus.js';
 
-import { State } from './state.js';
+const _screens = new Map();
+let _current = null;
 
 export const Router = {
-  /** ルート定義：{ name: { module, container } } */
-  _routes: {},
-
-  /** 現在のルート名 */
-  current: null,
-
-  /**
-   * 画面モジュールを登録
-   *
-   * @param {string} name - ルート名（'home', 'gland'など）
-   * @param {Object} module - { render: function(container, params) }
-   * @param {string} [containerId='app-root'] - 描画先の要素ID
-   */
-  register(name, module, containerId = 'app-root') {
-    this._routes[name] = { module, containerId };
-    console.log('[Router] registered:', name);
+  register(name, renderFn) {
+    _screens.set(name, renderFn);
   },
-
-  /**
-   * 指定したルートへ遷移
-   *
-   * @param {string} name - ルート名
-   * @param {Object} [params] - 画面に渡すパラメータ
-   */
-  go(name, params = {}) {
-    const route = this._routes[name];
-    if (!route) {
-      console.warn('[Router] unknown route:', name);
+  go(name) {
+    if (!_screens.has(name)) {
+      console.warn('[Router] unknown screen:', name);
       return;
     }
-
-    // 状態を更新
-    State.currentRoute = name;
-    this.current = name;
-
-    // URLハッシュを更新（戻るボタン対応の布石）
-    try {
-      if (location.hash !== '#' + name) {
-        history.replaceState(null, '', '#' + name);
-      }
-    } catch (e) {}
-
-    // フッターナビの active 状態を更新
-    this._updateNavActive(name);
-
-    // 描画先要素を取得
-    const container = document.getElementById(route.containerId);
-    if (!container) {
-      console.warn('[Router] container not found:', route.containerId);
-      return;
-    }
-
-    // 画面モジュールの render を呼ぶ
-    try {
-      if (typeof route.module.render === 'function') {
-        route.module.render(container, params);
-      }
-    } catch (e) {
-      console.error('[Router] render error:', name, e);
-    }
-
-    console.log('[Router] →', name);
+    location.hash = `#${name}`;
+    // hashchange イベントで処理される
   },
-
-  /**
-   * フッターナビのアクティブ状態を更新
-   */
-  _updateNavActive(name) {
-    const btns = document.querySelectorAll('.footer-nav [data-route]');
-    btns.forEach((b) => {
-      b.classList.toggle('active', b.getAttribute('data-route') === name);
+  _activate(name) {
+    document.querySelectorAll('.gw-screen').forEach(el => el.classList.remove('active'));
+    const target = document.getElementById(`gw-screen-${name}`);
+    if (target) target.classList.add('active');
+    document.querySelectorAll('.gw-footer-nav [data-route]').forEach(el => {
+      el.classList.toggle('is-active', el.dataset.route === name);
     });
+    const fn = _screens.get(name);
+    if (fn) fn();
+    _current = name;
+    EventBus.emit('route:changed', name);
   },
-
-  /**
-   * 初期ルートを決定（URLハッシュから）
-   */
-  resolveInitial() {
-    try {
-      const hash = (location.hash || '').replace(/^#/, '');
-      if (hash && this._routes[hash]) return hash;
-    } catch (e) {}
-    return 'home';
-  }
+  current() { return _current; },
+  start() {
+    window.addEventListener('hashchange', () => {
+      const name = parseHash();
+      if (_screens.has(name)) this._activate(name);
+    });
+    // QRリンク経由の参加処理
+    const joinMatch = location.hash.match(/#join=(\S+)/);
+    if (joinMatch) {
+      sessionStorage.setItem('gworld.pendingJoin', joinMatch[1]);
+      location.hash = '#gcompete';
+    }
+    const initial = parseHash() || 'home';
+    this._activate(initial);
+  },
 };
 
-console.log('[core/router] loaded');
+function parseHash() {
+  const h = location.hash.replace('#', '');
+  if (h.startsWith('join=')) return 'gcompete';
+  return h.split('?')[0] || 'home';
+}

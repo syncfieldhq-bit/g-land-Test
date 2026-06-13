@@ -1,61 +1,133 @@
-/**
- * ═══════════════════════════════════════════════════════
- * scripts/screens/mypage.js - マイページ画面
- *
- * Phase 3 では最小実装。Phase 4 でバックアップ連携等を追加予定。
- * ═══════════════════════════════════════════════════════
- */
-
-import { State } from '../core/state.js';
-import { Store } from '../core/storage.js';
-import { confirm } from '../ui/modal.js';
+// =============================================================
+// mypage.js - マイページ（プロフィール・公開設定・履歴管理）
+// =============================================================
+import * as Store from '../core/storage.js';
 import { toast } from '../ui/toast.js';
+import { Router } from '../core/router.js';
 
-export const MyPageScreen = {
-  render(container) {
-    const profile = State.profile;
-    const name = profile && profile.nickname ? profile.nickname : '未登録';
+let _root = null;
 
-    container.innerHTML = `
-      <div class="card mypage-card">
-        <div class="avatar">👤</div>
-        <div class="my-name">${escapeHtml(name)}</div>
-        <div class="my-state">${profile ? 'プレイヤー' : 'ゲスト'}</div>
-      </div>
-
-      <div class="card">
-        <h3>⚙️ 設定</h3>
-        <button class="btn-ghost" data-action="logout">🚪 別のプレイヤーで使用</button>
-      </div>
-
-      <div class="version-info">
-        G-WORLD v3.0.0-phase3<br>
-        永久無料 golfインフラ
-      </div>
-    `;
-
-    console.log('[screens/mypage] rendered');
-  },
-
-  /** ログアウト処理 */
-  async logout() {
-    const ok = await confirm(
-      'プレイヤーリセット',
-      'すべてのデータが削除されます。<br>本当にリセットしますか？'
-    );
-    if (ok) {
-      State.reset();
-      toast('リセットしました', { type: 'success' });
-      setTimeout(() => location.reload(), 800);
-    }
+export function renderMyPage() {
+  if (!_root) {
+    _root = document.getElementById('gw-screen-mypage');
+    if (!_root) return;
   }
-};
+  const profile = Store.getProfile();
+  const settings = Store.getSettings();
+  const history = Store.getRoundHistory();
 
-function escapeHtml(s) {
-  if (s == null) return '';
-  return String(s).replace(/[&<>"']/g, (m) => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-  })[m]);
+  _root.innerHTML = `
+    <div class="gw-mp-section">
+      <h2>👤 プロフィール</h2>
+      ${profile ? `
+        <div class="gw-mp-row"><span>ニックネーム</span><input type="text" id="gw-mp-name" value="${escapeHtml(profile.name)}" maxlength="20"></div>
+        <div class="gw-mp-row">
+          <label class="gw-cm-public-row">
+            <input type="checkbox" id="gw-mp-public" ${profile.isPublic !== false ? 'checked' : ''}>
+            <span>ランキングに公開する</span>
+          </label>
+        </div>
+        <button class="gw-btn-primary" data-action="save-profile">プロフィールを保存</button>
+      ` : '<p>未登録です。G-LANDから登録してください。</p>'}
+    </div>
+
+    <div class="gw-mp-section">
+      <h2>⚙️ 表示設定</h2>
+      <div class="gw-mp-row">
+        <span>入力モード</span>
+        <select id="gw-mp-input">
+          <option value="simple" ${settings.inputMode === 'simple' ? 'selected' : ''}>シンプル</option>
+          <option value="counter" ${settings.inputMode === 'counter' ? 'selected' : ''}>カウンター</option>
+        </select>
+      </div>
+      <div class="gw-mp-row">
+        <span>スコア表示</span>
+        <select id="gw-mp-display">
+          <option value="number" ${settings.displayMode === 'number' ? 'selected' : ''}>数字</option>
+          <option value="pardiff" ${settings.displayMode === 'pardiff' ? 'selected' : ''}>±表記</option>
+          <option value="symbol" ${settings.displayMode === 'symbol' ? 'selected' : ''}>ゴルフ記号</option>
+        </select>
+      </div>
+      <button class="gw-btn-primary" data-action="save-settings">設定を保存</button>
+    </div>
+
+    <div class="gw-mp-section">
+      <h2>📋 ラウンド履歴（${history.length}件）</h2>
+      ${history.length === 0 ? '<p style="color:#aaa;">まだ履歴がありません</p>' : renderHistory(history)}
+      ${history.length ? '<button class="gw-btn-secondary" data-action="clear-history">履歴をすべて削除</button>' : ''}
+    </div>
+
+    <div class="gw-mp-section">
+      <h2>🛠 メンテナンス</h2>
+      <button class="gw-btn-danger" data-action="logout">ログアウト（全データ削除）</button>
+    </div>
+  `;
+
+  _root.querySelectorAll('[data-action]').forEach(el => {
+    el.addEventListener('click', () => handle(el.dataset.action));
+  });
 }
 
-console.log('[screens/mypage] loaded');
+function renderHistory(history) {
+  let html = '<div class="gw-mp-history">';
+  for (const r of history.slice(0, 20)) {
+    const date = new Date(r.savedAt).toLocaleString('ja-JP');
+    const me = r.players?.find(p => p.isSelf);
+    const total = me ? me.scores.reduce((s, v) => s + (v || 0), 0) : '-';
+    html += `
+      <div class="gw-mp-history-row">
+        <span>${date}</span>
+        <span>${r.course?.name || '-'} ${r.course?.variant || ''}</span>
+        <span>${total}</span>
+      </div>
+    `;
+  }
+  html += '</div>';
+  return html;
+}
+
+function handle(action) {
+  switch (action) {
+    case 'save-profile': {
+      const name = document.getElementById('gw-mp-name').value.trim();
+      const isPublic = document.getElementById('gw-mp-public').checked;
+      if (!name) { toast('名前を入力してください', 'error'); return; }
+      const profile = Store.getProfile() || {};
+      profile.name = name; profile.isPublic = isPublic;
+      Store.saveProfile(profile);
+      toast('プロフィールを保存しました', 'success');
+      break;
+    }
+    case 'save-settings': {
+      const s = Store.getSettings();
+      s.inputMode = document.getElementById('gw-mp-input').value;
+      s.displayMode = document.getElementById('gw-mp-display').value;
+      Store.saveSettings(s);
+      toast('設定を保存しました', 'success');
+      break;
+    }
+    case 'clear-history':
+      if (confirm('履歴を全て削除しますか？')) {
+        Store.clearRoundHistory();
+        toast('履歴を削除しました', 'info');
+        renderMyPage();
+      }
+      break;
+    case 'logout':
+      if (confirm('全データを削除してログアウトしますか？')) {
+        Store.clearProfile();
+        Store.clearRoundDraft();
+        Store.clearRoundHistory();
+        Store.clearGroup();
+        toast('ログアウトしました', 'info');
+        Router.go('home');
+      }
+      break;
+  }
+}
+
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'
+  }[c]));
+}
