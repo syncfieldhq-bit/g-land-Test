@@ -17,6 +17,7 @@
  */
 
 import { PARS } from './config.js';
+import { SCORE_NAMES, SCORE_SYMBOLS, DIFF_COLORS } from './constants.js';
 
 export const Calculator = {
 
@@ -91,19 +92,35 @@ export const Calculator = {
   },
 
   /**
-   * 1ホールのスコア名称（ALBATROSS / EAGLE / BIRDIE / PAR / BOGEY / DOUBLE BOGEY ...）
+   * 1ホールのスコア名称（ALBATROSS / EAGLE / BIRDIE / PAR / BOGEY ...）
+   * ★constants.SCORE_NAMES を参照しているので、名称変更は constants.js だけ
    */
   holeScoreName(stroke, hole, pars = PARS) {
     const diff = this.holeParDiff(stroke, hole, pars);
     if (diff === null) return '';
-    if (diff <= -3) return 'ALBATROSS';
-    if (diff === -2) return 'EAGLE';
-    if (diff === -1) return 'BIRDIE';
-    if (diff === 0)  return 'PAR';
-    if (diff === 1)  return 'BOGEY';
-    if (diff === 2)  return 'DOUBLE BOGEY';
-    if (diff === 3)  return 'TRIPLE BOGEY';
-    return '+' + diff;
+    const key = String(Math.max(-3, Math.min(3, diff)));
+    return SCORE_NAMES[key] || (diff > 0 ? '+' + diff : String(diff));
+  },
+
+  /**
+   * ★新追加：1ホールのスコア記号（🐦 / ⚫ / 🔴 etc.）
+   * constants.SCORE_SYMBOLS を参照しているので、記号変更は constants.js だけ
+   */
+  holeScoreSymbol(stroke, hole, pars = PARS) {
+    const diff = this.holeParDiff(stroke, hole, pars);
+    if (diff === null) return '';
+    const key = String(Math.max(-3, Math.min(3, diff)));
+    return SCORE_SYMBOLS[key] || (diff > 0 ? '🔵' : '⚫');
+  },
+
+  /**
+   * ★新追加：PAR差のカラークラスを返す
+   */
+  diffColorClass(diff) {
+    if (diff === null || diff === undefined) return '';
+    if (diff < 0)  return DIFF_COLORS.UNDER;
+    if (diff === 0) return DIFF_COLORS.EVEN;
+    return DIFF_COLORS.OVER;
   },
 
   // ═══════════════════════════════════════════
