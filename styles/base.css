@@ -542,3 +542,151 @@ body {
   .gw-sc-row-name { min-width: 80px; font-size: 13px; }
   .gw-sc-th, .gw-sc-cell { width: 44px; font-size: 14px; }
 }
+
+/* =============================================================
+   Phase 7b 追加スタイル
+   ============================================================= */
+
+/* Resume ボタン強化 */
+.gw-cta-resume {
+  background: linear-gradient(135deg, #2ecc71, #16a085) !important;
+  color: #fff !important;
+  position: relative;
+  animation: gwPulse 2s ease-in-out infinite;
+}
+@keyframes gwPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(46,204,113,0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(46,204,113,0); }
+}
+.gw-resume-sub {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.85);
+  margin-top: 4px;
+}
+
+/* Coming Soon モジュール */
+.gw-portal-module.is-coming-soon {
+  opacity: 0.65;
+  background: rgba(255,255,255,0.04);
+  border-style: dashed;
+  cursor: pointer;
+}
+.gw-portal-module.is-coming-soon:active {
+  opacity: 0.85;
+}
+.gw-portal-module .gw-mod-lock {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 16px;
+  filter: drop-shadow(0 0 4px rgba(0,0,0,0.5));
+}
+.gw-portal-module .gw-badge-soon {
+  background: linear-gradient(135deg, #9b59b6, #8e44ad);
+  font-size: 9px;
+  letter-spacing: 0.5px;
+}
+.gw-portal-module .gw-badge-active {
+  background: #2ecc71;
+}
+
+/* タップ即遷移ボタン（コース選択） */
+.gw-cs-instant {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  padding: 16px !important;
+  background: linear-gradient(135deg, rgba(245,200,66,0.08), rgba(245,200,66,0.15)) !important;
+  border: 1px solid rgba(245,200,66,0.3) !important;
+  border-radius: 14px !important;
+  transition: all 0.15s;
+}
+.gw-cs-instant:active {
+  transform: scale(0.97);
+  background: linear-gradient(135deg, rgba(245,200,66,0.25), rgba(245,200,66,0.4)) !important;
+}
+.gw-cs-icon { font-size: 24px; flex-shrink: 0; }
+.gw-cs-text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.gw-cs-variant { font-size: 17px; font-weight: 700; color: #fff; }
+.gw-cs-holes { font-size: 12px; color: rgba(255,255,255,0.6); }
+.gw-cs-arrow {
+  font-size: 18px; color: #f5c842;
+  animation: gwArrowSlide 1.4s ease-in-out infinite;
+}
+@keyframes gwArrowSlide {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(4px); }
+}
+
+/* 現在ホール: ヘッダー強化（黄色ハイライト＋光彩） */
+.gw-sc-th.is-current {
+  background: linear-gradient(180deg, #f5c842, #e6a02e) !important;
+  color: #0a3d2e !important;
+  font-weight: 900;
+  box-shadow: 0 0 0 2px #f5c842 inset, 0 2px 8px rgba(245,200,66,0.5);
+  position: relative;
+  z-index: 1;
+}
+.gw-sc-th.is-current .gw-sc-th-num { color: #0a3d2e; font-size: 16px; }
+.gw-sc-th.is-current .gw-sc-th-par { color: rgba(10,61,46,0.8); }
+
+/* 現在ホール: セル強化 */
+.gw-sc-cell.is-current {
+  background: rgba(245,200,66,0.2) !important;
+  border-left: 2px solid #f5c842;
+  border-right: 2px solid #f5c842;
+}
+
+/* 現在ホール: 入力UI のホールラベル */
+.gw-si-hole-current {
+  position: relative;
+  background: linear-gradient(135deg, rgba(245,200,66,0.25), rgba(245,200,66,0.4)) !important;
+  border: 2px solid #f5c842 !important;
+  box-shadow: 0 0 16px rgba(245,200,66,0.4);
+}
+.gw-si-hole-hint {
+  display: block;
+  font-size: 10px;
+  color: rgba(245,200,66,0.7);
+  margin-top: 2px;
+  letter-spacing: 0.5px;
+}
+
+/* オートスライド時のスムーズ感 */
+.gw-sc-scroll {
+  scroll-behavior: smooth;
+}
+
+/* マイページ：フィールド構造 */
+.gw-mp-field {
+  margin-bottom: 12px;
+}
+.gw-mp-field label {
+  display: block;
+  font-size: 13px;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 6px;
+}
+.gw-mp-field input[type="text"] {
+  width: 100%;
+  padding: 12px;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 10px;
+  font-size: 16px;
+}
+.gw-mp-field input[type="text"]:focus {
+  outline: none;
+  border-color: #f5c842;
+}
+.gw-mp-hint {
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  margin: 4px 0 0;
+}
+
+/* スコア表示のサブテキスト調整 */
+.gw-si-hole-label .gw-si-hole-num { font-weight: 900; }

@@ -1,5 +1,5 @@
 // =============================================================
-// mypage.js - マイページ（プロフィール・公開設定・履歴管理）
+// mypage.js - マイページ（Phase 7b：本名フィールド追加版）
 // =============================================================
 import * as Store from '../core/storage.js';
 import { toast } from '../ui/toast.js';
@@ -20,11 +20,19 @@ export function renderMyPage() {
     <div class="gw-mp-section">
       <h2>👤 プロフィール</h2>
       ${profile ? `
-        <div class="gw-mp-row"><span>ニックネーム</span><input type="text" id="gw-mp-name" value="${escapeHtml(profile.name)}" maxlength="20"></div>
-        <div class="gw-mp-row">
+        <div class="gw-mp-field">
+          <label>ニックネーム（表示名）</label>
+          <input type="text" id="gw-mp-name" value="${escapeHtml(profile.name)}" maxlength="20">
+        </div>
+        <div class="gw-mp-field">
+          <label>本名（氏名）</label>
+          <input type="text" id="gw-mp-realname" value="${escapeHtml(profile.realName || '')}" placeholder="例: 山田 太郎" maxlength="30">
+          <p class="gw-mp-hint">※ コンペ運営側での本人確認に使用されます（非公開）</p>
+        </div>
+        <div class="gw-mp-field">
           <label class="gw-cm-public-row">
             <input type="checkbox" id="gw-mp-public" ${profile.isPublic !== false ? 'checked' : ''}>
-            <span>ランキングに公開する</span>
+            <span>リーダーボードに公開する</span>
           </label>
         </div>
         <button class="gw-btn-primary" data-action="save-profile">プロフィールを保存</button>
@@ -47,6 +55,12 @@ export function renderMyPage() {
           <option value="pardiff" ${settings.displayMode === 'pardiff' ? 'selected' : ''}>±表記</option>
           <option value="symbol" ${settings.displayMode === 'symbol' ? 'selected' : ''}>ゴルフ記号</option>
         </select>
+      </div>
+      <div class="gw-mp-row">
+        <label class="gw-cm-public-row" style="flex:1;">
+          <input type="checkbox" id="gw-mp-putt" ${settings.puttEnabled ? 'checked' : ''}>
+          <span>パット入力をデフォルトでON</span>
+        </label>
       </div>
       <button class="gw-btn-primary" data-action="save-settings">設定を保存</button>
     </div>
@@ -77,7 +91,7 @@ function renderHistory(history) {
     html += `
       <div class="gw-mp-history-row">
         <span>${date}</span>
-        <span>${r.course?.name || '-'} ${r.course?.variant || ''}</span>
+        <span>${escapeHtml(r.course?.name || '-')} ${escapeHtml(r.course?.variant || '')}</span>
         <span>${total}</span>
       </div>
     `;
@@ -90,10 +104,13 @@ function handle(action) {
   switch (action) {
     case 'save-profile': {
       const name = document.getElementById('gw-mp-name').value.trim();
+      const realName = document.getElementById('gw-mp-realname').value.trim();
       const isPublic = document.getElementById('gw-mp-public').checked;
-      if (!name) { toast('名前を入力してください', 'error'); return; }
+      if (!name) { toast('ニックネームを入力してください', 'error'); return; }
       const profile = Store.getProfile() || {};
-      profile.name = name; profile.isPublic = isPublic;
+      profile.name = name;
+      profile.realName = realName;
+      profile.isPublic = isPublic;
       Store.saveProfile(profile);
       toast('プロフィールを保存しました', 'success');
       break;
@@ -102,6 +119,7 @@ function handle(action) {
       const s = Store.getSettings();
       s.inputMode = document.getElementById('gw-mp-input').value;
       s.displayMode = document.getElementById('gw-mp-display').value;
+      s.puttEnabled = document.getElementById('gw-mp-putt').checked;
       Store.saveSettings(s);
       toast('設定を保存しました', 'success');
       break;

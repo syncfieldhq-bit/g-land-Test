@@ -1,6 +1,5 @@
 // =============================================================
-// score-input.js - スコア入力UI
-// シンプル/カウンター切替、表示モード循環、パットON/OFF
+// score-input.js - スコア入力UI（Phase 7b：オートスライド対応）
 // =============================================================
 import { State } from '../core/state.js';
 import { EventBus } from '../core/event-bus.js';
@@ -39,9 +38,10 @@ function render() {
   _container.innerHTML = `
     <div class="gw-si-top">
       <button class="gw-si-prev" data-action="prev-hole">◀</button>
-      <button class="gw-si-hole-label" data-action="open-jump">
+      <button class="gw-si-hole-label gw-si-hole-current" data-action="open-jump">
         <div class="gw-si-hole-num">${hole + 1}H</div>
         <div class="gw-si-hole-par">PAR ${par}</div>
+        <span class="gw-si-hole-hint">タップでジャンプ</span>
       </button>
       <button class="gw-si-next" data-action="next-hole">▶</button>
     </div>
@@ -85,7 +85,7 @@ function renderSimpleMode(par, stroke) {
     </div>
     <div class="gw-si-actions">
       <button class="gw-si-clear" data-action="clear-hole">クリア</button>
-      <button class="gw-si-ok" data-action="confirm-simple">この打数で確定</button>
+      <button class="gw-si-ok" data-action="confirm-simple">この打数で確定→次へ</button>
     </div>
   `;
 }
@@ -112,6 +112,7 @@ function renderCounterMode(stroke, putt) {
       </div>
       <div class="gw-si-actions">
         <button class="gw-si-clear" data-action="clear-hole">クリア</button>
+        <button class="gw-si-ok" data-action="confirm-counter">確定→次へ</button>
       </div>
     </div>
   `;
@@ -133,6 +134,21 @@ function bindEvents() {
     el.addEventListener('click', (e) => handle(el.dataset.action, e));
     el.addEventListener('change', (e) => handle(el.dataset.action, e));
   });
+}
+
+/** 🎯 確定時に次ホールへ自動移動 */
+function autoAdvance() {
+  const course = State.getCourse();
+  const hole = State.getHole();
+  if (course && hole < course.holes - 1) {
+    setTimeout(() => State.setHole(hole + 1), 200);
+  } else if (course && hole === course.holes - 1) {
+    // 最終ホール
+    setTimeout(() => {
+      // トーストでお知らせ（toast.jsを動的importしない代わりにイベント発火）
+      EventBus.emit('round:lasthole-confirmed');
+    }, 200);
+  }
 }
 
 function handle(action, e) {
@@ -180,8 +196,14 @@ function handle(action, e) {
       break;
     }
     case 'confirm-simple': {
+      // PAR で確定（未入力なら）→ 次ホールへ
       if (active.scores[hole] == null) State.setScore(active.id, hole, par);
-      State.setHole(Math.min(course.holes - 1, hole + 1));
+      autoAdvance();
+      break;
+    }
+    case 'confirm-counter': {
+      // カウンターは累積値を確定 → 次ホールへ
+      autoAdvance();
       break;
     }
     case 'clear-hole':
@@ -221,5 +243,5 @@ export function mountScoreInput(host) {
   render();
 }
 
-[EVENTS.SCORE_UPDATED, EVENTS.HOLE_CHANGED, EVENTS.PLAYER_CHANGED, 'putt:updated', 'settings:changed', 'course:changed']
+[EVENTS.SCORE_UPDATED, EVENTS.HOLE_CHANGED, EVENTS.PLAYER_CHANGED, 'putt:updated', 'settings:changed', 'course:changed', 'state:restored']
   .forEach(ev => EventBus.on(ev, render));

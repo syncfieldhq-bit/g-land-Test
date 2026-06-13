@@ -1,5 +1,5 @@
 // =============================================================
-// gland.js - G-LAND 画面（コース選択 + スコア入力 + スコアカード）
+// gland.js - G-LAND画面（Phase 7b：タップ即遷移・ドラフト即復帰）
 // =============================================================
 import { State } from '../core/state.js';
 import { EventBus } from '../core/event-bus.js';
@@ -9,7 +9,6 @@ import { toast } from '../ui/toast.js';
 import { mountScoreInput } from '../widgets/score-input.js';
 import { mountScorecard } from '../widgets/scorecard.js';
 import { mountPlayerTabs } from '../widgets/player-tabs.js';
-import { openCompanionModal } from '../widgets/companion-modal.js';
 
 let _root = null;
 let _mounted = false;
@@ -26,7 +25,7 @@ export function renderGLand() {
     return;
   }
 
-  // 自分をプレイヤーとして登録
+  // 自分をプレイヤーとして登録（未登録時のみ）
   ensureSelfPlayer(profile);
 
   const course = State.getCourse();
@@ -36,9 +35,9 @@ export function renderGLand() {
     return;
   }
 
-  // メイン画面
-  _root.innerHTML = renderMain();
-  if (!_mounted) {
+  // メイン画面（コースが選択済 = ドラフト復帰時は即ここに飛ぶ）
+  if (!_mounted || !_root.querySelector('#gw-gland-input')) {
+    _root.innerHTML = renderMain();
     mountPlayerTabs(document.getElementById('gw-gland-tabs'));
     mountScoreInput(document.getElementById('gw-gland-input'));
     mountScorecard(document.getElementById('gw-gland-card'));
@@ -51,9 +50,11 @@ function renderRegister() {
   return `
     <div class="gw-card">
       <h2 style="color:#f5c842;">⛳ はじめまして</h2>
-      <p style="color:rgba(255,255,255,0.7);font-size:13px;">あなたのニックネームを教えてください。</p>
-      <label>ニックネーム</label>
-      <input type="text" id="gw-input-nick" placeholder="例: タロウ" maxlength="20">
+      <p style="color:rgba(255,255,255,0.7);font-size:13px;">あなたのお名前を教えてください。</p>
+      <label>ニックネーム（表示名）</label>
+      <input type="text" id="gw-input-nick" placeholder="例: タロウ" maxlength="20" autocomplete="off">
+      <label>本名（氏名・任意）</label>
+      <input type="text" id="gw-input-realname" placeholder="例: 山田 太郎" maxlength="30" autocomplete="off">
       <label class="gw-cm-public-row">
         <input type="checkbox" id="gw-input-public" checked>
         <span>ランキングに公開する</span>
@@ -66,9 +67,15 @@ function renderRegister() {
 function bindRegisterEvents() {
   _root.querySelector('[data-action="register"]').addEventListener('click', () => {
     const name = document.getElementById('gw-input-nick').value.trim();
+    const realName = document.getElementById('gw-input-realname').value.trim();
     const isPublic = document.getElementById('gw-input-public').checked;
     if (!name) { toast('ニックネームを入力してください', 'error'); return; }
-    Store.saveProfile({ name, isPublic, createdAt: Date.now() });
+    Store.saveProfile({
+      name,
+      realName,
+      isPublic,
+      createdAt: Date.now(),
+    });
     toast(`ようこそ、${name}さん！`, 'success');
     renderGLand();
   });
@@ -84,7 +91,13 @@ function ensureSelfPlayer(profile) {
 }
 
 function renderCourseSelect() {
-  let html = `<div class="gw-card"><h2 style="color:#f5c842;">本日のコースを選択</h2>`;
+  let html = `
+    <div class="gw-card">
+      <h2 style="color:#f5c842;text-align:center;">⚡ 本日のコースを選択</h2>
+      <p style="color:rgba(255,255,255,0.6);font-size:12px;text-align:center;margin:0 0 16px;">
+        タップで即スタート ⛳
+      </p>
+  `;
   const groups = {};
   for (const [id, c] of Object.entries(COURSES)) {
     const key = c.name;
@@ -92,9 +105,19 @@ function renderCourseSelect() {
     groups[key].push({ id, ...c });
   }
   for (const [name, variants] of Object.entries(groups)) {
-    html += `<div class="gw-cs-group"><h3>${name}</h3>`;
+    html += `<div class="gw-cs-group"><h3>${escapeHtml(name)}</h3>`;
     for (const v of variants) {
-      html += `<button class="gw-cs-btn" data-course="${v.id}">${v.variant} (${v.holes}H)</button>`;
+      const icon = v.holes === 18 ? '🔵' : '🟢';
+      html += `
+        <button class="gw-cs-btn gw-cs-instant" data-course="${v.id}">
+          <span class="gw-cs-icon">${icon}</span>
+          <span class="gw-cs-text">
+            <span class="gw-cs-variant">${escapeHtml(v.variant)}</span>
+            <span class="gw-cs-holes">${v.holes}ホール</span>
+          </span>
+          <span class="gw-cs-arrow">▶</span>
+        </button>
+      `;
     }
     html += `</div>`;
   }
@@ -107,8 +130,12 @@ function bindCourseEvents() {
     btn.addEventListener('click', () => {
       const id = btn.dataset.course;
       const c = COURSES[id];
+      // 🚀 タップ即遷移: コース設定 → 即メイン画面描画（確認なし）
       State.setCourse({ id, ...c });
-      toast(`${c.name} ${c.variant} で開始`, 'success');
+      toast(`${c.name} ${c.variant} スタート！`, 'success', 1500);
+      // _mountedをリセットして強制再描画
+      _mounted = false;
+      renderGLand();
     });
   });
 }
@@ -118,13 +145,13 @@ function renderMain() {
   return `
     <div class="gw-gland-main">
       <div class="gw-gland-courseinfo">
-        <span>⛳ ${course.name} <small>(${course.variant})</small></span>
+        <span>⛳ ${escapeHtml(course.name)} <small>(${escapeHtml(course.variant)})</small></span>
         <button class="gw-mini-btn" data-action="change-course">変更</button>
       </div>
       <div id="gw-gland-tabs"></div>
       <div id="gw-gland-input"></div>
-      <details class="gw-gland-cardwrap">
-        <summary>📊 スコアカードを開く</summary>
+      <details class="gw-gland-cardwrap" open>
+        <summary>📊 スコアカード（タップで開閉）</summary>
         <div id="gw-gland-card"></div>
       </details>
       <div class="gw-gland-actions">
@@ -143,9 +170,13 @@ function bindMainEvents() {
 function handleMain(action) {
   switch (action) {
     case 'change-course':
-      if (confirm('コースを変更しますか？（スコアはクリアされます）')) {
+      if (confirm('コースを変更しますか？\n（現在のスコアは破棄されます）')) {
         State.reset();
+        Store.clearRoundDraft();
         _mounted = false;
+        // 自分のプロフィールを再登録
+        const profile = Store.getProfile();
+        if (profile) ensureSelfPlayer(profile);
         renderGLand();
       }
       break;
@@ -158,16 +189,35 @@ function handleMain(action) {
           group: snap.group,
         });
         Store.clearRoundDraft();
-        toast('履歴に保存しました', 'success');
+        State.reset();
+        _mounted = false;
+        toast('履歴に保存しました 🎉', 'success');
         EventBus.emit(EVENTS.ROUND_FINISHED);
+        // ホームに戻る
+        location.hash = '#home';
       }
       break;
   }
 }
 
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'
+  }[c]));
+}
+
 // 自動セーブ
-[EVENTS.SCORE_UPDATED, 'putt:updated', EVENTS.PLAYER_ADDED, EVENTS.PLAYER_REMOVED, 'course:changed']
+[EVENTS.SCORE_UPDATED, 'putt:updated', EVENTS.PLAYER_ADDED, EVENTS.PLAYER_REMOVED,
+ EVENTS.HOLE_CHANGED, 'course:changed', 'player:renamed']
   .forEach(ev => EventBus.on(ev, () => {
     const snap = State.snapshot();
     if (snap.course) Store.saveRoundDraft(snap);
   }));
+
+// 画面外からのhash遷移時にもmount状態を維持／更新
+EventBus.on('route:changed', (name) => {
+  if (name === 'gland') {
+    // すでにマウント済みなら再mountしないが、コース変更検知のため一応再描画判定
+    renderGLand();
+  }
+});
