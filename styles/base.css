@@ -880,3 +880,134 @@ html, body {
   margin-top: 24px;
   line-height: 1.6;
 }
+
+/* ═══════════════════════════════════════════
+   Phase 4 追加：スコアサマリ・拡張UI
+═══════════════════════════════════════════ */
+
+/* ─── スコアサマリ（合計・PAR差・OUT/IN） ─── */
+.score-summary {
+  background: linear-gradient(180deg, rgba(245,200,66,0.18), rgba(245,200,66,0.05));
+  border: 1px solid rgba(245,200,66,0.35);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+
+.summary-main {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  text-align: center;
+}
+
+.summary-item .lbl {
+  font-size: 10px;
+  color: var(--text-sub);
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+.summary-item .val {
+  font-size: 28px;
+  font-weight: 900;
+  color: #fff;
+  margin-top: 2px;
+  line-height: 1;
+}
+
+.summary-item.summary-diff .val {
+  font-size: 24px;
+}
+
+.summary-item.summary-played .val {
+  font-size: 18px;
+  color: var(--gold-bright);
+}
+
+/* PAR差カラー */
+.diff-under {
+  color: #ff6b6b !important;
+}
+.diff-even {
+  color: var(--gold-bright) !important;
+}
+.diff-over {
+  color: #87ceeb !important;
+}
+
+/* OUT / IN ハーフ */
+.summary-halves {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.half-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.half-lbl {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--gold);
+  letter-spacing: 1px;
+}
+
+.half-val {
+  font-size: 18px;
+  font-weight: 900;
+  color: #fff;
+}
+
+.half-diff {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* ─── ホールナビ ─── */
+.score-hole-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.hole-nav-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(245, 200, 66, 0.15);
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-size: 18px;
+  font-weight: 900;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.hole-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.hole-info {
+  flex: 1;
+  text-align: center;
+}
+
+.hole-name {
+  font-size: 11px;
+  color: var(--gold-bright);
+  font-weight: 800;
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
