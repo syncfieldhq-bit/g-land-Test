@@ -2,2864 +2,1315 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0a3d2e">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="G-WORLD">
-<title>G-WORLD ⛳ v9</title>
-<link rel="icon" href="./icon.png">
-<link rel="apple-touch-icon" href="./icon.png">
-
-<!-- ==========================================================
-  G-WORLD v9.0 - カード一体型UI（究極版）
-  
-  【設計コンセプト】
-  - 画面全体が大きなスコアカード（入力専用画面は廃止）
-  - セルタップで下からモーダルがにゅるっと出現
-  - 編集ロック機能（誤タップ防止）
-  - 年配対応の超大型UI（最低56px円形ボタン）
-========================================================== -->
-
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0F5132">
+<title>G-WORLD v10 | デジタルスコアカード</title>
 <style>
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-html, body { height: 100%; }
+/* =========================================
+   G-WORLD v10.0 - Card Focus Edition
+   image_2.png ベース | 緑質感・プロ仕様
+   ========================================= */
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+:root {
+  --green-1: #0F5132;      /* メイン濃緑（image_2のヘッダー）*/
+  --green-2: #1B7A4B;      /* セカンダリ */
+  --green-3: #2D9D5F;      /* アクセント */
+  --green-4: #6FCF97;      /* ハイライト */
+  --gold: #F2C84B;         /* 現在ホール */
+  --gold-dark: #C99A1A;
+  --cream: #FAF7EE;        /* 紙色背景 */
+  --paper: #FFFDF5;        /* カード地 */
+  --ink: #1A2E1F;          /* テキスト */
+  --ink-soft: #4A5D52;
+  --line: #D8E4DB;
+  --line-strong: #B5C9BA;
+  --red: #D63B3B;
+  --blue: #2E6FB5;
+  --shadow-1: 0 2px 6px rgba(15,81,50,.08);
+  --shadow-2: 0 6px 18px rgba(15,81,50,.14);
+  --shadow-3: 0 12px 32px rgba(15,81,50,.22);
+  --radius: 14px;
+  --radius-lg: 20px;
+
+  /* フッター高さ（safe-area込） */
+  --footer-h: calc(64px + env(safe-area-inset-bottom));
+  /* ラウンド終了ボタンとフッターの間に確保する余白 */
+  --footer-gap: 32px;
+}
+
+html, body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic UI", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  overscroll-behavior-y: none;
+}
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Noto Sans JP', sans-serif;
-  background: linear-gradient(180deg, #0a3d2e 0%, #1a4d3e 100%);
-  color: #fff; min-height: 100vh;
-  padding-bottom: 70px;
-  font-size: 15px;
-  -webkit-text-size-adjust: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  /* フッターと被らないようにbody下に余白 */
+  padding-bottom: var(--footer-h);
 }
 
-/* ========== Boot ========== */
-.boot {
-  position: fixed; inset: 0; z-index: 9999;
-  background: #0a3d2e;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  transition: opacity 0.4s;
-}
-.boot.hidden { opacity: 0; pointer-events: none; }
-.boot-spinner {
-  width: 50px; height: 50px;
-  border: 4px solid rgba(245,200,66,0.2);
-  border-top-color: #f5c842;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.boot-title { font-size: 32px; font-weight: 900; color: #f5c842; margin-top: 20px; letter-spacing: 6px; }
-.boot-sub { color: rgba(255,255,255,0.6); margin-top: 6px; font-size: 12px; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+input, select { font-family: inherit; font-size: inherit; }
 
-/* ========== Header ========== */
-header {
-  position: sticky; top: 0; z-index: 100;
-  background: rgba(10,61,46,0.95); backdrop-filter: blur(10px);
-  padding: 10px 14px;
-  border-bottom: 1px solid rgba(245,200,66,0.2);
-  display: flex; justify-content: space-between; align-items: center;
-}
-header h1 { font-size: 18px; color: #f5c842; letter-spacing: 2px; }
-header h1 small { font-size: 10px; color: rgba(255,255,255,0.6); margin-left: 6px; font-weight: 400; }
-.header-actions { display: flex; gap: 6px; }
-.header-actions button {
-  padding: 6px 10px; font-size: 11px; font-weight: 800;
-  background: rgba(255,255,255,0.1); color: #f5c842;
-  border: 1px solid rgba(245,200,66,0.3); border-radius: 6px;
-  cursor: pointer;
-}
-
-/* ========== Screens ========== */
-main { padding: 12px; max-width: 720px; margin: 0 auto; }
-.screen { display: none; }
-.screen.active { display: block; animation: fadeIn 0.3s; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-
-/* ========== Card 共通 ========== */
-.card {
-  background: rgba(255,255,255,0.08);
-  border-radius: 16px; padding: 18px;
-  margin-bottom: 14px;
-  border: 1px solid rgba(255,255,255,0.1);
-}
-.card h2 { color: #f5c842; margin-bottom: 8px; font-size: 22px; }
-.card p { color: rgba(255,255,255,0.7); font-size: 14px; line-height: 1.6; margin-bottom: 10px; }
-.card label { display: block; font-size: 14px; color: rgba(255,255,255,0.8); margin: 12px 0 6px; }
-.card input[type="text"] {
-  width: 100%; padding: 16px; font-size: 17px;
-  background: rgba(255,255,255,0.1); color: #fff;
-  border: 1px solid rgba(255,255,255,0.2); border-radius: 10px;
-  outline: none;
-}
-.card input[type="text"]:focus { border-color: #f5c842; }
-
-.btn-primary {
-  display: block; width: 100%; padding: 18px;
-  background: linear-gradient(135deg, #f5c842, #e6a02e);
-  color: #0a3d2e;
-  font-size: 18px; font-weight: 900;
-  border: none; border-radius: 14px; cursor: pointer;
-  margin-top: 14px;
-}
-.btn-primary:active { transform: scale(0.97); }
-.btn-secondary {
-  display: block; width: 100%; padding: 14px;
-  background: rgba(255,255,255,0.15); color: #fff;
-  font-size: 15px; font-weight: 700;
-  border: none; border-radius: 10px; cursor: pointer;
-  margin-top: 10px;
-}
-.btn-danger { background: #c0392b !important; color: #fff !important; }
-.btn-green { background: linear-gradient(135deg, #2ecc71, #27ae60) !important; color: #fff !important; }
-
-/* ========== Home (Portal) ========== */
-.hero { text-align: center; padding: 20px 0; }
-.hero .greet { font-size: 15px; color: rgba(255,255,255,0.7); }
-.hero .name { font-size: 30px; font-weight: 900; color: #f5c842; margin: 4px 0; }
-.hero .badge {
-  display: inline-block; padding: 5px 14px; font-size: 12px;
-  border-radius: 12px; margin-bottom: 16px;
-  background: rgba(245,200,66,0.2); color: #f5c842;
-}
-.hero .badge.guest { background: rgba(255,255,255,0.15); color: #ddd; }
-.cta-resume {
-  display: block; width: 100%; padding: 18px;
-  background: linear-gradient(135deg, #2ecc71, #16a085);
-  color: #fff; font-size: 17px; font-weight: 800;
-  border: none; border-radius: 14px; cursor: pointer;
-  margin-bottom: 10px;
-  animation: pulse 2s ease-in-out infinite;
-}
-@keyframes pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(46,204,113,0.4); }
-  50% { box-shadow: 0 0 0 12px rgba(46,204,113,0); }
-}
-.cta-resume small { display: block; font-size: 12px; opacity: 0.9; margin-top: 3px; }
-.cta-start {
-  display: block; width: 100%; padding: 20px;
-  background: linear-gradient(135deg, #f5c842, #e6a02e);
-  color: #0a3d2e; font-size: 20px; font-weight: 900;
-  border: none; border-radius: 16px; cursor: pointer;
-}
-
-.section-label {
-  display: flex; align-items: center; gap: 8px;
-  margin: 22px 4px 10px; font-size: 13px; font-weight: 800;
-  color: rgba(255,255,255,0.85);
-}
-.section-label .dot { width: 10px; height: 10px; border-radius: 50%; }
-.section-label .dot.ready { background: #2ecc71; box-shadow: 0 0 6px #2ecc71; }
-.section-label .dot.soon { background: #9b59b6; box-shadow: 0 0 6px #9b59b6; }
-
-.modules { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.module {
-  position: relative; padding: 20px 10px; text-align: center;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 14px; color: #fff; cursor: pointer;
-}
-.module.ready { border-color: rgba(46,204,113,0.3); background: linear-gradient(135deg, rgba(46,204,113,0.05), rgba(255,255,255,0.08)); }
-.module.soon { opacity: 0.6; border-style: dashed; border-color: rgba(155,89,182,0.5); }
-.module .icon { font-size: 38px; }
-.module .mname { font-weight: 800; color: #f5c842; margin-top: 4px; font-size: 15px; }
-.module .mdesc { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 2px; }
-.module .tag {
-  position: absolute; top: 6px; right: 6px;
-  padding: 2px 6px; font-size: 8px; font-weight: 900; letter-spacing: 1px;
-  border-radius: 5px;
-}
-.module .tag.ready { background: #2ecc71; color: #fff; }
-.module .tag.soon { background: #9b59b6; color: #fff; }
-.module .lock { position: absolute; top: 6px; left: 6px; font-size: 14px; }
-
-/* ========== Footer Nav ========== */
-nav.footer {
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
-  background: rgba(10,61,46,0.95); backdrop-filter: blur(10px);
-  display: flex; height: 64px;
-  border-top: 1px solid rgba(245,200,66,0.2);
-}
-nav.footer button {
-  flex: 1; background: none; border: none; color: rgba(255,255,255,0.6);
-  font-size: 11px; cursor: pointer; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 2px;
-}
-nav.footer button span { font-size: 22px; }
-nav.footer button.active { color: #f5c842; }
-
-/* ========== Course Select ========== */
-.cs-btn {
-  display: flex; align-items: center; gap: 12px;
-  width: 100%; padding: 18px;
-  background: linear-gradient(135deg, rgba(245,200,66,0.1), rgba(245,200,66,0.18));
-  border: 1px solid rgba(245,200,66,0.3);
-  border-radius: 12px; color: #fff;
-  margin-bottom: 8px; cursor: pointer;
-}
-.cs-btn:active { transform: scale(0.97); }
-.cs-btn .ico { font-size: 24px; }
-.cs-btn .info { flex: 1; text-align: left; }
-.cs-btn .info-name { font-size: 17px; font-weight: 800; }
-.cs-btn .info-sub { font-size: 12px; color: rgba(255,255,255,0.65); margin-top: 2px; }
-.cs-btn .arrow { color: #f5c842; font-size: 18px; }
-
-/* ====================================================
-   🌟 G-LAND メイン（カード一体型）
-   ==================================================== */
-
-/* トップバー（ミニマル） */
-.gl-topbar {
-  display: flex; align-items: center; gap: 8px;
-  padding: 10px 12px; margin-bottom: 12px;
-  background: linear-gradient(135deg, rgba(245,200,66,0.12), rgba(245,200,66,0.05));
-  border: 1px solid rgba(245,200,66,0.3);
-  border-radius: 12px;
-}
-.gl-topbar .cname {
-  flex: 1; font-size: 14px; font-weight: 800; color: #f5c842;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.gl-topbar .cvar {
-  font-size: 10px; padding: 2px 6px; border-radius: 6px;
-  background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.85);
-  margin-left: 4px;
-}
-.gl-topbar-actions { display: flex; gap: 5px; }
-.gl-mini-btn {
-  padding: 8px 10px; font-size: 11px; font-weight: 800;
-  border: none; border-radius: 8px; cursor: pointer;
-  display: flex; align-items: center; gap: 3px;
-}
-.gl-mini-btn.detail { background: rgba(52,152,219,0.25); color: #5dade2; border: 1px solid rgba(52,152,219,0.5); }
-.gl-mini-btn.qr { background: linear-gradient(135deg, #2ecc71, #16a085); color: #fff; box-shadow: 0 2px 6px rgba(46,204,113,0.4); }
-
-/* 現在ホール・全体スコア表示バー */
-.gl-statusbar {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 14px 16px; margin-bottom: 14px;
-  background: linear-gradient(135deg, rgba(245,200,66,0.18), rgba(245,200,66,0.05));
-  border: 2px solid rgba(245,200,66,0.4);
-  border-radius: 14px;
-}
-.gl-statusbar .sb-hole { display: flex; align-items: center; gap: 12px; }
-.gl-statusbar .sb-hole-arrow {
-  width: 44px; height: 44px;
-  background: rgba(245,200,66,0.2); color: #f5c842;
-  border: 2px solid rgba(245,200,66,0.5); border-radius: 50%;
-  font-size: 18px; font-weight: 900; cursor: pointer;
-}
-.gl-statusbar .sb-hole-arrow:active { transform: scale(0.9); }
-.gl-statusbar .sb-hole-info { text-align: center; min-width: 80px; }
-.gl-statusbar .sb-hole-num { font-size: 28px; font-weight: 900; color: #f5c842; line-height: 1; }
-.gl-statusbar .sb-hole-par { font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 2px; }
-.gl-statusbar .sb-total { text-align: right; }
-.gl-statusbar .sb-total-label { font-size: 10px; color: rgba(255,255,255,0.6); letter-spacing: 1px; }
-.gl-statusbar .sb-total-val {
-  font-size: 22px; font-weight: 900; color: #fff;
-  margin-top: 2px; line-height: 1;
-}
-.gl-statusbar .sb-total-diff {
-  font-size: 13px; font-weight: 800; margin-top: 3px;
-}
-
-/* 表示モード切替・編集ロック制御バー */
-.gl-control-row {
-  display: flex; gap: 8px; margin-bottom: 12px;
-  align-items: stretch;
-}
-.gl-display-toggle {
-  display: flex; flex: 1; gap: 4px;
-  background: rgba(0,0,0,0.25); padding: 4px;
-  border-radius: 10px;
-}
-.gl-display-toggle button {
-  flex: 1; padding: 10px 6px;
-  background: transparent; color: #ddd;
-  border: none; border-radius: 6px;
-  font-size: 12px; font-weight: 700; cursor: pointer;
-}
-.gl-display-toggle button.on {
-  background: #f5c842; color: #0a3d2e; font-weight: 900;
-}
-
-/* 🔒 編集モード切替ボタン */
-.gl-edit-mode-btn {
-  padding: 10px 14px;
-  border-radius: 10px; border: 2px solid;
-  font-size: 12px; font-weight: 900; cursor: pointer;
-  display: flex; align-items: center; gap: 4px;
-  white-space: nowrap;
-}
-.gl-edit-mode-btn.locked {
-  background: rgba(46,204,113,0.15);
-  border-color: rgba(46,204,113,0.5);
-  color: #2ecc71;
-}
-.gl-edit-mode-btn.unlocked {
-  background: rgba(231,76,60,0.2);
-  border-color: rgba(231,76,60,0.7);
-  color: #e74c3c;
-  animation: editPulse 1.5s ease-in-out infinite;
-}
-@keyframes editPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(231,76,60,0.5); }
-  50% { box-shadow: 0 0 0 8px rgba(231,76,60,0); }
-}
-
-/* 🔒 編集ロック解除中の警告バナー */
-.gl-unlock-warning {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 14px; margin-bottom: 12px;
-  background: linear-gradient(135deg, rgba(231,76,60,0.2), rgba(231,76,60,0.05));
-  border: 2px dashed rgba(231,76,60,0.6);
-  border-radius: 10px;
-  font-size: 13px; color: #fff;
-  animation: unlockGlow 1.5s ease-in-out infinite;
-}
-@keyframes unlockGlow {
-  0%, 100% { background-color: rgba(231,76,60,0.15); }
-  50% { background-color: rgba(231,76,60,0.25); }
-}
-.gl-unlock-warning .warn-ico { font-size: 22px; }
-.gl-unlock-warning strong { color: #e74c3c; }
-
-/* ====================================================
-   🃏 スコアカード本体（カード一体型UI）
-   ==================================================== */
-.gl-scorecard {
-  background: linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.25));
-  border: 2px solid rgba(245,200,66,0.3);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-  margin-bottom: 14px;
-}
-.gl-sc-title {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 12px 14px;
-  background: linear-gradient(135deg, rgba(245,200,66,0.25), rgba(245,200,66,0.1));
-  border-bottom: 2px solid rgba(245,200,66,0.3);
-}
-.gl-sc-title h3 { color: #f5c842; font-size: 16px; font-weight: 900; }
-.gl-sc-title .sync-dot {
-  font-size: 10px; font-weight: 700;
-  background: rgba(46,204,113,0.15); color: #2ecc71;
-  padding: 3px 8px 3px 18px; border-radius: 8px;
-  position: relative;
-}
-.gl-sc-title .sync-dot::before {
-  content: ''; position: absolute; left: 7px; top: 50%; transform: translateY(-50%);
-  width: 6px; height: 6px; background: #2ecc71; border-radius: 50%;
-  box-shadow: 0 0 6px #2ecc71;
-  animation: syncFlash 1.6s ease-in-out infinite;
-}
-@keyframes syncFlash { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-.gl-sc-hint {
-  padding: 6px 14px;
-  font-size: 11px; color: rgba(255,255,255,0.55);
-  background: rgba(0,0,0,0.15);
-  text-align: center;
-}
-
-/* スコアカード本体（左固定 + 横スクロール） */
-.gl-sc-table { display: flex; }
-.gl-sc-fixed {
-  flex-shrink: 0;
-  background: rgba(10,61,46,0.95);
-  border-right: 2px solid rgba(245,200,66,0.3);
-  z-index: 2;
-}
-.gl-sc-fixed .sc-header-cell {
-  padding: 6px 12px; font-size: 11px; color: #f5c842;
-  background: rgba(245,200,66,0.18);
-  font-weight: 900; height: 76px;
-  display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
-  border-bottom: 2px solid rgba(255,255,255,0.1);
-}
-.gl-sc-fixed .sc-header-cell small { font-size: 9px; color: rgba(255,255,255,0.6); margin-top: 2px; }
-.gl-sc-fixed .sc-row-name {
-  padding: 12px 12px; font-size: 17px; font-weight: 800;
-  min-width: 130px; max-width: 170px;
-  height: 64px;
-  border-bottom: 2px solid rgba(255,255,255,0.12);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+/* ====== トップバー（コース情報・編集） ====== */
+.topbar {
+  position: sticky; top: 0; z-index: 50;
+  background: linear-gradient(135deg, var(--green-1) 0%, var(--green-2) 100%);
   color: #fff;
-  background: rgba(0,0,0,0.15);
+  padding: 14px 16px 12px;
+  padding-top: calc(14px + env(safe-area-inset-top));
+  box-shadow: var(--shadow-2);
+}
+.topbar-row { display: flex; align-items: center; gap: 10px; }
+.topbar-title { flex: 1; min-width: 0; }
+.topbar-course {
+  font-size: 17px; font-weight: 800; letter-spacing: .02em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.topbar-meta {
+  font-size: 12px; color: #D8F0DD; margin-top: 2px;
+  display: flex; align-items: center; gap: 8px;
+}
+.topbar-meta .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green-4); animation: pulse 1.8s ease-in-out infinite; }
+.topbar-btn {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: rgba(255,255,255,.16);
+  color: #fff; font-size: 18px;
+  display: grid; place-items: center;
+  transition: background .15s;
+}
+.topbar-btn:active { background: rgba(255,255,255,.32); }
+
+/* ====== 表示切替トグル（数字/±） ====== */
+.display-toggle-row {
+  background: var(--paper);
+  padding: 12px 16px 10px;
   display: flex; align-items: center; justify-content: space-between;
-  gap: 6px;
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
 }
-.gl-sc-fixed .sc-row-name.is-me {
-  background: linear-gradient(90deg, rgba(245,200,66,0.35), rgba(245,200,66,0.1));
-  color: #f5c842;
-  border-left: 4px solid #f5c842;
-  padding-left: 8px;
+.display-toggle-label {
+  font-size: 12px; color: var(--ink-soft); font-weight: 700;
+  letter-spacing: .04em;
 }
-.gl-sc-fixed .sc-row-name .pname-text {
-  flex: 1;
-  overflow: hidden; text-overflow: ellipsis;
+.display-toggle {
+  display: inline-flex; background: var(--cream);
+  border: 1.5px solid var(--line-strong);
+  border-radius: 999px; padding: 3px;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.04);
 }
-.gl-sc-fixed .sc-row-name .pname-text .me-tag {
-  font-size: 9px; background: #f5c842; color: #0a3d2e;
-  padding: 2px 5px; border-radius: 4px; margin-left: 6px;
-  font-weight: 900;
+.display-toggle button {
+  padding: 8px 18px;
+  font-size: 13px; font-weight: 800;
+  border-radius: 999px;
+  color: var(--ink-soft);
+  transition: all .18s;
+  min-width: 90px;
 }
-
-/* 🔒 プレイヤー別ロック表示 */
-.gl-sc-fixed .sc-row-name .pname-lock {
-  width: 28px; height: 28px;
-  background: rgba(46,204,113,0.15);
-  border: 1.5px solid rgba(46,204,113,0.5);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px;
-  flex-shrink: 0;
-  cursor: pointer;
-}
-.gl-sc-fixed .sc-row-name .pname-lock.unlocked {
-  background: rgba(231,76,60,0.2);
-  border-color: rgba(231,76,60,0.7);
-  animation: lockPulse 1.5s ease-in-out infinite;
-}
-@keyframes lockPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(231,76,60,0.5); }
-  50% { box-shadow: 0 0 0 6px rgba(231,76,60,0); }
-}
-
-/* 横スクロール側 */
-.gl-sc-scroll {
-  flex: 1; overflow-x: auto; -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
-  scroll-snap-type: x proximity;
-}
-.gl-sc-scroll::-webkit-scrollbar { height: 4px; }
-.gl-sc-scroll::-webkit-scrollbar-thumb { background: rgba(245,200,66,0.4); border-radius: 2px; }
-.gl-sc-row { display: flex; }
-
-/* ヘッダーセル（ホール番号） */
-.gl-sc-cell {
-  flex-shrink: 0; width: 64px; height: 64px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 24px; font-weight: 900;
-  border-bottom: 2px solid rgba(255,255,255,0.1);
-  border-right: 1px solid rgba(255,255,255,0.05);
-  color: rgba(255,255,255,0.35);
-  background: rgba(255,255,255,0.03);
-  scroll-snap-align: center;
-  position: relative;
-  cursor: pointer;
-}
-.gl-sc-cell.head {
-  background: rgba(255,255,255,0.1); color: #f5c842;
-  font-size: 16px; flex-direction: column; gap: 2px;
-  height: 76px; padding: 6px 0;
-  cursor: default;
-}
-.gl-sc-cell.head .hnum { font-size: 17px; font-weight: 900; }
-.gl-sc-cell.head .hpar { font-size: 10px; opacity: 0.8; }
-.gl-sc-cell.head.current {
-  background: linear-gradient(180deg, #ffe680, #f5c842, #e6a02e) !important;
-  color: #0a3d2e !important;
-  box-shadow: 0 0 0 2px #fff inset;
-  animation: holeFlash 1.5s ease-in-out infinite;
-  z-index: 2;
-}
-@keyframes holeFlash {
-  0%, 100% { box-shadow: 0 0 0 2px #fff inset, 0 0 12px rgba(245,200,66,0.7); }
-  50% { box-shadow: 0 0 0 2px #fff inset, 0 0 20px rgba(245,200,66,1); }
-}
-.gl-sc-cell.head.current .hpar { color: rgba(10,61,46,0.85); font-weight: 800; }
-
-/* 通常セル：タップ可能視覚化 */
-.gl-sc-cell:not(.head) {
-  border-left: 1px dashed rgba(255,255,255,0.08);
-}
-.gl-sc-cell:not(.head):hover {
-  background: rgba(245,200,66,0.1);
-}
-.gl-sc-cell:not(.head):active {
-  transform: scale(0.92);
-}
-.gl-sc-cell.filled {
+.display-toggle button.active {
+  background: linear-gradient(135deg, var(--green-1), var(--green-2));
   color: #fff;
-  background: rgba(255,255,255,0.08);
-  border-color: rgba(255,255,255,0.2);
-}
-.gl-sc-cell.under { color: #e74c3c; background: rgba(231,76,60,0.18); font-size: 28px; }
-.gl-sc-cell.birdie { color: #f39c12; background: rgba(243,156,18,0.15); }
-.gl-sc-cell.par { color: #f5c842; }
-.gl-sc-cell.bogey { color: #5dade2; background: rgba(93,173,226,0.1); }
-.gl-sc-cell.double { color: #2980b9; background: rgba(41,128,185,0.15); }
-.gl-sc-cell.over { color: #95a5a6; }
-.gl-sc-cell.current:not(.head) {
-  background: rgba(245,200,66,0.2) !important;
-  border-left: 3px solid #f5c842;
-  border-right: 3px solid #f5c842;
-}
-/* ロック中の他プレイヤーセル：薄く・タップ不可視覚 */
-.gl-sc-cell.locked {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-.gl-sc-cell.locked::after {
-  content: '🔒';
-  position: absolute;
-  top: 2px; right: 2px;
-  font-size: 8px;
-  opacity: 0.6;
-}
-.gl-sc-cell.editable-now {
-  background: rgba(231,76,60,0.1);
-  border: 1px solid rgba(231,76,60,0.4);
+  box-shadow: var(--shadow-1);
 }
 
-/* 合計・PAR差列 */
-.gl-sc-cell.total, .gl-sc-cell.diff {
-  width: 72px;
-  background: linear-gradient(135deg, rgba(245,200,66,0.25), rgba(245,200,66,0.1));
-  color: #f5c842; font-weight: 900;
-  cursor: default;
-  border-left: none;
+/* ====== スコアカード本体 ====== */
+.card-wrap {
+  padding: 14px 12px 0;
 }
-.gl-sc-cell.head.total, .gl-sc-cell.head.diff { font-size: 12px; }
+.card {
+  background: var(--paper);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-2);
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
 
-/* パット内訳バッジ（セル右下） */
-.gl-sc-cell .putt-badge {
-  position: absolute;
-  bottom: 2px; right: 4px;
-  font-size: 9px;
-  color: rgba(46,204,113,0.8);
+/* スコアカードヘッダー（緑バー） */
+.card-header {
+  background: linear-gradient(135deg, var(--green-1), var(--green-2));
+  color: #fff;
+  padding: 10px 14px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 14px; font-weight: 800;
+  letter-spacing: .04em;
+}
+.card-header .icon { font-size: 16px; }
+.card-header .badge {
+  margin-left: auto;
+  font-size: 11px; padding: 3px 10px;
+  background: rgba(255,255,255,.18);
+  border-radius: 999px;
   font-weight: 700;
 }
 
-/* 同伴者を追加ボタン */
-.gl-add-companion {
-  display: block; width: 100%;
-  padding: 14px; margin: 10px 14px 14px;
-  width: calc(100% - 28px);
-  background: rgba(46,204,113,0.12);
-  border: 1.5px dashed rgba(46,204,113,0.5);
-  border-radius: 10px;
-  color: #2ecc71; font-size: 14px; font-weight: 800;
-  cursor: pointer;
+/* テーブル（横スクロール） */
+.scoretable-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
 }
-.gl-add-companion:active { transform: scale(0.98); }
+.scoretable-scroll::-webkit-scrollbar { height: 6px; }
+.scoretable-scroll::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 3px; }
 
-/* ラウンド終了 */
-.finish-btn {
-  display: block; width: 100%; padding: 20px;
-  margin-top: 16px;
-  background: linear-gradient(135deg, #2ecc71, #27ae60);
-  color: #fff; font-size: 18px; font-weight: 900;
-  border: none; border-radius: 14px;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(46,204,113,0.4);
+.scoretable {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: max-content;
+  min-width: 100%;
+  font-variant-numeric: tabular-nums;
 }
-.finish-btn:active { transform: scale(0.98); }
+.scoretable th, .scoretable td {
+  border-bottom: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  padding: 0;
+  text-align: center;
+  background: var(--paper);
+}
+.scoretable thead th {
+  background: linear-gradient(180deg, #F4EFDF 0%, #E9E1C6 100%);
+  font-size: 13px; font-weight: 800; color: var(--ink);
+  height: 42px; min-width: 52px;
+  position: relative;
+}
+.scoretable thead th.par-row {
+  background: #EFEAD6;
+  font-size: 12px; color: var(--ink-soft);
+  height: 30px;
+  font-weight: 700;
+}
 
-/* ========== Modal 共通 ========== */
-.modal {
-  position: fixed; inset: 0; z-index: 5000;
+/* 左固定カラム（プレイヤー名） */
+.col-fixed {
+  position: sticky; left: 0; z-index: 5;
+  min-width: 110px !important; max-width: 110px;
+  background: var(--paper) !important;
+  text-align: left !important;
+  padding: 0 12px !important;
+  border-right: 2px solid var(--line-strong) !important;
+  box-shadow: 4px 0 6px -4px rgba(0,0,0,.08);
+}
+thead .col-fixed { background: linear-gradient(180deg, #F4EFDF 0%, #E9E1C6 100%) !important; }
+thead .col-fixed.par-row { background: #EFEAD6 !important; }
+
+.col-total {
+  position: sticky; right: 0; z-index: 5;
+  min-width: 64px !important;
+  background: #F4EFDF !important;
+  border-left: 2px solid var(--line-strong) !important;
+  box-shadow: -4px 0 6px -4px rgba(0,0,0,.08);
+  font-weight: 900;
+}
+thead .col-total { background: linear-gradient(180deg, #E9E1C6, #DFD4B0) !important; }
+
+/* 現在ホール強調 */
+.scoretable th.current-hole,
+.scoretable td.current-hole {
+  background: linear-gradient(180deg, #FFF4CC 0%, #FFE89A 100%) !important;
+  box-shadow: inset 0 0 0 2px var(--gold);
+  position: relative;
+}
+.scoretable th.current-hole::after {
+  content: "●";
+  position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);
+  font-size: 7px; color: var(--gold-dark);
+}
+
+/* プレイヤー行 */
+.player-cell {
+  display: flex; flex-direction: column; justify-content: center;
+  height: 100%; min-height: 56px;
+  padding: 6px 0;
+}
+.player-cell .name {
+  font-size: 15px; font-weight: 800;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.player-cell .you-tag {
+  display: inline-block;
+  font-size: 9px; font-weight: 800;
+  background: var(--green-2); color: #fff;
+  padding: 1px 5px; border-radius: 4px;
+  margin-top: 2px; width: fit-content;
+  letter-spacing: .04em;
+}
+
+/* スコアセル */
+.score-cell {
+  height: 56px;
+  min-width: 52px;
+  font-size: 22px; font-weight: 900;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background .12s;
+  position: relative;
+}
+.score-cell:active { background: #F4EFDF !important; }
+.score-cell.empty { color: #C8D2CB; font-size: 18px; }
+.score-cell.under-2 { color: var(--red); font-size: 24px; }
+.score-cell.under-1 { color: #E07642; }
+.score-cell.over-1 { color: var(--ink-soft); }
+.score-cell.over-2 { color: var(--blue); }
+
+/* 行ストライプ */
+.scoretable tbody tr:nth-child(even) td { background: #FCFAF1; }
+.scoretable tbody tr:nth-child(even) td.col-fixed { background: #FCFAF1 !important; }
+.scoretable tbody tr:nth-child(even) td.col-total { background: #F1ECD6 !important; }
+
+/* 合計列 */
+.col-total .total-score { font-size: 22px; font-weight: 900; color: var(--green-1); }
+.col-total .diff { font-size: 11px; color: var(--ink-soft); margin-top: 1px; }
+.col-total .diff.minus { color: var(--red); font-weight: 800; }
+
+/* ====== 中央アクションエリア（招待QR大ボタン＋同伴者追加） ====== */
+.center-actions {
+  padding: 18px 16px 14px;
+  background: linear-gradient(180deg, var(--paper) 0%, #F7F2E2 100%);
+  border-top: 1px solid var(--line);
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+}
+
+.invite-qr-btn {
+  width: 100%; max-width: 360px;
+  background: linear-gradient(135deg, var(--green-1) 0%, var(--green-3) 100%);
+  color: #fff;
+  padding: 18px 20px;
+  border-radius: 18px;
+  font-size: 18px; font-weight: 900;
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  box-shadow: 0 8px 20px rgba(15,81,50,.32), inset 0 -3px 0 rgba(0,0,0,.12);
+  letter-spacing: .04em;
+  position: relative;
+  overflow: hidden;
+  transition: transform .12s;
+}
+.invite-qr-btn::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.25) 0%, transparent 60%);
   pointer-events: none;
 }
-.modal.open { pointer-events: auto; }
-.modal-bg {
-  position: absolute; inset: 0;
-  background: rgba(0,0,0,0.7);
-  opacity: 0; transition: opacity 0.3s;
-}
-.modal.open .modal-bg { opacity: 1; }
-.modal-sheet {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  background: linear-gradient(180deg, #1a4d3e, #0a3d2e);
-  border-radius: 24px 24px 0 0;
-  padding: 20px;
-  transform: translateY(100%);
-  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  max-height: 92vh; overflow-y: auto;
-}
-.modal.open .modal-sheet { transform: translateY(0); }
-.modal-head {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 14px;
-}
-.modal-head h3 { color: #f5c842; font-size: 19px; }
-.modal-close {
-  width: 40px; height: 40px; font-size: 22px;
-  background: rgba(255,255,255,0.1); color: #fff;
-  border: none; border-radius: 50%; cursor: pointer;
-}
-
-/* ====================================================
-   🌟 スコア入力モーダル（カード一体型のメインUI）
-   ==================================================== */
-.score-input-modal .modal-sheet {
-  padding: 22px 20px 28px;
-}
-
-.sim-header {
-  text-align: center; margin-bottom: 14px;
-}
-.sim-header .sim-player {
-  font-size: 19px; font-weight: 900; color: #f5c842;
-}
-.sim-header .sim-player .sim-self-tag {
-  display: inline-block;
-  font-size: 10px; background: #f5c842; color: #0a3d2e;
-  padding: 2px 6px; border-radius: 5px; margin-left: 6px;
-  font-weight: 900;
-}
-.sim-header .sim-hole {
-  font-size: 14px; color: rgba(255,255,255,0.75); margin-top: 4px;
-}
-.sim-header .sim-hole strong { color: #f5c842; font-weight: 900; }
-
-/* 代理入力警告 */
-.sim-proxy-warn {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 14px; margin-bottom: 14px;
-  background: rgba(231,76,60,0.15);
-  border: 2px dashed rgba(231,76,60,0.5);
+.invite-qr-btn:active { transform: translateY(2px); box-shadow: 0 4px 10px rgba(15,81,50,.32); }
+.invite-qr-btn .qr-icon {
+  width: 38px; height: 38px;
+  background: #fff; color: var(--green-1);
   border-radius: 10px;
-  font-size: 12px; color: #fff;
+  display: grid; place-items: center;
+  font-size: 22px;
+  box-shadow: var(--shadow-1);
 }
-.sim-proxy-warn .warn-ico { font-size: 18px; }
-.sim-proxy-warn strong { color: #e74c3c; }
-
-/* モード切替タブ */
-.sim-mode-tabs {
-  display: flex; gap: 4px;
-  background: rgba(0,0,0,0.25); padding: 4px;
-  border-radius: 10px;
-  margin-bottom: 14px;
-}
-.sim-mode-tabs button {
-  flex: 1; padding: 10px;
-  background: transparent; color: #ddd;
-  border: none; border-radius: 6px;
-  font-size: 13px; font-weight: 700; cursor: pointer;
-}
-.sim-mode-tabs button.on {
-  background: #f5c842; color: #0a3d2e; font-weight: 900;
+.invite-qr-btn .qr-label { display: flex; flex-direction: column; align-items: flex-start; }
+.invite-qr-btn .qr-label .main { font-size: 19px; line-height: 1.2; }
+.invite-qr-btn .qr-label .sub { font-size: 11px; opacity: .9; font-weight: 600; margin-top: 2px; }
+.invite-qr-btn .pulse-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--green-4);
+  margin-left: auto;
+  box-shadow: 0 0 0 0 var(--green-4);
+  animation: pulse-ring 2s infinite;
 }
 
-/* ストローク表示エリア（大きな数字） */
-.sim-stroke {
-  text-align: center;
-  background: rgba(0,0,0,0.3);
-  border: 3px solid #888;
-  border-radius: 16px;
-  padding: 16px 12px;
-  margin-bottom: 14px;
-}
-.sim-stroke .lbl { font-size: 11px; color: rgba(255,255,255,0.7); letter-spacing: 1px; }
-.sim-stroke .big {
-  font-size: 72px; font-weight: 900; line-height: 1;
-  margin: 4px 0;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
-}
-.sim-stroke .diff { font-size: 16px; font-weight: 800; margin-top: 4px; }
-.sim-stroke .name { font-size: 11px; opacity: 0.85; margin-top: 2px; letter-spacing: 1px; }
-
-/* ±56px円形ボタン（親指完結） */
-.sim-stroke-controls {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 14px; margin-bottom: 14px;
-}
-.sim-circle-btn {
-  width: 72px; height: 72px;
-  border: none; border-radius: 50%;
-  font-size: 38px; font-weight: 900;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  flex-shrink: 0;
-}
-.sim-circle-btn:active { transform: scale(0.9); }
-.sim-circle-btn.minus { background: linear-gradient(135deg, #e74c3c, #c0392b); color: #fff; }
-.sim-circle-btn.plus { background: linear-gradient(135deg, #f5c842, #e6a02e); color: #0a3d2e; }
-.sim-stroke-center {
-  flex: 1; text-align: center;
-  font-size: 16px; color: rgba(255,255,255,0.7);
-  font-weight: 700;
-}
-
-/* パット内訳（独立管理） */
-.sim-putt {
-  background: rgba(46,204,113,0.08);
-  border: 2px solid rgba(46,204,113,0.3);
-  border-radius: 14px;
-  padding: 14px;
-  margin-bottom: 14px;
-}
-.sim-putt .plbl {
-  font-size: 12px; color: #2ecc71; letter-spacing: 1px; font-weight: 800;
-  text-align: center; margin-bottom: 4px;
-}
-.sim-putt .pval {
-  font-size: 40px; font-weight: 900; color: #2ecc71;
-  text-align: center; line-height: 1; margin-bottom: 4px;
-}
-.sim-putt .pmark {
-  text-align: center; font-size: 10px;
-  color: rgba(255,255,255,0.5); margin-bottom: 10px;
-}
-.sim-putt-controls {
-  display: flex; align-items: center; justify-content: center;
-  gap: 14px;
-}
-.sim-putt-btn {
-  width: 56px; height: 56px;
-  background: rgba(46,204,113,0.2); color: #2ecc71;
-  border: 2px solid rgba(46,204,113,0.6); border-radius: 50%;
-  font-size: 22px; font-weight: 900; cursor: pointer;
-}
-.sim-putt-btn:active { transform: scale(0.9); }
-
-/* カウンターモード */
-.sim-counter {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-  margin-bottom: 14px;
-}
-.sim-counter-cell {
-  text-align: center;
-  padding: 14px 10px;
+.add-companion-btn {
+  background: transparent;
+  color: var(--green-1);
+  border: 2px dashed var(--green-2);
+  padding: 12px 22px;
   border-radius: 12px;
+  font-size: 14px; font-weight: 800;
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: background .15s;
 }
-.sim-counter-cell.shot {
-  background: rgba(52,152,219,0.1);
-  border: 2px solid rgba(52,152,219,0.4);
-}
-.sim-counter-cell.putt {
-  background: rgba(46,204,113,0.1);
-  border: 2px solid rgba(46,204,113,0.4);
-}
-.sim-counter-cell .cnt-lbl {
-  font-size: 11px; font-weight: 800; letter-spacing: 1px;
-}
-.sim-counter-cell.shot .cnt-lbl { color: #5dade2; }
-.sim-counter-cell.putt .cnt-lbl { color: #2ecc71; }
-.sim-counter-cell .cnt-val {
-  font-size: 44px; font-weight: 900; line-height: 1;
-  margin: 6px 0;
-}
-.sim-counter-cell.shot .cnt-val { color: #5dade2; }
-.sim-counter-cell.putt .cnt-val { color: #2ecc71; }
-.sim-counter-cell .cnt-controls {
-  display: flex; justify-content: center; gap: 8px;
-}
-.sim-counter-cell .cnt-btn {
-  width: 56px; height: 56px;
-  border: none; border-radius: 50%;
-  font-size: 22px; font-weight: 900;
-  cursor: pointer;
-}
-.sim-counter-cell.shot .cnt-btn { background: #5dade2; color: #fff; }
-.sim-counter-cell.putt .cnt-btn { background: #2ecc71; color: #fff; }
-.sim-counter-cell .cnt-btn.minus { background: rgba(231,76,60,0.2); color: #e74c3c; border: 1px solid rgba(231,76,60,0.5); }
-.sim-counter-cell .cnt-btn:active { transform: scale(0.9); }
+.add-companion-btn:active { background: rgba(15,81,50,.06); }
+.add-companion-btn .plus { font-size: 18px; font-weight: 900; }
 
-/* アクションボタン */
-.sim-actions {
+/* ====== ラウンド終了保存ボタン ====== */
+.save-section {
+  padding: 18px 16px var(--footer-gap);
+  display: flex; justify-content: center;
+}
+.save-round-btn {
+  width: 100%; max-width: 360px;
+  background: linear-gradient(135deg, var(--green-2) 0%, var(--green-3) 100%);
+  color: #fff;
+  padding: 18px 24px;
+  border-radius: 16px;
+  font-size: 17px; font-weight: 900;
+  letter-spacing: .06em;
+  box-shadow: 0 6px 16px rgba(45,157,95,.32), inset 0 -3px 0 rgba(0,0,0,.12);
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: transform .12s;
+}
+.save-round-btn:active { transform: translateY(2px); box-shadow: 0 3px 8px rgba(45,157,95,.32); }
+.save-round-btn .icon { font-size: 22px; }
+
+/* ====== フッターバー（最下部固定） ====== */
+.footer-bar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 100;
+  background: var(--paper);
+  border-top: 1.5px solid var(--line-strong);
+  display: flex;
+  padding-bottom: env(safe-area-inset-bottom);
+  box-shadow: 0 -4px 16px rgba(15,81,50,.10);
+}
+.footer-tab {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 10px 4px 8px;
+  color: var(--ink-soft);
+  font-size: 11px; font-weight: 700;
+  gap: 3px;
+  transition: color .15s;
+  position: relative;
+}
+.footer-tab .ftab-icon { font-size: 22px; line-height: 1; }
+.footer-tab.active { color: var(--green-1); }
+.footer-tab.active::before {
+  content: "";
+  position: absolute; top: 0; left: 30%; right: 30%; height: 3px;
+  background: linear-gradient(90deg, var(--green-2), var(--green-3));
+  border-radius: 0 0 3px 3px;
+}
+.footer-tab .lock-badge {
+  position: absolute; top: 6px; right: 18%;
+  font-size: 9px;
+  background: #B07AC9; color: #fff;
+  padding: 1px 5px; border-radius: 6px;
+  font-weight: 800;
+}
+
+/* ====== モーダル共通 ====== */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(15,30,20,.55);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: flex-end;
+  animation: fadein .2s;
+}
+.modal-backdrop.show { display: flex; }
+.modal {
+  width: 100%;
+  background: var(--paper);
+  border-radius: 22px 22px 0 0;
+  box-shadow: 0 -10px 30px rgba(0,0,0,.25);
+  max-height: 92vh;
+  overflow-y: auto;
+  animation: slideup .3s cubic-bezier(.2,.9,.3,1.2);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.modal-handle {
+  width: 44px; height: 5px;
+  background: var(--line-strong);
+  border-radius: 3px;
+  margin: 10px auto 6px;
+}
+.modal-header {
+  padding: 8px 18px 12px;
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.modal-title {
+  font-size: 16px; font-weight: 800;
+  flex: 1;
+}
+.modal-close {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--cream); color: var(--ink-soft);
+  font-size: 18px;
+  display: grid; place-items: center;
+}
+
+/* ====== スコア入力モーダル（プレイヤータブ付き） ====== */
+.player-tabs {
+  display: flex; gap: 6px;
+  overflow-x: auto;
+  padding: 12px 14px 10px;
+  background: linear-gradient(180deg, #F4EFDF, var(--paper));
+  border-bottom: 1px solid var(--line);
+  scrollbar-width: none;
+}
+.player-tabs::-webkit-scrollbar { display: none; }
+.player-tab {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  background: var(--cream);
+  border: 1.5px solid var(--line-strong);
+  border-radius: 999px;
+  font-size: 13px; font-weight: 800;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  transition: all .15s;
+  min-height: 38px;
+}
+.player-tab.active {
+  background: linear-gradient(135deg, var(--green-1), var(--green-2));
+  color: #fff;
+  border-color: var(--green-1);
+  box-shadow: var(--shadow-1);
+}
+.player-tab .you-dot {
+  display: inline-block; width: 6px; height: 6px;
+  background: var(--gold); border-radius: 50%;
+  margin-right: 4px; vertical-align: middle;
+}
+
+.modal-hole-info {
+  padding: 14px 18px 8px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-hole-info .hole-num {
+  font-size: 24px; font-weight: 900; color: var(--green-1);
+}
+.modal-hole-info .hole-par {
+  font-size: 13px; color: var(--ink-soft); font-weight: 700;
+}
+
+/* 大型スコア表示 */
+.input-display {
+  text-align: center;
+  padding: 16px 16px 8px;
+}
+.input-display .stroke-num {
+  font-size: 72px; font-weight: 900; line-height: 1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.input-display .stroke-diff {
+  font-size: 14px; font-weight: 800; margin-top: 4px;
+  color: var(--ink-soft);
+}
+.input-display .stroke-diff.minus { color: var(--red); }
+.input-display .stroke-diff.plus { color: var(--blue); }
+
+/* ストローク ± 横並び */
+.stroke-row {
+  display: flex; align-items: center; justify-content: center;
+  gap: 22px;
+  padding: 6px 16px 14px;
+}
+.stroke-btn {
+  width: 72px; height: 72px; border-radius: 50%;
+  font-size: 34px; font-weight: 900;
+  color: #fff;
+  display: grid; place-items: center;
+  box-shadow: var(--shadow-2);
+  transition: transform .1s;
+}
+.stroke-btn.minus { background: linear-gradient(135deg, #D63B3B, #E55757); }
+.stroke-btn.plus { background: linear-gradient(135deg, var(--green-2), var(--green-3)); }
+.stroke-btn:active { transform: scale(.92); }
+
+/* パット数（独立管理・強調表示） */
+.putt-section {
+  margin: 8px 14px 14px;
+  background: #FFFBE8;
+  border: 2px dashed var(--gold);
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+.putt-label {
+  font-size: 11px; font-weight: 800; color: var(--gold-dark);
+  letter-spacing: .06em;
+  display: flex; align-items: center; gap: 6px;
+  margin-bottom: 6px;
+}
+.putt-label .dot { width: 6px; height: 6px; background: var(--gold); border-radius: 50%; animation: pulse 1.4s infinite; }
+.putt-row {
+  display: flex; align-items: center; justify-content: center;
+  gap: 18px;
+}
+.putt-num {
+  font-size: 40px; font-weight: 900; color: var(--ink);
+  min-width: 60px; text-align: center;
+}
+.putt-btn {
+  width: 56px; height: 56px; border-radius: 50%;
+  font-size: 26px; font-weight: 900;
+  background: var(--paper); color: var(--green-1);
+  border: 2px solid var(--green-2);
+  display: grid; place-items: center;
+  transition: transform .1s;
+}
+.putt-btn:active { transform: scale(.92); background: var(--green-1); color: #fff; }
+.putt-note {
+  font-size: 10px; color: var(--ink-soft); text-align: center;
+  margin-top: 4px;
+}
+
+/* 確定ボタン */
+.confirm-row {
+  padding: 4px 14px 18px;
+  display: flex; gap: 10px;
+}
+.btn-clear {
+  flex: 0 0 90px;
+  padding: 16px 0;
+  background: var(--cream);
+  color: var(--ink-soft);
+  border: 1.5px solid var(--line-strong);
+  border-radius: 14px;
+  font-size: 13px; font-weight: 800;
+}
+.btn-confirm {
+  flex: 1;
+  padding: 18px 0;
+  background: linear-gradient(135deg, var(--green-1), var(--green-3));
+  color: #fff;
+  border-radius: 14px;
+  font-size: 17px; font-weight: 900;
+  letter-spacing: .04em;
+  box-shadow: var(--shadow-2);
+}
+.btn-confirm:active { transform: translateY(2px); }
+.btn-confirm.final {
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+  animation: pulse-gold 2s infinite;
+}
+
+/* ====== 招待QRモーダル ====== */
+.qr-modal-body {
+  padding: 18px;
+  text-align: center;
+}
+.qr-canvas {
+  width: 240px; height: 240px;
+  background: #fff;
+  border: 6px solid var(--green-1);
+  border-radius: 16px;
+  margin: 12px auto;
+  padding: 12px;
+  display: grid; place-items: center;
+  box-shadow: var(--shadow-2);
+}
+.qr-canvas svg { width: 100%; height: 100%; }
+.qr-group-name { font-size: 17px; font-weight: 800; margin-bottom: 6px; }
+.qr-group-id {
+  font-family: ui-monospace, "SF Mono", monospace;
+  font-size: 12px; color: var(--ink-soft);
+  background: var(--cream); padding: 6px 12px; border-radius: 8px;
+  display: inline-block;
+}
+.qr-actions {
   display: flex; gap: 8px; margin-top: 14px;
 }
-.sim-actions button {
-  flex: 1; padding: 16px;
-  border: none; border-radius: 12px;
-  font-size: 15px; font-weight: 800;
-  cursor: pointer;
+.qr-actions button {
+  flex: 1;
+  padding: 12px 0;
+  background: var(--green-2); color: #fff;
+  border-radius: 10px; font-weight: 800; font-size: 13px;
 }
-.sim-action-cancel { background: rgba(255,255,255,0.1); color: #ddd; }
-.sim-action-clear { background: rgba(231,76,60,0.2); color: #e74c3c; }
-.sim-action-ok {
-  background: linear-gradient(135deg, #2ecc71, #27ae60);
-  color: #fff; flex: 2 !important;
-  font-size: 16px !important; font-weight: 900 !important;
-}
+.qr-actions button.secondary { background: var(--cream); color: var(--ink); border: 1.5px solid var(--line-strong); }
 
-/* 次ホールへ自動進む */
-.sim-auto-next {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 11px; color: rgba(255,255,255,0.6);
-  margin: 6px 0 0; justify-content: center;
+/* ====== 同伴者追加モーダル ====== */
+.add-form { padding: 14px 18px 20px; }
+.add-form label {
+  display: block;
+  font-size: 12px; font-weight: 800; color: var(--ink-soft);
+  margin: 10px 0 4px;
+  letter-spacing: .04em;
 }
-.sim-auto-next input { width: 16px; height: 16px; }
-
-/* ====================================================
-   その他のモーダル（QR、コース詳細、同伴者）
-   ==================================================== */
-.qr-img {
-  background: #fff; padding: 16px; border-radius: 16px;
-  margin: 14px auto; max-width: 280px;
-  text-align: center;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
-}
-.qr-img svg { width: 100%; max-width: 240px; height: auto; }
-.qr-hint {
-  text-align: center; font-size: 13px;
-  color: rgba(255,255,255,0.85); margin: 12px 0;
-  line-height: 1.6;
-}
-.qr-url { display: flex; gap: 6px; }
-.qr-url input {
-  flex: 1; padding: 10px; font-size: 11px;
-  background: rgba(255,255,255,0.08); color: #ddd;
-  border: 1px solid rgba(255,255,255,0.15); border-radius: 8px;
-}
-.qr-url button {
-  padding: 10px 14px;
-  background: #f5c842; color: #0a3d2e;
-  border: none; border-radius: 8px;
-  font-weight: 800; cursor: pointer;
-}
-
-.course-detail-section { margin-bottom: 16px; }
-.course-detail-section h4 {
-  color: #f5c842; font-size: 14px; font-weight: 800;
-  margin-bottom: 8px;
-  border-bottom: 1px solid rgba(245,200,66,0.3);
-  padding-bottom: 4px;
-}
-.yardage-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-.yardage-table th {
-  background: rgba(245,200,66,0.15); color: #f5c842;
-  padding: 6px 4px; font-weight: 800;
-  border: 1px solid rgba(255,255,255,0.1);
-  font-size: 11px;
-}
-.yardage-table td {
-  padding: 6px 4px; text-align: center;
-  border: 1px solid rgba(255,255,255,0.08);
-  color: #fff; font-weight: 600;
-}
-.yardage-table .hole-col { background: rgba(255,255,255,0.05); font-weight: 800; }
-.yardage-table .wc { color: #5dade2; font-size: 14px; }
-.yardage-table .total-row td {
-  background: rgba(245,200,66,0.2); color: #f5c842; font-weight: 900;
-}
-.local-rules {
-  background: rgba(255,255,255,0.05);
-  padding: 12px; border-radius: 10px;
-  font-size: 12px; line-height: 1.7;
-}
-.local-rules ol { padding-left: 20px; }
-.local-rules li { margin-bottom: 6px; }
-.contact-info {
-  background: rgba(52,152,219,0.08);
-  border: 1px solid rgba(52,152,219,0.3);
-  padding: 12px; border-radius: 10px;
-  font-size: 12px; line-height: 1.7;
-  color: rgba(255,255,255,0.85);
-}
-.contact-info strong { color: #5dade2; }
-
-/* QR参加バナー */
-.join-banner {
-  display: flex; align-items: center; gap: 14px;
-  padding: 16px;
-  background: linear-gradient(135deg, rgba(46,204,113,0.25), rgba(46,204,113,0.05));
+.add-form input {
+  width: 100%;
+  padding: 14px 14px;
+  border: 1.5px solid var(--line-strong);
   border-radius: 12px;
-  border-left: 4px solid #2ecc71;
-  margin-bottom: 16px;
+  font-size: 16px;
+  background: var(--paper);
 }
-.join-banner .ico {
-  font-size: 36px;
-  animation: joinPulse 1.8s ease-in-out infinite;
+.add-form input:focus { outline: none; border-color: var(--green-2); box-shadow: 0 0 0 3px rgba(45,157,95,.2); }
+.add-form .primary-btn {
+  width: 100%; margin-top: 16px;
+  padding: 16px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--green-1), var(--green-3));
+  color: #fff; font-size: 16px; font-weight: 900;
 }
-@keyframes joinPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.15); }
-}
-.join-banner .info-title { font-size: 18px; font-weight: 900; color: #2ecc71; }
-.join-banner .info-sub { font-size: 13px; color: rgba(255,255,255,0.75); margin-top: 2px; }
 
-/* Toast */
-.toast-container {
-  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
-  z-index: 9000; display: flex; flex-direction: column-reverse; gap: 8px;
-  pointer-events: none;
-}
+/* ====== トースト ====== */
 .toast {
-  padding: 11px 20px; background: rgba(0,0,0,0.85); color: #fff;
-  border-radius: 22px; font-size: 14px; font-weight: 700;
-  opacity: 0; transform: translateY(10px); transition: all 0.3s;
-  max-width: 84vw; text-align: center;
+  position: fixed; left: 50%; bottom: calc(var(--footer-h) + 16px);
+  transform: translateX(-50%) translateY(80px);
+  background: var(--green-1); color: #fff;
+  padding: 12px 22px; border-radius: 999px;
+  font-size: 13px; font-weight: 700;
+  box-shadow: var(--shadow-3);
+  z-index: 300;
+  opacity: 0; pointer-events: none;
+  transition: transform .3s, opacity .3s;
+  max-width: 90vw; text-align: center;
 }
-.toast.show { opacity: 1; transform: translateY(0); }
-.toast.success { background: rgba(46,204,113,0.95); }
-.toast.error { background: rgba(231,76,60,0.95); }
-.toast.info { background: rgba(52,152,219,0.95); }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* マイページ */
-.mp-section { background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px; margin-bottom: 12px; }
-.mp-section h2 { color: #f5c842; font-size: 18px; margin-bottom: 8px; }
-.mp-section.soon {
-  opacity: 0.6;
-  border: 1.5px dashed rgba(155,89,182,0.4);
-  position: relative; padding-left: 44px;
+/* ====== アニメーション ====== */
+@keyframes pulse {
+  0%,100% { opacity: 1; } 50% { opacity: .4; }
 }
-.mp-section.soon::before {
-  content: '🔒'; position: absolute; top: 14px; left: 14px; font-size: 20px;
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(111,207,151,.7); }
+  70% { box-shadow: 0 0 0 12px rgba(111,207,151,0); }
+  100% { box-shadow: 0 0 0 0 rgba(111,207,151,0); }
 }
-.mp-row {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 8px 0; gap: 10px;
+@keyframes pulse-gold {
+  0%,100% { box-shadow: 0 0 0 0 rgba(242,200,75,.6), var(--shadow-2); }
+  50% { box-shadow: 0 0 0 10px rgba(242,200,75,0), var(--shadow-2); }
 }
-.mp-row select, .mp-row input {
-  padding: 10px 14px; background: rgba(255,255,255,0.1); color: #fff;
-  border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;
-  font-size: 15px;
-}
-.mp-history-row {
-  display: flex; justify-content: space-between; padding: 8px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  font-size: 12px;
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideup {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }
 
-/* レスポンシブ */
+/* ====== 小型端末対応 ====== */
 @media (max-width: 380px) {
-  .sim-stroke .big { font-size: 60px; }
-  .sim-circle-btn { width: 64px; height: 64px; font-size: 32px; }
-  .gl-sc-fixed .sc-row-name { min-width: 110px; font-size: 15px; padding: 10px 8px; }
-  .gl-sc-cell { width: 54px; height: 56px; font-size: 20px; }
-  .gl-sc-cell.head { height: 68px; }
-  .gl-sc-cell.total, .gl-sc-cell.diff { width: 62px; }
-  .sim-counter-cell .cnt-btn { width: 48px; height: 48px; font-size: 18px; }
+  .col-fixed { min-width: 96px !important; max-width: 96px; }
+  .scoretable thead th { min-width: 46px; }
+  .score-cell { min-width: 46px; font-size: 20px; }
+  .input-display .stroke-num { font-size: 64px; }
+  .stroke-btn { width: 66px; height: 66px; font-size: 30px; }
 }
 </style>
 </head>
 <body>
 
-<div id="boot" class="boot">
-  <div class="boot-spinner"></div>
-  <div class="boot-title">G-WORLD</div>
-  <div class="boot-sub">起動中...</div>
-</div>
-
-<header>
-  <h1>G-WORLD<small>v9</small></h1>
-  <div class="header-actions">
-    <button id="edit-mode-btn-header" style="display:none;">🔒 ロック中</button>
-  </div>
-</header>
-
-<main>
-  <section id="screen-home" class="screen"></section>
-  <section id="screen-gland" class="screen"></section>
-  <section id="screen-gcompete" class="screen"></section>
-  <section id="screen-mypage" class="screen"></section>
-</main>
-
-<nav class="footer">
-  <button data-route="home"><span>🏠</span>ホーム</button>
-  <button data-route="gland"><span>⛳</span>G-LAND</button>
-  <button data-route="gcompete"><span>🏆</span>コンペ</button>
-  <button data-route="mypage"><span>👤</span>マイ</button>
-</nav>
-
-<div class="toast-container" id="toasts"></div>
-
-<!-- ============ スコア入力モーダル（カード一体型のメイン） ============ -->
-<div class="modal score-input-modal" id="score-modal">
-  <div class="modal-bg" data-close></div>
-  <div class="modal-sheet">
-    <div class="modal-head">
-      <h3>スコア入力</h3>
-      <button class="modal-close" data-close>×</button>
+<!-- ============ トップバー ============ -->
+<div class="topbar">
+  <div class="topbar-row">
+    <div class="topbar-title">
+      <div class="topbar-course">六甲国際パブリック</div>
+      <div class="topbar-meta">
+        <span class="dot"></span>
+        <span id="topMeta">OUT 18H · PAR 72 · 同期中</span>
+      </div>
     </div>
-    <div id="score-modal-body"></div>
+    <button class="topbar-btn" id="btnEdit" title="編集">✎</button>
   </div>
 </div>
 
-<!-- QR招待モーダル -->
-<div class="modal" id="qr-modal">
-  <div class="modal-bg" data-close></div>
-  <div class="modal-sheet">
-    <div class="modal-head">
-      <h3>📲 招待QRコード</h3>
-      <button class="modal-close" data-close>×</button>
-    </div>
-    <div id="qr-body"></div>
+<!-- ============ 表示切替トグル ============ -->
+<div class="display-toggle-row">
+  <div class="display-toggle-label">スコア表示モード</div>
+  <div class="display-toggle" id="displayToggle">
+    <button data-mode="number" class="active">数字</button>
+    <button data-mode="diff">スコア差(±)</button>
   </div>
 </div>
 
-<!-- コース詳細モーダル -->
-<div class="modal" id="course-detail-modal">
-  <div class="modal-bg" data-close></div>
-  <div class="modal-sheet">
-    <div class="modal-head">
-      <h3>📖 コース詳細・ローカルルール</h3>
-      <button class="modal-close" data-close>×</button>
-    </div>
-    <div id="course-detail-body"></div>
-  </div>
-</div>
-
-<!-- 同伴者追加モーダル -->
-<div class="modal" id="companion-modal">
-  <div class="modal-bg" data-close></div>
-  <div class="modal-sheet">
-    <div class="modal-head">
-      <h3 id="comp-title">同伴者を追加</h3>
-      <button class="modal-close" data-close>×</button>
-    </div>
-    <div>
-      <label style="display:block;font-size:14px;color:rgba(255,255,255,0.8);margin:10px 0 6px;">名前</label>
-      <input type="text" id="comp-name" maxlength="20" placeholder="例: タロウ"
-        style="width:100%;padding:16px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2);border-radius:10px;font-size:17px;outline:none;">
-      <label style="display:flex;align-items:center;gap:8px;margin-top:14px;">
-        <input type="checkbox" id="comp-public" checked style="width:20px;height:20px;">
-        <span>ランキングに公開する</span>
-      </label>
-      <div style="display:flex;gap:8px;margin-top:18px;">
-        <button id="comp-delete" style="display:none;flex:1;padding:14px;background:#c0392b;color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:800;">削除</button>
-        <button id="comp-ok" style="flex:2;padding:14px;background:linear-gradient(135deg,#2ecc71,#27ae60);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:900;font-size:16px;">確定</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-'use strict';
-
-// ============================================================
-// 0. アプリ定数 + 六甲国際パブリック実データ
-// ============================================================
-const APP = { NAME: 'G-WORLD', VERSION: '9.0.0', MAX_PLAYERS: 16 };
-
-const OUT_PARS  = [4,4,4,5,4,3,5,3,4];
-const OUT_YARDS = [352,352,263,469,358,154,455,158,414];
-const OUT_LADIES= [321,344,247,410,343,118,338,100,350];
-const OUT_HDCP  = [11,9,13,5,7,17,3,15,1];
-const OUT_WC    = [false,false,true,false,true,false,true,true,false];
-
-const IN_PARS   = [4,4,4,5,4,3,5,4,4];
-const IN_YARDS  = [375,390,289,502,343,140,483,180,370];
-const IN_LADIES = [321,322,247,447,246,118,363,135,297];
-const IN_HDCP   = [10,2,14,4,12,18,6,16,8];
-const IN_WC     = [false,true,false,true,true,false,true,true,false];
-
-const COURSE_BASE = {
-  name: '六甲国際パブリック',
-  rating: { reg: 68.2, ladies: 64.8 },
-  totalYards: 6047, totalYardsL: 5067, par: 72,
-  address: '〒651-1263 神戸市北区山田町西下字押部道16-1',
-  tel: '078-583-0351', fax: '078-583-0355', url: 'http://www.rok-pc.com',
-};
-
-function makeCourseOutStart() {
-  return {
-    id: 'rokko-out-start', ...COURSE_BASE,
-    variant: '18H (OUTスタート)', holes: 18,
-    pars:[...OUT_PARS,...IN_PARS], yards:[...OUT_YARDS,...IN_YARDS],
-    yardsL:[...OUT_LADIES,...IN_LADIES], hdcp:[...OUT_HDCP,...IN_HDCP],
-    wc:[...OUT_WC,...IN_WC],
-    labels:['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18'],
-    startSide:'OUT',
-  };
-}
-function makeCourseInStart() {
-  return {
-    id: 'rokko-in-start', ...COURSE_BASE,
-    variant: '18H (INスタート)', holes: 18,
-    pars:[...IN_PARS,...OUT_PARS], yards:[...IN_YARDS,...OUT_YARDS],
-    yardsL:[...IN_LADIES,...OUT_LADIES], hdcp:[...IN_HDCP,...OUT_HDCP],
-    wc:[...IN_WC,...OUT_WC],
-    labels:['10','11','12','13','14','15','16','17','18','1','2','3','4','5','6','7','8','9'],
-    startSide:'IN',
-  };
-}
-function makeCourseOutOnly() {
-  return {
-    id:'rokko-out-only', ...COURSE_BASE, variant:'OUT 9H', holes:9,
-    pars:[...OUT_PARS], yards:[...OUT_YARDS], yardsL:[...OUT_LADIES],
-    hdcp:[...OUT_HDCP], wc:[...OUT_WC],
-    labels:['1','2','3','4','5','6','7','8','9'], startSide:'OUT',
-  };
-}
-function makeCourseInOnly() {
-  return {
-    id:'rokko-in-only', ...COURSE_BASE, variant:'IN 9H', holes:9,
-    pars:[...IN_PARS], yards:[...IN_YARDS], yardsL:[...IN_LADIES],
-    hdcp:[...IN_HDCP], wc:[...IN_WC],
-    labels:['10','11','12','13','14','15','16','17','18'], startSide:'IN',
-  };
-}
-
-const COURSES = {
-  'rokko-out-start': makeCourseOutStart,
-  'rokko-in-start': makeCourseInStart,
-  'rokko-out-only': makeCourseOutOnly,
-  'rokko-in-only': makeCourseInOnly,
-};
-
-const LOCAL_RULES = [
-  '本ルールに適用なき事項はすべてJGAゴルフ規則による。',
-  '【境界】 アウトオブバウンズ（OB）の境界は白杭、又は赤白杭で標示する。修理地は青杭、又は白線でその限界を標示する。ラテラル・ウォーターハザードの限界は赤杭で標示する。',
-  '【動かせない障害物】 撒水栓・排水路・カートの軌条及び支柱・樹木の支柱・U字排水溝・舗装道路を動かせない障害物とする。',
-  '全ホールに於て第1打がOB又はロストボールの場合は、前方の特設ティーよりプレーイング4を以ってプレーしなければならない。',
-  '球が電線に触れたときは、そのストロークを取消し、罰なしに打直さなければならない。',
-  'ローカル・ルールの追加、又は訂正は随時掲示し、掲示の日からその効力を発生する。',
-];
-
-const STORE_KEYS = {
-  PROFILE: 'gw.profile',
-  DRAFT: 'gw.draft',
-  HISTORY: 'gw.history',
-  SETTINGS: 'gw.settings',
-  GROUP: 'gw.group',
-};
-
-// ============================================================
-// 1. Store
-// ============================================================
-const Store = {
-  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e) { return d; } },
-  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch(e) { return false; } },
-  del(k) { localStorage.removeItem(k); },
-  getProfile() { return this.get(STORE_KEYS.PROFILE, null); },
-  saveProfile(p) { return this.set(STORE_KEYS.PROFILE, p); },
-  getSettings() { return this.get(STORE_KEYS.SETTINGS, { inputMode: 'simple', displayMode: 'number', autoNext: true }); },
-  saveSettings(s) { return this.set(STORE_KEYS.SETTINGS, s); },
-  getDraft() { return this.get(STORE_KEYS.DRAFT, null); },
-  saveDraft(d) { d.updatedAt = Date.now(); return this.set(STORE_KEYS.DRAFT, d); },
-  clearDraft() { this.del(STORE_KEYS.DRAFT); },
-  getHistory() { return this.get(STORE_KEYS.HISTORY, []); },
-  appendRound(r) {
-    const h = this.getHistory();
-    r.id = r.id || `r_${Date.now()}`;
-    r.savedAt = Date.now();
-    h.unshift(r);
-    if (h.length > 50) h.length = 50;
-    return this.set(STORE_KEYS.HISTORY, h);
-  },
-  clearHistory() { this.del(STORE_KEYS.HISTORY); },
-  getGroup() { return this.get(STORE_KEYS.GROUP, null); },
-  saveGroup(g) { return this.set(STORE_KEYS.GROUP, g); },
-  clearGroup() { this.del(STORE_KEYS.GROUP); },
-};
-
-// ============================================================
-// 2. State
-//   独立管理ロジック：
-//   scores = ストローク総数（合計打数）
-//   putts  = パット数（内訳）
-//   shots  = 純粋ショット数（カウンターモード）
-// ============================================================
-const State = {
-  players: [],
-  activeId: null,
-  hole: 0,
-  course: null,
-  group: null,
-  settings: { inputMode: 'simple', displayMode: 'number', autoNext: true },
-  // 編集ロック状態：{ playerId: false } で初期化、true = 編集可能（unlock状態）
-  editUnlocked: {}, 
-
-  reset() {
-    this.players = []; this.activeId = null; this.hole = 0;
-    this.course = null; this.group = null;
-    this.editUnlocked = {};
-  },
-  getSelf() { return this.players.find(p => p.isSelf); },
-  getActive() { return this.players.find(p => p.id === this.activeId) || this.players[0]; },
-  setHole(idx) {
-    if (!this.course || idx < 0 || idx >= this.course.holes) return;
-    this.hole = idx;
-    emit('hole:changed', idx);
-  },
-  setCourse(c) {
-    this.course = c;
-    this.players.forEach(p => {
-      if (!p.scores || p.scores.length !== c.holes) {
-        p.scores = new Array(c.holes).fill(null);
-        p.putts = new Array(c.holes).fill(null);
-        p.shots = new Array(c.holes).fill(null);
-      }
-    });
-    emit('course:changed', c);
-  },
-  setActivePlayer(id) {
-    if (!this.players.find(p => p.id === id)) return;
-    this.activeId = id;
-    emit('player:changed', id);
-  },
-  addPlayer(p) {
-    if (this.players.length >= APP.MAX_PLAYERS) return null;
-    const id = p.id || `p_${Date.now()}_${Math.random().toString(36).slice(2,6)}`;
-    const holes = this.course ? this.course.holes : 18;
-    const np = {
-      id,
-      name: p.name || 'ゲスト',
-      scores: p.scores || new Array(holes).fill(null),
-      putts:  p.putts  || new Array(holes).fill(null),
-      shots:  p.shots  || new Array(holes).fill(null),
-      isPublic: p.isPublic !== false,
-      isSelf: !!p.isSelf,
-      isHost: !!p.isHost,
-    };
-    this.players.push(np);
-    if (!this.activeId) this.activeId = id;
-    emit('player:added', np);
-    return np;
-  },
-  removePlayer(id) {
-    const i = this.players.findIndex(p => p.id === id);
-    if (i < 0) return false;
-    if (this.players[i].isSelf) return false;
-    this.players.splice(i, 1);
-    if (this.activeId === id) this.activeId = this.players[0]?.id || null;
-    delete this.editUnlocked[id];
-    emit('player:removed', id);
-    return true;
-  },
-  renamePlayer(id, name) {
-    const p = this.players.find(p => p.id === id);
-    if (!p) return false;
-    p.name = name;
-    emit('player:renamed', { id, name });
-    return true;
-  },
-  setScore(playerId, holeIdx, stroke) {
-    const p = this.players.find(p => p.id === playerId);
-    if (!p) return;
-    p.scores[holeIdx] = stroke;
-    emit('score:updated', { playerId, holeIdx, stroke });
-  },
-  setPutt(playerId, holeIdx, putt) {
-    const p = this.players.find(p => p.id === playerId);
-    if (!p) return;
-    p.putts[holeIdx] = putt;
-    emit('putt:updated', { playerId, holeIdx, putt });
-  },
-  setShots(playerId, holeIdx, shots) {
-    const p = this.players.find(p => p.id === playerId);
-    if (!p) return;
-    p.shots[holeIdx] = shots;
-    const putt = p.putts[holeIdx] || 0;
-    p.scores[holeIdx] = shots + putt;
-    emit('score:updated', { playerId, holeIdx, stroke: p.scores[holeIdx] });
-  },
-  incrementPutt(playerId, holeIdx) {
-    const p = this.players.find(p => p.id === playerId);
-    if (!p) return;
-    const curP = p.putts[holeIdx] || 0;
-    const curS = p.shots[holeIdx] || 0;
-    p.putts[holeIdx] = curP + 1;
-    p.scores[holeIdx] = curS + p.putts[holeIdx];
-    emit('putt:updated', { playerId, holeIdx, putt: p.putts[holeIdx] });
-    emit('score:updated', { playerId, holeIdx, stroke: p.scores[holeIdx] });
-  },
-  updateSetting(key, val) {
-    this.settings[key] = val;
-    Store.saveSettings(this.settings);
-    emit('settings:changed', { key, val });
-  },
-  setGroup(g) { this.group = g; emit('group:changed', g); },
-
-  // === 🔒 編集ロック管理 ===
-  isEditable(playerId) {
-    const p = this.players.find(p => p.id === playerId);
-    if (!p) return false;
-    if (p.isSelf) return true; // 自分は常に編集可能
-    return !!this.editUnlocked[playerId];
-  },
-  unlock(playerId) {
-    this.editUnlocked[playerId] = true;
-    emit('edit:unlocked', playerId);
-  },
-  lock(playerId) {
-    this.editUnlocked[playerId] = false;
-    emit('edit:locked', playerId);
-  },
-  lockAll() {
-    this.editUnlocked = {};
-    emit('edit:all-locked');
-  },
-  hasAnyUnlocked() {
-    return Object.values(this.editUnlocked).some(v => v);
-  },
-
-  snapshot() { return JSON.parse(JSON.stringify({
-    players: this.players, activeId: this.activeId, hole: this.hole,
-    course: this.course, group: this.group, settings: this.settings,
-  })); },
-  restore(s) {
-    if (!s) return;
-    Object.assign(this, s);
-    emit('state:restored', s);
-  },
-};
-
-// ============================================================
-// 3. EventBus
-// ============================================================
-const _listeners = new Map();
-function on(event, h) {
-  if (!_listeners.has(event)) _listeners.set(event, new Set());
-  _listeners.get(event).add(h);
-}
-function emit(event, data) {
-  const s = _listeners.get(event);
-  if (!s) return;
-  for (const h of s) { try { h(data); } catch (e) { console.error('[Bus]', event, e); } }
-}
-
-// ============================================================
-// 4. Toast
-// ============================================================
-function toast(msg, type = 'info', duration = 2200) {
-  const c = document.getElementById('toasts');
-  const t = document.createElement('div');
-  t.className = `toast ${type}`;
-  t.textContent = msg;
-  c.appendChild(t);
-  requestAnimationFrame(() => t.classList.add('show'));
-  setTimeout(() => {
-    t.classList.remove('show');
-    setTimeout(() => t.remove(), 300);
-  }, duration);
-}
-
-// ============================================================
-// 5. ヘルパー
-// ============================================================
-function esc(s) {
-  return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
-}
-
-// 記号変換: -3:★ -2:◎ -1:○ 0:━ +1:△ +2:□ +3以上:数字
-function diffToSymbol(diff) {
-  if (diff <= -3) return '★';
-  if (diff === -2) return '◎';
-  if (diff === -1) return '○';
-  if (diff === 0) return '━';
-  if (diff === 1) return '△';
-  if (diff === 2) return '□';
-  return `+${diff}`;
-}
-
-function formatScore(stroke, par, mode) {
-  if (stroke == null) return '-';
-  if (mode === 'symbol') {
-    const d = stroke - par;
-    return diffToSymbol(d);
-  }
-  return String(stroke);
-}
-
-function diffClass(diff) {
-  if (diff <= -2) return 'under';
-  if (diff === -1) return 'birdie';
-  if (diff === 0) return 'par';
-  if (diff === 1) return 'bogey';
-  if (diff === 2) return 'double';
-  return 'over';
-}
-
-function diffName(diff) {
-  if (diff == null) return '';
-  if (diff <= -3) return 'ALBATROSS';
-  if (diff === -2) return 'EAGLE';
-  if (diff === -1) return 'BIRDIE';
-  if (diff === 0) return 'PAR';
-  if (diff === 1) return 'BOGEY';
-  if (diff === 2) return 'DOUBLE';
-  return diff > 0 ? `+${diff}` : '';
-}
-
-function getDiffColor(diff) {
-  if (diff == null) return '#f5c842';
-  if (diff <= -2) return '#e74c3c';
-  if (diff === -1) return '#f39c12';
-  if (diff === 0) return '#f5c842';
-  if (diff === 1) return '#5dade2';
-  if (diff === 2) return '#2980b9';
-  return '#95a5a6';
-}
-
-// ============================================================
-// 6. Router
-// ============================================================
-const screens = {};
-function registerScreen(name, fn) { screens[name] = fn; }
-function go(name) { location.hash = `#${name}`; }
-function activate(name) {
-  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
-  const t = document.getElementById(`screen-${name}`);
-  if (t) t.classList.add('active');
-  document.querySelectorAll('nav.footer button').forEach(b => {
-    b.classList.toggle('active', b.dataset.route === name);
-  });
-  const fn = screens[name];
-  if (fn) fn();
-}
-
-// ============================================================
-// 7. QRコード生成（自前実装 Version5 Level L）
-// ============================================================
-const QR_EXP = new Array(256), QR_LOG = new Array(256);
-(function() {
-  for (let i = 0; i < 8; i++) QR_EXP[i] = 1 << i;
-  for (let i = 8; i < 256; i++) QR_EXP[i] = QR_EXP[i-4] ^ QR_EXP[i-5] ^ QR_EXP[i-6] ^ QR_EXP[i-8];
-  for (let i = 0; i < 255; i++) QR_LOG[QR_EXP[i]] = i;
-})();
-function gfMul(a,b) { return (a===0||b===0)?0:QR_EXP[(QR_LOG[a]+QR_LOG[b])%255]; }
-function rsGen(n) {
-  let p = [1];
-  for (let i = 0; i < n; i++) {
-    const np = new Array(p.length+1).fill(0);
-    for (let j = 0; j < p.length; j++) { np[j] ^= p[j]; np[j+1] ^= gfMul(p[j], QR_EXP[i]); }
-    p = np;
-  }
-  return p;
-}
-function rsEnc(data, ec) {
-  const gen = rsGen(ec);
-  const r = data.concat(new Array(ec).fill(0));
-  for (let i = 0; i < data.length; i++) {
-    const f = r[i];
-    if (f !== 0) for (let j = 0; j < gen.length; j++) r[i+j] ^= gfMul(gen[j], f);
-  }
-  return r.slice(data.length);
-}
-function genQR(text, scale = 8, margin = 2) {
-  const SIZE = 37, DATA_BYTES = 108, EC_BYTES = 26;
-  const utf8 = [];
-  for (let i = 0; i < text.length; i++) {
-    let c = text.charCodeAt(i);
-    if (c < 0x80) utf8.push(c);
-    else if (c < 0x800) { utf8.push(0xC0|(c>>6)); utf8.push(0x80|(c&0x3F)); }
-    else { utf8.push(0xE0|(c>>12)); utf8.push(0x80|((c>>6)&0x3F)); utf8.push(0x80|(c&0x3F)); }
-  }
-  if (utf8.length > DATA_BYTES - 3) return '<div style="color:#e74c3c;padding:20px;">QRデータが大きすぎます</div>';
-  let bits = [];
-  const addBits = (n, len) => { for (let i = len-1; i >= 0; i--) bits.push((n>>i)&1); };
-  addBits(0b0100, 4);
-  addBits(utf8.length, 8);
-  for (const b of utf8) addBits(b, 8);
-  addBits(0, 4);
-  while (bits.length % 8 !== 0) bits.push(0);
-  const bytes = [];
-  for (let i = 0; i < bits.length; i+=8) {
-    let v = 0;
-    for (let j = 0; j < 8; j++) if (bits[i+j]) v |= (1<<(7-j));
-    bytes.push(v);
-  }
-  const pads = [0xEC, 0x11];
-  while (bytes.length < DATA_BYTES) bytes.push(pads[bytes.length%2]);
-  const ec = rsEnc(bytes, EC_BYTES);
-  const all = bytes.concat(ec);
-  const allBits = [];
-  for (const b of all) for (let i = 7; i >= 0; i--) allBits.push((b>>i)&1);
-
-  const m = [];
-  for (let i = 0; i < SIZE; i++) m.push(new Array(SIZE).fill(null));
-
-  function placeFinder(r, c) {
-    for (let dr = -1; dr <= 7; dr++) for (let dc = -1; dc <= 7; dc++) {
-      const rr = r+dr, cc = c+dc;
-      if (rr<0||rr>=SIZE||cc<0||cc>=SIZE) continue;
-      if ((dr>=0&&dr<=6&&(dc===0||dc===6))||(dc>=0&&dc<=6&&(dr===0||dr===6))||(dr>=2&&dr<=4&&dc>=2&&dc<=4)) m[rr][cc] = 1;
-      else m[rr][cc] = 0;
-    }
-  }
-  placeFinder(0,0); placeFinder(0,SIZE-7); placeFinder(SIZE-7,0);
-  for (let i = 0; i < 8; i++) {
-    if (m[7][i]===null) m[7][i]=0; if (m[i][7]===null) m[i][7]=0;
-    if (m[7][SIZE-1-i]===null) m[7][SIZE-1-i]=0; if (m[i][SIZE-8]===null) m[i][SIZE-8]=0;
-    if (m[SIZE-8][i]===null) m[SIZE-8][i]=0; if (m[SIZE-1-i][7]===null) m[SIZE-1-i][7]=0;
-  }
-  for (const r of [6,30]) for (const c of [6,30]) {
-    if ((r===6&&c===6)||(r===6&&c===30)||(r===30&&c===6)) continue;
-    for (let dr = -2; dr <= 2; dr++) for (let dc = -2; dc <= 2; dc++) {
-      if (Math.abs(dr)===2||Math.abs(dc)===2||(dr===0&&dc===0)) m[r+dr][c+dc] = 1;
-      else m[r+dr][c+dc] = 0;
-    }
-  }
-  for (let i = 8; i < SIZE-8; i++) {
-    if (m[6][i]===null) m[6][i] = i%2===0?1:0;
-    if (m[i][6]===null) m[i][6] = i%2===0?1:0;
-  }
-  const fbits = [1,1,1,0,1,1,1,1,1,0,0,0,1,0,0];
-  for (let i = 0; i < 6; i++) m[i][8] = fbits[i];
-  m[7][8]=fbits[6]; m[8][8]=fbits[7]; m[8][7]=fbits[8];
-  for (let i = 0; i < 6; i++) m[8][5-i] = fbits[9+i];
-  for (let i = 0; i < 7; i++) m[SIZE-1-i][8] = fbits[i];
-  for (let i = 0; i < 8; i++) m[8][SIZE-8+i] = fbits[7+i];
-  m[SIZE-8][8] = 1;
-
-  let idx = 0, dir = -1, col = SIZE-1;
-  while (col > 0) {
-    if (col === 6) col--;
-    let row = (dir === -1) ? SIZE-1 : 0;
-    while (row >= 0 && row < SIZE) {
-      for (let c = 0; c < 2; c++) {
-        const cc = col - c;
-        if (m[row][cc] === null) {
-          const bit = idx < allBits.length ? allBits[idx++] : 0;
-          m[row][cc] = ((row+cc)%2 === 0) ? (1-bit) : bit;
-        }
-      }
-      row += dir;
-    }
-    dir = -dir;
-    col -= 2;
-  }
-
-  const fullSize = (SIZE + 2*margin) * scale;
-  let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${fullSize}" height="${fullSize}" viewBox="0 0 ${SIZE+2*margin} ${SIZE+2*margin}" shape-rendering="crispEdges">`;
-  svg += '<rect width="100%" height="100%" fill="#fff"/>';
-  for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
-    if (m[r][c] === 1) svg += `<rect x="${c+margin}" y="${r+margin}" width="1" height="1" fill="#0a3d2e"/>`;
-  }
-  svg += '</svg>';
-  return svg;
-}
-
-// ============================================================
-// 8. ライブ同期（BroadcastChannel）
-// ============================================================
-const Sync = {
-  bc: null, groupId: null, pullTimer: null,
-  init() {
-    if ('BroadcastChannel' in window) {
-      this.bc = new BroadcastChannel('gworld-sync');
-      this.bc.addEventListener('message', (e) => this.onMessage(e.data));
-    }
-  },
-  start(groupId) {
-    this.groupId = groupId;
-    State.setGroup({ id: groupId, joinedAt: Date.now() });
-    Store.saveGroup({ id: groupId });
-    if (this.bc) this.bc.postMessage({ type: 'hello', from: State.getSelf()?.id, groupId });
-    if (this.pullTimer) clearInterval(this.pullTimer);
-    this.pullTimer = setInterval(() => this.broadcast(), 5000);
-  },
-  stop() {
-    this.groupId = null;
-    if (this.pullTimer) clearInterval(this.pullTimer);
-    Store.clearGroup();
-    State.setGroup(null);
-  },
-  broadcast() {
-    if (!this.groupId || !this.bc) return;
-    const self = State.getSelf();
-    if (!self) return;
-    this.bc.postMessage({
-      type: 'players-update',
-      groupId: this.groupId,
-      players: State.players.filter(p => p.isPublic !== false).map(p => ({
-        id: p.id, name: p.name, scores: p.scores, putts: p.putts, shots: p.shots,
-        isPublic: p.isPublic, isHost: p.isHost,
-      })),
-    });
-  },
-  onMessage(data) {
-    if (!data || data.groupId !== this.groupId) return;
-    if (data.type === 'players-update' && Array.isArray(data.players)) {
-      this.mergePlayers(data.players);
-    } else if (data.type === 'hello') {
-      this.broadcast();
-    }
-  },
-  mergePlayers(remote) {
-    const self = State.getSelf();
-    let changed = false;
-    remote.forEach(rp => {
-      if (self && rp.id === self.id) return;
-      const ex = State.players.find(p => p.id === rp.id);
-      if (ex) {
-        if (JSON.stringify(ex.scores) !== JSON.stringify(rp.scores)) { ex.scores = rp.scores; changed = true; }
-        if (JSON.stringify(ex.putts) !== JSON.stringify(rp.putts)) { ex.putts = rp.putts; changed = true; }
-        if (JSON.stringify(ex.shots) !== JSON.stringify(rp.shots)) { ex.shots = rp.shots; changed = true; }
-        if (ex.name !== rp.name) { ex.name = rp.name; changed = true; }
-      } else {
-        State.addPlayer({ id: rp.id, name: rp.name, scores: rp.scores, putts: rp.putts, shots: rp.shots, isPublic: rp.isPublic, isHost: rp.isHost, isSelf: false });
-        changed = true;
-      }
-    });
-    if (changed) emit('sync:merged');
-  },
-};
-on('score:updated', () => Sync.broadcast());
-on('putt:updated', () => Sync.broadcast());
-on('player:added', () => Sync.broadcast());
-on('player:renamed', () => Sync.broadcast());
-
-// ============================================================
-// 9. ホーム画面
-// ============================================================
-registerScreen('home', () => {
-  const root = document.getElementById('screen-home');
-  const profile = Store.getProfile();
-  const draft = Store.getDraft();
-  const history = Store.getHistory();
-  const hasResume = !!(draft && draft.course && draft.players?.length);
-
-  root.innerHTML = `
-    <div class="hero">
-      <div class="greet">こんにちは</div>
-      <div class="name">${profile ? esc(profile.name) + 'さん' : 'ゲストさん'}</div>
-      <div class="badge ${profile ? '' : 'guest'}">${profile ? '登録済' : 'ゲストモード'}</div>
-      ${hasResume ? `
-        <button class="cta-resume" data-act="resume">
-          ▶ 進行中のラウンドを続ける
-          <small>${esc(draft.course.name)} ${esc(draft.course.variant)}</small>
-        </button>
-      ` : ''}
-      <button class="cta-start" data-act="start">⛳ ラウンドを開始する</button>
+<!-- ============ スコアカード ============ -->
+<div class="card-wrap">
+  <div class="card">
+    <div class="card-header">
+      <span class="icon">📋</span>
+      <span>デジタルスコアカード</span>
+      <span class="badge" id="currentHoleBadge">現在 1H</span>
     </div>
 
-    <div class="section-label">
-      <span class="dot ready"></span><span>利用可能な機能</span>
-    </div>
-    <div class="modules">
-      <button class="module ready" data-route="gland">
-        <span class="tag ready">READY</span>
-        <div class="icon">⛳</div>
-        <div class="mname">G-LAND</div>
-        <div class="mdesc">スコア管理</div>
-      </button>
-      <button class="module ready" data-route="gcompete">
-        <span class="tag ready">READY</span>
-        <div class="icon">🏆</div>
-        <div class="mname">G-COMPETE</div>
-        <div class="mdesc">QR招待</div>
-      </button>
-      <button class="module ready" data-route="mypage">
-        <span class="tag ready">READY</span>
-        <div class="icon">👤</div>
-        <div class="mname">マイページ</div>
-        <div class="mdesc">設定・履歴</div>
-      </button>
-    </div>
-
-    <div class="section-label">
-      <span class="dot soon"></span><span>開発中の機能</span>
-    </div>
-    <div class="modules">
-      <button class="module soon" data-act="soon" data-name="Gタウン">
-        <span class="lock">🔒</span><span class="tag soon">SOON</span>
-        <div class="icon">🏘️</div><div class="mname">Gタウン</div><div class="mdesc">地域コミュニティ</div>
-      </button>
-      <button class="module soon" data-act="soon" data-name="Gプロアマ">
-        <span class="lock">🔒</span><span class="tag soon">SOON</span>
-        <div class="icon">🏌️</div><div class="mname">Gプロアマ</div><div class="mdesc">プロアマコンペ</div>
-      </button>
-      <button class="module soon" data-act="soon" data-name="Gレッスン">
-        <span class="lock">🔒</span><span class="tag soon">SOON</span>
-        <div class="icon">🎓</div><div class="mname">Gレッスン</div><div class="mdesc">プロのレッスン</div>
-      </button>
-      <button class="module soon" data-act="soon" data-name="Gショップ">
-        <span class="lock">🔒</span><span class="tag soon">SOON</span>
-        <div class="icon">🛍️</div><div class="mname">Gショップ</div><div class="mdesc">用品ショップ</div>
-      </button>
-    </div>
-
-    ${history.length ? `
-      <div style="margin-top:24px;">
-        <h3 style="color:#f5c842;font-size:15px;margin-bottom:8px;">📋 最近のラウンド</h3>
-        ${history.slice(0,3).map(r => {
-          const me = r.players?.find(p => p.isSelf);
-          const t = me ? me.scores.reduce((s,v)=>s+(v||0), 0) : 0;
-          return `<div style="display:flex;justify-content:space-between;padding:10px;background:rgba(255,255,255,0.05);border-radius:8px;margin-bottom:6px;font-size:13px;">
-            <span>${new Date(r.savedAt).toLocaleDateString('ja-JP')}</span>
-            <span>${esc(r.course?.name||'-')}</span>
-            <span style="color:#f5c842;font-weight:800;">${t||'-'}</span>
-          </div>`;
-        }).join('')}
-      </div>
-    ` : ''}
-
-    <div style="text-align:center;margin-top:24px;padding:12px;color:rgba(255,255,255,0.4);font-size:11px;">
-      G-WORLD v${APP.VERSION} ⛳
-    </div>
-  `;
-
-  root.querySelectorAll('[data-route]').forEach(el => el.onclick = () => go(el.dataset.route));
-  root.querySelectorAll('[data-act]').forEach(el => {
-    el.onclick = () => {
-      const a = el.dataset.act;
-      if (a === 'soon') toast(`「${el.dataset.name}」は近日公開予定です 🚀`, 'info');
-      else if (a === 'start') {
-        if (Store.getDraft()) {
-          if (!confirm('進行中のラウンドがあります。新しく始めますか？')) return;
-          Store.clearDraft(); State.reset();
-        }
-        go('gland');
-      }
-      else if (a === 'resume') {
-        const d = Store.getDraft();
-        if (!d) { toast('進行中のラウンドが見つかりません', 'error'); return; }
-        State.reset();
-        State.restore(d);
-        toast('ラウンドを再開します', 'success');
-        go('gland');
-      }
-    };
-  });
-});
-
-// ============================================================
-// 10. G-LAND（カード一体型UI）
-// ============================================================
-registerScreen('gland', () => {
-  const root = document.getElementById('screen-gland');
-  const pendingJoin = sessionStorage.getItem('gw.pendingJoin');
-  if (pendingJoin) { handleQRJoin(root, pendingJoin); return; }
-
-  const profile = Store.getProfile();
-  if (!profile) { renderRegister(root); return; }
-  ensureSelf(profile);
-  if (!State.course) { renderCourseSelect(root); return; }
-  renderScorecardMain(root);
-});
-
-function ensureSelf(profile) {
-  if (State.getSelf()) return;
-  State.addPlayer({ name: profile.name, isSelf: true, isPublic: profile.isPublic !== false });
-}
-
-function handleQRJoin(root, groupId) {
-  const profile = Store.getProfile();
-  if (!profile) {
-    root.innerHTML = `
-      <div class="card">
-        <div class="join-banner">
-          <span class="ico">🎯</span>
-          <div>
-            <div class="info-title">コンペに招待されました！</div>
-            <div class="info-sub">名前を入れるだけで即参加</div>
-          </div>
-        </div>
-        <label>ニックネーム（表示名）</label>
-        <input type="text" id="join-nick" placeholder="例: タロウ" maxlength="20" autofocus>
-        <label>本名（任意）</label>
-        <input type="text" id="join-real" placeholder="例: 山田 太郎" maxlength="30">
-        <label style="display:flex;align-items:center;gap:8px;margin-top:14px;">
-          <input type="checkbox" id="join-pub" checked style="width:20px;height:20px;">
-          <span>リーダーボードに公開する</span>
-        </label>
-        <button class="btn-primary btn-green" data-act="join-ok">⚡ 登録して参加</button>
-      </div>
-    `;
-    document.querySelector('[data-act="join-ok"]').onclick = () => {
-      const n = document.getElementById('join-nick').value.trim();
-      const r = document.getElementById('join-real').value.trim();
-      const p = document.getElementById('join-pub').checked;
-      if (!n) { toast('ニックネームを入力してください', 'error'); return; }
-      Store.saveProfile({ name: n, realName: r, isPublic: p, createdAt: Date.now() });
-      toast(`ようこそ ${n}さん！`, 'success');
-      setTimeout(() => activate('gland'), 300);
-    };
-    document.getElementById('join-nick').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') document.querySelector('[data-act="join-ok"]').click();
-    });
-    return;
-  }
-
-  sessionStorage.removeItem('gw.pendingJoin');
-  ensureSelf(profile);
-  Sync.start(groupId);
-  if (!State.course) State.setCourse(makeCourseOutStart());
-  toast(`${profile.name}さんで参加しました 🎉`, 'success');
-  renderScorecardMain(root);
-}
-
-function renderRegister(root) {
-  root.innerHTML = `
-    <div class="card">
-      <h2>⛳ はじめまして</h2>
-      <p>あなたのお名前を教えてください。</p>
-      <label>ニックネーム（表示名）</label>
-      <input type="text" id="r-nick" placeholder="例: タロウ" maxlength="20" autofocus>
-      <label>本名（氏名・任意）</label>
-      <input type="text" id="r-real" placeholder="例: 山田 太郎" maxlength="30">
-      <label style="display:flex;align-items:center;gap:8px;margin-top:14px;">
-        <input type="checkbox" id="r-pub" checked style="width:20px;height:20px;">
-        <span>ランキングに公開する</span>
-      </label>
-      <button class="btn-primary" id="r-ok">登録して始める</button>
-    </div>
-  `;
-  document.getElementById('r-ok').onclick = () => {
-    const n = document.getElementById('r-nick').value.trim();
-    const r = document.getElementById('r-real').value.trim();
-    const p = document.getElementById('r-pub').checked;
-    if (!n) { toast('ニックネームを入力してください', 'error'); return; }
-    Store.saveProfile({ name: n, realName: r, isPublic: p, createdAt: Date.now() });
-    toast(`ようこそ ${n}さん！`, 'success');
-    activate('gland');
-  };
-}
-
-function renderCourseSelect(root) {
-  const c18o = makeCourseOutStart();
-  const c18i = makeCourseInStart();
-  const c9o = makeCourseOutOnly();
-  const c9i = makeCourseInOnly();
-  root.innerHTML = `
-    <div class="card">
-      <h2 style="text-align:center;">⚡ 本日のスタート地点を選択</h2>
-      <p style="text-align:center;">六甲国際パブリック PAR72 / タップで即スタート ⛳</p>
-      <div>
-        <button class="cs-btn" data-cid="rokko-out-start">
-          <span class="ico">🔵</span>
-          <span class="info">
-            <div class="info-name">OUTスタート（18H）</div>
-            <div class="info-sub">1H→18H: OUT 1-9 → IN 10-18 / ${c18o.totalYards}yd PAR72</div>
-          </span>
-          <span class="arrow">▶</span>
-        </button>
-        <button class="cs-btn" data-cid="rokko-in-start">
-          <span class="ico">🔴</span>
-          <span class="info">
-            <div class="info-name">INスタート（18H）</div>
-            <div class="info-sub">1H→18H: IN 10-18 → OUT 1-9 / ${c18i.totalYards}yd PAR72</div>
-          </span>
-          <span class="arrow">▶</span>
-        </button>
-        <button class="cs-btn" data-cid="rokko-out-only">
-          <span class="ico">🟢</span>
-          <span class="info">
-            <div class="info-name">OUTのみ（9H）</div>
-            <div class="info-sub">${c9o.yards.reduce((s,v)=>s+v,0)}yd PAR36</div>
-          </span>
-          <span class="arrow">▶</span>
-        </button>
-        <button class="cs-btn" data-cid="rokko-in-only">
-          <span class="ico">🟢</span>
-          <span class="info">
-            <div class="info-name">INのみ（9H）</div>
-            <div class="info-sub">${c9i.yards.reduce((s,v)=>s+v,0)}yd PAR36</div>
-          </span>
-          <span class="arrow">▶</span>
-        </button>
-      </div>
-    </div>
-  `;
-  root.querySelectorAll('.cs-btn').forEach(btn => {
-    btn.onclick = () => {
-      const c = COURSES[btn.dataset.cid]();
-      State.setCourse(c);
-      toast(`${c.name} ${c.variant} スタート！`, 'success', 1500);
-      activate('gland');
-    };
-  });
-}
-
-// ============================================================
-// 🃏 スコアカード メインビュー（v9 カード一体型）
-// ============================================================
-function renderScorecardMain(root) {
-  const course = State.course;
-  const settings = State.settings;
-  const me = State.getSelf();
-  const hole = State.hole;
-  const par = course.pars[hole];
-  const holeLabel = course.labels[hole];
-
-  // 自分の合計
-  const myTotalStroke = me.scores.reduce((s,v) => s + (v || 0), 0);
-  const myPlayedPar = me.scores.reduce((s,v,i) => s + (v != null ? course.pars[i] : 0), 0);
-  const myTotalDiff = myTotalStroke - myPlayedPar;
-  const myTotalDiffStr = myTotalDiff > 0 ? `+${myTotalDiff}` : myTotalDiff === 0 ? 'E' : String(myTotalDiff);
-  const totalDiffColor = getDiffColor(myTotalStroke > 0 ? myTotalDiff : null);
-
-  const hasUnlock = State.hasAnyUnlocked();
-
-  root.innerHTML = `
-    <!-- ミニトップバー -->
-    <div class="gl-topbar">
-      <span class="cname">⛳ ${esc(course.name)}<span class="cvar">${esc(course.variant)}</span></span>
-      <div class="gl-topbar-actions">
-        <button class="gl-mini-btn detail" data-act="course-detail">📖 詳細</button>
-        <button class="gl-mini-btn qr" data-act="invite-qr">📲 招待QR</button>
-      </div>
-    </div>
-
-    <!-- 現在ホール・合計表示 -->
-    <div class="gl-statusbar">
-      <div class="sb-hole">
-        <button class="sb-hole-arrow" data-act="prev-hole">◀</button>
-        <div class="sb-hole-info">
-          <div class="sb-hole-num">${holeLabel}H</div>
-          <div class="sb-hole-par">PAR ${par}</div>
-        </div>
-        <button class="sb-hole-arrow" data-act="next-hole">▶</button>
-      </div>
-      <div class="sb-total">
-        <div class="sb-total-label">合計打数</div>
-        <div class="sb-total-val">${myTotalStroke || '-'}</div>
-        <div class="sb-total-diff" style="color:${totalDiffColor};">${myTotalStroke > 0 ? myTotalDiffStr : ''}</div>
-      </div>
-    </div>
-
-    <!-- 表示モード切替 + 編集ロック表示 -->
-    <div class="gl-control-row">
-      <div class="gl-display-toggle">
-        <button class="${settings.displayMode==='number'?'on':''}" data-act="disp-number">📊 数字</button>
-        <button class="${settings.displayMode==='symbol'?'on':''}" data-act="disp-symbol">★◎○ 記号</button>
-      </div>
-      <button class="gl-edit-mode-btn ${hasUnlock?'unlocked':'locked'}" data-act="lock-all">
-        ${hasUnlock ? '🔓 編集中' : '🔒 ロック中'}
-      </button>
-    </div>
-
-    ${hasUnlock ? `
-      <div class="gl-unlock-warning">
-        <span class="warn-ico">⚠️</span>
-        <span><strong>代理入力 有効中</strong> — 他プレイヤーのスコアを編集できます。誤タップ注意！</span>
-      </div>
-    ` : ''}
-
-    <!-- 🃏 スコアカード本体 -->
-    <div class="gl-scorecard">
-      <div class="gl-sc-title">
-        <h3>🃏 デジタルスコアカード</h3>
-        <span class="sync-dot">全員同期中</span>
-      </div>
-      <div class="gl-sc-hint">
-        💡 自分のセルはいつでもタップ可。他人のセルは 🔓 解除でタップ可。
-      </div>
-      <div class="gl-sc-table">
-        <!-- 左固定列 -->
-        <div class="gl-sc-fixed">
-          <div class="sc-header-cell">プレイヤー<small>合計／PAR差</small></div>
-          ${State.players.map(p => {
-            const t = p.scores.reduce((s,v) => s + (v || 0), 0);
-            const ps = p.scores.reduce((s,v,i) => s + (v != null ? course.pars[i] : 0), 0);
-            const d = t - ps;
-            const dStr = t > 0 ? (d===0?'E':(d>0?`+${d}`:String(d))) : '-';
-            const unlocked = State.isEditable(p.id) && !p.isSelf;
-            return `
-              <div class="sc-row-name ${p.isSelf ? 'is-me' : ''}" data-pid="${p.id}">
-                <div class="pname-text">
-                  ${esc(p.name)}${p.isSelf ? '<span class="me-tag">自分</span>' : ''}
-                  <div style="font-size:11px;color:rgba(255,255,255,0.55);font-weight:600;margin-top:2px;">${t || '-'} / ${t > 0 ? dStr : '-'}</div>
-                </div>
-                ${!p.isSelf ? `
-                  <button class="pname-lock ${unlocked?'unlocked':''}" data-lock-pid="${p.id}" title="${unlocked?'編集中（タップでロック）':'ロック中（タップで解除）'}">
-                    ${unlocked ? '🔓' : '🔒'}
-                  </button>
-                ` : ''}
-              </div>
-            `;
-          }).join('')}
-        </div>
-        <!-- 横スクロール部 -->
-        <div class="gl-sc-scroll" id="sc-scroll">
-          <!-- ヘッダー行 -->
-          <div class="gl-sc-row">
-            ${course.pars.map((p, i) => `
-              <div class="gl-sc-cell head ${i === hole ? 'current' : ''}" data-hidx="${i}">
-                <div class="hnum">${course.labels[i]}H</div>
-                <div class="hpar">P${p}</div>
-              </div>
-            `).join('')}
-            <div class="gl-sc-cell head total">合計</div>
-            <div class="gl-sc-cell head diff">±</div>
-          </div>
-          <!-- プレイヤー行 -->
-          ${State.players.map(p => {
-            let t = 0, ps = 0, has = false;
-            const editable = State.isEditable(p.id);
-            const cells = course.pars.map((par, i) => {
-              const s = p.scores[i];
-              const putt = p.putts[i];
-              if (s != null) { t += s; ps += par; has = true; }
-              const cls = ['gl-sc-cell'];
-              if (i === hole) cls.push('current');
-              if (s != null) cls.push('filled', diffClass(s - par));
-              if (!editable) cls.push('locked');
-              else if (!p.isSelf) cls.push('editable-now');
-              const display = formatScore(s, par, settings.displayMode);
-              const puttBadge = putt != null && putt > 0 ? `<span class="putt-badge">p${putt}</span>` : '';
-              return `<div class="${cls.join(' ')}" data-pid="${p.id}" data-hidx="${i}">${display}${puttBadge}</div>`;
-            }).join('');
-            const d = has ? t - ps : null;
-            const dStr = has ? (d===0?'E':(d>0?`+${d}`:String(d))) : '-';
-            return `<div class="gl-sc-row">${cells}
-              <div class="gl-sc-cell total">${has ? t : '-'}</div>
-              <div class="gl-sc-cell diff ${has ? diffClass(d) : ''}">${dStr}</div>
-            </div>`;
-          }).join('')}
-        </div>
-      </div>
-      <button class="gl-add-companion" data-act="add-companion">＋ 同伴者を追加（最大16名）</button>
-    </div>
-
-    <button class="finish-btn" data-act="finish">✅ ラウンド終了 / 保存</button>
-  `;
-
-  bindScorecardEvents(root);
-  centerCurrentHole();
-}
-
-function bindScorecardEvents(root) {
-  // アクションボタン
-  root.querySelectorAll('[data-act]').forEach(el => el.onclick = () => handleAction(el.dataset.act, el));
-  // ヘッダーセルタップ → ホール変更
-  root.querySelectorAll('.gl-sc-cell.head[data-hidx]').forEach(el => el.onclick = () => {
-    State.setHole(parseInt(el.dataset.hidx, 10));
-  });
-  // 通常セルタップ → スコア入力モーダル
-  root.querySelectorAll('.gl-sc-cell:not(.head)[data-pid][data-hidx]').forEach(el => {
-    el.onclick = (e) => {
-      e.stopPropagation();
-      const pid = el.dataset.pid;
-      const hidx = parseInt(el.dataset.hidx, 10);
-      // 🔒 編集権限チェック
-      if (!State.isEditable(pid)) {
-        const player = State.players.find(p => p.id === pid);
-        if (!player) return;
-        if (confirm(`${player.name}さんのスコアを代理入力しますか？\n（誤タップ防止のため、編集を有効化します）`)) {
-          State.unlock(pid);
-          toast(`🔓 ${player.name}さんの編集を有効化しました`, 'info');
-          setTimeout(() => openScoreModal(pid, hidx), 200);
-        }
-        return;
-      }
-      openScoreModal(pid, hidx);
-    };
-  });
-  // 個別ロックトグル
-  root.querySelectorAll('[data-lock-pid]').forEach(el => {
-    el.onclick = (e) => {
-      e.stopPropagation();
-      const pid = el.dataset.lockPid;
-      const player = State.players.find(p => p.id === pid);
-      if (!player) return;
-      if (State.isEditable(pid)) {
-        State.lock(pid);
-        toast(`🔒 ${player.name}さんをロックしました`, 'info', 1500);
-      } else {
-        if (confirm(`${player.name}さんの編集を有効化しますか？\n（代理入力モード）`)) {
-          State.unlock(pid);
-          toast(`🔓 ${player.name}さんの編集を有効化`, 'info', 1500);
-        }
-      }
-    };
-  });
-  // プレイヤー名タップ（自分以外）→ 編集モーダル
-  root.querySelectorAll('.sc-row-name[data-pid]').forEach(el => {
-    el.addEventListener('dblclick', () => {
-      const p = State.players.find(x => x.id === el.dataset.pid);
-      if (!p || p.isSelf) return;
-      openCompanionModal(p.id);
-    });
-  });
-}
-
-function handleAction(action, el) {
-  const me = State.getSelf();
-  const h = State.hole;
-  const c = State.course;
-  if (!me || !c) return;
-
-  switch (action) {
-    case 'prev-hole': State.setHole(Math.max(0, h - 1)); break;
-    case 'next-hole': State.setHole(Math.min(c.holes - 1, h + 1)); break;
-    case 'disp-number': State.updateSetting('displayMode', 'number'); break;
-    case 'disp-symbol': State.updateSetting('displayMode', 'symbol'); break;
-    case 'lock-all': {
-      if (State.hasAnyUnlocked()) {
-        State.lockAll();
-        toast('🔒 すべての編集をロックしました', 'info', 1500);
-      } else {
-        toast('💡 個別のセルや 🔒 ボタンをタップして編集権限を有効化', 'info', 2500);
-      }
-      break;
-    }
-    case 'course-detail': openCourseDetail(); break;
-    case 'invite-qr': openInviteQR(); break;
-    case 'add-companion': openCompanionModal(null); break;
-    case 'finish': {
-      if (!confirm('ラウンドを終了して履歴に保存しますか？')) return;
-      const snap = State.snapshot();
-      Store.appendRound({ course: snap.course, players: snap.players, group: snap.group });
-      Store.clearDraft();
-      State.reset();
-      Sync.stop();
-      toast('履歴に保存しました 🎉', 'success');
-      setTimeout(() => go('home'), 600);
-      break;
-    }
-  }
-}
-
-// 現在ホール中央追従
-function centerCurrentHole() {
-  const scroll = document.getElementById('sc-scroll');
-  if (!scroll) return;
-  const doScroll = () => {
-    if (scroll.clientWidth === 0) return;
-    const target = scroll.querySelector('.gl-sc-cell.head.current');
-    if (!target) return;
-    const cw = scroll.clientWidth;
-    const tl = target.offsetLeft;
-    const tw = target.offsetWidth;
-    scroll.scrollTo({ left: Math.max(0, tl - cw/2 + tw/2), behavior: 'smooth' });
-  };
-  requestAnimationFrame(doScroll);
-  setTimeout(doScroll, 150);
-  setTimeout(doScroll, 400);
-  setTimeout(doScroll, 800);
-}
-
-// ============================================================
-// 🌟 スコア入力モーダル（カード一体型のメイン）
-// ============================================================
-let _editingCtx = null; // { playerId, holeIdx, tempScore, tempPutt, tempShots }
-
-function openScoreModal(playerId, holeIdx) {
-  const player = State.players.find(p => p.id === playerId);
-  const course = State.course;
-  if (!player || !course) return;
-
-  const par = course.pars[holeIdx];
-  // 既存値か、未入力ならPARから開始
-  let curScore = player.scores[holeIdx] != null ? player.scores[holeIdx] : par;
-  let curPutt = player.putts[holeIdx] || 0;
-  let curShots = player.shots[holeIdx] != null ? player.shots[holeIdx] : Math.max(0, curScore - curPutt);
-
-  _editingCtx = { playerId, holeIdx, tempScore: curScore, tempPutt: curPutt, tempShots: curShots, mode: State.settings.inputMode };
-
-  const modal = document.getElementById('score-modal');
-  modal.classList.add('open');
-  renderScoreModalBody();
-}
-
-function renderScoreModalBody() {
-  if (!_editingCtx) return;
-  const { playerId, holeIdx, mode } = _editingCtx;
-  const player = State.players.find(p => p.id === playerId);
-  const course = State.course;
-  if (!player || !course) return;
-
-  const par = course.pars[holeIdx];
-  const holeLabel = course.labels[holeIdx];
-  const isProxy = !player.isSelf;
-
-  const body = document.getElementById('score-modal-body');
-
-  let inputHtml = '';
-  if (mode === 'simple') {
-    const stroke = _editingCtx.tempScore;
-    const putt = _editingCtx.tempPutt;
-    const diff = stroke - par;
-    const diffStr = diff === 0 ? '(PAR)' : (diff > 0 ? `(+${diff})` : `(${diff})`);
-    const diffColor = getDiffColor(diff);
-    const nameStr = diffName(diff);
-
-    inputHtml = `
-      <!-- ストローク表示 -->
-      <div class="sim-stroke" style="border-color:${diffColor};">
-        <div class="lbl">ストローク（合計打数）</div>
-        <div class="big" style="color:${diffColor};">${stroke}</div>
-        <div class="diff" style="color:${diffColor};">${diffStr}</div>
-        ${nameStr ? `<div class="name" style="color:${diffColor};">${nameStr}</div>` : ''}
-      </div>
-
-      <!-- 56px+ 円形ボタン -->
-      <div class="sim-stroke-controls">
-        <button class="sim-circle-btn minus" data-sim-act="stroke-minus">−</button>
-        <div class="sim-stroke-center">タップで±1</div>
-        <button class="sim-circle-btn plus" data-sim-act="stroke-plus">＋</button>
-      </div>
-
-      <!-- パット内訳（独立） -->
-      <div class="sim-putt">
-        <div class="plbl">内訳：パット数（独立カウント）</div>
-        <div class="pval">${putt}</div>
-        <div class="pmark">※ ストロークには加算しません</div>
-        <div class="sim-putt-controls">
-          <button class="sim-putt-btn" data-sim-act="putt-minus">−</button>
-          <button class="sim-putt-btn" data-sim-act="putt-plus">＋</button>
-        </div>
-      </div>
-    `;
-  } else {
-    // カウンターモード
-    const shots = _editingCtx.tempShots;
-    const putt = _editingCtx.tempPutt;
-    const total = shots + putt;
-    const diff = total > 0 ? total - par : null;
-    const diffStr = diff == null ? '' : (diff === 0 ? '(PAR)' : (diff > 0 ? `(+${diff})` : `(${diff})`));
-    const diffColor = getDiffColor(diff);
-    const nameStr = diffName(diff);
-
-    inputHtml = `
-      <div class="sim-stroke" style="border-color:${diffColor};">
-        <div class="lbl">合計打数（ショット＋パット）</div>
-        <div class="big" style="color:${diffColor};">${total > 0 ? total : '-'}</div>
-        <div class="diff" style="color:${diffColor};">${diffStr}</div>
-        ${nameStr ? `<div class="name" style="color:${diffColor};">${nameStr}</div>` : ''}
-      </div>
-
-      <div class="sim-counter">
-        <div class="sim-counter-cell shot">
-          <div class="cnt-lbl">ショット</div>
-          <div class="cnt-val">${shots}</div>
-          <div class="cnt-controls">
-            <button class="cnt-btn minus" data-sim-act="shot-minus">−</button>
-            <button class="cnt-btn" data-sim-act="shot-plus">＋</button>
-          </div>
-        </div>
-        <div class="sim-counter-cell putt">
-          <div class="cnt-lbl">パット</div>
-          <div class="cnt-val">${putt}</div>
-          <div class="cnt-controls">
-            <button class="cnt-btn minus" data-sim-act="putt-minus-c">−</button>
-            <button class="cnt-btn" data-sim-act="putt-plus-c">＋</button>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  body.innerHTML = `
-    <!-- ヘッダー -->
-    <div class="sim-header">
-      <div class="sim-player">
-        ${esc(player.name)}${player.isSelf ? '<span class="sim-self-tag">自分</span>' : ''}
-      </div>
-      <div class="sim-hole">
-        <strong>${holeLabel}H</strong> ／ PAR ${par}
-      </div>
-    </div>
-
-    ${isProxy ? `
-      <div class="sim-proxy-warn">
-        <span class="warn-ico">⚠️</span>
-        <span><strong>代理入力</strong>：${esc(player.name)}さんのスコアを編集中です</span>
-      </div>
-    ` : ''}
-
-    <!-- モード切替タブ -->
-    <div class="sim-mode-tabs">
-      <button class="${mode==='simple'?'on':''}" data-sim-act="mode-simple">シンプル（結果入力）</button>
-      <button class="${mode==='counter'?'on':''}" data-sim-act="mode-counter">カウンター（逐次）</button>
-    </div>
-
-    ${inputHtml}
-
-    <!-- アクション -->
-    <div class="sim-actions">
-      <button class="sim-action-cancel" data-sim-act="cancel">キャンセル</button>
-      <button class="sim-action-clear" data-sim-act="clear">クリア</button>
-      <button class="sim-action-ok" data-sim-act="ok">確定して保存</button>
-    </div>
-
-    <div class="sim-auto-next">
-      <input type="checkbox" id="sim-auto-next" ${State.settings.autoNext ? 'checked' : ''}>
-      <label for="sim-auto-next">確定後、自分のスコアなら次ホールへ自動移動</label>
-    </div>
-  `;
-
-  // イベント結線
-  body.querySelectorAll('[data-sim-act]').forEach(el => {
-    el.onclick = () => handleSimAction(el.dataset.simAct);
-  });
-  const autoNextCheck = document.getElementById('sim-auto-next');
-  if (autoNextCheck) {
-    autoNextCheck.onchange = () => State.updateSetting('autoNext', autoNextCheck.checked);
-  }
-}
-
-function handleSimAction(action) {
-  if (!_editingCtx) return;
-  const ctx = _editingCtx;
-  const par = State.course.pars[ctx.holeIdx];
-
-  switch (action) {
-    case 'mode-simple':
-      _editingCtx.mode = 'simple';
-      State.updateSetting('inputMode', 'simple');
-      renderScoreModalBody();
-      break;
-    case 'mode-counter':
-      _editingCtx.mode = 'counter';
-      State.updateSetting('inputMode', 'counter');
-      renderScoreModalBody();
-      break;
-    // === シンプルモード ===
-    case 'stroke-minus':
-      ctx.tempScore = Math.max(1, ctx.tempScore - 1);
-      renderScoreModalBody();
-      break;
-    case 'stroke-plus':
-      ctx.tempScore = Math.min(20, ctx.tempScore + 1);
-      renderScoreModalBody();
-      break;
-    case 'putt-minus':
-      ctx.tempPutt = Math.max(0, ctx.tempPutt - 1);
-      renderScoreModalBody();
-      break;
-    case 'putt-plus':
-      ctx.tempPutt = Math.min(15, ctx.tempPutt + 1);
-      renderScoreModalBody();
-      break;
-    // === カウンターモード ===
-    case 'shot-minus':
-      ctx.tempShots = Math.max(0, ctx.tempShots - 1);
-      renderScoreModalBody();
-      break;
-    case 'shot-plus':
-      ctx.tempShots = ctx.tempShots + 1;
-      renderScoreModalBody();
-      break;
-    case 'putt-minus-c':
-      ctx.tempPutt = Math.max(0, ctx.tempPutt - 1);
-      renderScoreModalBody();
-      break;
-    case 'putt-plus-c':
-      ctx.tempPutt = ctx.tempPutt + 1;
-      renderScoreModalBody();
-      break;
-    // === 確定・クリア ===
-    case 'ok': {
-      const { playerId, holeIdx, mode, tempScore, tempPutt, tempShots } = ctx;
-      const player = State.players.find(p => p.id === playerId);
-      if (!player) return;
-      if (mode === 'simple') {
-        // シンプル：ストロークとパットを独立保存
-        State.setScore(playerId, holeIdx, tempScore);
-        State.setPutt(playerId, holeIdx, tempPutt);
-        // shots を再計算（合計-パット）
-        player.shots[holeIdx] = Math.max(0, tempScore - tempPutt);
-      } else {
-        // カウンター：ショット+パット=合計
-        State.setShots(playerId, holeIdx, tempShots);
-        State.setPutt(playerId, holeIdx, tempPutt);
-        player.scores[holeIdx] = tempShots + tempPutt;
-        emit('score:updated', { playerId, holeIdx, stroke: player.scores[holeIdx] });
-      }
-      document.getElementById('score-modal').classList.remove('open');
-      toast('保存しました 🎉', 'success', 1500);
-
-      // 自分のスコア + autoNextがONなら次ホールへ
-      if (State.settings.autoNext && player.isSelf && holeIdx === State.hole && holeIdx < State.course.holes - 1) {
-        setTimeout(() => State.setHole(holeIdx + 1), 300);
-      }
-      // 代理入力後は自動ロック（誤タップ防止）
-      if (!player.isSelf) {
-        setTimeout(() => {
-          State.lock(playerId);
-          toast(`🔒 ${player.name}さんを自動ロック`, 'info', 1500);
-        }, 800);
-      }
-      _editingCtx = null;
-      break;
-    }
-    case 'clear': {
-      const { playerId, holeIdx } = ctx;
-      State.setScore(playerId, holeIdx, null);
-      State.setPutt(playerId, holeIdx, null);
-      const player = State.players.find(p => p.id === playerId);
-      if (player) player.shots[holeIdx] = null;
-      document.getElementById('score-modal').classList.remove('open');
-      toast('クリアしました', 'info', 1200);
-      _editingCtx = null;
-      break;
-    }
-    case 'cancel':
-      document.getElementById('score-modal').classList.remove('open');
-      _editingCtx = null;
-      break;
-  }
-}
-
-// ============================================================
-// 招待QRモーダル
-// ============================================================
-function openInviteQR() {
-  const modal = document.getElementById('qr-modal');
-  const body = document.getElementById('qr-body');
-  let group = State.group;
-
-  if (!group) {
-    const self = State.getSelf();
-    if (!self) { toast('先にプロフィール登録してください', 'error'); return; }
-    self.isHost = true;
-    const groupId = `g_${Date.now()}_${Math.random().toString(36).slice(2,8)}`;
-    const c = State.course;
-    const groupName = c ? `${c.name} ${c.variant}` : 'プライベートルーム';
-    group = { id: groupId, name: groupName, hostId: self.id, createdAt: Date.now() };
-    Sync.start(groupId);
-    State.setGroup(group);
-    Store.saveGroup(group);
-  }
-
-  const base = location.origin + location.pathname.replace(/\/$/, '');
-  const joinURL = `${base}/#join=${group.id}`;
-  let qrSvg;
-  try { qrSvg = genQR(joinURL, 7, 2); }
-  catch (e) { qrSvg = '<div style="color:#e74c3c;">QR生成失敗</div>'; }
-
-  body.innerHTML = `
-    <div style="text-align:center;margin-bottom:12px;">
-      <div style="font-size:16px;font-weight:800;color:#f5c842;">${esc(group.name)}</div>
-      <div style="font-size:10px;color:rgba(255,255,255,0.5);margin-top:2px;">ID: ${esc(group.id)}</div>
-    </div>
-    <div class="qr-img">${qrSvg}</div>
-    <p class="qr-hint">📷 同伴者にこのQRを読み取ってもらうと<br>自動で同じ組に参加できます</p>
-    <div class="qr-url">
-      <input readonly value="${esc(joinURL)}" id="qr-url-input">
-      <button id="qr-copy">コピー</button>
-    </div>
-    <button class="btn-primary btn-green" id="qr-share" style="margin-top:12px;">📤 リンクを共有</button>
-  `;
-  document.getElementById('qr-copy').onclick = async () => {
-    try { await navigator.clipboard.writeText(joinURL); toast('URLをコピー', 'success'); }
-    catch (e) {
-      const inp = document.getElementById('qr-url-input');
-      inp.select(); document.execCommand('copy');
-      toast('URLをコピー', 'success');
-    }
-  };
-  document.getElementById('qr-share').onclick = async () => {
-    if (navigator.share) {
-      try { await navigator.share({ title: 'G-WORLD 招待', url: joinURL }); } catch (e) {}
-    } else {
-      try { await navigator.clipboard.writeText(joinURL); toast('URLをコピー', 'success'); } catch (e) {}
-    }
-  };
-  modal.classList.add('open');
-}
-
-// ============================================================
-// コース詳細モーダル
-// ============================================================
-function openCourseDetail() {
-  const modal = document.getElementById('course-detail-modal');
-  const body = document.getElementById('course-detail-body');
-  const c = State.course;
-  if (!c) return;
-
-  const is18 = c.holes === 18;
-  let yardageRows = '';
-  if (is18) {
-    yardageRows += `<tr><td colspan="6" style="background:rgba(245,200,66,0.15);color:#f5c842;font-weight:900;">＜ 前半 9H ＞</td></tr>`;
-    let outYR=0,outYL=0,outP=0;
-    for (let i = 0; i < 9; i++) {
-      yardageRows += `<tr><td class="hole-col">${c.labels[i]}</td><td>${c.yards[i]}</td><td>${c.yardsL[i]}</td><td>${c.pars[i]}</td><td>${c.hdcp[i]}</td><td class="wc">${c.wc[i] ? '🚻' : ''}</td></tr>`;
-      outYR+=c.yards[i]; outYL+=c.yardsL[i]; outP+=c.pars[i];
-    }
-    yardageRows += `<tr class="total-row"><td>前半計</td><td>${outYR}</td><td>${outYL}</td><td>${outP}</td><td>-</td><td>-</td></tr>`;
-    yardageRows += `<tr><td colspan="6" style="background:rgba(245,200,66,0.15);color:#f5c842;font-weight:900;">＜ 後半 9H ＞</td></tr>`;
-    let inYR=0,inYL=0,inP=0;
-    for (let i = 9; i < 18; i++) {
-      yardageRows += `<tr><td class="hole-col">${c.labels[i]}</td><td>${c.yards[i]}</td><td>${c.yardsL[i]}</td><td>${c.pars[i]}</td><td>${c.hdcp[i]}</td><td class="wc">${c.wc[i] ? '🚻' : ''}</td></tr>`;
-      inYR+=c.yards[i]; inYL+=c.yardsL[i]; inP+=c.pars[i];
-    }
-    yardageRows += `<tr class="total-row"><td>後半計</td><td>${inYR}</td><td>${inYL}</td><td>${inP}</td><td>-</td><td>-</td></tr>`;
-    yardageRows += `<tr class="total-row"><td>TOTAL</td><td>${outYR+inYR}</td><td>${outYL+inYL}</td><td>${outP+inP}</td><td>-</td><td>-</td></tr>`;
-  } else {
-    let tY=0,tYL=0,tP=0;
-    for (let i = 0; i < c.holes; i++) {
-      yardageRows += `<tr><td class="hole-col">${c.labels[i]}</td><td>${c.yards[i]}</td><td>${c.yardsL[i]}</td><td>${c.pars[i]}</td><td>${c.hdcp[i]}</td><td class="wc">${c.wc[i] ? '🚻' : ''}</td></tr>`;
-      tY+=c.yards[i]; tYL+=c.yardsL[i]; tP+=c.pars[i];
-    }
-    yardageRows += `<tr class="total-row"><td>TOTAL</td><td>${tY}</td><td>${tYL}</td><td>${tP}</td><td>-</td><td>-</td></tr>`;
-  }
-
-  body.innerHTML = `
-    <div class="course-detail-section">
-      <h4>📍 コース情報</h4>
-      <div class="contact-info">
-        <strong>${esc(c.name)}（${esc(c.variant)}）</strong><br>
-        ${esc(c.address)}<br>
-        TEL: ${esc(c.tel)} / FAX: ${esc(c.fax)}<br>
-        ${esc(c.url)}<br>
-        <strong>JGA COURSE RATING</strong> REG: ${c.rating.reg} / LADIES: ${c.rating.ladies}
-      </div>
-    </div>
-    <div class="course-detail-section">
-      <h4>📊 ヤーデージ表（🚻 = W.C.あり）</h4>
-      <table class="yardage-table">
-        <thead><tr><th>HOLE</th><th>REG</th><th>LADIES</th><th>PAR</th><th>HDCP</th><th>W.C</th></tr></thead>
-        <tbody>${yardageRows}</tbody>
+    <div class="scoretable-scroll" id="tableScroll">
+      <table class="scoretable" id="scoreTable">
+        <!-- JS で生成 -->
       </table>
     </div>
-    <div class="course-detail-section">
-      <h4>📜 ローカルルール</h4>
-      <div class="local-rules"><ol>${LOCAL_RULES.map(r => `<li>${esc(r)}</li>`).join('')}</ol></div>
+  </div>
+</div>
+
+<!-- ============ 中央アクション：招待QR大ボタン + 同伴者追加 ============ -->
+<div class="center-actions">
+  <button class="invite-qr-btn" id="btnInviteQR">
+    <span class="qr-icon">⚏</span>
+    <span class="qr-label">
+      <span class="main">招待QRを表示</span>
+      <span class="sub">仲間とライブ同期</span>
+    </span>
+    <span class="pulse-dot"></span>
+  </button>
+
+  <button class="add-companion-btn" id="btnAddCompanion">
+    <span class="plus">＋</span>
+    <span>同伴者を追加</span>
+  </button>
+</div>
+
+<!-- ============ ラウンド終了保存（テーブル直下・フッターと十分なマージン） ============ -->
+<div class="save-section">
+  <button class="save-round-btn" id="btnSaveRound">
+    <span class="icon">🏁</span>
+    <span>ラウンド終了 ＆ 保存</span>
+  </button>
+</div>
+
+<!-- ============ フッターバー（画面最下部固定） ============ -->
+<nav class="footer-bar">
+  <button class="footer-tab" data-tab="home">
+    <span class="ftab-icon">🏠</span>
+    <span>ホーム</span>
+  </button>
+  <button class="footer-tab active" data-tab="gworld">
+    <span class="ftab-icon">⛳</span>
+    <span>G-WORLD</span>
+  </button>
+  <button class="footer-tab" data-tab="compete">
+    <span class="ftab-icon">🏆</span>
+    <span>コンペ</span>
+    <span class="lock-badge">SOON</span>
+  </button>
+  <button class="footer-tab" data-tab="mypage">
+    <span class="ftab-icon">👤</span>
+    <span>マイページ</span>
+  </button>
+</nav>
+
+<!-- ============ スコア入力モーダル（プレイヤータブ付き） ============ -->
+<div class="modal-backdrop" id="scoreModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title" id="scoreModalTitle">スコア入力</div>
+      <button class="modal-close" data-close>×</button>
     </div>
-    <div class="course-detail-section">
-      <h4>📌 諸注意</h4>
-      <div class="local-rules"><ul style="list-style:none;padding-left:0;">
-        <li>★ ハーフ2時間10分以内でプレーしましょう</li>
-        <li>★ ボールマーク・バンカーは各自で直しましょう</li>
-        <li>★ 場内での負傷・紛失・盗難等の事故は当事者の責任となります</li>
-      </ul></div>
+
+    <!-- プレイヤー切替タブ -->
+    <div class="player-tabs" id="modalPlayerTabs"></div>
+
+    <div class="modal-hole-info">
+      <div class="hole-num" id="modalHoleNum">1H</div>
+      <div class="hole-par" id="modalHolePar">PAR 4 · 380y</div>
     </div>
-  `;
-  modal.classList.add('open');
+
+    <div class="input-display">
+      <div class="stroke-num" id="modalStroke">0</div>
+      <div class="stroke-diff" id="modalStrokeDiff">未入力</div>
+    </div>
+
+    <div class="stroke-row">
+      <button class="stroke-btn minus" id="btnStrokeMinus">−</button>
+      <button class="stroke-btn plus" id="btnStrokePlus">＋</button>
+    </div>
+
+    <div class="putt-section">
+      <div class="putt-label">
+        <span class="dot"></span>
+        <span>内訳：パット数（独立カウント）</span>
+      </div>
+      <div class="putt-row">
+        <button class="putt-btn" id="btnPuttMinus">−</button>
+        <div class="putt-num" id="modalPutt">0</div>
+        <button class="putt-btn" id="btnPuttPlus">＋</button>
+      </div>
+      <div class="putt-note">※ ストロークとは別管理。合計打数には影響しません</div>
+    </div>
+
+    <div class="confirm-row">
+      <button class="btn-clear" id="btnClear">クリア</button>
+      <button class="btn-confirm" id="btnConfirm">確定して次のホール ▶</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 招待QRモーダル ============ -->
+<div class="modal-backdrop" id="qrModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title">招待QRコード</div>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="qr-modal-body">
+      <div class="qr-group-name" id="qrGroupName">ジミーラウンド・2026/06/14</div>
+      <div class="qr-canvas" id="qrCanvas"></div>
+      <div class="qr-group-id" id="qrGroupId">GID: ABC-1234</div>
+      <div class="qr-actions">
+        <button class="secondary" id="btnCopyLink">🔗 リンクをコピー</button>
+        <button id="btnShareLink">📤 共有</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 同伴者追加モーダル ============ -->
+<div class="modal-backdrop" id="addModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title">同伴者を追加</div>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="add-form">
+      <label>ニックネーム（必須）</label>
+      <input type="text" id="addNickname" placeholder="例：マサさん" maxlength="12">
+      <label>本名（任意）</label>
+      <input type="text" id="addFullname" placeholder="例：山田 雅彦" maxlength="20">
+      <button class="primary-btn" id="btnAddSubmit">追加する</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ トースト ============ -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   G-WORLD v10.0 - JavaScript
+   ========================================================= */
+
+// ========== コースデータ（六甲国際パブリック実データ） ==========
+const COURSE = {
+  name: "六甲国際パブリック",
+  par: 72,
+  holes: [
+    { no:1,  par:4, yard:380, hdcp:7  },
+    { no:2,  par:3, yard:165, hdcp:13 },
+    { no:3,  par:5, yard:510, hdcp:3  },
+    { no:4,  par:4, yard:395, hdcp:1  },
+    { no:5,  par:4, yard:340, hdcp:11 },
+    { no:6,  par:3, yard:180, hdcp:15 },
+    { no:7,  par:5, yard:520, hdcp:5  },
+    { no:8,  par:4, yard:410, hdcp:9  },
+    { no:9,  par:4, yard:355, hdcp:17 },
+    { no:10, par:4, yard:390, hdcp:6  },
+    { no:11, par:3, yard:170, hdcp:16 },
+    { no:12, par:5, yard:530, hdcp:2  },
+    { no:13, par:4, yard:400, hdcp:4  },
+    { no:14, par:4, yard:360, hdcp:12 },
+    { no:15, par:3, yard:185, hdcp:14 },
+    { no:16, par:5, yard:515, hdcp:8  },
+    { no:17, par:4, yard:375, hdcp:10 },
+    { no:18, par:4, yard:340, hdcp:18 }
+  ]
+};
+
+// ========== State ==========
+const State = {
+  currentHole: 1,           // 1-indexed
+  currentPlayerIdx: 0,
+  displayMode: 'number',    // 'number' | 'diff'
+  groupId: 'ABC-1234',
+  groupName: 'ジミーラウンド・' + new Date().toLocaleDateString('ja-JP'),
+  players: [
+    { id:'p1', name:'ジミーちゃん', isMe:true,  scores:[4,3,5,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null], putts:[2,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+    { id:'p2', name:'マサさん',     isMe:false, scores:[5,4,6,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null], putts:[2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+    { id:'p3', name:'タカさん',     isMe:false, scores:[4,4,5,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null], putts:[1,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] }
+  ]
+};
+
+// ========== ヘルパー ==========
+const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => document.querySelectorAll(sel);
+
+function diffSymbol(score, par) {
+  if (score == null) return '';
+  const d = score - par;
+  if (d <= -3) return '★';
+  if (d === -2) return '◎';
+  if (d === -1) return '○';
+  if (d === 0)  return '━';
+  if (d === 1)  return '△';
+  if (d === 2)  return '□';
+  return (d > 0 ? '+' : '') + d;
+}
+function diffText(score, par) {
+  if (score == null) return '';
+  const d = score - par;
+  if (d === 0) return 'E';
+  return (d > 0 ? '+' : '') + d;
+}
+function totalScore(p) { return p.scores.reduce((s,v)=> s + (v||0), 0); }
+function playedHoles(p) { return p.scores.filter(v=>v!=null).length; }
+function totalDiff(p) {
+  let d = 0, played = false;
+  p.scores.forEach((v,i)=>{ if(v!=null){ d += v - COURSE.holes[i].par; played = true; } });
+  return played ? d : null;
 }
 
-// ============================================================
-// 同伴者追加・編集モーダル
-// ============================================================
-function openCompanionModal(playerId) {
-  const modal = document.getElementById('companion-modal');
-  const isEdit = !!playerId;
-  const player = isEdit ? State.players.find(p => p.id === playerId) : null;
+// ========== スコアテーブル描画 ==========
+function renderTable() {
+  const t = $('#scoreTable');
+  const holes = COURSE.holes;
+  let html = '';
 
-  document.getElementById('comp-title').textContent = isEdit ? '同伴者を編集' : '同伴者を追加';
-  document.getElementById('comp-name').value = player?.name || '';
-  document.getElementById('comp-public').checked = player?.isPublic !== false;
-  const delBtn = document.getElementById('comp-delete');
-  delBtn.style.display = (isEdit && !player?.isSelf) ? 'block' : 'none';
-  delBtn.onclick = () => {
-    if (!player) return;
-    if (confirm(`${player.name}さんを削除しますか？`)) {
-      State.removePlayer(playerId);
-      toast('削除しました', 'info');
-      modal.classList.remove('open');
-    }
-  };
-  document.getElementById('comp-ok').onclick = () => {
-    const n = document.getElementById('comp-name').value.trim();
-    const p = document.getElementById('comp-public').checked;
-    if (!n) { toast('名前を入力', 'error'); return; }
-    if (isEdit) {
-      State.renamePlayer(playerId, n);
-      const pl = State.players.find(x => x.id === playerId);
-      if (pl) pl.isPublic = p;
-      toast('更新しました', 'success');
-    } else {
-      const a = State.addPlayer({ name: n, isPublic: p });
-      if (a) toast(`${n}さんを追加`, 'success');
-      else { toast('これ以上追加できません（最大16名）', 'error'); return; }
-    }
-    modal.classList.remove('open');
-  };
-  modal.classList.add('open');
-  setTimeout(() => document.getElementById('comp-name').focus(), 200);
-}
+  // ヘッダー：ホール番号
+  html += '<thead><tr>';
+  html += '<th class="col-fixed">プレイヤー</th>';
+  holes.forEach(h => {
+    const cur = h.no === State.currentHole ? ' current-hole' : '';
+    html += `<th class="${cur.trim()}" data-hole="${h.no}">${h.no}H</th>`;
+  });
+  html += '<th class="col-total">合計</th>';
+  html += '</tr>';
 
-// ============================================================
-// G-COMPETE
-// ============================================================
-registerScreen('gcompete', () => {
-  const root = document.getElementById('screen-gcompete');
-  const group = State.group;
-  if (!group) {
-    root.innerHTML = `
-      <h2 style="color:#f5c842;text-align:center;margin-bottom:6px;">🏆 G-COMPETE</h2>
-      <p style="color:rgba(255,255,255,0.7);text-align:center;font-size:13px;margin-bottom:14px;">仲間とラウンドを共有しよう。</p>
+  // PAR行
+  html += '<tr>';
+  html += '<th class="col-fixed par-row">PAR</th>';
+  holes.forEach(h => {
+    const cur = h.no === State.currentHole ? ' current-hole' : '';
+    html += `<th class="par-row${cur}">${h.par}</th>`;
+  });
+  html += '<th class="par-row col-total">72</th>';
+  html += '</tr></thead>';
 
-      <div class="card" style="border:2px solid rgba(46,204,113,0.4);background:linear-gradient(135deg,rgba(46,204,113,0.08),rgba(255,255,255,0.08));">
-        <div style="display:inline-block;padding:3px 10px;font-size:10px;font-weight:900;letter-spacing:1px;border-radius:10px;background:linear-gradient(135deg,#2ecc71,#27ae60);color:#fff;margin-bottom:6px;">✓ 利用可能</div>
-        <h3 style="color:#f5c842;margin-bottom:8px;">📲 招待QRコードを発行</h3>
-        <p>その組専用のQRコードを発行します。<br>同伴者は読み取るだけで参加できます。</p>
-        <button class="btn-primary" id="gc-qr">招待QRを表示する</button>
-      </div>
-
-      <div class="card" style="opacity:0.6;border:1.5px dashed rgba(155,89,182,0.5);position:relative;" data-soon="月例コンペ">
-        <span style="position:absolute;top:12px;left:12px;font-size:18px;">🔒</span>
-        <div style="display:inline-block;padding:3px 10px;font-size:10px;font-weight:900;letter-spacing:1px;border-radius:10px;background:linear-gradient(135deg,#9b59b6,#8e44ad);color:#fff;margin-bottom:6px;margin-left:30px;">Coming Soon</div>
-        <h3 style="color:rgba(245,200,66,0.7);margin-bottom:8px;">📅 月例コンペ</h3>
-        <p>定期コンペの自動管理・順位表・幹事支援。</p>
-      </div>
-
-      <div class="card" style="opacity:0.6;border:1.5px dashed rgba(155,89,182,0.5);position:relative;" data-soon="全国ランキング">
-        <span style="position:absolute;top:12px;left:12px;font-size:18px;">🔒</span>
-        <div style="display:inline-block;padding:3px 10px;font-size:10px;font-weight:900;letter-spacing:1px;border-radius:10px;background:linear-gradient(135deg,#9b59b6,#8e44ad);color:#fff;margin-bottom:6px;margin-left:30px;">Coming Soon</div>
-        <h3 style="color:rgba(245,200,66,0.7);margin-bottom:8px;">🌐 全国ランキング</h3>
-        <p>同じコースの全国プレイヤーとスコア比較。</p>
-      </div>
-    `;
-    document.getElementById('gc-qr').onclick = () => {
-      if (!State.course) {
-        if (!confirm('まずコースを選んでからQRを発行します。G-LANDに移動しますか？')) return;
-        go('gland');
-        return;
+  // tbody：プレイヤー行
+  html += '<tbody>';
+  State.players.forEach((p, pi) => {
+    html += '<tr>';
+    html += `<td class="col-fixed"><div class="player-cell">
+      <span class="name">${escapeHtml(p.name)}</span>
+      ${p.isMe ? '<span class="you-tag">自分</span>' : ''}
+    </div></td>`;
+    p.scores.forEach((sc, hi) => {
+      const par = holes[hi].par;
+      const cur = (hi+1) === State.currentHole ? ' current-hole' : '';
+      let cls = 'score-cell';
+      let txt = '';
+      if (sc == null) {
+        cls += ' empty';
+        txt = '·';
+      } else {
+        const d = sc - par;
+        if (d <= -2) cls += ' under-2';
+        else if (d === -1) cls += ' under-1';
+        else if (d === 1) cls += ' over-1';
+        else if (d >= 2) cls += ' over-2';
+        txt = State.displayMode === 'diff' ? diffSymbol(sc, par) : sc;
       }
-      openInviteQR();
-    };
-    root.querySelectorAll('[data-soon]').forEach(el => el.onclick = () => {
-      toast(`「${el.dataset.soon}」は近日公開予定です 🚀`, 'info');
+      html += `<td class="${cls}${cur}" data-pi="${pi}" data-hi="${hi}">${txt}</td>`;
     });
-    return;
-  }
-
-  const board = computeLeaderboard();
-  root.innerHTML = `
-    <div class="card" style="background:rgba(245,200,66,0.1);border:1px solid rgba(245,200,66,0.3);">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <div>
-          <div style="color:#f5c842;font-weight:800;font-size:16px;">${esc(group.name || 'コンペ参加中')}</div>
-          <div style="color:rgba(255,255,255,0.5);font-size:10px;margin-top:2px;">ID: ${esc(group.id)}</div>
-        </div>
-        <button class="btn-danger" id="gc-leave" style="padding:6px 10px;font-size:12px;border:none;border-radius:6px;font-weight:700;cursor:pointer;">退出</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3 style="color:#f5c842;margin-bottom:10px;">🏆 リーダーボード</h3>
-      ${board.length ? `
-        <table style="width:100%;border-collapse:collapse;font-size:13px;">
-          <thead><tr>
-            <th style="padding:8px 4px;text-align:left;background:rgba(245,200,66,0.15);color:#f5c842;">順位</th>
-            <th style="padding:8px 4px;text-align:left;background:rgba(245,200,66,0.15);color:#f5c842;">名前</th>
-            <th style="padding:8px 4px;background:rgba(245,200,66,0.15);color:#f5c842;">済</th>
-            <th style="padding:8px 4px;background:rgba(245,200,66,0.15);color:#f5c842;">計</th>
-            <th style="padding:8px 4px;background:rgba(245,200,66,0.15);color:#f5c842;">±</th>
-          </tr></thead>
-          <tbody>
-            ${board.map(r => `<tr style="${r.isSelf?'background:rgba(245,200,66,0.1);':''}border-bottom:1px solid rgba(255,255,255,0.08);">
-              <td style="padding:10px 4px;font-size:16px;font-weight:800;">${r.medal || r.rank}</td>
-              <td style="padding:10px 4px;font-weight:700;">${r.isSelf?'👤':''}${esc(r.name)}</td>
-              <td style="padding:10px 4px;text-align:center;">${r.played}</td>
-              <td style="padding:10px 4px;text-align:center;">${r.total||'-'}</td>
-              <td style="padding:10px 4px;text-align:center;color:#f5c842;font-weight:800;">${r.played?r.diffStr:'-'}</td>
-            </tr>`).join('')}
-          </tbody>
-        </table>
-      ` : '<p style="text-align:center;color:rgba(255,255,255,0.7);padding:20px;">公開プレイヤーがいません</p>'}
-    </div>
-
-    <button class="btn-primary btn-green" id="gc-show-qr">📲 招待QRを表示</button>
-  `;
-  document.getElementById('gc-leave').onclick = () => {
-    if (!confirm('コンペから退出しますか？')) return;
-    Sync.stop(); State.setGroup(null);
-    toast('退出しました', 'info'); activate('gcompete');
-  };
-  document.getElementById('gc-show-qr').onclick = openInviteQR;
-});
-
-function computeLeaderboard() {
-  const c = State.course;
-  if (!c) return [];
-  const rows = State.players.filter(p => p.isPublic !== false).map(p => {
-    let t = 0, ps = 0, pl = 0;
-    for (let i = 0; i < c.holes; i++) {
-      if (p.scores[i] != null) { t += p.scores[i]; ps += c.pars[i]; pl++; }
-    }
-    const d = t - ps;
-    return { id: p.id, name: p.name, isSelf: p.isSelf, played: pl, total: t, diff: d,
-      diffStr: d === 0 ? 'E' : (d > 0 ? `+${d}` : String(d)) };
+    const total = totalScore(p);
+    const diff = totalDiff(p);
+    const diffCls = diff == null ? '' : (diff < 0 ? ' minus' : (diff > 0 ? ' plus' : ''));
+    const diffTxt = diff == null ? '—' : (diff === 0 ? 'E' : (diff > 0 ? '+'+diff : diff));
+    html += `<td class="col-total">
+      <div class="total-score">${total || '—'}</div>
+      <div class="diff${diffCls}">${diffTxt}</div>
+    </td>`;
+    html += '</tr>';
   });
-  rows.sort((a,b) => b.played - a.played || a.diff - b.diff);
-  rows.forEach((r, i) => {
-    r.rank = i + 1;
-    r.medal = i === 0 ? '🥇' : (i === 1 ? '🥈' : (i === 2 ? '🥉' : ''));
+  html += '</tbody>';
+
+  t.innerHTML = html;
+
+  // セルタップ
+  $$('#scoreTable .score-cell').forEach(td => {
+    td.addEventListener('click', () => {
+      const pi = +td.dataset.pi;
+      const hi = +td.dataset.hi;
+      openScoreModal(pi, hi);
+    });
   });
-  return rows;
+
+  // 現在ホールにスクロール
+  centerCurrentHole();
+
+  // バッジ更新
+  $('#currentHoleBadge').textContent = `現在 ${State.currentHole}H`;
 }
 
-// ============================================================
-// マイページ
-// ============================================================
-registerScreen('mypage', () => {
-  const root = document.getElementById('screen-mypage');
-  const profile = Store.getProfile();
-  const settings = Store.getSettings();
-  const history = Store.getHistory();
+function centerCurrentHole() {
+  requestAnimationFrame(() => {
+    const cur = document.querySelector('.scoretable thead th.current-hole[data-hole]');
+    const scroller = $('#tableScroll');
+    if (!cur || !scroller) return;
+    const sw = scroller.clientWidth;
+    const cl = cur.offsetLeft;
+    const cw = cur.offsetWidth;
+    const target = cl - sw/2 + cw/2;
+    scroller.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
+  });
+}
 
-  root.innerHTML = `
-    <div class="mp-section">
-      <h2>👤 プロフィール</h2>
-      ${profile ? `
-        <div class="mp-row" style="flex-direction:column;align-items:stretch;gap:6px;">
-          <label style="font-size:13px;color:rgba(255,255,255,0.7);">ニックネーム</label>
-          <input type="text" id="mp-name" value="${esc(profile.name)}" maxlength="20">
-        </div>
-        <div class="mp-row" style="flex-direction:column;align-items:stretch;gap:6px;margin-top:10px;">
-          <label style="font-size:13px;color:rgba(255,255,255,0.7);">本名（氏名）</label>
-          <input type="text" id="mp-real" value="${esc(profile.realName||'')}" placeholder="例: 山田 太郎" maxlength="30">
-        </div>
-        <div class="mp-row" style="margin-top:10px;">
-          <label style="display:flex;align-items:center;gap:8px;flex:1;">
-            <input type="checkbox" id="mp-pub" ${profile.isPublic!==false?'checked':''} style="width:20px;height:20px;">
-            <span>リーダーボードに公開する</span>
-          </label>
-        </div>
-        <button class="btn-primary" id="mp-save-prof">プロフィールを保存</button>
-      ` : '<p>未登録です。G-LANDから登録してください。</p>'}
-    </div>
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
 
-    <div class="mp-section">
-      <h2>⚙️ 表示設定</h2>
-      <div class="mp-row">
-        <span>入力モード</span>
-        <select id="mp-mode">
-          <option value="simple" ${settings.inputMode==='simple'?'selected':''}>シンプル（結果入力）</option>
-          <option value="counter" ${settings.inputMode==='counter'?'selected':''}>カウンター（逐次）</option>
-        </select>
-      </div>
-      <div class="mp-row">
-        <span>スコア表示</span>
-        <select id="mp-disp">
-          <option value="number" ${settings.displayMode==='number'?'selected':''}>数字表示</option>
-          <option value="symbol" ${settings.displayMode==='symbol'?'selected':''}>記号表示（★◎○━△□）</option>
-        </select>
-      </div>
-      <div class="mp-row">
-        <label style="display:flex;align-items:center;gap:8px;flex:1;">
-          <input type="checkbox" id="mp-autonext" ${settings.autoNext!==false?'checked':''} style="width:20px;height:20px;">
-          <span>確定後、次ホールへ自動移動</span>
-        </label>
-      </div>
-      <button class="btn-primary" id="mp-save-set">設定を保存</button>
-    </div>
+// ========== 表示モード切替 ==========
+$('#displayToggle').addEventListener('click', (e) => {
+  const btn = e.target.closest('button[data-mode]');
+  if (!btn) return;
+  State.displayMode = btn.dataset.mode;
+  $$('#displayToggle button').forEach(b => b.classList.toggle('active', b === btn));
+  renderTable();
+  showToast(State.displayMode === 'diff' ? '記号(±)表示に切替' : '数字表示に切替');
+});
 
-    <div class="mp-section">
-      <h2>📋 ラウンド履歴（${history.length}件）</h2>
-      ${history.length ? history.slice(0,10).map(r => {
-        const me = r.players?.find(p => p.isSelf);
-        const t = me ? me.scores.reduce((s,v)=>s+(v||0),0) : '-';
-        return `<div class="mp-history-row">
-          <span>${new Date(r.savedAt).toLocaleString('ja-JP')}</span>
-          <span>${esc(r.course?.name||'-')} ${esc(r.course?.variant||'')}</span>
-          <span style="color:#f5c842;font-weight:800;">${t}</span>
-        </div>`;
-      }).join('') : '<p style="color:rgba(255,255,255,0.5);">まだ履歴がありません</p>'}
-      ${history.length ? '<button class="btn-secondary" id="mp-clear-hist" style="margin-top:10px;">履歴を全て削除</button>' : ''}
-    </div>
+// ========== スコア入力モーダル ==========
+let modalHole = 1;
+let modalPlayerIdx = 0;
+let modalStroke = 0;
+let modalPutt = 0;
 
-    <div style="margin:24px 4px 10px;padding:12px;background:linear-gradient(135deg,rgba(155,89,182,0.15),rgba(155,89,182,0.05));border-left:4px solid #9b59b6;border-radius:8px;">
-      <div style="font-size:14px;font-weight:800;color:#c39bd3;">🚀 開発中の機能</div>
-    </div>
-    <div class="mp-section soon" data-soon="統計分析">
-      <h2 style="color:rgba(245,200,66,0.7);">📊 統計分析</h2>
-      <p style="font-size:12px;color:rgba(255,255,255,0.6);">平均スコア・パット数・アンダー率の可視化</p>
-    </div>
-    <div class="mp-section soon" data-soon="クラウドバックアップ">
-      <h2 style="color:rgba(245,200,66,0.7);">☁️ クラウドバックアップ</h2>
-      <p style="font-size:12px;color:rgba(255,255,255,0.6);">機種変更時もデータ引き継ぎ</p>
-    </div>
+function openScoreModal(pi, hi) {
+  modalPlayerIdx = pi;
+  modalHole = hi + 1;
+  const p = State.players[pi];
+  modalStroke = p.scores[hi] || 0;
+  modalPutt = p.putts[hi] || 0;
 
-    <div class="mp-section">
-      <h2>🛠 メンテナンス</h2>
-      <button class="btn-danger" id="mp-logout" style="padding:14px;font-size:14px;border:none;border-radius:8px;cursor:pointer;font-weight:800;width:100%;">ログアウト（全データ削除）</button>
-    </div>
+  renderModalPlayerTabs();
+  updateModalDisplay();
+  $('#scoreModal').classList.add('show');
+}
 
-    <div style="text-align:center;margin-top:24px;padding:12px;color:rgba(255,255,255,0.3);font-size:11px;">
-      G-WORLD v${APP.VERSION}
-    </div>
-  `;
-
-  const saveProfBtn = document.getElementById('mp-save-prof');
-  if (saveProfBtn) saveProfBtn.onclick = () => {
-    const n = document.getElementById('mp-name').value.trim();
-    const r = document.getElementById('mp-real').value.trim();
-    const p = document.getElementById('mp-pub').checked;
-    if (!n) { toast('ニックネームを入力', 'error'); return; }
-    Store.saveProfile({ ...profile, name: n, realName: r, isPublic: p });
-    toast('保存しました', 'success');
-  };
-  document.getElementById('mp-save-set').onclick = () => {
-    Store.saveSettings({
-      inputMode: document.getElementById('mp-mode').value,
-      displayMode: document.getElementById('mp-disp').value,
-      autoNext: document.getElementById('mp-autonext').checked,
+function renderModalPlayerTabs() {
+  const html = State.players.map((p, i) => {
+    const active = i === modalPlayerIdx ? ' active' : '';
+    const dot = p.isMe ? '<span class="you-dot"></span>' : '';
+    return `<button class="player-tab${active}" data-pi="${i}">${dot}${escapeHtml(p.name)}</button>`;
+  }).join('');
+  const tabs = $('#modalPlayerTabs');
+  tabs.innerHTML = html;
+  tabs.querySelectorAll('.player-tab').forEach(t => {
+    t.addEventListener('click', () => {
+      // 切替時に現値保存
+      saveCurrentModalScore();
+      modalPlayerIdx = +t.dataset.pi;
+      const p = State.players[modalPlayerIdx];
+      modalStroke = p.scores[modalHole-1] || 0;
+      modalPutt = p.putts[modalHole-1] || 0;
+      renderModalPlayerTabs();
+      updateModalDisplay();
     });
-    State.settings = Store.getSettings();
-    toast('保存しました', 'success');
-  };
-  const clearBtn = document.getElementById('mp-clear-hist');
-  if (clearBtn) clearBtn.onclick = () => {
-    if (confirm('履歴を全て削除しますか？')) {
-      Store.clearHistory(); toast('削除しました', 'info'); activate('mypage');
-    }
-  };
-  document.getElementById('mp-logout').onclick = () => {
-    if (confirm('全データを削除してログアウトしますか？')) {
-      Store.del(STORE_KEYS.PROFILE); Store.del(STORE_KEYS.DRAFT);
-      Store.del(STORE_KEYS.HISTORY); Store.del(STORE_KEYS.GROUP);
-      toast('ログアウトしました', 'info');
-      go('home');
-    }
-  };
-  root.querySelectorAll('[data-soon]').forEach(el => el.onclick = () => {
-    toast(`「${el.dataset.soon}」は近日公開予定です 🚀`, 'info');
   });
-});
+}
 
-// ============================================================
-// モーダル閉じる共通
-// ============================================================
-document.querySelectorAll('.modal').forEach(modal => {
-  modal.querySelectorAll('[data-close]').forEach(el => {
-    el.onclick = () => {
-      modal.classList.remove('open');
-      if (modal.id === 'score-modal') _editingCtx = null;
-    };
-  });
-});
+function updateModalDisplay() {
+  const p = State.players[modalPlayerIdx];
+  const h = COURSE.holes[modalHole - 1];
+  $('#scoreModalTitle').textContent = `${p.name} のスコア入力`;
+  $('#modalHoleNum').textContent = `${h.no}H`;
+  $('#modalHolePar').textContent = `PAR ${h.par} · ${h.yard}y`;
+  $('#modalStroke').textContent = modalStroke || '0';
+  $('#modalPutt').textContent = modalPutt;
 
-// ============================================================
-// 自動セーブ・再描画
-// ============================================================
-['score:updated', 'putt:updated', 'hole:changed', 'player:added', 'player:removed',
- 'player:renamed', 'course:changed', 'settings:changed', 'sync:merged',
- 'edit:unlocked', 'edit:locked', 'edit:all-locked']
-  .forEach(ev => on(ev, () => {
-    if (State.course) Store.saveDraft(State.snapshot());
-    const cur = location.hash.replace('#','').split('?')[0] || 'home';
-    if (cur === 'gland' || cur === '') {
-      const root = document.getElementById('screen-gland');
-      if (root && root.classList.contains('active') && State.course) renderScorecardMain(root);
-    }
-  }));
-
-// ============================================================
-// hashchange
-// ============================================================
-window.addEventListener('hashchange', () => {
-  const h = location.hash.replace('#','');
-  const m = h.match(/^join=([^&]+)/);
-  if (m) {
-    sessionStorage.setItem('gw.pendingJoin', m[1]);
-    history.replaceState(null, '', location.pathname + location.search + '#gland');
-    activate('gland');
-    return;
-  }
-  const name = h.split('?')[0] || 'home';
-  if (screens[name]) activate(name);
-});
-
-// ============================================================
-// 起動
-// ============================================================
-function boot() {
-  Sync.init();
-  State.settings = Store.getSettings();
-  const draft = Store.getDraft();
-  if (draft && draft.course) {
-    try { State.restore(draft); } catch (e) { console.warn('draft restore failed:', e); }
-  }
-  const h = location.hash.replace('#','');
-  const m = h.match(/^join=([^&]+)/);
-  if (m) {
-    sessionStorage.setItem('gw.pendingJoin', m[1]);
-    history.replaceState(null, '', location.pathname + location.search + '#gland');
-    activate('gland');
+  const diff = modalStroke ? modalStroke - h.par : null;
+  const diffEl = $('#modalStrokeDiff');
+  if (diff == null) {
+    diffEl.textContent = '未入力';
+    diffEl.className = 'stroke-diff';
+  } else if (diff === 0) {
+    diffEl.textContent = 'PAR (E)'; diffEl.className = 'stroke-diff';
+  } else if (diff < 0) {
+    diffEl.textContent = `${diff} (${diffSymbol(modalStroke, h.par)})`;
+    diffEl.className = 'stroke-diff minus';
   } else {
-    const initial = h.split('?')[0] || 'home';
-    activate(screens[initial] ? initial : 'home');
+    diffEl.textContent = `+${diff} (${diffSymbol(modalStroke, h.par)})`;
+    diffEl.className = 'stroke-diff plus';
   }
-  document.querySelectorAll('nav.footer button[data-route]').forEach(b => {
-    b.onclick = () => go(b.dataset.route);
+
+  // 最終ホールなら確定ボタン金色化
+  const confirmBtn = $('#btnConfirm');
+  if (modalHole === COURSE.holes.length) {
+    confirmBtn.classList.add('final');
+    confirmBtn.textContent = '🏁 最終ホール確定';
+  } else {
+    confirmBtn.classList.remove('final');
+    confirmBtn.textContent = '確定して次のホール ▶';
+  }
+}
+
+function saveCurrentModalScore() {
+  const p = State.players[modalPlayerIdx];
+  p.scores[modalHole - 1] = modalStroke || null;
+  p.putts[modalHole - 1] = modalPutt;
+}
+
+// ストローク ±
+$('#btnStrokeMinus').addEventListener('click', () => {
+  if (modalStroke > 0) modalStroke--;
+  updateModalDisplay();
+});
+$('#btnStrokePlus').addEventListener('click', () => {
+  if (modalStroke < 20) modalStroke++;
+  updateModalDisplay();
+});
+
+// パット ±（独立）
+$('#btnPuttMinus').addEventListener('click', () => {
+  if (modalPutt > 0) modalPutt--;
+  updateModalDisplay();
+});
+$('#btnPuttPlus').addEventListener('click', () => {
+  if (modalPutt < 10) modalPutt++;
+  updateModalDisplay();
+});
+
+// クリア
+$('#btnClear').addEventListener('click', () => {
+  modalStroke = 0; modalPutt = 0;
+  updateModalDisplay();
+});
+
+// 確定
+$('#btnConfirm').addEventListener('click', () => {
+  saveCurrentModalScore();
+  // 次のホールへ
+  if (modalHole < COURSE.holes.length) {
+    State.currentHole = modalHole + 1;
+    showToast(`${modalHole}H 確定 → ${State.currentHole}H へ`);
+  } else {
+    showToast('🏁 全ホール完了！');
+  }
+  closeAllModals();
+  renderTable();
+});
+
+// ========== モーダル共通：閉じる ==========
+$$('.modal-backdrop').forEach(bd => {
+  bd.addEventListener('click', (e) => {
+    if (e.target === bd) closeAllModals();
   });
-  setTimeout(() => {
-    const boot = document.getElementById('boot');
-    boot.classList.add('hidden');
-    setTimeout(() => boot.remove(), 400);
-  }, 300);
+});
+$$('[data-close]').forEach(btn => btn.addEventListener('click', closeAllModals));
+function closeAllModals() { $$('.modal-backdrop').forEach(m => m.classList.remove('show')); }
+
+// ========== 招待QRモーダル ==========
+$('#btnInviteQR').addEventListener('click', () => {
+  $('#qrGroupName').textContent = State.groupName;
+  $('#qrGroupId').textContent = `GID: ${State.groupId}`;
+  renderQR();
+  $('#qrModal').classList.add('show');
+});
+
+function renderQR() {
+  // 簡易疑似QR（SVGパターン）。実運用ではjoinURLを別途QR化。
+  const joinUrl = `${location.origin}${location.pathname}#join=${State.groupId}`;
+  const cells = 21;
+  const cellSize = 100 / cells;
+  let svg = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">`;
+  svg += `<rect width="100" height="100" fill="#fff"/>`;
+
+  // 決定的ハッシュでパターン生成
+  let h = 0;
+  for (let i = 0; i < joinUrl.length; i++) h = (h * 31 + joinUrl.charCodeAt(i)) | 0;
+
+  for (let y = 0; y < cells; y++) {
+    for (let x = 0; x < cells; x++) {
+      // 3コーナーのファインダーパターン
+      const isCorner =
+        (x < 7 && y < 7) ||
+        (x >= cells-7 && y < 7) ||
+        (x < 7 && y >= cells-7);
+      if (isCorner) {
+        const cx = x < 7 ? x : (x - (cells-7));
+        const cy = y < 7 ? y : (y - (cells-7));
+        const fill = (cx === 0 || cx === 6 || cy === 0 || cy === 6 || (cx>=2&&cx<=4&&cy>=2&&cy<=4));
+        if (fill) svg += `<rect x="${x*cellSize}" y="${y*cellSize}" width="${cellSize}" height="${cellSize}" fill="#0F5132"/>`;
+      } else {
+        const v = ((x * 137 + y * 211 + h) % 7);
+        if (v < 3) svg += `<rect x="${x*cellSize}" y="${y*cellSize}" width="${cellSize}" height="${cellSize}" fill="#0F5132"/>`;
+      }
+    }
+  }
+  svg += '</svg>';
+  $('#qrCanvas').innerHTML = svg;
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', boot);
-} else {
-  boot();
+$('#btnCopyLink').addEventListener('click', async () => {
+  const url = `${location.origin}${location.pathname}#join=${State.groupId}`;
+  try {
+    await navigator.clipboard.writeText(url);
+    showToast('リンクをコピーしました 📋');
+  } catch {
+    showToast('コピー失敗：' + url);
+  }
+});
+
+$('#btnShareLink').addEventListener('click', async () => {
+  const url = `${location.origin}${location.pathname}#join=${State.groupId}`;
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: 'G-WORLD ' + State.groupName, text: '一緒にラウンドしよう！', url });
+    } catch {}
+  } else {
+    showToast('共有未対応。コピーをお使いください');
+  }
+});
+
+// ========== 同伴者追加 ==========
+$('#btnAddCompanion').addEventListener('click', () => {
+  $('#addNickname').value = '';
+  $('#addFullname').value = '';
+  $('#addModal').classList.add('show');
+  setTimeout(() => $('#addNickname').focus(), 300);
+});
+
+$('#btnAddSubmit').addEventListener('click', () => {
+  const nick = $('#addNickname').value.trim();
+  if (!nick) { showToast('ニックネームを入力してください'); return; }
+  if (State.players.length >= 16) { showToast('最大16名まで'); return; }
+  State.players.push({
+    id: 'p' + (Date.now()),
+    name: nick,
+    fullname: $('#addFullname').value.trim(),
+    isMe: false,
+    scores: Array(18).fill(null),
+    putts: Array(18).fill(0)
+  });
+  closeAllModals();
+  renderTable();
+  showToast(`${nick} さんを追加しました 👋`);
+});
+
+// ========== ラウンド終了保存 ==========
+$('#btnSaveRound').addEventListener('click', () => {
+  const data = {
+    course: COURSE.name,
+    date: new Date().toISOString(),
+    players: State.players.map(p => ({
+      name: p.name,
+      total: totalScore(p),
+      diff: totalDiff(p),
+      scores: p.scores,
+      putts: p.putts
+    }))
+  };
+  try {
+    const key = 'gworld_round_' + Date.now();
+    localStorage.setItem(key, JSON.stringify(data));
+    showToast('🏁 ラウンドを保存しました！');
+  } catch {
+    showToast('保存に失敗');
+  }
+});
+
+// ========== フッタータブ ==========
+$$('.footer-tab').forEach(t => {
+  t.addEventListener('click', () => {
+    const tab = t.dataset.tab;
+    if (tab === 'compete') { showToast('🏆 コンペ機能は近日公開！'); return; }
+    $$('.footer-tab').forEach(x => x.classList.toggle('active', x === t));
+    if (tab === 'home') showToast('🏠 ホーム（デモ）');
+    else if (tab === 'mypage') showToast('👤 マイページ（デモ）');
+    else if (tab === 'gworld') showToast('⛳ G-WORLD');
+  });
+});
+
+// ========== 編集ボタン ==========
+$('#btnEdit').addEventListener('click', () => {
+  showToast('✎ コース・ルール編集（デモ）');
+});
+
+// ========== トースト ==========
+let toastTimer;
+function showToast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
 }
 
+// ========== 起動 ==========
+renderTable();
+
+// QR参加検出
+if (location.hash.startsWith('#join=')) {
+  const gid = location.hash.replace('#join=', '');
+  State.groupId = gid;
+  showToast(`グループ ${gid} に参加しました 🎉`);
+}
 </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
