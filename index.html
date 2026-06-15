@@ -1390,6 +1390,149 @@ tr.is-me td.current-hole {
   border: 1px solid var(--line);
 }
 
+
+/* ========== v14追加：入力モード切替バー（メイン画面） ========== */
+.toggle-bar.input-mode-bar {
+  border-top: none;
+  border-bottom: 2px solid var(--green-mist-2);
+  background: linear-gradient(180deg, var(--paper) 0%, #F7FCF9 100%);
+  position: relative;
+}
+.toggle-bar.input-mode-bar::before {
+  content: "↓"; position: absolute;
+  left: 50%; top: -10px; transform: translateX(-50%);
+  background: var(--green-2); color: #fff;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 10px; font-weight: 900;
+  box-shadow: var(--shadow-1);
+}
+
+.input-mode-main-toggle {
+  display: inline-flex; gap: 4px;
+  background: var(--cream);
+  border: 1.5px solid var(--line-strong);
+  border-radius: 12px; padding: 4px;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.04);
+}
+.input-mode-main-toggle button {
+  padding: 8px 12px;
+  font-size: 11px; font-weight: 800;
+  border-radius: 9px;
+  color: var(--ink-soft);
+  transition: all .18s;
+  display: flex; align-items: center; gap: 6px;
+  min-height: 38px;
+}
+.input-mode-main-toggle button .im-icon {
+  font-size: 16px; line-height: 1;
+}
+.input-mode-main-toggle button .im-name {
+  font-size: 11px; line-height: 1.1;
+  display: flex; flex-direction: column;
+  align-items: flex-start;
+}
+.input-mode-main-toggle button .im-sub {
+  font-size: 9px; opacity: .75;
+  font-weight: 700;
+}
+.input-mode-main-toggle button.active {
+  background: linear-gradient(135deg, var(--green-deep), var(--green-1));
+  color: #fff;
+  box-shadow: var(--shadow-1);
+}
+.input-mode-main-toggle button.active .im-sub {
+  opacity: .85;
+  color: var(--gold);
+}
+
+/* ========== v14追加：モーダル内のモードバッジ ========== */
+.modal-mode-badge {
+  display: flex; align-items: center; gap: 8px;
+  margin: 10px 14px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, var(--green-mist), #F7FCF9);
+  border-left: 4px solid var(--green-2);
+  border-radius: 10px;
+  font-size: 12px;
+}
+.modal-mode-badge .mb-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.modal-mode-badge .mb-label {
+  font-weight: 900; color: var(--green-deep);
+  font-size: 13px;
+}
+.modal-mode-badge .mb-hint {
+  color: var(--ink-soft);
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* シンプルモード時専用カラー */
+.modal-mode-badge.is-simple {
+  background: linear-gradient(135deg, #FFF8E1, #FFFBEC);
+  border-left-color: var(--gold-dark);
+}
+.modal-mode-badge.is-simple .mb-label { color: var(--gold-dark); }
+
+/* ========== v14追加：PARクイックボタン（シンプルモード専用） ========== */
+.quick-par-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: linear-gradient(135deg, var(--gold-light), #FFE89A);
+  color: var(--gold-dark);
+  border: 1.5px solid var(--gold);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 11px; font-weight: 900;
+  margin-top: 10px;
+  transition: all .12s;
+  letter-spacing: .04em;
+}
+.quick-par-btn:active {
+  transform: scale(.94);
+  background: var(--gold);
+  color: #fff;
+}
+.quick-par-btn .qp-icon { font-size: 13px; }
+
+/* カウンターモード時は非表示 */
+body.input-mode-counter .quick-par-btn { display: none; }
+body.input-mode-counter #btnQuickPutt { display: none; }
+
+/* ========== v14追加：パットクイックボタン ========== */
+.quick-putt-btn {
+  margin-left: auto;
+  margin-right: 6px;
+  font-size: 10px; padding: 2px 8px;
+  background: var(--gold-light);
+  color: var(--gold-dark);
+  border: 1.5px solid var(--gold);
+  border-radius: var(--radius-pill);
+  font-weight: 800;
+  transition: transform .1s;
+}
+.quick-putt-btn:active {
+  transform: scale(.92);
+  background: var(--gold);
+  color: #fff;
+}
+
+/* ========== v14追加：レスポンシブ調整 ========== */
+@media (max-width: 380px) {
+  .input-mode-main-toggle button {
+    padding: 6px 10px;
+    min-height: 34px;
+  }
+  .input-mode-main-toggle button .im-name { font-size: 10px; }
+  .input-mode-main-toggle button .im-sub { font-size: 8px; }
+  .input-mode-main-toggle button .im-icon { font-size: 14px; }
+  .modal-mode-badge .mb-hint { display: none; }
+}
+
 </style>
 
 <!-- QR Code Generator (Kazuhiko Arase, MIT) -->
@@ -3742,6 +3885,21 @@ var qrcode = function() {
     </div>
   </div>
 
+  <!-- 入力モード切替バー（表示モードのすぐ下・階層的に配置） -->
+  <div class="toggle-bar input-mode-bar">
+    <div class="toggle-label">スコア入力モード</div>
+    <div class="input-mode-main-toggle" id="inputModeMainToggle">
+      <button data-mode="simple" class="active" title="PAR基準から±で素早く調整">
+        <span class="im-icon">⚡</span>
+        <span class="im-name">シンプル<span class="im-sub">(±)</span></span>
+      </button>
+      <button data-mode="counter" title="0から＋ボタンで1打ずつカウント">
+        <span class="im-icon">🔢</span>
+        <span class="im-name">カウンター<span class="im-sub">(＋−)</span></span>
+      </button>
+    </div>
+  </div>
+
   <div class="card-wrap">
     <div class="card">
       <div class="card-header">
@@ -3992,42 +4150,33 @@ var qrcode = function() {
         <button id="modalHoleNext">▶</button>
       </div>
     </div>
-    <!-- 入力モード切替 -->
-    <div class="input-mode-toggle-bar">
-      <span class="im-label">入力モード：</span>
-      <div class="input-mode-toggle" id="modalInputModeToggle">
-        <button data-mode="counter" class="active">＋− カウンター</button>
-        <button data-mode="simple">直接入力</button>
-      </div>
+    <!-- 入力モード表示バッジ（メイン画面で切替済） -->
+    <div class="modal-mode-badge">
+      <span class="mb-icon" id="modalModeIcon">⚡</span>
+      <span class="mb-label" id="modalModeLabel">シンプル（±）モード</span>
+      <span class="mb-hint" id="modalModeHint">PAR基準・±で調整</span>
     </div>
 
-    <!-- カウンター入力UI -->
-    <div id="counterInputUI">
-      <div class="input-display">
-        <div class="stroke-num" id="modalStroke">0</div>
-        <div class="stroke-diff" id="modalStrokeDiff">未入力</div>
-      </div>
-      <div class="stroke-row">
-        <button class="stroke-btn minus" id="btnStrokeMinus">−</button>
-        <button class="stroke-btn plus" id="btnStrokePlus">＋</button>
-      </div>
+    <!-- 統合入力UI（モードによって挙動が変わる） -->
+    <div class="input-display">
+      <div class="stroke-num" id="modalStroke">0</div>
+      <div class="stroke-diff" id="modalStrokeDiff">未入力</div>
+      <!-- シンプル(±)モード時のみ表示：PARクイックボタン -->
+      <button class="quick-par-btn" id="btnQuickPar" title="PARに戻す">
+        <span class="qp-icon">🎯</span><span>PARに戻す</span>
+      </button>
     </div>
-
-    <!-- シンプル入力UI（直接数字入力） -->
-    <div id="simpleInputUI" style="display:none;">
-      <div class="simple-input-wrap">
-        <label class="si-label">ストローク（打数）</label>
-        <input type="number" id="simpleStrokeInput" class="simple-num-input"
-               min="0" max="20" placeholder="例：4" inputmode="numeric">
-        <label class="si-label">パット数</label>
-        <input type="number" id="simplePuttInput" class="simple-num-input"
-               min="0" max="10" placeholder="例：2" inputmode="numeric">
-      </div>
+    <div class="stroke-row">
+      <button class="stroke-btn minus" id="btnStrokeMinus">−</button>
+      <button class="stroke-btn plus" id="btnStrokePlus">＋</button>
     </div>
     <div class="putt-section" id="puttSection">
       <div class="putt-label">
         <span class="dot"></span>
         <span>内訳：パット数（独立カウント）</span>
+        <button class="quick-putt-btn" id="btnQuickPutt" title="2パットに戻す">
+          🎯 2に戻す
+        </button>
         <button class="toggle-mini" id="puttToggleMini">ON</button>
       </div>
       <div class="putt-row">
@@ -4211,13 +4360,6 @@ var qrcode = function() {
         </div>
         <label class="switch"><input type="checkbox" id="setLadiesTee"><span class="switch-slider"></span></label>
       </div>
-      <div class="switch-row">
-        <div>
-          <div class="switch-label">スコア入力モード</div>
-          <div class="switch-sub">OFF=カウンター(＋−ボタン) / ON=直接数字入力</div>
-        </div>
-        <label class="switch"><input type="checkbox" id="setInputMode"><span class="switch-slider"></span></label>
-      </div>
       <button class="primary-btn" id="btnSaveSettings">💾 設定を保存</button>
     </div>
   </div>
@@ -4259,6 +4401,7 @@ var qrcode = function() {
      JavaScript（次でWrite追記）
      ============================================================ -->
 <script id="app-script">
+
 /* =================================================================
    G-WORLD v13.0 - 配布版 JavaScript (Real QR + Name Select)
    2026/06/15 - 六甲国際パブリックコース 専用
@@ -4398,7 +4541,10 @@ const State = {
     showPuttInTable: false,
     sortMeFirst: true,
     useLadiesTee: false,
-    inputMode: 'counter'       // 'counter' | 'simple'
+    /* 監督指示v14 §1 - 用語再定義：
+       'simple'   = PAR基準スタート、±で素早く調整（監督愛用モード）
+       'counter'  = 0スタート、＋で1打ずつカウント */
+    inputMode: 'simple'        // 'simple' | 'counter' （デフォルトはシンプル）
   },
   settings: {
     puttEnabled: true,
@@ -4804,8 +4950,25 @@ function openScoreModal(pi, hi) {
   modalPlayerIdx = pi;
   modalHole = hi + 1;
   const p = State.players[pi];
-  modalStroke = p.scores[hi] || 0;
-  modalPutt = p.putts[hi] || 0;
+  const h = COURSE.holes[hi];
+
+  /* 既存スコアがあれば優先、なければ入力モードに応じた初期値を設定 */
+  if (p.scores[hi] != null) {
+    /* 既存スコアあり：そのまま表示（モード問わず） */
+    modalStroke = p.scores[hi];
+    modalPutt = p.putts[hi] || 0;
+  } else {
+    /* 未入力：モードに応じた初期値 */
+    if (State.ui.inputMode === 'simple') {
+      /* シンプル(±)モード：PARが基準、パットは2が基準 */
+      modalStroke = h.par;
+      modalPutt = 2;
+    } else {
+      /* カウンター(＋−)モード：0から開始 */
+      modalStroke = 0;
+      modalPutt = 0;
+    }
+  }
 
   renderModalPlayerTabs();
   applyInputMode();
@@ -4832,27 +4995,58 @@ function renderModalPlayerTabs() {
       saveCurrentModalScore();
       modalPlayerIdx = +t.dataset.pi;
       const p = State.players[modalPlayerIdx];
-      modalStroke = p.scores[modalHole - 1] || 0;
-      modalPutt = p.putts[modalHole - 1] || 0;
+      const h = COURSE.holes[modalHole - 1];
+      /* v14：モードに応じた初期値 */
+      if (p.scores[modalHole - 1] != null) {
+        modalStroke = p.scores[modalHole - 1];
+        modalPutt = p.putts[modalHole - 1] || 0;
+      } else if (State.ui.inputMode === 'simple') {
+        modalStroke = h.par;
+        modalPutt = 2;
+      } else {
+        modalStroke = 0;
+        modalPutt = 0;
+      }
       renderModalPlayerTabs();
       updateModalDisplay();
     });
   });
 }
 
-/* 入力モード切替 */
+/* 入力モードUI反映（メイン画面トグル＋モーダル内バッジ＋body class） */
 function applyInputMode() {
-  const counterUI = $('#counterInputUI');
-  const simpleUI = $('#simpleInputUI');
-  const tog = $('#modalInputModeToggle');
-  if (State.ui.inputMode === 'simple') {
-    counterUI.style.display = 'none';
-    simpleUI.style.display = 'block';
-    tog.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.mode === 'simple'));
-  } else {
-    counterUI.style.display = 'block';
-    simpleUI.style.display = 'none';
-    tog.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.mode === 'counter'));
+  const mode = State.ui.inputMode;
+  const isSimple = (mode === 'simple');
+
+  /* body クラス（CSSでクイックPARボタン表示制御） */
+  document.body.classList.toggle('input-mode-simple', isSimple);
+  document.body.classList.toggle('input-mode-counter', !isSimple);
+
+  /* メイン画面のトグル */
+  const mainTog = $('#inputModeMainToggle');
+  if (mainTog) {
+    mainTog.querySelectorAll('button').forEach(b => {
+      b.classList.toggle('active', b.dataset.mode === mode);
+    });
+  }
+
+  /* モーダル内バッジ */
+  const badge = $('.modal-mode-badge');
+  const icon = $('#modalModeIcon');
+  const label = $('#modalModeLabel');
+  const hint = $('#modalModeHint');
+  if (badge && icon && label && hint) {
+    if (isSimple) {
+      badge.classList.add('is-simple');
+      icon.textContent = '⚡';
+      label.textContent = 'シンプル（±）モード';
+      hint.textContent = 'PAR基準・±で調整';
+    } else {
+      badge.classList.remove('is-simple');
+      icon.textContent = '🔢';
+      label.textContent = 'カウンター（＋−）モード';
+      hint.textContent = '0から1打ずつカウント';
+    }
   }
 }
 
@@ -4864,8 +5058,6 @@ function updateModalDisplay() {
   $('#modalHolePar').textContent = 'PAR ' + h.par + ' · ' + getYard(h) + 'y · HDCP ' + h.hdcp;
   $('#modalStroke').textContent = modalStroke || '0';
   $('#modalPutt').textContent = modalPutt;
-  $('#simpleStrokeInput').value = modalStroke || '';
-  $('#simplePuttInput').value = modalPutt || '';
 
   const diff = modalStroke ? modalStroke - h.par : null;
   const diffEl = $('#modalStrokeDiff');
@@ -4920,19 +5112,25 @@ function applyPuttSectionEnabled() {
 }
 
 function saveCurrentModalScore() {
-  /* シンプルモードのフォーム値を取得 */
-  if (State.ui.inputMode === 'simple') {
-    const v = parseInt($('#simpleStrokeInput').value, 10);
-    if (!isNaN(v) && v >= 0 && v <= 20) modalStroke = v;
-    else modalStroke = 0;
-    const pv = parseInt($('#simplePuttInput').value, 10);
-    if (!isNaN(pv) && pv >= 0 && pv <= 10) modalPutt = pv;
-    else modalPutt = 0;
-  }
+  /* シンプル・カウンターとも modalStroke / modalPutt が現在値 */
   const p = State.players[modalPlayerIdx];
   p.scores[modalHole - 1] = modalStroke > 0 ? modalStroke : null;
   p.putts[modalHole - 1] = modalPutt;
   Storage.saveState();
+}
+
+/* PARに戻す（シンプルモード専用クイックアクション） */
+function resetToPar() {
+  const h = COURSE.holes[modalHole - 1];
+  modalStroke = h.par;
+  updateModalDisplay();
+  showToast('🎯 ストロークを PAR ' + h.par + ' に戻しました');
+}
+
+function resetPuttTo2() {
+  modalPutt = 2;
+  updateModalDisplay();
+  showToast('🎯 パットを 2 に戻しました');
 }
 
 function closeAllModals() {
@@ -5125,8 +5323,18 @@ function confirmAndNext() {
       State.round.currentHole = modalHole + 1;
       modalHole = State.round.currentHole;
       const p = State.players[modalPlayerIdx];
-      modalStroke = p.scores[modalHole - 1] || 0;
-      modalPutt = p.putts[modalHole - 1] || 0;
+      const h = COURSE.holes[modalHole - 1];
+      /* v14：次ホールもモードに応じた初期値 */
+      if (p.scores[modalHole - 1] != null) {
+        modalStroke = p.scores[modalHole - 1];
+        modalPutt = p.putts[modalHole - 1] || 0;
+      } else if (State.ui.inputMode === 'simple') {
+        modalStroke = h.par;
+        modalPutt = 2;
+      } else {
+        modalStroke = 0;
+        modalPutt = 0;
+      }
       Storage.saveState();
       renderTopAndHero();
       renderTable();
@@ -5623,7 +5831,6 @@ function openSettings() {
   $('#setAutoNext').checked = State.settings.autoNext;
   $('#setShowPutt').checked = State.ui.showPuttInTable;
   $('#setLadiesTee').checked = State.ui.useLadiesTee;
-  $('#setInputMode').checked = State.ui.inputMode === 'simple';
   $('#settingsModal').classList.add('show');
 }
 
@@ -5632,7 +5839,6 @@ function saveSettings() {
   State.settings.autoNext = $('#setAutoNext').checked;
   State.ui.showPuttInTable = $('#setShowPutt').checked;
   State.ui.useLadiesTee = $('#setLadiesTee').checked;
-  State.ui.inputMode = $('#setInputMode').checked ? 'simple' : 'counter';
   Storage.saveSettings();
   Storage.saveState();
   applyPuttSectionEnabled();
@@ -5698,27 +5904,25 @@ function bindEvents() {
   /* ラウンド保存 */
   $('#btnSaveRound').addEventListener('click', saveRound);
 
-  /* 入力モード切替（モーダル内） */
-  $('#modalInputModeToggle').addEventListener('click', (e) => {
+  /* 入力モード切替（メイン画面トグル） */
+  $('#inputModeMainToggle').addEventListener('click', (e) => {
     const btn = e.target.closest('button[data-mode]');
     if (!btn) return;
-    State.ui.inputMode = btn.dataset.mode;
+    const newMode = btn.dataset.mode;
+    if (newMode === State.ui.inputMode) return;
+    State.ui.inputMode = newMode;
     Storage.saveState();
     applyInputMode();
-    updateModalDisplay();
+    const labels = {
+      simple: '⚡ シンプル(±)モードに切替：PAR基準から素早く調整',
+      counter: '🔢 カウンター(＋−)モードに切替：0から1打ずつカウント'
+    };
+    showToast(labels[newMode]);
   });
 
-  /* シンプル入力（直接数字入力） */
-  $('#simpleStrokeInput').addEventListener('input', () => {
-    const v = parseInt($('#simpleStrokeInput').value, 10);
-    modalStroke = (!isNaN(v) && v >= 0 && v <= 20) ? v : 0;
-    updateModalDisplay();
-  });
-  $('#simplePuttInput').addEventListener('input', () => {
-    const v = parseInt($('#simplePuttInput').value, 10);
-    modalPutt = (!isNaN(v) && v >= 0 && v <= 10) ? v : 0;
-    updateModalDisplay();
-  });
+  /* PARクイックボタン（シンプルモード専用） */
+  $('#btnQuickPar').addEventListener('click', resetToPar);
+  $('#btnQuickPutt').addEventListener('click', resetPuttTo2);
 
   /* カウンターモード */
   $('#btnStrokeMinus').addEventListener('click', () => {
@@ -5740,9 +5944,17 @@ function bindEvents() {
     updateModalDisplay();
   });
   $('#btnClear').addEventListener('click', () => {
-    modalStroke = 0; modalPutt = 0;
-    $('#simpleStrokeInput').value = '';
-    $('#simplePuttInput').value = '';
+    /* クリア動作はモード依存：シンプル時はPAR/2に戻す、カウンター時は0/0 */
+    const h = COURSE.holes[modalHole - 1];
+    if (State.ui.inputMode === 'simple') {
+      modalStroke = h.par;
+      modalPutt = 2;
+      showToast('シンプルモード：PAR / 2パットにリセット');
+    } else {
+      modalStroke = 0;
+      modalPutt = 0;
+      showToast('カウンターモード：0 にリセット');
+    }
     updateModalDisplay();
   });
   $('#btnConfirm').addEventListener('click', confirmAndNext);
@@ -5753,8 +5965,18 @@ function bindEvents() {
       modalHole--;
       State.round.currentHole = modalHole;
       const p = State.players[modalPlayerIdx];
-      modalStroke = p.scores[modalHole - 1] || 0;
-      modalPutt = p.putts[modalHole - 1] || 0;
+      const h = COURSE.holes[modalHole - 1];
+      /* v14：モードに応じた初期値 */
+      if (p.scores[modalHole - 1] != null) {
+        modalStroke = p.scores[modalHole - 1];
+        modalPutt = p.putts[modalHole - 1] || 0;
+      } else if (State.ui.inputMode === 'simple') {
+        modalStroke = h.par;
+        modalPutt = 2;
+      } else {
+        modalStroke = 0;
+        modalPutt = 0;
+      }
       Storage.saveState();
       renderTopAndHero();
       renderTable();
@@ -5767,8 +5989,18 @@ function bindEvents() {
       modalHole++;
       State.round.currentHole = modalHole;
       const p = State.players[modalPlayerIdx];
-      modalStroke = p.scores[modalHole - 1] || 0;
-      modalPutt = p.putts[modalHole - 1] || 0;
+      const h = COURSE.holes[modalHole - 1];
+      /* v14：モードに応じた初期値 */
+      if (p.scores[modalHole - 1] != null) {
+        modalStroke = p.scores[modalHole - 1];
+        modalPutt = p.putts[modalHole - 1] || 0;
+      } else if (State.ui.inputMode === 'simple') {
+        modalStroke = h.par;
+        modalPutt = 2;
+      } else {
+        modalStroke = 0;
+        modalPutt = 0;
+      }
       Storage.saveState();
       renderTopAndHero();
       renderTable();
@@ -5844,8 +6076,9 @@ function bindEvents() {
 function boot() {
   initState();
   bindEvents();
+  applyInputMode();  /* v14: 起動時に入力モードを適用（body class設定など） */
   Router.handleInitial();
-  console.log('G-WORLD v13.0 (六甲国際配布版・Real QR) booted at', new Date().toISOString());
+  console.log('G-WORLD v14.0 (六甲国際配布版・PAR基準±入力復元) booted at', new Date().toISOString());
 }
 
 if (document.readyState === 'loading') {
@@ -5853,6 +6086,7 @@ if (document.readyState === 'loading') {
 } else {
   boot();
 }
+
 
 </script>
 
