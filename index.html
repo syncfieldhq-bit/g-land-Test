@@ -23,7 +23,7 @@
 
 <!-- v17: 簡易インラインWeb App Manifest（ホーム画面追加対応） -->
 <link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"G-WORLD","short_name":"G-WORLD","description":"六甲国際パブリックコース・デジタルスコアカード","start_url":"./","scope":"./","display":"standalone","background_color":"%23E8F3EC","theme_color":"%230F5132","icons":[{"src":"./icon.png","sizes":"192x192","type":"image/png","purpose":"any"},{"src":"./icon.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]}'>
-<title>G-WORLD v19.0 | 六甲国際パブリックコース</title>
+<title>G-WORLD v20.0 | 六甲国際パブリックコース</title>
 <style>
 /* =================================================================
    G-WORLD v12.0 - 配布版 Final
@@ -5227,6 +5227,8 @@ function openScoreModal(pi, hi) {
   applyInputMode();
   updateModalDisplay();
   applyPuttSectionEnabled();
+  /* v20: 確定ボタンを再バインド（9H/18Hどちらでも確実に動作） */
+  try { rebindConfirmBtn(); } catch(e) {}
   $('#scoreModal').classList.add('show');
 }
 
@@ -5325,6 +5327,17 @@ function applyHolesMode() {
   }
   /* v18: モード切替の瞬間に遷移ボタンを再バインド */
   rebindHoleNav();
+  /* v20: スコアモーダルが開いている場合は modalHole を補正＋表示を即時更新 */
+  try {
+    const scoreModal = document.getElementById('scoreModal');
+    if (scoreModal && scoreModal.classList.contains('show')) {
+      let mh = parseInt(modalHole, 10);
+      if (!mh || isNaN(mh) || mh < 1) mh = 1;
+      if (mh > mode) mh = mode;
+      modalHole = mh;
+      updateModalDisplay();
+    }
+  } catch(e) {}
 }
 
 /* =================================================================
@@ -5345,14 +5358,42 @@ function rebindHoleNav() {
   if (next) next.addEventListener('click', function(){ moveHole(1); });
 }
 
+/* =================================================================
+   v20: スコアモーダル「確定」ボタンの Re-bind 関数
+   9Hモードでも18Hモードと同様に確定遷移が動作するよう保証
+   ================================================================= */
+function rebindConfirmBtn() {
+  const id = 'btnConfirm';
+  const old = document.getElementById(id);
+  if (!old) return;
+  const fresh = old.cloneNode(true);
+  old.parentNode.replaceChild(fresh, old);
+  const btn = document.getElementById(id);
+  if (btn) btn.addEventListener('click', confirmAndNext);
+}
+
 function updateModalDisplay() {
+  /* v20: modalHole 正規化（範囲外なら 1 にフォールバック） */
+  const _maxH = getMaxHole();
+  let _mh = parseInt(modalHole, 10);
+  if (!_mh || isNaN(_mh) || _mh < 1) _mh = 1;
+  if (_mh > _maxH) _mh = _maxH;
+  if (_mh > 18) _mh = 18;
+  modalHole = _mh;
   const p = State.players[modalPlayerIdx];
   const h = COURSE.holes[modalHole - 1];
-  $('#scoreModalTitle').textContent = fullName(p) + ' のスコア入力';
-  $('#modalHoleNum').textContent = h.no + 'H';
-  $('#modalHolePar').textContent = 'PAR ' + h.par + ' · ' + getYard(h) + 'y · HDCP ' + h.hdcp;
-  $('#modalStroke').textContent = modalStroke || '0';
-  $('#modalPutt').textContent = modalPutt;
+  if (!h || !p) return;
+  /* v20: 各DOM書込前に存在確認（安全化） */
+  const elTitle = document.getElementById('scoreModalTitle');
+  const elNum = document.getElementById('modalHoleNum');
+  const elPar = document.getElementById('modalHolePar');
+  const elStroke = document.getElementById('modalStroke');
+  const elPutt = document.getElementById('modalPutt');
+  if (elTitle) elTitle.textContent = fullName(p) + ' のスコア入力';
+  if (elNum) elNum.textContent = h.no + 'H';
+  if (elPar) elPar.textContent = 'PAR ' + h.par + ' · ' + getYard(h) + 'y · HDCP ' + h.hdcp;
+  if (elStroke) elStroke.textContent = modalStroke || '0';
+  if (elPutt) elPutt.textContent = modalPutt;
 
   const diff = modalStroke ? modalStroke - h.par : null;
   const diffEl = $('#modalStrokeDiff');
@@ -5617,10 +5658,18 @@ function moveHole(delta) {
 function confirmAndNext() {
   saveCurrentModalScore();
   const maxH = getMaxHole();  /* v17: 9Hモード時は9まで */
+  /* v20: modalHole 正規化（NaN/範囲外なら 1〜maxH に補正） */
+  let mh = parseInt(modalHole, 10);
+  if (!mh || isNaN(mh) || mh < 1) mh = 1;
+  if (mh > maxH) mh = maxH;
+  modalHole = mh;
+
   if (modalHole < maxH) {
     if (State.settings.autoNext) {
-      State.round.currentHole = modalHole + 1;
-      modalHole = State.round.currentHole;
+      /* v20: 18Hと同じ遷移処理を9Hでも確実に実行 */
+      const nextHole = modalHole + 1;
+      State.round.currentHole = nextHole;
+      modalHole = nextHole;
       const p = State.players[modalPlayerIdx];
       const h = COURSE.holes[modalHole - 1];
       /* v14：次ホールもモードに応じた初期値 */
@@ -5637,7 +5686,11 @@ function confirmAndNext() {
       Storage.saveState();
       renderTopAndHero();
       renderTable();
+      /* v20: モーダル表示を即時更新 + 次フレームでも再描画ヒントを送る（DOM同期保証） */
       updateModalDisplay();
+      if (typeof requestAnimationFrame === 'function') {
+        requestAnimationFrame(function() { try { updateModalDisplay(); } catch(e) {} });
+      }
       showToast('✓ ' + (modalHole - 1) + 'H 確定 → ' + modalHole + 'H へ');
     } else {
       Storage.saveState();
@@ -5647,6 +5700,7 @@ function confirmAndNext() {
       showToast('✓ ' + modalHole + 'H 確定');
     }
   } else {
+    /* 最終ホール（9Hなら9H、18Hなら18H） */
     Storage.saveState();
     renderTopAndHero();
     renderTable();
@@ -6056,6 +6110,18 @@ function saveProfile() {
   renderMyPage();
   renderTable();
   showToast('✓ プロフィールを保存しました');
+
+  /* v20: プロフィール保存後にDOM上の表示を強制更新（マイページヘッダー・ニックネーム表示） */
+  try {
+    if (typeof renderMyPage === 'function') renderMyPage();
+    const myNameDisp = document.getElementById('myNameDisp');
+    const myFullnameDisp = document.getElementById('myFullnameDisp');
+    if (myNameDisp) myNameDisp.textContent = (State.me.lastname || State.me.firstname || 'ゲスト');
+    if (myFullnameDisp) {
+      const full = (State.me.lastname || '') + (State.me.firstname ? ' ' + State.me.firstname : '');
+      myFullnameDisp.textContent = full.trim() || '本名未登録';
+    }
+  } catch(e) {}
 }
 
 /* =================================================================
@@ -6480,7 +6546,7 @@ function boot() {
   try { renderTopAndHero(); } catch(e) {}
   try { renderTable(); } catch(e) {}
   Router.handleInitial();
-  console.log('G-WORLD v19.0 (UIレイアウト統合版・3カラム整列・姓名均一化) booted at', new Date().toISOString());
+  console.log('G-WORLD v20.0 (9Hホール遷移修正・modalHole正規化・DOM同期保証) booted at', new Date().toISOString());
 }
 
 if (document.readyState === 'loading') {
