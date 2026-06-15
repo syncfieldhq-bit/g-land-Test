@@ -1628,6 +1628,165 @@ body.input-mode-counter #btnQuickPutt { display: none; }
   .secondary-btn { font-size: 10.5px; padding: 10px 4px; min-height: 52px; }
   .secondary-btn .icon { font-size: 16px; }
 }
+
+/* ========== v25: クイックアクション（予約・緊急・ナビ） 3カラム ========== */
+.quick-actions {
+  padding: 4px 16px 4px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  align-items: stretch;
+  max-width: 760px;
+  margin: 0 auto;
+}
+.quick-btn {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 4px;
+  min-height: 64px;
+  padding: 10px 4px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  font-size: 13px; font-weight: 900;
+  text-align: center; line-height: 1.2;
+  text-decoration: none;
+  box-shadow: var(--shadow-1);
+  transition: transform .12s, box-shadow .12s;
+  color: #fff;
+}
+.quick-btn:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,.15); }
+.quick-btn .qa-icon { font-size: 22px; line-height: 1; }
+.quick-btn .qa-label { font-size: 12.5px; font-weight: 900; }
+.quick-reserve { background: linear-gradient(135deg, #1B7A4B, #0F5132); border-color: #0F5132; }
+.quick-tel     { background: linear-gradient(135deg, #C0392B, #8B1A0E); border-color: #8B1A0E; }
+.quick-nav     { background: linear-gradient(135deg, #2D6FB8, #1A4F8B); border-color: #1A4F8B; }
+
+@media (max-width: 360px) {
+  .quick-btn { font-size: 11px; min-height: 60px; padding: 8px 2px; }
+  .quick-btn .qa-icon { font-size: 19px; }
+}
+
+/* ========== v25: モーダル v25 レイアウト（3:2 L字） ========== */
+.modal-v25 .modal-body-v25 {
+  display: flex; flex-direction: column;
+  height: calc(85vh - 110px);
+  min-height: 480px;
+  overflow: hidden;
+}
+.modal-v25 .modal-top-pane {
+  flex: 3;
+  overflow-y: auto;
+  padding: 0 4px 8px;
+  border-bottom: 2px dashed var(--line);
+  -webkit-overflow-scrolling: touch;
+}
+.modal-v25 .modal-bottom-pane {
+  flex: 2;
+  display: flex; flex-direction: column;
+  gap: 8px;
+  padding: 10px 4px 4px;
+  overflow: hidden;
+}
+
+/* 6ボタングリッド（2列×3行） */
+.grid6 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 8px;
+  flex: 1;
+  min-height: 130px;
+}
+.g6-btn {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 2px;
+  padding: 8px 4px;
+  border-radius: 14px;
+  border: 2px solid var(--line-strong);
+  background: linear-gradient(180deg, #FFFFFF 0%, #F4F8F6 100%);
+  color: var(--ink);
+  font-size: 13px; font-weight: 900;
+  line-height: 1.15;
+  cursor: pointer;
+  box-shadow: var(--shadow-1);
+  transition: transform .1s, box-shadow .1s, background .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.g6-btn:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,.18); }
+.g6-btn:disabled { opacity: .35; cursor: not-allowed; }
+.g6-btn .g6-icon { font-size: 22px; font-weight: 900; line-height: 1; }
+.g6-btn .g6-label { font-size: 12px; font-weight: 900; }
+
+.g6-shot-plus, .g6-putt-plus { background: linear-gradient(180deg, #E8F5EE, #C9E6D6); border-color: #4FA876; color: #0F5132; }
+.g6-shot-minus, .g6-putt-minus { background: linear-gradient(180deg, #FFEFEC, #FAD3CB); border-color: #C97864; color: #8B2A18; }
+.g6-player-next { background: linear-gradient(180deg, #EDF1FC, #C9D4EC); border-color: #5772A6; color: #1F3A6B; }
+.g6-confirm { background: linear-gradient(135deg, #0F5132, #1B7A4B); border-color: #0F5132; color: #fff; }
+.g6-confirm .g6-icon { color: #FFD86B; }
+
+/* L字情報枠：1行に4要素 grid */
+.lshape-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 6px;
+  padding-top: 4px;
+}
+.li-btn, .li-info {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 2px;
+  min-height: 52px;
+  padding: 6px 4px;
+  border-radius: 10px;
+  border: 1.5px solid var(--line-strong);
+  background: var(--paper);
+  text-decoration: none;
+  color: var(--ink);
+  font-size: 11px; font-weight: 800;
+  text-align: center; line-height: 1.15;
+}
+.li-btn { box-shadow: var(--shadow-1); }
+.li-btn:active { transform: translateY(1px); }
+.li-btn .li-icon, .li-info .li-icon { font-size: 16px; line-height: 1; }
+.li-btn .li-text, .li-info .li-text { font-size: 11px; font-weight: 900; }
+.li-reserve { background: linear-gradient(135deg, #E8F5EE, #C9E6D6); border-color: #4FA876; color: #0F5132; }
+.li-tel     { background: linear-gradient(135deg, #FFE5DF, #F9C6BB); border-color: #C97864; color: #8B2A18; }
+.li-info    { background: #FFFDF5; border-style: dashed; color: var(--ink-soft); }
+.li-info b  { font-size: 14px; font-weight: 900; color: var(--ink); }
+
+/* ========== v25: クロスハイライト（現在ホール列 × 入力中行） ========== */
+#scoreTable td.cross-hl,
+#scoreTable th.cross-hl {
+  background: linear-gradient(180deg, #FFF6CC 0%, #FFE99E 100%) !important;
+  box-shadow: inset 0 0 0 2px #C99B2B;
+  position: relative;
+  z-index: 2;
+}
+#scoreTable tr.cross-hl > td {
+  background: linear-gradient(180deg, #FFFBE6 0%, #FFF1B8 100%);
+}
+#scoreTable td.cross-hl.cross-hl-cell {
+  background: linear-gradient(180deg, #FFE588 0%, #FFD250 100%) !important;
+  box-shadow: inset 0 0 0 3px #B5871F;
+}
+
+/* ========== v25: ユニバーサルデザイン強化（モーダル/ボタン高視認性） ========== */
+.modal-v25 .hole-num { font-size: 30px; font-weight: 900; letter-spacing: 1px; }
+.modal-v25 .hole-par { font-size: 14px; font-weight: 800; }
+.modal-v25 .stroke-num { font-size: 56px; font-weight: 900; letter-spacing: 2px; }
+.modal-v25 .stroke-diff { font-size: 18px; font-weight: 900; }
+.modal-v25 .putt-num { font-size: 36px; font-weight: 900; }
+.modal-v25 .modal-mode-badge { font-size: 13px; font-weight: 900; }
+
+@media (max-width: 380px) {
+  .grid6 { gap: 6px; }
+  .g6-btn { padding: 6px 3px; }
+  .g6-btn .g6-icon { font-size: 19px; }
+  .g6-btn .g6-label { font-size: 11px; }
+  .lshape-info { grid-template-columns: 1fr 1fr; gap: 5px; }
+  .li-btn, .li-info { min-height: 46px; font-size: 10.5px; }
+}
+
 </style>
 
 <!-- QR Code Generator (Kazuhiko Arase, MIT) -->
@@ -4054,6 +4213,22 @@ var qrcode = function() {
     </button>
   </div>
 
+  <!-- v25: クイックアクション（予約・緊急電話・ナビ）3カラム -->
+  <div class="quick-actions">
+    <a class="quick-btn quick-reserve" href="https://firstee.jp/rok-pc/rok-pc" target="_blank" rel="noopener">
+      <span class="qa-icon">📅</span>
+      <span class="qa-label">予約サイト</span>
+    </a>
+    <a class="quick-btn quick-tel" href="tel:0785830351">
+      <span class="qa-icon">📞</span>
+      <span class="qa-label">六甲国際<br>緊急連絡</span>
+    </a>
+    <a class="quick-btn quick-nav" href="https://www.google.com/maps/dir/?api=1&destination=六甲国際パブリックコース" target="_blank" rel="noopener">
+      <span class="qa-icon">🧭</span>
+      <span class="qa-label">Googleナビ<br>起動</span>
+    </a>
+  </div>
+
   <div class="secondary-actions">
     <button class="secondary-btn" id="btnCourseDetail">
       <span class="icon">📖</span><span>コース詳細・ルール</span>
@@ -4252,62 +4427,125 @@ var qrcode = function() {
 
 <!-- モーダル: スコア入力 -->
 <div class="modal-backdrop" id="scoreModal">
-  <div class="modal">
+  <div class="modal modal-v25">
     <div class="modal-handle"></div>
     <div class="modal-header">
       <div class="modal-title" id="scoreModalTitle">スコア入力</div>
       <button class="modal-close" data-close>×</button>
     </div>
     <div class="player-tabs" id="modalPlayerTabs"></div>
-    <div class="modal-hole-info">
-      <div>
-        <div class="hole-num" id="modalHoleNum">1H</div>
-        <div class="hole-par" id="modalHolePar">PAR 4 · 352y</div>
-      </div>
-      <div class="hole-nav-mini">
-        <button id="modalHolePrev">◀</button>
-        <button id="modalHoleNext">▶</button>
-      </div>
-    </div>
-    <!-- 入力モード表示バッジ（メイン画面で切替済） -->
-    <div class="modal-mode-badge">
-      <span class="mb-icon" id="modalModeIcon">⚡</span>
-      <span class="mb-label" id="modalModeLabel">シンプル（±）モード</span>
-      <span class="mb-hint" id="modalModeHint">PAR基準・±で調整</span>
-    </div>
 
-    <!-- 統合入力UI（モードによって挙動が変わる） -->
-    <div class="input-display">
-      <div class="stroke-num" id="modalStroke">0</div>
-      <div class="stroke-diff" id="modalStrokeDiff">未入力</div>
-      <!-- シンプル(±)モード時のみ表示：PARクイックボタン -->
-      <button class="quick-par-btn" id="btnQuickPar" title="PARに戻す">
-        <span class="qp-icon">🎯</span><span>PARに戻す</span>
-      </button>
-    </div>
-    <div class="stroke-row">
-      <button class="stroke-btn minus" id="btnStrokeMinus">−</button>
-      <button class="stroke-btn plus" id="btnStrokePlus">＋</button>
-    </div>
-    <div class="putt-section" id="puttSection">
-      <div class="putt-label">
-        <span class="dot"></span>
-        <span>内訳：パット数（独立カウント）</span>
-        <button class="quick-putt-btn" id="btnQuickPutt" title="2パットに戻す">
-          🎯 2に戻す
-        </button>
-        <button class="toggle-mini" id="puttToggleMini">ON</button>
+    <!-- ============================================================
+         v25: モーダル本体（3:2 L字レイアウト）
+         上部3/5 = スコアカード詳細表示エリア
+         下部2/5 = グリッド入力（2列×3行）＋ L字情報枠
+         ============================================================ -->
+    <div class="modal-body-v25">
+
+      <!-- 上部3/5：スコアカード詳細表示 -->
+      <div class="modal-top-pane">
+        <div class="modal-hole-info">
+          <div>
+            <div class="hole-num" id="modalHoleNum">1H</div>
+            <div class="hole-par" id="modalHolePar">PAR 4 · 352y</div>
+          </div>
+          <div class="hole-nav-mini">
+            <button id="modalHolePrev">◀</button>
+            <button id="modalHoleNext">▶</button>
+          </div>
+        </div>
+
+        <div class="modal-mode-badge">
+          <span class="mb-icon" id="modalModeIcon">⚡</span>
+          <span class="mb-label" id="modalModeLabel">シンプル（±）モード</span>
+          <span class="mb-hint" id="modalModeHint">PAR基準・±で調整</span>
+        </div>
+
+        <div class="input-display">
+          <div class="stroke-num" id="modalStroke">0</div>
+          <div class="stroke-diff" id="modalStrokeDiff">未入力</div>
+          <button class="quick-par-btn" id="btnQuickPar" title="PARに戻す">
+            <span class="qp-icon">🎯</span><span>PARに戻す</span>
+          </button>
+        </div>
+
+        <!-- v25: 既存のストローク／パット行は内部処理用に隠さず保持
+             （クリック時の挙動を6ボタングリッドから委譲） -->
+        <div class="stroke-row" style="display:none;">
+          <button class="stroke-btn minus" id="btnStrokeMinus">−</button>
+          <button class="stroke-btn plus" id="btnStrokePlus">＋</button>
+        </div>
+        <div class="putt-section" id="puttSection">
+          <div class="putt-label">
+            <span class="dot"></span>
+            <span>内訳：パット数</span>
+            <button class="quick-putt-btn" id="btnQuickPutt" title="2パットに戻す">🎯 2に戻す</button>
+            <button class="toggle-mini" id="puttToggleMini">ON</button>
+          </div>
+          <div class="putt-row">
+            <button class="putt-btn" id="btnPuttMinus" style="display:none;">−</button>
+            <div class="putt-num" id="modalPutt">0</div>
+            <button class="putt-btn" id="btnPuttPlus" style="display:none;">＋</button>
+          </div>
+        </div>
       </div>
-      <div class="putt-row">
-        <button class="putt-btn" id="btnPuttMinus">−</button>
-        <div class="putt-num" id="modalPutt">0</div>
-        <button class="putt-btn" id="btnPuttPlus">＋</button>
+
+      <!-- 下部2/5：6ボタングリッド + L字情報枠 -->
+      <div class="modal-bottom-pane">
+
+        <!-- 2列×3行 グリッド（実体6ボタン） -->
+        <div class="grid6">
+          <button class="g6-btn g6-shot-plus" id="g6ShotPlus">
+            <span class="g6-icon">＋</span>
+            <span class="g6-label" id="g6ShotPlusLabel">ショット ＋</span>
+          </button>
+          <button class="g6-btn g6-putt-plus" id="g6PuttPlus">
+            <span class="g6-icon">＋</span>
+            <span class="g6-label">パット ＋</span>
+          </button>
+          <button class="g6-btn g6-player-next" id="g6PlayerNext">
+            <span class="g6-icon">👥</span>
+            <span class="g6-label">プレイヤー<br>切替 ▶</span>
+          </button>
+          <button class="g6-btn g6-shot-minus" id="g6ShotMinus">
+            <span class="g6-icon">−</span>
+            <span class="g6-label" id="g6ShotMinusLabel">ショット −</span>
+          </button>
+          <button class="g6-btn g6-putt-minus" id="g6PuttMinus">
+            <span class="g6-icon">−</span>
+            <span class="g6-label">パット −</span>
+          </button>
+          <button class="g6-btn g6-confirm" id="g6Confirm">
+            <span class="g6-icon">✓</span>
+            <span class="g6-label">確定して<br>次のホール</span>
+          </button>
+        </div>
+
+        <!-- L字情報枠：4要素（予約・緊急電話・ロッカー番号・午後スタート） -->
+        <div class="lshape-info">
+          <a class="li-btn li-reserve" href="https://firstee.jp/rok-pc/rok-pc" target="_blank" rel="noopener">
+            <span class="li-icon">📅</span><span class="li-text">予約サイト</span>
+          </a>
+          <a class="li-btn li-tel" href="tel:0785830351">
+            <span class="li-icon">📞</span><span class="li-text">六甲国際 緊急</span>
+          </a>
+          <div class="li-info" id="liLocker">
+            <span class="li-icon">🔐</span>
+            <span class="li-text">ロッカー <b id="lockerNum">—</b></span>
+          </div>
+          <div class="li-info" id="liStart">
+            <span class="li-icon">⛳</span>
+            <span class="li-text">PMスタート <b id="pmStart">—</b></span>
+          </div>
+        </div>
+
+        <!-- 既存「クリア／確定」行は内部処理用に保持・隠す -->
+        <div class="confirm-row" style="display:none;">
+          <button class="btn-clear" id="btnClear">クリア</button>
+          <button class="btn-confirm" id="btnConfirm">確定して次のホール ▶</button>
+        </div>
+
       </div>
-      <div class="putt-note">※ ストロークとは別管理。合計打数には影響しません</div>
-    </div>
-    <div class="confirm-row">
-      <button class="btn-clear" id="btnClear">クリア</button>
-      <button class="btn-confirm" id="btnConfirm">確定して次のホール ▶</button>
     </div>
   </div>
 </div>
@@ -5106,6 +5344,8 @@ function openScoreModal(pi, hi) {
   $('#scoreModal').classList.add('show');
   /* v22: 9Hモード時は disabled/ボタン文言を9H用に上書き */
   applyHoleModeOverlay();
+  /* v25: クロスハイライト適用 */
+  try { applyCrossHighlight(); } catch(e) {}
 }
 
 function renderModalPlayerTabs() {
@@ -5226,6 +5466,8 @@ function updateModalDisplay() {
     confirmBtn.classList.remove('final');
     confirmBtn.textContent = State.settings.autoNext ? '確定して次のホール ▶' : '確定する';
   }
+  /* v25: クロスハイライト追従 */
+  try { applyCrossHighlight(); } catch(e) {}
 }
 
 function applyPuttSectionEnabled() {
@@ -5276,6 +5518,10 @@ function resetPuttTo2() {
 
 function closeAllModals() {
   $$('.modal-backdrop').forEach(m => m.classList.remove('show'));
+  /* v25: クロスハイライトをクリア */
+  try {
+    document.querySelectorAll('#scoreTable .cross-hl').forEach(el => el.classList.remove('cross-hl', 'cross-hl-cell'));
+  } catch(e) {}
 }
 
 /* =================================================================
@@ -5743,6 +5989,34 @@ function applyHoleModeOverlay() {
       }
     }
   }
+}
+
+/* =================================================================
+   v25: クロスハイライト（現在ホール列 × 現在プレイヤー行）
+   入力モーダルが開いている時のみ、スコアテーブルの該当セルを強調
+   ================================================================= */
+function applyCrossHighlight() {
+  /* まず全てのハイライトをクリア */
+  document.querySelectorAll('#scoreTable .cross-hl').forEach(el => el.classList.remove('cross-hl', 'cross-hl-cell'));
+  /* スコアモーダルが開いていない場合は何もしない */
+  const sm = document.getElementById('scoreModal');
+  if (!sm || !sm.classList.contains('show')) return;
+  const hi = (modalHole - 1);
+  const pi = modalPlayerIdx;
+  /* ホール列（th と全 td） */
+  document.querySelectorAll('#scoreTable th[data-hole]').forEach(th => {
+    if (parseInt(th.dataset.hole, 10) === modalHole) th.classList.add('cross-hl');
+  });
+  document.querySelectorAll('#scoreTable td[data-hi="' + hi + '"]').forEach(td => {
+    td.classList.add('cross-hl');
+  });
+  /* プレイヤー行 */
+  document.querySelectorAll('#scoreTable tr[data-pi="' + pi + '"]').forEach(tr => {
+    tr.classList.add('cross-hl');
+  });
+  /* 交差セル（強調） */
+  const crossCell = document.querySelector('#scoreTable td[data-pi="' + pi + '"][data-hi="' + hi + '"]');
+  if (crossCell) crossCell.classList.add('cross-hl-cell');
 }
 
 /* =================================================================
@@ -6496,6 +6770,73 @@ function bindEvents() {
       setHolesMode(newMode);
     });
   }
+
+    /* ============================================================
+     v25: 6ボタングリッドハンドラ（既存ボタンに委譲し聖域を侵さない）
+     ============================================================ */
+  (function bindGrid6() {
+    const click = (id, target) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        const t = document.getElementById(target);
+        if (t) t.click();
+      });
+    };
+    /* 左列上下 = ショット ± （既存 btnStrokePlus / btnStrokeMinus に委譲） */
+    click('g6ShotPlus',  'btnStrokePlus');
+    click('g6ShotMinus', 'btnStrokeMinus');
+    /* 中列上下 = パット ± */
+    click('g6PuttPlus',  'btnPuttPlus');
+    click('g6PuttMinus', 'btnPuttMinus');
+    /* 右上 = プレイヤー切替 */
+    const playerNextBtn = document.getElementById('g6PlayerNext');
+    if (playerNextBtn) {
+      playerNextBtn.addEventListener('click', () => {
+        if (typeof State === 'undefined' || !State.players || State.players.length === 0) return;
+        modalPlayerIdx = (modalPlayerIdx + 1) % State.players.length;
+        const p = State.players[modalPlayerIdx];
+        const hi = modalHole - 1;
+        if (p.scores[hi] != null) {
+          modalStroke = p.scores[hi];
+          modalPutt = p.putts[hi] || 0;
+        } else if (State.ui.inputMode === 'simple') {
+          const h = COURSE.holes[hi];
+          modalStroke = h.par;
+          modalPutt = 2;
+        } else {
+          modalStroke = 0;
+          modalPutt = 0;
+        }
+        renderModalPlayerTabs();
+        updateModalDisplay();
+        try { applyHoleModeOverlay(); } catch(e) {}
+        try { applyCrossHighlight(); } catch(e) {}
+        showToast('👥 ' + fullName(p) + ' に切替');
+      });
+    }
+    /* 右下 = 確定して次へ（既存 btnConfirm に委譲・9H/18Hディスパッチを通る） */
+    click('g6Confirm', 'btnConfirm');
+  })();
+
+  /* ============================================================
+     v25: 入力モードによってショット±ラベルを動的更新
+     シンプル(±) = 「ストローク ±」 / カウンター = 「ショット ±」
+     ============================================================ */
+  (function bindShotLabelUpdate() {
+    const updateLabel = () => {
+      const isSimple = State.ui.inputMode === 'simple';
+      const plus = document.getElementById('g6ShotPlusLabel');
+      const minus = document.getElementById('g6ShotMinusLabel');
+      if (plus) plus.textContent = isSimple ? 'ストローク ＋' : 'ショット ＋';
+      if (minus) minus.textContent = isSimple ? 'ストローク −' : 'ショット −';
+    };
+    /* 入力モードトグル変更時にラベルも更新 */
+    const tog = document.getElementById('inputModeMainToggle');
+    if (tog) tog.addEventListener('click', () => setTimeout(updateLabel, 50));
+    updateLabel();
+  })();
 
   /* v15: アコーディオン設定パネル開閉 */
   const accordion = $('#settingsAccordion');
