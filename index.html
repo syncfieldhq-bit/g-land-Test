@@ -1787,6 +1787,299 @@ body.input-mode-counter #btnQuickPutt { display: none; }
   .li-btn, .li-info { min-height: 46px; font-size: 10.5px; }
 }
 
+
+/* ============================================================
+   v26: トップページ ロッカー番号 & PMスタート 入力フォーム
+   ============================================================ */
+.top-locker-form {
+  margin: 6px 16px 4px;
+  padding: 10px 14px;
+  background: linear-gradient(180deg, #FFFDF5 0%, #F4EFDF 100%);
+  border: 1.5px solid var(--line-strong);
+  border-radius: 14px;
+  box-shadow: var(--shadow-1);
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.tlf-title {
+  font-size: 13px; font-weight: 900;
+  color: var(--green-2); margin-bottom: 8px;
+  letter-spacing: .04em;
+}
+.tlf-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.tlf-field { display: flex; flex-direction: column; }
+.tlf-label {
+  font-size: 11px; font-weight: 800; color: var(--ink-soft);
+  margin-bottom: 4px;
+}
+.top-locker-form input[type="text"],
+.top-locker-form .tlf-time-btn {
+  width: 100%;
+  height: 44px;
+  padding: 8px 12px;
+  font-size: 17px; font-weight: 900;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 10px;
+  background: var(--paper);
+  box-sizing: border-box;
+  text-align: center;
+  color: var(--ink);
+}
+.top-locker-form input[type="text"]:focus,
+.top-locker-form .tlf-time-btn:focus {
+  outline: none;
+  border-color: var(--green-mid);
+  box-shadow: 0 0 0 3px rgba(15, 81, 50, 0.12);
+}
+.tlf-time-btn {
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.tlf-time-icon { font-size: 18px; }
+
+/* ============================================================
+   v26: モーダル上部 — スコア表ミラー（横スクロール）
+   ============================================================ */
+.modal-v25 .modal-mini-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  background: linear-gradient(180deg, #FFFDF5, #F4EFDF);
+  border-radius: 10px;
+  border: 1.5px solid var(--line-strong);
+  margin-bottom: 8px;
+}
+.modal-v25 .modal-mini-hole {
+  display: flex; flex-direction: column;
+  align-items: flex-start;
+}
+.modal-v25 .modal-mini-hole .hole-num {
+  font-size: 28px; font-weight: 900; line-height: 1;
+  color: var(--green-2);
+}
+.modal-v25 .modal-mini-hole .hole-par {
+  font-size: 12px; font-weight: 800; color: var(--ink-soft);
+}
+.modal-v25 .modal-mini-stroke {
+  display: flex; flex-direction: column; align-items: center;
+}
+.modal-v25 .modal-mini-stroke .stroke-num {
+  font-size: 36px; font-weight: 900; line-height: 1;
+  letter-spacing: 1px;
+}
+.modal-v25 .modal-mini-stroke .stroke-diff {
+  font-size: 13px; font-weight: 900;
+}
+
+/* モーダル内スコア表ミラー */
+.modal-v25 .modal-scoretable-wrap {
+  padding: 0;
+  margin-bottom: 6px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--paper);
+}
+.modal-v25 .modal-scoretable-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+  max-height: 220px;
+}
+.modal-v25 #modalScoreTable {
+  font-size: 12px;
+}
+
+/* モードバッジ＋PARボタン横並び */
+.modal-v25 .modal-mode-badge {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 10px;
+  font-size: 12px; font-weight: 900;
+}
+.modal-v25 .quick-par-mini {
+  margin-left: auto;
+  padding: 6px 12px;
+  font-size: 12px;
+  min-height: 32px;
+}
+
+/* ============================================================
+   v26: 下部L字レイアウト（左縦・中央グリッド・下横）
+   ============================================================ */
+.modal-v25 .modal-bottom-pane {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 1fr auto;
+  grid-template-areas:
+    "left center"
+    "bottom bottom";
+  gap: 6px;
+  padding: 6px 4px;
+}
+
+/* 左縦列：予約 + 緊急電話 */
+.l-left {
+  grid-area: left;
+  display: flex; flex-direction: column;
+  gap: 6px;
+  width: 72px;
+}
+.l-vbtn {
+  flex: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 2px;
+  padding: 6px 4px;
+  border-radius: 12px;
+  border: 2px solid var(--line-strong);
+  text-decoration: none;
+  font-size: 11px; font-weight: 900;
+  text-align: center; line-height: 1.15;
+  box-shadow: var(--shadow-1);
+  min-height: 60px;
+}
+.l-vbtn:active { transform: translateY(1px); }
+.l-vbtn .lv-icon { font-size: 22px; line-height: 1; }
+.l-vbtn .lv-text { font-size: 11px; font-weight: 900; }
+.l-reserve { background: linear-gradient(135deg, #1B7A4B, #0F5132); color: #fff; border-color: #0F5132; }
+.l-tel     { background: linear-gradient(135deg, #C0392B, #8B1A0E); color: #fff; border-color: #8B1A0E; }
+
+/* 中央 6ボタングリッド（コンパクト：横幅半分・親指届く範囲） */
+.l-center {
+  grid-area: center;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+}
+.grid6-compact {
+  width: 100%;
+  max-width: 260px;
+  grid-template-columns: 1fr 1fr 1fr !important;
+  grid-template-rows: 1fr 1fr !important;
+  gap: 6px;
+}
+.grid6-compact .g6-btn {
+  padding: 6px 2px;
+  min-height: 56px;
+  border-radius: 12px;
+  font-size: 11px;
+}
+.grid6-compact .g6-btn .g6-icon { font-size: 19px; }
+.grid6-compact .g6-btn .g6-label { font-size: 10.5px; line-height: 1.1; }
+
+/* 下横：ロッカー（表示専用）+ PMスタート（タイムピッカー） */
+.l-bottom {
+  grid-area: bottom;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+  padding-top: 4px;
+  border-top: 1px dashed var(--line);
+  margin-top: 4px;
+}
+.lb-info, .lb-btn {
+  display: flex; align-items: center; gap: 8px;
+  min-height: 48px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1.5px solid var(--line-strong);
+  background: var(--paper);
+  color: var(--ink);
+  font-weight: 800;
+}
+.lb-info { background: #FFFDF5; border-style: dashed; }
+.lb-btn { background: linear-gradient(135deg, #EDF1FC, #C9D4EC); border-color: #5772A6; cursor: pointer; }
+.lb-btn:active { transform: translateY(1px); }
+.lb-icon { font-size: 22px; line-height: 1; }
+.lb-body { display: flex; flex-direction: column; align-items: flex-start; gap: 0; }
+.lb-label { font-size: 11px; font-weight: 800; color: var(--ink-soft); }
+.lb-value { font-size: 14px; font-weight: 900; color: var(--ink); }
+.lb-value b { font-size: 16px; }
+
+/* ============================================================
+   v26: PMスタート タイムピッカー モーダル
+   ============================================================ */
+.modal-pmpicker { max-width: 380px; }
+.pmpicker-body { padding: 16px; }
+.pmpicker-hint {
+  font-size: 13px; font-weight: 800; color: var(--ink-soft);
+  margin-bottom: 12px; text-align: center;
+}
+.pmpicker-input {
+  width: 100%;
+  font-size: 32px;
+  font-weight: 900;
+  padding: 14px;
+  border: 2px solid var(--line-strong);
+  border-radius: 12px;
+  text-align: center;
+  background: var(--paper);
+  color: var(--ink);
+  margin-bottom: 14px;
+  box-sizing: border-box;
+}
+.pmpicker-quick {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+  margin-bottom: 14px;
+}
+.pmpicker-quick button {
+  padding: 10px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 10px;
+  background: var(--paper);
+  font-size: 14px; font-weight: 900;
+  color: var(--ink);
+  cursor: pointer;
+}
+.pmpicker-quick button:active {
+  background: var(--green-mist);
+  border-color: var(--green-2);
+  color: var(--green-2);
+}
+.pmpicker-actions {
+  display: grid; grid-template-columns: 1fr 2fr; gap: 8px;
+}
+.pmpicker-actions .btn-clear {
+  padding: 12px;
+  border-radius: 10px;
+  background: #E5E5E5;
+  border: 1.5px solid #BBB;
+  font-weight: 900;
+  cursor: pointer;
+}
+.pmpicker-actions .btn-confirm {
+  padding: 12px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #1B7A4B, #0F5132);
+  color: #fff;
+  border: none;
+  font-weight: 900;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+/* ============================================================
+   v26: 小画面対応
+   ============================================================ */
+@media (max-width: 380px) {
+  .l-left { width: 60px; }
+  .l-vbtn { font-size: 10px; min-height: 54px; }
+  .l-vbtn .lv-icon { font-size: 19px; }
+  .grid6-compact { max-width: 220px; }
+  .grid6-compact .g6-btn { min-height: 50px; padding: 5px 2px; }
+  .grid6-compact .g6-btn .g6-icon { font-size: 17px; }
+  .grid6-compact .g6-btn .g6-label { font-size: 10px; }
+  .modal-v25 .modal-mini-stroke .stroke-num { font-size: 30px; }
+  .lb-info, .lb-btn { min-height: 44px; padding: 5px 8px; }
+  .lb-icon { font-size: 19px; }
+  .lb-value b { font-size: 14px; }
+  .pmpicker-input { font-size: 26px; padding: 12px; }
+}
+
 </style>
 
 <!-- QR Code Generator (Kazuhiko Arase, MIT) -->
@@ -4213,6 +4506,24 @@ var qrcode = function() {
     </button>
   </div>
 
+  <!-- v26: トップページ ロッカー番号 & PMスタート 入力フォーム -->
+  <div class="top-locker-form">
+    <div class="tlf-title">🏌️ 今日のラウンド情報</div>
+    <div class="tlf-row">
+      <div class="tlf-field">
+        <label class="tlf-label">🔐 貴重品ロッカー番号</label>
+        <input type="text" id="topLockerInput" maxlength="6" placeholder="例: 123" inputmode="numeric">
+      </div>
+      <div class="tlf-field">
+        <label class="tlf-label">⛳ 午後スタート時間</label>
+        <button class="tlf-time-btn" id="topPmStartBtn" type="button">
+          <span id="topPmStartDisp">— : —</span>
+          <span class="tlf-time-icon">🕒</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- v25: クイックアクション（予約・緊急電話・ナビ）3カラム -->
   <div class="quick-actions">
     <a class="quick-btn quick-reserve" href="https://firstee.jp/rok-pc/rok-pc" target="_blank" rel="noopener">
@@ -4436,18 +4747,22 @@ var qrcode = function() {
     <div class="player-tabs" id="modalPlayerTabs"></div>
 
     <!-- ============================================================
-         v25: モーダル本体（3:2 L字レイアウト）
-         上部3/5 = スコアカード詳細表示エリア
-         下部2/5 = グリッド入力（2列×3行）＋ L字情報枠
+         v26: モーダル本体（3:2 L字レイアウト）
+         上部3/5 = スコアカード表ミラー（横スクロール・全ホール可視化）
+         下部2/5 = L字レイアウト（左縦=予約/電話 / 中央=6ボタングリッド / 下横=ロッカー/PMスタート）
          ============================================================ -->
     <div class="modal-body-v25">
 
-      <!-- 上部3/5：スコアカード詳細表示 -->
+      <!-- 上部3/5：スコアカード表ミラー（横スクロール可能） -->
       <div class="modal-top-pane">
-        <div class="modal-hole-info">
-          <div>
-            <div class="hole-num" id="modalHoleNum">1H</div>
-            <div class="hole-par" id="modalHolePar">PAR 4 · 352y</div>
+        <div class="modal-mini-header">
+          <div class="modal-mini-hole">
+            <span class="hole-num" id="modalHoleNum">1H</span>
+            <span class="hole-par" id="modalHolePar">PAR 4 · 352y</span>
+          </div>
+          <div class="modal-mini-stroke">
+            <span class="stroke-num" id="modalStroke">0</span>
+            <span class="stroke-diff" id="modalStrokeDiff">未入力</span>
           </div>
           <div class="hole-nav-mini">
             <button id="modalHolePrev">◀</button>
@@ -4455,27 +4770,28 @@ var qrcode = function() {
           </div>
         </div>
 
+        <!-- v26: メイン画面スコア表のミラー（renderTable()がここにも複製） -->
+        <div class="modal-scoretable-wrap">
+          <div class="scoretable-scroll modal-scoretable-scroll" id="modalTableScroll">
+            <table class="scoretable" id="modalScoreTable"></table>
+          </div>
+        </div>
+
         <div class="modal-mode-badge">
           <span class="mb-icon" id="modalModeIcon">⚡</span>
           <span class="mb-label" id="modalModeLabel">シンプル（±）モード</span>
           <span class="mb-hint" id="modalModeHint">PAR基準・±で調整</span>
-        </div>
-
-        <div class="input-display">
-          <div class="stroke-num" id="modalStroke">0</div>
-          <div class="stroke-diff" id="modalStrokeDiff">未入力</div>
-          <button class="quick-par-btn" id="btnQuickPar" title="PARに戻す">
-            <span class="qp-icon">🎯</span><span>PARに戻す</span>
+          <button class="quick-par-btn quick-par-mini" id="btnQuickPar" title="PARに戻す">
+            <span class="qp-icon">🎯</span><span>PAR</span>
           </button>
         </div>
 
-        <!-- v25: 既存のストローク／パット行は内部処理用に隠さず保持
-             （クリック時の挙動を6ボタングリッドから委譲） -->
+        <!-- 内部処理用に保持（聖域・hidden） -->
         <div class="stroke-row" style="display:none;">
           <button class="stroke-btn minus" id="btnStrokeMinus">−</button>
           <button class="stroke-btn plus" id="btnStrokePlus">＋</button>
         </div>
-        <div class="putt-section" id="puttSection">
+        <div class="putt-section" id="puttSection" style="display:none;">
           <div class="putt-label">
             <span class="dot"></span>
             <span>内訳：パット数</span>
@@ -4490,11 +4806,23 @@ var qrcode = function() {
         </div>
       </div>
 
-      <!-- 下部2/5：6ボタングリッド + L字情報枠 -->
+      <!-- 下部2/5：L字レイアウト -->
       <div class="modal-bottom-pane">
+        <!-- L字: 左縦列 = 予約 + 緊急電話 -->
+        <div class="l-left">
+          <a class="l-vbtn l-reserve" href="https://firstee.jp/rok-pc/rok-pc" target="_blank" rel="noopener">
+            <span class="lv-icon">📅</span>
+            <span class="lv-text">予約<br>サイト</span>
+          </a>
+          <a class="l-vbtn l-tel" href="tel:0785830351">
+            <span class="lv-icon">📞</span>
+            <span class="lv-text">緊急<br>連絡</span>
+          </a>
+        </div>
 
-        <!-- 2列×3行 グリッド（実体6ボタン） -->
-        <div class="grid6">
+        <!-- 中央：コンパクト 6ボタングリッド -->
+        <div class="l-center">
+          <div class="grid6 grid6-compact">
           <button class="g6-btn g6-shot-plus" id="g6ShotPlus">
             <span class="g6-icon">＋</span>
             <span class="g6-label" id="g6ShotPlusLabel">ショット ＋</span>
@@ -4517,34 +4845,62 @@ var qrcode = function() {
           </button>
           <button class="g6-btn g6-confirm" id="g6Confirm">
             <span class="g6-icon">✓</span>
-            <span class="g6-label">確定して<br>次のホール</span>
+            <span class="g6-label">確定<br>次へ</span>
+          </button>
+          </div>
+        </div>
+
+        <!-- L字: 下横 = ロッカー番号(表示専用) + PMスタート(タイムピッカー) -->
+        <div class="l-bottom">
+          <div class="lb-info" id="liLocker">
+            <span class="lb-icon">🔐</span>
+            <div class="lb-body">
+              <span class="lb-label">ロッカー</span>
+              <span class="lb-value"><b id="lockerNum">—</b></span>
+            </div>
+          </div>
+          <button class="lb-btn" id="liStartBtn" type="button">
+            <span class="lb-icon">⛳</span>
+            <div class="lb-body">
+              <span class="lb-label">PMスタート</span>
+              <span class="lb-value"><b id="pmStart">— : —</b></span>
+            </div>
           </button>
         </div>
 
-        <!-- L字情報枠：4要素（予約・緊急電話・ロッカー番号・午後スタート） -->
-        <div class="lshape-info">
-          <a class="li-btn li-reserve" href="https://firstee.jp/rok-pc/rok-pc" target="_blank" rel="noopener">
-            <span class="li-icon">📅</span><span class="li-text">予約サイト</span>
-          </a>
-          <a class="li-btn li-tel" href="tel:0785830351">
-            <span class="li-icon">📞</span><span class="li-text">六甲国際 緊急</span>
-          </a>
-          <div class="li-info" id="liLocker">
-            <span class="li-icon">🔐</span>
-            <span class="li-text">ロッカー <b id="lockerNum">—</b></span>
-          </div>
-          <div class="li-info" id="liStart">
-            <span class="li-icon">⛳</span>
-            <span class="li-text">PMスタート <b id="pmStart">—</b></span>
-          </div>
-        </div>
-
-        <!-- 既存「クリア／確定」行は内部処理用に保持・隠す -->
+        <!-- 既存「クリア／確定」行は内部処理用に保持・隠す（聖域） -->
         <div class="confirm-row" style="display:none;">
           <button class="btn-clear" id="btnClear">クリア</button>
           <button class="btn-confirm" id="btnConfirm">確定して次のホール ▶</button>
         </div>
 
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- v26: PMスタート時刻ピッカー モーダル -->
+<div class="modal-backdrop" id="pmStartModal">
+  <div class="modal modal-pmpicker">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title">⛳ 午後スタート時間</div>
+      <button class="modal-close" data-close>×</button>
+    </div>
+    <div class="pmpicker-body">
+      <div class="pmpicker-hint">スタート時間を選択してください</div>
+      <input type="time" id="pmStartTimeInput" class="pmpicker-input" step="300">
+      <div class="pmpicker-quick">
+        <button data-pmtime="12:00">12:00</button>
+        <button data-pmtime="12:30">12:30</button>
+        <button data-pmtime="13:00">13:00</button>
+        <button data-pmtime="13:30">13:30</button>
+        <button data-pmtime="14:00">14:00</button>
+        <button data-pmtime="14:30">14:30</button>
+      </div>
+      <div class="pmpicker-actions">
+        <button class="btn-clear" id="btnPmStartClear">クリア</button>
+        <button class="btn-confirm" id="btnPmStartSave">保存</button>
       </div>
     </div>
   </div>
@@ -4894,7 +5250,9 @@ const State = {
     currentHole: 1,
     groupId: '',
     groupName: '',
-    holesMode: 18   /* v22: 18 (フルラウンド) or 9 (ハーフ) - 9Hモードは独立ロジックで処理 */
+    holesMode: 18,   /* v22: 18 (フルラウンド) or 9 (ハーフ) - 9Hモードは独立ロジックで処理 */
+    lockerNum: '',   /* v26: 貴重品ロッカー番号（メイン画面で入力、モーダルは表示専用） */
+    pmStart: ''      /* v26: 午後スタート時間 (HH:MM 形式) */
   },
   players: [],
   ui: {
@@ -5234,6 +5592,14 @@ function renderTable() {
   $('#currentHoleBadge').textContent = '現在 ' + State.round.currentHole + 'H';
 
   centerCurrentHole();
+
+  /* v26: モーダル内スコア表ミラー（モーダルが開いている時のみ複製） */
+  try {
+    const modalTbl = document.getElementById('modalScoreTable');
+    if (modalTbl) modalTbl.innerHTML = t.innerHTML;
+    /* モーダル側のクロスハイライト再適用 */
+    if (typeof applyCrossHighlight === 'function') applyCrossHighlight();
+  } catch(e) {}
 }
 
 function centerCurrentHole() {
@@ -5344,6 +5710,14 @@ function openScoreModal(pi, hi) {
   $('#scoreModal').classList.add('show');
   /* v22: 9Hモード時は disabled/ボタン文言を9H用に上書き */
   applyHoleModeOverlay();
+  /* v26: モーダルが開いたタイミングでスコア表ミラーを反映 */
+  try {
+    const t = document.getElementById('scoreTable');
+    const modalTbl = document.getElementById('modalScoreTable');
+    if (t && modalTbl) modalTbl.innerHTML = t.innerHTML;
+  } catch(e) {}
+  /* v26: ロッカー番号・PMスタートをモーダル表示に反映 */
+  try { syncLockerPmDisplay(); } catch(e) {}
   /* v25: クロスハイライト適用 */
   try { applyCrossHighlight(); } catch(e) {}
 }
@@ -5518,9 +5892,9 @@ function resetPuttTo2() {
 
 function closeAllModals() {
   $$('.modal-backdrop').forEach(m => m.classList.remove('show'));
-  /* v25: クロスハイライトをクリア */
+  /* v25/v26: クロスハイライトを両方の表からクリア */
   try {
-    document.querySelectorAll('#scoreTable .cross-hl').forEach(el => el.classList.remove('cross-hl', 'cross-hl-cell'));
+    document.querySelectorAll('#scoreTable .cross-hl, #modalScoreTable .cross-hl').forEach(el => el.classList.remove('cross-hl', 'cross-hl-cell'));
   } catch(e) {}
 }
 
@@ -5996,27 +6370,63 @@ function applyHoleModeOverlay() {
    入力モーダルが開いている時のみ、スコアテーブルの該当セルを強調
    ================================================================= */
 function applyCrossHighlight() {
-  /* まず全てのハイライトをクリア */
-  document.querySelectorAll('#scoreTable .cross-hl').forEach(el => el.classList.remove('cross-hl', 'cross-hl-cell'));
+  /* v26: メイン表＋モーダル内ミラー表 両方をクリア */
+  document.querySelectorAll('#scoreTable .cross-hl, #modalScoreTable .cross-hl').forEach(el => el.classList.remove('cross-hl', 'cross-hl-cell'));
   /* スコアモーダルが開いていない場合は何もしない */
   const sm = document.getElementById('scoreModal');
   if (!sm || !sm.classList.contains('show')) return;
   const hi = (modalHole - 1);
   const pi = modalPlayerIdx;
-  /* ホール列（th と全 td） */
-  document.querySelectorAll('#scoreTable th[data-hole]').forEach(th => {
-    if (parseInt(th.dataset.hole, 10) === modalHole) th.classList.add('cross-hl');
+
+  /* v26: メイン表 + モーダル表の両方に同じハイライトを適用 */
+  ['#scoreTable', '#modalScoreTable'].forEach(function(rootSel) {
+    /* ホール列（th と全 td） */
+    document.querySelectorAll(rootSel + ' th[data-hole]').forEach(th => {
+      if (parseInt(th.dataset.hole, 10) === modalHole) th.classList.add('cross-hl');
+    });
+    document.querySelectorAll(rootSel + ' td[data-hi="' + hi + '"]').forEach(td => {
+      td.classList.add('cross-hl');
+    });
+    /* プレイヤー行 */
+    document.querySelectorAll(rootSel + ' tr[data-pi="' + pi + '"]').forEach(tr => {
+      tr.classList.add('cross-hl');
+    });
+    /* 交差セル（強調） */
+    const crossCell = document.querySelector(rootSel + ' td[data-pi="' + pi + '"][data-hi="' + hi + '"]');
+    if (crossCell) crossCell.classList.add('cross-hl-cell');
   });
-  document.querySelectorAll('#scoreTable td[data-hi="' + hi + '"]').forEach(td => {
-    td.classList.add('cross-hl');
-  });
-  /* プレイヤー行 */
-  document.querySelectorAll('#scoreTable tr[data-pi="' + pi + '"]').forEach(tr => {
-    tr.classList.add('cross-hl');
-  });
-  /* 交差セル（強調） */
-  const crossCell = document.querySelector('#scoreTable td[data-pi="' + pi + '"][data-hi="' + hi + '"]');
-  if (crossCell) crossCell.classList.add('cross-hl-cell');
+
+  /* v26: モーダル内ミラー表で、現在ホール列を可視範囲にスクロール */
+  try {
+    const modalScroller = document.getElementById('modalTableScroll');
+    if (modalScroller) {
+      const curTh = modalScroller.querySelector('th[data-hole="' + modalHole + '"]');
+      if (curTh) {
+        const sw = modalScroller.clientWidth;
+        const cl = curTh.offsetLeft;
+        const cw = curTh.offsetWidth;
+        modalScroller.scrollTo({ left: Math.max(0, cl - sw / 2 + cw / 2), behavior: 'smooth' });
+      }
+    }
+  } catch(e) {}
+}
+
+/* =================================================================
+   v26: ロッカー番号 & PMスタート 表示同期
+   ================================================================= */
+function syncLockerPmDisplay() {
+  const locker = (State.round && State.round.lockerNum) ? State.round.lockerNum : '';
+  const pm = (State.round && State.round.pmStart) ? State.round.pmStart : '';
+  /* メイン画面の入力欄 */
+  const topInput = document.getElementById('topLockerInput');
+  if (topInput && topInput.value !== locker) topInput.value = locker;
+  const topPm = document.getElementById('topPmStartDisp');
+  if (topPm) topPm.textContent = pm || '— : —';
+  /* モーダル下部の表示専用 */
+  const lockerDisp = document.getElementById('lockerNum');
+  if (lockerDisp) lockerDisp.textContent = locker || '—';
+  const pmDisp = document.getElementById('pmStart');
+  if (pmDisp) pmDisp.textContent = pm || '— : —';
 }
 
 /* =================================================================
@@ -6838,6 +7248,79 @@ function bindEvents() {
     updateLabel();
   })();
 
+  /* ============================================================
+     v26: トップページ ロッカー番号入力 → State.round に保存
+     ============================================================ */
+  (function bindTopLocker() {
+    const inp = document.getElementById('topLockerInput');
+    if (!inp) return;
+    /* 初期値復元 */
+    if (State.round && State.round.lockerNum) inp.value = State.round.lockerNum;
+    const save = () => {
+      const v = (inp.value || '').trim();
+      State.round.lockerNum = v;
+      try { Storage.saveState(); } catch(e) {}
+      try { syncLockerPmDisplay(); } catch(e) {}
+    };
+    inp.addEventListener('input', save);
+    inp.addEventListener('change', save);
+    inp.addEventListener('blur', save);
+  })();
+
+  /* ============================================================
+     v26: PMスタート ボタン → タイムピッカーモーダル
+     ============================================================ */
+  (function bindPmStart() {
+    const open = () => {
+      const modal = document.getElementById('pmStartModal');
+      const inp = document.getElementById('pmStartTimeInput');
+      if (!modal || !inp) return;
+      inp.value = (State.round && State.round.pmStart) ? State.round.pmStart : '';
+      modal.classList.add('show');
+    };
+    /* メイン画面のボタンとモーダル内のボタン、両方からピッカーを開く */
+    const topBtn = document.getElementById('topPmStartBtn');
+    if (topBtn) topBtn.addEventListener('click', open);
+    const modalBtn = document.getElementById('liStartBtn');
+    if (modalBtn) modalBtn.addEventListener('click', open);
+
+    /* クイック時刻選択ボタン */
+    document.querySelectorAll('#pmStartModal button[data-pmtime]').forEach(b => {
+      b.addEventListener('click', () => {
+        const t = b.dataset.pmtime;
+        const inp = document.getElementById('pmStartTimeInput');
+        if (inp) inp.value = t;
+      });
+    });
+
+    /* 保存 */
+    const saveBtn = document.getElementById('btnPmStartSave');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', () => {
+        const inp = document.getElementById('pmStartTimeInput');
+        const v = inp ? (inp.value || '').trim() : '';
+        State.round.pmStart = v;
+        try { Storage.saveState(); } catch(e) {}
+        try { syncLockerPmDisplay(); } catch(e) {}
+        try { closeAllModals(); } catch(e) {}
+        showToast(v ? '⛳ PMスタート: ' + v + ' に設定' : '⛳ PMスタートをクリアしました');
+      });
+    }
+    /* クリア */
+    const clearBtn = document.getElementById('btnPmStartClear');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        const inp = document.getElementById('pmStartTimeInput');
+        if (inp) inp.value = '';
+        State.round.pmStart = '';
+        try { Storage.saveState(); } catch(e) {}
+        try { syncLockerPmDisplay(); } catch(e) {}
+        try { closeAllModals(); } catch(e) {}
+        showToast('⛳ PMスタートをクリアしました');
+      });
+    }
+  })();
+
   /* v15: アコーディオン設定パネル開閉 */
   const accordion = $('#settingsAccordion');
   const accordionToggle = $('#accordionToggle');
@@ -6872,6 +7355,8 @@ function boot() {
   /* v22: ラウンド形式トグル UI と9Hオーバーレイ初期適用 */
   try { applyHolesModeToggleUI(); } catch(e) {}
   try { applyHoleModeOverlay(); } catch(e) {}
+  /* v26: ロッカー＆PMスタート表示初期同期 */
+  try { syncLockerPmDisplay(); } catch(e) {}
   Router.handleInitial();
   console.log('G-WORLD v22.0 (9H専用ロジック完全独立)', new Date().toISOString());
 }
