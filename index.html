@@ -7,23 +7,7 @@
 <meta name="theme-color" content="#0F5132">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="G-WORLD">
-<meta name="application-name" content="G-WORLD">
-<meta name="mobile-web-app-capable" content="yes">
-
-<!-- v17: PWA / Apple Touch Icon（同階層の icon.png を絶対パス化） -->
-<link rel="icon" type="image/png" href="./icon.png">
-<link rel="shortcut icon" href="./icon.png">
-<link rel="apple-touch-icon" href="./icon.png">
-<link rel="apple-touch-icon" sizes="180x180" href="./icon.png">
-<link rel="apple-touch-icon" sizes="167x167" href="./icon.png">
-<link rel="apple-touch-icon" sizes="152x152" href="./icon.png">
-<link rel="apple-touch-icon" sizes="120x120" href="./icon.png">
-<link rel="apple-touch-icon-precomposed" href="./icon.png">
-
-<!-- v17: 簡易インラインWeb App Manifest（ホーム画面追加対応） -->
-<link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"G-WORLD","short_name":"G-WORLD","description":"六甲国際パブリックコース・デジタルスコアカード","start_url":"./","scope":"./","display":"standalone","background_color":"%23E8F3EC","theme_color":"%230F5132","icons":[{"src":"./icon.png","sizes":"192x192","type":"image/png","purpose":"any"},{"src":"./icon.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]}'>
-<title>G-WORLD v20.0 | 六甲国際パブリックコース</title>
+<title>G-WORLD v12.0 | 六甲国際パブリックコース</title>
 <style>
 /* =================================================================
    G-WORLD v12.0 - 配布版 Final
@@ -516,28 +500,20 @@ tr.is-me td.current-hole {
 /* ========== セカンダリアクション ========== */
 .secondary-actions {
   padding: 4px 16px 16px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 8px;
-  align-items: stretch;
+  display: flex; gap: 8px; justify-content: center;
+  flex-wrap: wrap;
 }
 .secondary-btn {
   background: var(--paper);
   border: 1.5px solid var(--line-strong);
   color: var(--ink);
-  padding: 12px 6px;
+  padding: 10px 16px;
   border-radius: 10px;
-  font-size: 11.5px; font-weight: 800;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 4px;
-  min-height: 56px;
-  text-align: center;
-  line-height: 1.2;
+  font-size: 12px; font-weight: 800;
+  display: inline-flex; align-items: center; gap: 6px;
   box-shadow: var(--shadow-1);
   transition: all .15s;
-  width: 100%;
 }
-.secondary-btn .icon { font-size: 18px !important; line-height: 1; }
 .secondary-btn:active { transform: translateY(1px); background: var(--cream); }
 .secondary-btn .icon { font-size: 14px; }
 .secondary-btn.tee-toggle {
@@ -970,36 +946,7 @@ tr.is-me td.current-hole {
   border-color: var(--green-2);
   box-shadow: 0 0 0 3px rgba(45,157,95,.2);
 }
-.form-section .row2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  align-items: start;
-}
-.row2 > div { display: flex; flex-direction: column; min-width: 0; }
-.row2 > div > label {
-  display: flex; align-items: center; flex-wrap: wrap;
-  min-height: 32px;
-  font-size: 12px; font-weight: 700;
-  color: var(--ink-soft);
-  margin-bottom: 6px;
-  line-height: 1.3;
-}
-.row2 > div > input {
-  width: 100%;
-  height: 42px;
-  padding: 8px 12px;
-  font-size: 15px;
-  border: 1.5px solid var(--line-strong);
-  border-radius: 10px;
-  background: var(--paper);
-  box-sizing: border-box;
-}
-.row2 > div > input:focus {
-  outline: none;
-  border-color: var(--green-mid);
-  box-shadow: 0 0 0 3px rgba(15, 81, 50, 0.12);
-}
+.form-section .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .form-section .switch-row {
   display: flex; align-items: center; justify-content: space-between;
   padding: 12px 0;
@@ -1654,69 +1601,6 @@ body.input-mode-counter #btnQuickPutt { display: none; }
 .accordion-body .toggle-bar:last-child {
   border-bottom: none;
 }
-
-
-/* ========== v17追加：ラウンドモード切替（9H/18H） ========== */
-.toggle-bar.holes-mode-bar {
-  background: linear-gradient(180deg, var(--paper) 0%, #F7FCF9 100%);
-  border-top: 1px dashed var(--line);
-}
-.holes-mode-toggle {
-  display: inline-flex; gap: 4px;
-  background: var(--cream);
-  border: 1.5px solid var(--line-strong);
-  border-radius: 12px; padding: 4px;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,.04);
-}
-.holes-mode-toggle button {
-  padding: 8px 12px;
-  font-size: 11px; font-weight: 800;
-  border-radius: 9px;
-  color: var(--ink-soft);
-  transition: all .18s;
-  display: flex; align-items: center; gap: 6px;
-  min-height: 38px;
-}
-.holes-mode-toggle button .hm-icon { font-size: 14px; line-height: 1; }
-.holes-mode-toggle button .hm-name {
-  font-size: 12px; line-height: 1.1;
-  display: flex; flex-direction: column;
-  align-items: flex-start;
-}
-.holes-mode-toggle button .hm-sub {
-  font-size: 9px; opacity: .75; font-weight: 700;
-}
-.holes-mode-toggle button.active {
-  background: linear-gradient(135deg, var(--gold-dark), var(--gold));
-  color: #fff;
-  box-shadow: var(--shadow-1);
-}
-.holes-mode-toggle button.active .hm-sub {
-  opacity: .9;
-  color: #fff;
-}
-
-/* 9Hモード時：トップバーやヒーローに表示 */
-.holes-mode-badge {
-  display: inline-block;
-  background: var(--gold-dark);
-  color: #fff;
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: 800;
-  margin-left: 6px;
-  letter-spacing: .04em;
-}
-
-
-/* v19: small screen tweaks for 3-column buttons */
-@media (max-width: 360px) {
-  .secondary-btn { font-size: 10.5px; padding: 10px 4px; min-height: 52px; }
-  .secondary-btn .icon { font-size: 16px !important; }
-}
-/* v19: profile/edit input row alignment */
-.form-section .row2 + .switch-row { margin-top: 12px; }
 
 </style>
 
@@ -4091,21 +3975,6 @@ var qrcode = function() {
       </button>
     </div>
   </div>
-
-  <!-- v17: ラウンドモード（9H / 18H）切替 -->
-  <div class="toggle-bar holes-mode-bar">
-    <div class="toggle-label">ラウンドモード</div>
-    <div class="holes-mode-toggle" id="holesModeToggle">
-      <button data-holes="9" title="ハーフラウンド（9ホール）">
-        <span class="hm-icon">⛳</span>
-        <span class="hm-name">9H<span class="hm-sub">ハーフ</span></span>
-      </button>
-      <button data-holes="18" class="active" title="フルラウンド（18ホール）">
-        <span class="hm-icon">⛳⛳</span>
-        <span class="hm-name">18H<span class="hm-sub">フル</span></span>
-      </button>
-    </div>
-  </div>
     </div>
   </div>
 
@@ -4438,9 +4307,7 @@ var qrcode = function() {
     </div>
     <div class="form-section">
       <p style="font-size:11px;color:var(--ink-soft);margin-bottom:8px;line-height:1.5;">
-        ※ <b>姓または名のどちらかが入っていれば</b>保存OK。<br>
-        ※ 同姓対策：「田中一」のように<b>姓＋名の頭文字</b>を入れて識別子にできます。<br>
-        ※ 同伴者が後でQRから「名」を追加することも可能です。
+        ※ 姓（名字）のみ入力すれば追加できます。名は任意です。
       </p>
       <div class="row2">
         <div>
@@ -4590,9 +4457,8 @@ var qrcode = function() {
     </div>
     <div class="form-section">
       <p style="font-size:12px; color:var(--ink-soft); margin-bottom:10px; line-height:1.6;" id="manualNameHint">
-        招待ホストが入力した「姓（識別子）」が事前にセットされています。<br>
-        必要に応じて「名」を追加入力してください（任意）。<br>
-        ※ 姓・名のどちらかが入っていれば保存できます。
+        招待ホストが入力した「姓」が事前にセットされています。<br>
+        必要に応じて「名」を追加入力してください（任意）。
       </p>
       <div class="row2">
         <div>
@@ -4748,8 +4614,7 @@ const State = {
     finishedAt: null,
     currentHole: 1,
     groupId: '',
-    groupName: '',
-    holesMode: 18  /* v17: 9 または 18（ラウンドモード） */
+    groupName: ''
   },
   players: [],
   ui: {
@@ -4806,15 +4671,6 @@ const Storage = {
         if (snap.round) Object.assign(State.round, snap.round);
         if (snap.players) State.players = snap.players;
         if (snap.ui) Object.assign(State.ui, snap.ui);
-        /* v18: state sanitize - 不正値を強制補正 */
-        if (State.round.holesMode !== 9 && State.round.holesMode !== 18) {
-          State.round.holesMode = 18;
-        }
-        const ch = parseInt(State.round.currentHole, 10);
-        const maxH = State.round.holesMode === 9 ? 9 : 18;
-        if (!ch || isNaN(ch) || ch < 1 || ch > maxH) {
-          State.round.currentHole = 1;
-        }
         return true;
       }
     } catch(e) {}
@@ -4870,10 +4726,6 @@ function genGroupId() {
   return a + '-' + b;
 }
 function fullName(p) {
-  /* v19: 同姓対策ロジック説明
-     - ホストが「田中一」（姓＋名の頭文字）を lastname に入れた場合は、そのまま「田中一」と表示。
-     - 同伴者が後で firstname に「一郎」を追加した場合は「田中一 一郎」と結合表示。
-     - lastname のみでも識別子として優先表示される。 */
   if (!p) return '';
   const ln = (p.lastname || '').trim();
   const fn = (p.firstname || '').trim();
@@ -4911,18 +4763,6 @@ function getYard(hole) {
   return State.ui.useLadiesTee ? hole.ladiesYard : hole.regYard;
 }
 
-/* v17: 現在のラウンドモードに応じたホール配列を返す */
-function getActiveHoles() {
-  const n = (State.round && State.round.holesMode === 9) ? 9 : 18;
-  return COURSE.holes.slice(0, n);
-}
-function getActivePar() {
-  return getActiveHoles().reduce((s, h) => s + h.par, 0);
-}
-function getMaxHole() {
-  return (State.round && State.round.holesMode === 9) ? 9 : 18;
-}
-
 /* =================================================================
    §7. 初期化
    ================================================================= */
@@ -4953,17 +4793,6 @@ function initState() {
       me.firstname = State.me.firstname;
     }
   }
-  /* v18: 起動時に currentHole / holesMode を最終的に強制補正 */
-  if (State.round.holesMode !== 9 && State.round.holesMode !== 18) {
-    State.round.holesMode = 18;
-  }
-  {
-    const maxH = State.round.holesMode === 9 ? 9 : 18;
-    const ch = parseInt(State.round.currentHole, 10);
-    if (!ch || isNaN(ch) || ch < 1 || ch > maxH) {
-      State.round.currentHole = 1;
-    }
-  }
 }
 
 /* =================================================================
@@ -4971,7 +4800,7 @@ function initState() {
    ================================================================= */
 function renderTopAndHero() {
   $('#topCourse').textContent = COURSE.name;
-  $('#topMeta').textContent = 'スタンドアロン · ' + (State.round.holesMode === 9 ? '9H' : '18H') + 'ラウンド · ' +
+  $('#topMeta').textContent = 'スタンドアロン · オフライン入力 · ' +
     (State.ui.useLadiesTee ? 'LADIES TEE' : 'REG TEE');
 
   const cur = State.round.currentHole;
@@ -4985,11 +4814,10 @@ function renderTopAndHero() {
 
   $('#currentHoleBadge').textContent = '現在 ' + cur + 'H';
 
-  const maxH = getMaxHole();  /* v17: 9Hモード時は9まで */
   $('#btnHolePrev').disabled = cur <= 1;
-  $('#btnHoleNext').disabled = cur >= maxH;
+  $('#btnHoleNext').disabled = cur >= 18;
   $('#btnHolePrev').style.opacity = cur <= 1 ? '.3' : '1';
-  $('#btnHoleNext').style.opacity = cur >= maxH ? '.3' : '1';
+  $('#btnHoleNext').style.opacity = cur >= 18 ? '.3' : '1';
 
   $('#teeToggleLabel').textContent = State.ui.useLadiesTee ? 'LADIES' : 'REGティ';
   const teeBtn = $('#btnTeeToggle');
@@ -5002,7 +4830,7 @@ function renderTopAndHero() {
    ================================================================= */
 function renderTable() {
   const t = $('#scoreTable');
-  const holes = getActiveHoles();  /* v17: holesMode連動 */
+  const holes = COURSE.holes;
 
   let orderedPlayers = State.players.slice();
   if (State.ui.sortMeFirst) {
@@ -5040,7 +4868,7 @@ function renderTable() {
     const outEnd = (h.no === 9) ? ' out-end' : '';
     html += '<th class="par-row ' + (cur + outEnd).trim() + '">' + h.par + '</th>';
   });
-  html += '<th class="par-row col-total">' + getActivePar() + '</th>';
+  html += '<th class="par-row col-total">' + COURSE.par + '</th>';
   html += '</tr></thead>';
 
   /* tbody */
@@ -5227,8 +5055,6 @@ function openScoreModal(pi, hi) {
   applyInputMode();
   updateModalDisplay();
   applyPuttSectionEnabled();
-  /* v20: 確定ボタンを再バインド（9H/18Hどちらでも確実に動作） */
-  try { rebindConfirmBtn(); } catch(e) {}
   $('#scoreModal').classList.add('show');
 }
 
@@ -5305,95 +5131,14 @@ function applyInputMode() {
   }
 }
 
-/* v17: ラウンドモード（9H/18H）UI 反映 */
-function applyHolesMode() {
-  /* v18: state 正規化を保証 */
-  if (State.round.holesMode !== 9 && State.round.holesMode !== 18) {
-    State.round.holesMode = 18;
-  }
-  const mode = State.round.holesMode;
-  /* v18: 現在ホールが maxH を超えていれば maxH に戻し、未定義/0なら 1 に強制 */
-  const ch = parseInt(State.round.currentHole, 10);
-  if (!ch || isNaN(ch) || ch < 1) {
-    State.round.currentHole = 1;
-  } else if (ch > mode) {
-    State.round.currentHole = mode;
-  }
-  const tog = $('#holesModeToggle');
-  if (tog) {
-    tog.querySelectorAll('button').forEach(b => {
-      b.classList.toggle('active', parseInt(b.dataset.holes, 10) === mode);
-    });
-  }
-  /* v18: モード切替の瞬間に遷移ボタンを再バインド */
-  rebindHoleNav();
-  /* v20: スコアモーダルが開いている場合は modalHole を補正＋表示を即時更新 */
-  try {
-    const scoreModal = document.getElementById('scoreModal');
-    if (scoreModal && scoreModal.classList.contains('show')) {
-      let mh = parseInt(modalHole, 10);
-      if (!mh || isNaN(mh) || mh < 1) mh = 1;
-      if (mh > mode) mh = mode;
-      modalHole = mh;
-      updateModalDisplay();
-    }
-  } catch(e) {}
-}
-
-/* =================================================================
-   v18: ホール遷移ボタン Re-bind 関数
-   DOM操作タイミングに依存せず、確実にクリックイベントを再割り当て
-   ================================================================= */
-function rebindHoleNav() {
-  ['btnHolePrev', 'btnHoleNext'].forEach(function(id) {
-    const old = document.getElementById(id);
-    if (!old) return;
-    /* cloneNode で既存のイベントリスナを全てクリア */
-    const fresh = old.cloneNode(true);
-    old.parentNode.replaceChild(fresh, old);
-  });
-  const prev = document.getElementById('btnHolePrev');
-  const next = document.getElementById('btnHoleNext');
-  if (prev) prev.addEventListener('click', function(){ moveHole(-1); });
-  if (next) next.addEventListener('click', function(){ moveHole(1); });
-}
-
-/* =================================================================
-   v20: スコアモーダル「確定」ボタンの Re-bind 関数
-   9Hモードでも18Hモードと同様に確定遷移が動作するよう保証
-   ================================================================= */
-function rebindConfirmBtn() {
-  const id = 'btnConfirm';
-  const old = document.getElementById(id);
-  if (!old) return;
-  const fresh = old.cloneNode(true);
-  old.parentNode.replaceChild(fresh, old);
-  const btn = document.getElementById(id);
-  if (btn) btn.addEventListener('click', confirmAndNext);
-}
-
 function updateModalDisplay() {
-  /* v20: modalHole 正規化（範囲外なら 1 にフォールバック） */
-  const _maxH = getMaxHole();
-  let _mh = parseInt(modalHole, 10);
-  if (!_mh || isNaN(_mh) || _mh < 1) _mh = 1;
-  if (_mh > _maxH) _mh = _maxH;
-  if (_mh > 18) _mh = 18;
-  modalHole = _mh;
   const p = State.players[modalPlayerIdx];
   const h = COURSE.holes[modalHole - 1];
-  if (!h || !p) return;
-  /* v20: 各DOM書込前に存在確認（安全化） */
-  const elTitle = document.getElementById('scoreModalTitle');
-  const elNum = document.getElementById('modalHoleNum');
-  const elPar = document.getElementById('modalHolePar');
-  const elStroke = document.getElementById('modalStroke');
-  const elPutt = document.getElementById('modalPutt');
-  if (elTitle) elTitle.textContent = fullName(p) + ' のスコア入力';
-  if (elNum) elNum.textContent = h.no + 'H';
-  if (elPar) elPar.textContent = 'PAR ' + h.par + ' · ' + getYard(h) + 'y · HDCP ' + h.hdcp;
-  if (elStroke) elStroke.textContent = modalStroke || '0';
-  if (elPutt) elPutt.textContent = modalPutt;
+  $('#scoreModalTitle').textContent = fullName(p) + ' のスコア入力';
+  $('#modalHoleNum').textContent = h.no + 'H';
+  $('#modalHolePar').textContent = 'PAR ' + h.par + ' · ' + getYard(h) + 'y · HDCP ' + h.hdcp;
+  $('#modalStroke').textContent = modalStroke || '0';
+  $('#modalPutt').textContent = modalPutt;
 
   const diff = modalStroke ? modalStroke - h.par : null;
   const diffEl = $('#modalStrokeDiff');
@@ -5415,7 +5160,7 @@ function updateModalDisplay() {
   }
 
   $('#modalHolePrev').disabled = modalHole <= 1;
-  $('#modalHoleNext').disabled = modalHole >= getMaxHole();  /* v17: 9Hモード対応 */
+  $('#modalHoleNext').disabled = modalHole >= 18;
 
   $('#btnStrokeMinus').disabled = modalStroke <= 0;
   $('#btnStrokePlus').disabled = modalStroke >= 20;
@@ -5424,7 +5169,7 @@ function updateModalDisplay() {
   $('#btnPuttPlus').disabled = modalPutt >= 10;
 
   const confirmBtn = $('#btnConfirm');
-  if (modalHole >= getMaxHole()) {  /* v17: 9Hモード時は9で最終 */
+  if (modalHole >= COURSE.holes.length) {
     confirmBtn.classList.add('final');
     confirmBtn.textContent = '🏁 最終ホール確定';
   } else {
@@ -5570,9 +5315,9 @@ function openAddCompanion() {
 function submitAddCompanion() {
   const ln = $('#addLastname').value.trim();
   const fn = $('#addFirstname').value.trim();
-  /* v17: 姓または名のいずれか一方が入っていればOK（両方必須制約撤廃） */
-  if (!ln && !fn) {
-    showToast('姓または名のどちらかを入力してください', 'error');
+  /* v16: 姓（名字）が必須・名は任意 */
+  if (!ln) {
+    showToast('姓（名字）を入力してください', 'error');
     return;
   }
   if (State.players.length >= 16) {
@@ -5612,9 +5357,9 @@ function submitEditPlayer() {
   const p = State.players[editPlayerIdx];
   const ln = $('#editLastname').value.trim();
   const fn = $('#editFirstname').value.trim();
-  /* v17: 姓または名のいずれか一方が入っていればOK */
-  if (!ln && !fn) {
-    showToast('姓または名のどちらかを入力してください', 'error');
+  /* v16: 姓（名字）が必須・名は任意 */
+  if (!ln) {
+    showToast('姓（名字）を入力してください', 'error');
     return;
   }
   p.lastname = ln;
@@ -5647,8 +5392,7 @@ function deleteCurrentPlayer() {
    ================================================================= */
 function moveHole(delta) {
   const next = State.round.currentHole + delta;
-  const maxH = getMaxHole();  /* v17: 9Hモード時は9まで */
-  if (next < 1 || next > maxH) return;
+  if (next < 1 || next > 18) return;
   State.round.currentHole = next;
   Storage.saveState();
   renderTopAndHero();
@@ -5657,19 +5401,10 @@ function moveHole(delta) {
 
 function confirmAndNext() {
   saveCurrentModalScore();
-  const maxH = getMaxHole();  /* v17: 9Hモード時は9まで */
-  /* v20: modalHole 正規化（NaN/範囲外なら 1〜maxH に補正） */
-  let mh = parseInt(modalHole, 10);
-  if (!mh || isNaN(mh) || mh < 1) mh = 1;
-  if (mh > maxH) mh = maxH;
-  modalHole = mh;
-
-  if (modalHole < maxH) {
+  if (modalHole < COURSE.holes.length) {
     if (State.settings.autoNext) {
-      /* v20: 18Hと同じ遷移処理を9Hでも確実に実行 */
-      const nextHole = modalHole + 1;
-      State.round.currentHole = nextHole;
-      modalHole = nextHole;
+      State.round.currentHole = modalHole + 1;
+      modalHole = State.round.currentHole;
       const p = State.players[modalPlayerIdx];
       const h = COURSE.holes[modalHole - 1];
       /* v14：次ホールもモードに応じた初期値 */
@@ -5686,11 +5421,7 @@ function confirmAndNext() {
       Storage.saveState();
       renderTopAndHero();
       renderTable();
-      /* v20: モーダル表示を即時更新 + 次フレームでも再描画ヒントを送る（DOM同期保証） */
       updateModalDisplay();
-      if (typeof requestAnimationFrame === 'function') {
-        requestAnimationFrame(function() { try { updateModalDisplay(); } catch(e) {} });
-      }
       showToast('✓ ' + (modalHole - 1) + 'H 確定 → ' + modalHole + 'H へ');
     } else {
       Storage.saveState();
@@ -5700,12 +5431,11 @@ function confirmAndNext() {
       showToast('✓ ' + modalHole + 'H 確定');
     }
   } else {
-    /* 最終ホール（9Hなら9H、18Hなら18H） */
     Storage.saveState();
     renderTopAndHero();
     renderTable();
     closeAllModals();
-    showToast('🏁 ' + getMaxHole() + 'H完了！「ラウンド終了＆保存」で記録できます');
+    showToast('🏁 全ホール完了！「ラウンド終了＆保存」で記録できます');
   }
 }
 
@@ -5728,8 +5458,7 @@ function saveRound() {
     finishedAt: State.round.finishedAt,
     groupId: State.round.groupId,
     groupName: State.round.groupName,
-    par: getActivePar(),
-    holesMode: State.round.holesMode,  /* v17: 9H or 18H 保存 */
+    par: COURSE.par,
     tee: State.ui.useLadiesTee ? 'LADIES' : 'REG',
     players: State.players.map(p => ({
       lastname: p.lastname,
@@ -5795,8 +5524,6 @@ const Router = {
     if (name === 'gworld') {
       renderTopAndHero();
       renderTable();
-      /* v19: G-WORLD遷移時にホール遷移ボタンを再バインド（DOM同期保証） */
-      try { rebindHoleNav(); } catch(e) {}
     }
     window.scrollTo(0, 0);
   },
@@ -6010,9 +5737,9 @@ function openManualNameModal(callback, prefillLastname) {
   $('#btnManualSubmit').onclick = () => {
     const ln = $('#manualLastname').value.trim();
     const fn = $('#manualFirstname').value.trim();
-    /* v17: 姓または名のいずれか一方が入っていればOK */
-    if (!ln && !fn) {
-      showToast('姓または名のどちらかを入力してください', 'error');
+    /* v16: 姓（名字）が必須・名は任意 */
+    if (!ln) {
+      showToast('姓（名字）を入力してください', 'error');
       return;
     }
     closeAllModals();
@@ -6092,9 +5819,9 @@ function renderMyPage() {
 function saveProfile() {
   const ln = $('#profLastname').value.trim();
   const fn = $('#profFirstname').value.trim();
-  /* v17: 姓または名のいずれか一方が入っていればOK */
-  if (!ln && !fn) {
-    showToast('姓または名のどちらかを入力してください', 'error');
+  /* v16: 姓（名字）が必須・名は任意 */
+  if (!ln) {
+    showToast('姓（名字）を入力してください', 'error');
     return;
   }
   State.me.lastname = ln;
@@ -6110,18 +5837,6 @@ function saveProfile() {
   renderMyPage();
   renderTable();
   showToast('✓ プロフィールを保存しました');
-
-  /* v20: プロフィール保存後にDOM上の表示を強制更新（マイページヘッダー・ニックネーム表示） */
-  try {
-    if (typeof renderMyPage === 'function') renderMyPage();
-    const myNameDisp = document.getElementById('myNameDisp');
-    const myFullnameDisp = document.getElementById('myFullnameDisp');
-    if (myNameDisp) myNameDisp.textContent = (State.me.lastname || State.me.firstname || 'ゲスト');
-    if (myFullnameDisp) {
-      const full = (State.me.lastname || '') + (State.me.firstname ? ' ' + State.me.firstname : '');
-      myFullnameDisp.textContent = full.trim() || '本名未登録';
-    }
-  } catch(e) {}
 }
 
 /* =================================================================
@@ -6276,8 +5991,9 @@ function bindEvents() {
     showToast(labels[State.ui.displayMode] + 'に切替');
   });
 
-  /* ヒーロー：前後ホール（◀▶のみ・iマーク削除済） v19: rebindHoleNav経由で確実バインド */
-  rebindHoleNav();
+  /* ヒーロー：前後ホール（◀▶のみ・iマーク削除済） */
+  $('#btnHolePrev').addEventListener('click', () => moveHole(-1));
+  $('#btnHoleNext').addEventListener('click', () => moveHole(1));
 
   /* ヘッダー本マーク = 詳細統合 */
   $('#btnTopDetail').addEventListener('click', openCourseDetail);
@@ -6395,7 +6111,7 @@ function bindEvents() {
     }
   });
   $('#modalHoleNext').addEventListener('click', () => {
-    if (modalHole < getMaxHole()) {  /* v17: 9Hモード対応 */
+    if (modalHole < 18) {
       saveCurrentModalScore();
       modalHole++;
       State.round.currentHole = modalHole;
@@ -6480,40 +6196,6 @@ function bindEvents() {
     }
   });
 
-  /* v17: ラウンドモード（9H/18H）切替 */
-  const holesModeToggle = $('#holesModeToggle');
-  if (holesModeToggle) {
-    holesModeToggle.addEventListener('click', (e) => {
-      const btn = e.target.closest('button[data-holes]');
-      if (!btn) return;
-      const newMode = parseInt(btn.dataset.holes, 10);
-      if (newMode === State.round.holesMode) return;
-
-      /* スコア入力済みの場合は確認ダイアログ */
-      const playedAny = State.players.some(p => playedHoles(p) > 0);
-      if (playedAny) {
-        if (!confirm((newMode === 9 ? '9H' : '18H') + 'モードに切り替えます。\n現在の入力済みスコアは保持されますが、ラウンドモードが変わります。よろしいですか？')) {
-          return;
-        }
-      }
-
-      State.round.holesMode = newMode;
-      /* 現在ホールが maxH を超えていれば maxH に戻す */
-      if (State.round.currentHole > newMode) {
-        State.round.currentHole = newMode;
-      }
-      Storage.saveState();
-      applyHolesMode();
-      renderTopAndHero();
-      renderTable();
-      const labels = {
-        9:  '⛳ 9Hハーフラウンドに切替（OUT 9ホールのみ）',
-        18: '⛳⛳ 18Hフルラウンドに切替'
-      };
-      showToast(labels[newMode]);
-    });
-  }
-
   /* v15: アコーディオン設定パネル開閉 */
   const accordion = $('#settingsAccordion');
   const accordionToggle = $('#accordionToggle');
@@ -6541,12 +6223,8 @@ function boot() {
   initState();
   bindEvents();
   applyInputMode();  /* v14: 起動時に入力モードを適用（body class設定など） */
-  applyHolesMode();  /* v17: 起動時にラウンドモードを適用 */
-  /* v18: 1Hからボタンが効くよう、起動時に必ず最新ホールをレンダリング */
-  try { renderTopAndHero(); } catch(e) {}
-  try { renderTable(); } catch(e) {}
   Router.handleInitial();
-  console.log('G-WORLD v20.0 (9Hホール遷移修正・modalHole正規化・DOM同期保証) booted at', new Date().toISOString());
+  console.log('G-WORLD v16.0 (六甲国際配布版・姓必須/名任意に論理逆転) booted at', new Date().toISOString());
 }
 
 if (document.readyState === 'loading') {
