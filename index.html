@@ -500,22 +500,30 @@ tr.is-me td.current-hole {
 /* ========== セカンダリアクション ========== */
 .secondary-actions {
   padding: 4px 16px 16px;
-  display: flex; gap: 8px; justify-content: center;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  align-items: stretch;
 }
 .secondary-btn {
   background: var(--paper);
   border: 1.5px solid var(--line-strong);
   color: var(--ink);
-  padding: 10px 16px;
+  padding: 12px 6px;
   border-radius: 10px;
-  font-size: 12px; font-weight: 800;
-  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11.5px; font-weight: 800;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 4px;
+  min-height: 56px;
+  width: 100%;
+  text-align: center;
+  line-height: 1.2;
   box-shadow: var(--shadow-1);
   transition: all .15s;
 }
 .secondary-btn:active { transform: translateY(1px); background: var(--cream); }
-.secondary-btn .icon { font-size: 14px; }
+.secondary-btn .icon { font-size: 18px; line-height: 1; }
 .secondary-btn.tee-toggle {
   background: linear-gradient(135deg, #fff, #F4EFDF);
 }
@@ -1602,6 +1610,12 @@ body.input-mode-counter #btnQuickPutt { display: none; }
   border-bottom: none;
 }
 
+
+/* v21: small screen tweaks for 3-column secondary buttons */
+@media (max-width: 360px) {
+  .secondary-btn { font-size: 10.5px; padding: 10px 4px; min-height: 52px; }
+  .secondary-btn .icon { font-size: 16px; }
+}
 </style>
 
 <!-- QR Code Generator (Kazuhiko Arase, MIT) -->
@@ -6236,6 +6250,7 @@ if (document.readyState === 'loading') {
 
 </script>
 
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
