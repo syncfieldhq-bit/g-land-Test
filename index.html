@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#0F5132">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>G-WORLD v12.0 | 六甲国際パブリックコース</title>
+<title>G-WORLD v22.0 | 六甲国際パブリックコース</title>
 <style>
 /* =================================================================
    G-WORLD v12.0 - 配布版 Final
@@ -3989,6 +3989,21 @@ var qrcode = function() {
       </button>
     </div>
   </div>
+
+  <!-- v22: ラウンド形式トグル（9H/18H 完全独立ロジック） -->
+  <div class="toggle-bar input-mode-bar">
+    <div class="toggle-label">ラウンド形式</div>
+    <div class="input-mode-main-toggle" id="holesModeToggle">
+      <button data-holes="18" class="active" title="18ホール フルラウンド">
+        <span class="im-icon">⛳⛳</span>
+        <span class="im-name">18H<span class="im-sub">フル</span></span>
+      </button>
+      <button data-holes="9" title="9ホール ハーフラウンド">
+        <span class="im-icon">⛳</span>
+        <span class="im-name">9H<span class="im-sub">ハーフ</span></span>
+      </button>
+    </div>
+  </div>
     </div>
   </div>
 
@@ -4628,7 +4643,8 @@ const State = {
     finishedAt: null,
     currentHole: 1,
     groupId: '',
-    groupName: ''
+    groupName: '',
+    holesMode: 18   /* v22: 18 (フルラウンド) or 9 (ハーフ) - 9Hモードは独立ロジックで処理 */
   },
   players: [],
   ui: {
@@ -4685,6 +4701,10 @@ const Storage = {
         if (snap.round) Object.assign(State.round, snap.round);
         if (snap.players) State.players = snap.players;
         if (snap.ui) Object.assign(State.ui, snap.ui);
+        /* v22: holesMode sanitize */
+        if (State.round.holesMode !== 9 && State.round.holesMode !== 18) {
+          State.round.holesMode = 18;
+        }
         return true;
       }
     } catch(e) {}
@@ -4837,6 +4857,8 @@ function renderTopAndHero() {
   const teeBtn = $('#btnTeeToggle');
   if (State.ui.useLadiesTee) teeBtn.classList.add('ladies');
   else teeBtn.classList.remove('ladies');
+  /* v22: 9Hモード時はヒーローボタンの disabled を9H上限で上書き */
+  applyHoleModeOverlay();
 }
 
 /* =================================================================
@@ -5070,6 +5092,8 @@ function openScoreModal(pi, hi) {
   updateModalDisplay();
   applyPuttSectionEnabled();
   $('#scoreModal').classList.add('show');
+  /* v22: 9Hモード時は disabled/ボタン文言を9H用に上書き */
+  applyHoleModeOverlay();
 }
 
 function renderModalPlayerTabs() {
@@ -5451,6 +5475,281 @@ function confirmAndNext() {
     closeAllModals();
     showToast('🏁 全ホール完了！「ラウンド終了＆保存」で記録できます');
   }
+}
+
+/* =================================================================
+   v22 §14b. 9Hハーフラウンド専用ロジック（18Hと完全分離）
+   ──────────────────────────────────────────────────────────────────
+   18H用 moveHole / confirmAndNext / updateModalDisplay /
+   modalHolePrev / modalHoleNext には一切手を加えず、
+   9Hモード時のみ独立して動作する関数群をここに集約する。
+   既存ロジックとのバッティングを防ぐ設計。
+   ================================================================= */
+const HoleLogic9H = {
+  /* 9H専用：ヒーロー◀▶からのホール遷移 */
+  move(delta) {
+    const next = State.round.currentHole + delta;
+    if (next < 1 || next > 9) return;   /* 9Hで上限 */
+    State.round.currentHole = next;
+    Storage.saveState();
+    renderTopAndHero();
+    renderTable();
+    applyHoleModeOverlay();
+  },
+
+  /* 9H専用：「確定して次へ」ボタン押下時の処理 */
+  confirmAndNext() {
+    saveCurrentModalScore();
+    if (modalHole < 9) {
+      if (State.settings.autoNext) {
+        State.round.currentHole = modalHole + 1;
+        modalHole = State.round.currentHole;
+        const p = State.players[modalPlayerIdx];
+        const h = COURSE.holes[modalHole - 1];
+        if (p.scores[modalHole - 1] != null) {
+          modalStroke = p.scores[modalHole - 1];
+          modalPutt = p.putts[modalHole - 1] || 0;
+        } else if (State.ui.inputMode === 'simple') {
+          modalStroke = h.par;
+          modalPutt = 2;
+        } else {
+          modalStroke = 0;
+          modalPutt = 0;
+        }
+        Storage.saveState();
+        renderTopAndHero();
+        renderTable();
+        updateModalDisplay();        /* 18H版で表示更新 */
+        applyHoleModeOverlay();      /* 9H用オーバーレイ（disabled/ボタン文言補正） */
+        showToast('✓ ' + (modalHole - 1) + 'H 確定 → ' + modalHole + 'H へ');
+      } else {
+        Storage.saveState();
+        renderTopAndHero();
+        renderTable();
+        closeAllModals();
+        showToast('✓ ' + modalHole + 'H 確定');
+      }
+    } else {
+      /* 9H目（ハーフ最終ホール）の場合 */
+      Storage.saveState();
+      renderTopAndHero();
+      renderTable();
+      closeAllModals();
+      showToast('🏁 9H ハーフラウンド完了！「ラウンド終了＆保存」で記録できます');
+    }
+  },
+
+  /* 9H専用：モーダル◀ボタン */
+  modalPrev() {
+    if (modalHole > 1) {
+      saveCurrentModalScore();
+      modalHole--;
+      State.round.currentHole = modalHole;
+      const p = State.players[modalPlayerIdx];
+      const h = COURSE.holes[modalHole - 1];
+      if (p.scores[modalHole - 1] != null) {
+        modalStroke = p.scores[modalHole - 1];
+        modalPutt = p.putts[modalHole - 1] || 0;
+      } else if (State.ui.inputMode === 'simple') {
+        modalStroke = h.par;
+        modalPutt = 2;
+      } else {
+        modalStroke = 0;
+        modalPutt = 0;
+      }
+      Storage.saveState();
+      renderTopAndHero();
+      renderTable();
+      updateModalDisplay();
+      applyHoleModeOverlay();
+    }
+  },
+
+  /* 9H専用：モーダル▶ボタン（上限9H） */
+  modalNext() {
+    if (modalHole < 9) {
+      saveCurrentModalScore();
+      modalHole++;
+      State.round.currentHole = modalHole;
+      const p = State.players[modalPlayerIdx];
+      const h = COURSE.holes[modalHole - 1];
+      if (p.scores[modalHole - 1] != null) {
+        modalStroke = p.scores[modalHole - 1];
+        modalPutt = p.putts[modalHole - 1] || 0;
+      } else if (State.ui.inputMode === 'simple') {
+        modalStroke = h.par;
+        modalPutt = 2;
+      } else {
+        modalStroke = 0;
+        modalPutt = 0;
+      }
+      Storage.saveState();
+      renderTopAndHero();
+      renderTable();
+      updateModalDisplay();
+      applyHoleModeOverlay();
+    }
+  }
+};
+
+/* =================================================================
+   v22: モード判定 & ディスパッチ関数群
+   bindEvents から呼ばれるラッパー（18H/9Hを切替）
+   ================================================================= */
+function isHalfMode() {
+  return State.round.holesMode === 9;
+}
+
+function moveHoleDispatch(delta) {
+  if (isHalfMode()) {
+    HoleLogic9H.move(delta);
+  } else {
+    moveHole(delta);   /* 18H既存ロジック */
+  }
+}
+
+function confirmAndNextDispatch() {
+  if (isHalfMode()) {
+    HoleLogic9H.confirmAndNext();
+  } else {
+    confirmAndNext();   /* 18H既存ロジック */
+  }
+}
+
+function modalPrevDispatch() {
+  if (isHalfMode()) {
+    HoleLogic9H.modalPrev();
+  } else {
+    /* 18H版を直接呼び出すため、既存のモーダル◀の処理をここで再現
+       （bindEvents 内の addEventListener コールバックと同等の処理） */
+    if (modalHole > 1) {
+      saveCurrentModalScore();
+      modalHole--;
+      State.round.currentHole = modalHole;
+      const p = State.players[modalPlayerIdx];
+      const h = COURSE.holes[modalHole - 1];
+      if (p.scores[modalHole - 1] != null) {
+        modalStroke = p.scores[modalHole - 1];
+        modalPutt = p.putts[modalHole - 1] || 0;
+      } else if (State.ui.inputMode === 'simple') {
+        modalStroke = h.par;
+        modalPutt = 2;
+      } else {
+        modalStroke = 0;
+        modalPutt = 0;
+      }
+      Storage.saveState();
+      renderTopAndHero();
+      renderTable();
+      updateModalDisplay();
+    }
+  }
+}
+
+function modalNextDispatch() {
+  if (isHalfMode()) {
+    HoleLogic9H.modalNext();
+  } else {
+    if (modalHole < 18) {
+      saveCurrentModalScore();
+      modalHole++;
+      State.round.currentHole = modalHole;
+      const p = State.players[modalPlayerIdx];
+      const h = COURSE.holes[modalHole - 1];
+      if (p.scores[modalHole - 1] != null) {
+        modalStroke = p.scores[modalHole - 1];
+        modalPutt = p.putts[modalHole - 1] || 0;
+      } else if (State.ui.inputMode === 'simple') {
+        modalStroke = h.par;
+        modalPutt = 2;
+      } else {
+        modalStroke = 0;
+        modalPutt = 0;
+      }
+      Storage.saveState();
+      renderTopAndHero();
+      renderTable();
+      updateModalDisplay();
+    }
+  }
+}
+
+/* =================================================================
+   v22: 9Hモード用オーバーレイ
+   18H関数が描画したUIの一部（ボタンの disabled / 文言）を
+   9H用に上書きする。18H関数本体は無改造。
+   ================================================================= */
+function applyHoleModeOverlay() {
+  /* 18Hモード時は何もしない（既存挙動そのまま） */
+  if (!isHalfMode()) return;
+
+  const mode = 9;
+  /* 現在ホールが上限を超えていれば9に補正 */
+  if (State.round.currentHole > mode) {
+    State.round.currentHole = mode;
+  }
+
+  /* ヒーロー前後ボタンの disabled を 9H 用に再設定 */
+  const cur = State.round.currentHole;
+  const heroPrev = document.getElementById('btnHolePrev');
+  const heroNext = document.getElementById('btnHoleNext');
+  if (heroPrev) {
+    heroPrev.disabled = cur <= 1;
+    heroPrev.style.opacity = cur <= 1 ? '.3' : '1';
+  }
+  if (heroNext) {
+    heroNext.disabled = cur >= mode;
+    heroNext.style.opacity = cur >= mode ? '.3' : '1';
+  }
+
+  /* モーダル前後ボタン・確定ボタンの 9H 用補正（モーダルが開いている時のみ） */
+  const scoreModal = document.getElementById('scoreModal');
+  if (scoreModal && scoreModal.classList.contains('show')) {
+    const mPrev = document.getElementById('modalHolePrev');
+    const mNext = document.getElementById('modalHoleNext');
+    if (mPrev) mPrev.disabled = modalHole <= 1;
+    if (mNext) mNext.disabled = modalHole >= mode;
+
+    const confirmBtn = document.getElementById('btnConfirm');
+    if (confirmBtn) {
+      if (modalHole >= mode) {
+        confirmBtn.classList.add('final');
+        confirmBtn.textContent = '🏁 9H ハーフ完了';
+      } else {
+        confirmBtn.classList.remove('final');
+        confirmBtn.textContent = State.settings.autoNext ? '確定して次のホール ▶' : '確定する';
+      }
+    }
+  }
+}
+
+/* =================================================================
+   v22: 9H/18H モード切替（ラウンド形式トグル）
+   ================================================================= */
+function setHolesMode(mode) {
+  const m = (mode === 9) ? 9 : 18;
+  if (State.round.holesMode === m) return;
+  State.round.holesMode = m;
+  /* 現在ホールが上限を超えていれば補正 */
+  if (m === 9 && State.round.currentHole > 9) {
+    State.round.currentHole = 9;
+  }
+  Storage.saveState();
+  /* UI即時反映 */
+  applyHolesModeToggleUI();
+  renderTopAndHero();
+  renderTable();
+  applyHoleModeOverlay();
+  showToast(m === 9 ? '⛳ 9Hハーフラウンドに切替' : '⛳⛳ 18Hフルラウンドに切替');
+}
+
+function applyHolesModeToggleUI() {
+  const tog = document.getElementById('holesModeToggle');
+  if (!tog) return;
+  const mode = State.round.holesMode;
+  tog.querySelectorAll('button[data-holes]').forEach(b => {
+    b.classList.toggle('active', parseInt(b.dataset.holes, 10) === mode);
+  });
 }
 
 /* =================================================================
@@ -6006,8 +6305,8 @@ function bindEvents() {
   });
 
   /* ヒーロー：前後ホール（◀▶のみ・iマーク削除済） */
-  $('#btnHolePrev').addEventListener('click', () => moveHole(-1));
-  $('#btnHoleNext').addEventListener('click', () => moveHole(1));
+  $('#btnHolePrev').addEventListener('click', () => moveHoleDispatch(-1));
+  $('#btnHoleNext').addEventListener('click', () => moveHoleDispatch(1));
 
   /* ヘッダー本マーク = 詳細統合 */
   $('#btnTopDetail').addEventListener('click', openCourseDetail);
@@ -6098,56 +6397,11 @@ function bindEvents() {
     }
     updateModalDisplay();
   });
-  $('#btnConfirm').addEventListener('click', confirmAndNext);
+  $('#btnConfirm').addEventListener('click', confirmAndNextDispatch);
 
-  $('#modalHolePrev').addEventListener('click', () => {
-    if (modalHole > 1) {
-      saveCurrentModalScore();
-      modalHole--;
-      State.round.currentHole = modalHole;
-      const p = State.players[modalPlayerIdx];
-      const h = COURSE.holes[modalHole - 1];
-      /* v14：モードに応じた初期値 */
-      if (p.scores[modalHole - 1] != null) {
-        modalStroke = p.scores[modalHole - 1];
-        modalPutt = p.putts[modalHole - 1] || 0;
-      } else if (State.ui.inputMode === 'simple') {
-        modalStroke = h.par;
-        modalPutt = 2;
-      } else {
-        modalStroke = 0;
-        modalPutt = 0;
-      }
-      Storage.saveState();
-      renderTopAndHero();
-      renderTable();
-      updateModalDisplay();
-    }
-  });
-  $('#modalHoleNext').addEventListener('click', () => {
-    if (modalHole < 18) {
-      saveCurrentModalScore();
-      modalHole++;
-      State.round.currentHole = modalHole;
-      const p = State.players[modalPlayerIdx];
-      const h = COURSE.holes[modalHole - 1];
-      /* v14：モードに応じた初期値 */
-      if (p.scores[modalHole - 1] != null) {
-        modalStroke = p.scores[modalHole - 1];
-        modalPutt = p.putts[modalHole - 1] || 0;
-      } else if (State.ui.inputMode === 'simple') {
-        modalStroke = h.par;
-        modalPutt = 2;
-      } else {
-        modalStroke = 0;
-        modalPutt = 0;
-      }
-      Storage.saveState();
-      renderTopAndHero();
-      renderTable();
-      updateModalDisplay();
-    }
-  });
+  /* v22: モーダル前後ボタンは Dispatch 経由（18H/9H 自動分岐） */
+  $('#modalHolePrev').addEventListener('click', modalPrevDispatch);
+  $('#modalHoleNext').addEventListener('click', modalNextDispatch);
   $('#puttToggleMini').addEventListener('click', () => {
     State.settings.puttEnabled = !State.settings.puttEnabled;
     Storage.saveSettings();
@@ -6210,6 +6464,17 @@ function bindEvents() {
     }
   });
 
+    /* v22: ラウンド形式トグル（9H/18H 完全独立ロジック） */
+  const holesModeToggle = $('#holesModeToggle');
+  if (holesModeToggle) {
+    holesModeToggle.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-holes]');
+      if (!btn) return;
+      const newMode = parseInt(btn.dataset.holes, 10);
+      setHolesMode(newMode);
+    });
+  }
+
   /* v15: アコーディオン設定パネル開閉 */
   const accordion = $('#settingsAccordion');
   const accordionToggle = $('#accordionToggle');
@@ -6235,10 +6500,17 @@ function bindEvents() {
    ================================================================= */
 function boot() {
   initState();
+  /* v22: 起動時に holesMode 正規化 */
+  if (State.round.holesMode !== 9 && State.round.holesMode !== 18) {
+    State.round.holesMode = 18;
+  }
   bindEvents();
   applyInputMode();  /* v14: 起動時に入力モードを適用（body class設定など） */
+  /* v22: ラウンド形式トグル UI と9Hオーバーレイ初期適用 */
+  try { applyHolesModeToggleUI(); } catch(e) {}
+  try { applyHoleModeOverlay(); } catch(e) {}
   Router.handleInitial();
-  console.log('G-WORLD v16.0 (六甲国際配布版・姓必須/名任意に論理逆転) booted at', new Date().toISOString());
+  console.log('G-WORLD v22.0 (9H専用ロジック完全独立)', new Date().toISOString());
 }
 
 if (document.readyState === 'loading') {
