@@ -1533,6 +1533,75 @@ body.input-mode-counter #btnQuickPutt { display: none; }
   .modal-mode-badge .mb-hint { display: none; }
 }
 
+
+/* ========== v15追加：アコーディオン設定パネル ========== */
+.settings-accordion {
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+}
+.accordion-header {
+  width: 100%;
+  padding: 10px 16px;
+  background: linear-gradient(180deg, #F7FCF9 0%, var(--paper) 100%);
+  color: var(--green-deep);
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 13px; font-weight: 800;
+  border-bottom: 1px solid var(--line);
+  transition: background .15s;
+  cursor: pointer;
+}
+.accordion-header:active {
+  background: var(--green-mist);
+}
+.accordion-header .ah-label {
+  letter-spacing: .04em;
+}
+.accordion-header .ah-arrow {
+  font-size: 11px; font-weight: 800;
+  color: var(--ink-soft);
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px;
+  background: var(--cream);
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  transition: all .2s;
+}
+/* 閉じている状態 */
+.settings-accordion:not(.is-open) .accordion-header {
+  border-bottom: none;
+  padding: 8px 16px;
+}
+.settings-accordion:not(.is-open) .ah-label {
+  font-size: 12px;
+  opacity: .8;
+}
+.settings-accordion:not(.is-open) .ah-arrow {
+  background: var(--green-mist);
+  color: var(--green-deep);
+  border-color: var(--green-2);
+}
+
+/* body 部の開閉アニメーション */
+.accordion-body {
+  max-height: 600px;
+  opacity: 1;
+  overflow: hidden;
+  transition: max-height .35s cubic-bezier(.4, 0, .2, 1),
+              opacity .25s ease-out,
+              padding .25s ease-out;
+}
+.settings-accordion:not(.is-open) .accordion-body {
+  max-height: 0;
+  opacity: 0;
+}
+.accordion-body .toggle-bar {
+  border-bottom: 1px solid var(--line);
+}
+.accordion-body .toggle-bar:last-child {
+  border-bottom: none;
+}
+
 </style>
 
 <!-- QR Code Generator (Kazuhiko Arase, MIT) -->
@@ -3876,7 +3945,14 @@ var qrcode = function() {
     </div>
   </div>
 
-  <div class="toggle-bar">
+  <!-- v15: アコーディオン設定パネル（表示モード＋入力モードを格納） -->
+  <div class="settings-accordion is-open" id="settingsAccordion">
+    <button class="accordion-header" id="accordionToggle" type="button" aria-expanded="true">
+      <span class="ah-label">⚙️ スコア設定</span>
+      <span class="ah-arrow" id="accordionArrow">▼ 閉じる</span>
+    </button>
+    <div class="accordion-body" id="accordionBody">
+      <div class="toggle-bar">
     <div class="toggle-label">スコア表示モード</div>
     <div class="display-toggle" id="displayToggle">
       <button data-mode="number" class="active">数字</button>
@@ -3897,6 +3973,8 @@ var qrcode = function() {
         <span class="im-icon">🔢</span>
         <span class="im-name">カウンター<span class="im-sub">(＋−)</span></span>
       </button>
+    </div>
+  </div>
     </div>
   </div>
 
@@ -4090,11 +4168,11 @@ var qrcode = function() {
     <div class="form-section" style="padding: 0;">
       <div class="row2">
         <div>
-          <label>苗字<span class="required">必須</span></label>
+          <label>姓（任意）</label>
           <input type="text" id="profLastname" maxlength="12" placeholder="例：山田">
         </div>
         <div>
-          <label>名前<span class="required">必須</span></label>
+          <label>名<span class="required">必須</span></label>
           <input type="text" id="profFirstname" maxlength="12" placeholder="例：太郎">
         </div>
       </div>
@@ -4228,13 +4306,16 @@ var qrcode = function() {
       <button class="modal-close" data-close>×</button>
     </div>
     <div class="form-section">
+      <p style="font-size:11px;color:var(--ink-soft);margin-bottom:8px;line-height:1.5;">
+        ※ 名前のみ入力すれば追加できます（姓は任意）。
+      </p>
       <div class="row2">
         <div>
-          <label>苗字<span class="required">必須</span></label>
+          <label>姓（任意）</label>
           <input type="text" id="addLastname" maxlength="12" placeholder="例：田中">
         </div>
         <div>
-          <label>名前<span class="required">必須</span></label>
+          <label>名<span class="required">必須</span></label>
           <input type="text" id="addFirstname" maxlength="12" placeholder="例：一郎">
         </div>
       </div>
@@ -4254,11 +4335,11 @@ var qrcode = function() {
     <div class="form-section">
       <div class="row2">
         <div>
-          <label>苗字<span class="required">必須</span></label>
+          <label>姓（任意）</label>
           <input type="text" id="editLastname" maxlength="12">
         </div>
         <div>
-          <label>名前<span class="required">必須</span></label>
+          <label>名<span class="required">必須</span></label>
           <input type="text" id="editFirstname" maxlength="12">
         </div>
       </div>
@@ -4375,17 +4456,17 @@ var qrcode = function() {
       <button class="modal-close" data-close>×</button>
     </div>
     <div class="form-section">
-      <p style="font-size:12px; color:var(--ink-soft); margin-bottom:10px; line-height:1.6;">
-        招待リストに名前がありません。お手数ですが、本名を入力してください。<br>
-        （あとから編集も可能です）
+      <p style="font-size:12px; color:var(--ink-soft); margin-bottom:10px; line-height:1.6;" id="manualNameHint">
+        お手数ですが、あなたの名前を入力してください。<br>
+        姓はホストが事前入力していれば自動的にセットされます。
       </p>
       <div class="row2">
         <div>
-          <label>苗字<span class="required">必須</span></label>
+          <label>姓（任意）</label>
           <input type="text" id="manualLastname" maxlength="12" placeholder="例：山田">
         </div>
         <div>
-          <label>名前<span class="required">必須</span></label>
+          <label>名<span class="required">必須</span></label>
           <input type="text" id="manualFirstname" maxlength="12" placeholder="例：太郎">
         </div>
       </div>
@@ -5234,8 +5315,9 @@ function openAddCompanion() {
 function submitAddCompanion() {
   const ln = $('#addLastname').value.trim();
   const fn = $('#addFirstname').value.trim();
-  if (!ln || !fn) {
-    showToast('苗字と名前の両方を入力してください', 'error');
+  /* v15: 姓は任意・名のみ必須 */
+  if (!fn) {
+    showToast('名前を入力してください', 'error');
     return;
   }
   if (State.players.length >= 16) {
@@ -5275,8 +5357,9 @@ function submitEditPlayer() {
   const p = State.players[editPlayerIdx];
   const ln = $('#editLastname').value.trim();
   const fn = $('#editFirstname').value.trim();
-  if (!ln || !fn) {
-    showToast('苗字と名前の両方を入力してください', 'error');
+  /* v15: 姓は任意・名のみ必須 */
+  if (!fn) {
+    showToast('名前を入力してください', 'error');
     return;
   }
   p.lastname = ln;
@@ -5554,7 +5637,7 @@ function acceptJoinAsName(gid, allNames, myName) {
   const hasMe = players.some(p => p.isMe);
   if (!hasMe) {
     if (myName == null) {
-      /* 手動入力モーダル */
+      /* 手動入力モーダル（姓未指定） */
       openManualNameModal((ln, fn) => {
         players.unshift({
           id: 'me',
@@ -5568,6 +5651,37 @@ function acceptJoinAsName(gid, allNames, myName) {
         finalizeJoin(players, ln, fn);
       });
       return;
+    } else {
+      /* v15: 姓のみ指定された招待の場合、姓を事前入力して名のみ入力させる */
+      const parts = myName.trim().split(/\s+/);
+      const prefillLn = parts[0] || '';
+      const prefillFn = parts.slice(1).join(' ');
+      if (!prefillFn) {
+        /* 姓のみ → 手動入力モーダル（姓を事前入力） */
+        openManualNameModal((ln, fn) => {
+          /* リスト内の該当プレイヤーを更新して自分にする */
+          const target = players.find(p => p.lastname === prefillLn && !p.firstname);
+          if (target) {
+            target.lastname = ln;
+            target.firstname = fn;
+            target.id = 'me';
+            target.isMe = true;
+            target.isProxy = false;
+          } else {
+            players.unshift({
+              id: 'me',
+              lastname: ln,
+              firstname: fn,
+              isMe: true,
+              isProxy: false,
+              scores: Array(18).fill(null),
+              putts: Array(18).fill(0)
+            });
+          }
+          finalizeJoin(players, ln, fn);
+        }, prefillLn);
+        return;
+      }
     }
   } else {
     const me = players.find(p => p.isMe);
@@ -5603,17 +5717,29 @@ function finalizeJoin(players, myLastname, myFirstname) {
   }
 }
 
-function openManualNameModal(callback) {
-  $('#manualLastname').value = '';
+function openManualNameModal(callback, prefillLastname) {
+  /* v15: 招待者の「姓」が指定されていれば事前入力＋ヒント文更新 */
+  $('#manualLastname').value = prefillLastname || '';
   $('#manualFirstname').value = '';
+  const hint = $('#manualNameHint');
+  if (hint && prefillLastname) {
+    hint.innerHTML = '招待された「<b>' + escapeHtml(prefillLastname) + '</b>」さんですね。<br>あなたの<b>名</b>を入力してください。';
+  } else if (hint) {
+    hint.innerHTML = 'お手数ですが、あなたの<b>名</b>を入力してください。<br>姓は任意です（あとから編集も可能です）。';
+  }
   $('#manualNameModal').classList.add('show');
-  setTimeout(() => $('#manualLastname').focus(), 300);
+  /* 姓が事前入力済みなら 名 にフォーカス */
+  setTimeout(() => {
+    if (prefillLastname) $('#manualFirstname').focus();
+    else $('#manualFirstname').focus();
+  }, 300);
 
   $('#btnManualSubmit').onclick = () => {
     const ln = $('#manualLastname').value.trim();
     const fn = $('#manualFirstname').value.trim();
-    if (!ln || !fn) {
-      showToast('苗字と名前の両方を入力してください', 'error');
+    /* v15: 姓は任意・名のみ必須 */
+    if (!fn) {
+      showToast('名前を入力してください', 'error');
       return;
     }
     closeAllModals();
@@ -5693,8 +5819,9 @@ function renderMyPage() {
 function saveProfile() {
   const ln = $('#profLastname').value.trim();
   const fn = $('#profFirstname').value.trim();
-  if (!ln || !fn) {
-    showToast('苗字と名前の両方を入力してください', 'error');
+  /* v15: 姓は任意・名のみ必須 */
+  if (!fn) {
+    showToast('名前を入力してください', 'error');
     return;
   }
   State.me.lastname = ln;
@@ -6068,6 +6195,25 @@ function bindEvents() {
       centerCurrentHole();
     }
   });
+
+  /* v15: アコーディオン設定パネル開閉 */
+  const accordion = $('#settingsAccordion');
+  const accordionToggle = $('#accordionToggle');
+  const accordionArrow = $('#accordionArrow');
+  if (accordion && accordionToggle && accordionArrow) {
+    accordionToggle.addEventListener('click', () => {
+      const isOpen = accordion.classList.contains('is-open');
+      if (isOpen) {
+        accordion.classList.remove('is-open');
+        accordionToggle.setAttribute('aria-expanded', 'false');
+        accordionArrow.textContent = '▼ 設定を開く';
+      } else {
+        accordion.classList.add('is-open');
+        accordionToggle.setAttribute('aria-expanded', 'true');
+        accordionArrow.textContent = '▼ 閉じる';
+      }
+    });
+  }
 }
 
 /* =================================================================
@@ -6078,7 +6224,7 @@ function boot() {
   bindEvents();
   applyInputMode();  /* v14: 起動時に入力モードを適用（body class設定など） */
   Router.handleInitial();
-  console.log('G-WORLD v14.0 (六甲国際配布版・PAR基準±入力復元) booted at', new Date().toISOString());
+  console.log('G-WORLD v15.0 (六甲国際配布版・アコーディオンUI＋同伴者入力緩和) booted at', new Date().toISOString());
 }
 
 if (document.readyState === 'loading') {
