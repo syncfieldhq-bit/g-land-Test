@@ -23,7 +23,7 @@
 
 <!-- v17: 簡易インラインWeb App Manifest（ホーム画面追加対応） -->
 <link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"G-WORLD","short_name":"G-WORLD","description":"六甲国際パブリックコース・デジタルスコアカード","start_url":"./","scope":"./","display":"standalone","background_color":"%23E8F3EC","theme_color":"%230F5132","icons":[{"src":"./icon.png","sizes":"192x192","type":"image/png","purpose":"any"},{"src":"./icon.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]}'>
-<title>G-WORLD v18.0 | 六甲国際パブリックコース</title>
+<title>G-WORLD v19.0 | 六甲国際パブリックコース</title>
 <style>
 /* =================================================================
    G-WORLD v12.0 - 配布版 Final
@@ -516,20 +516,28 @@ tr.is-me td.current-hole {
 /* ========== セカンダリアクション ========== */
 .secondary-actions {
   padding: 4px 16px 16px;
-  display: flex; gap: 8px; justify-content: center;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  align-items: stretch;
 }
 .secondary-btn {
   background: var(--paper);
   border: 1.5px solid var(--line-strong);
   color: var(--ink);
-  padding: 10px 16px;
+  padding: 12px 6px;
   border-radius: 10px;
-  font-size: 12px; font-weight: 800;
-  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11.5px; font-weight: 800;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px;
+  min-height: 56px;
+  text-align: center;
+  line-height: 1.2;
   box-shadow: var(--shadow-1);
   transition: all .15s;
+  width: 100%;
 }
+.secondary-btn .icon { font-size: 18px !important; line-height: 1; }
 .secondary-btn:active { transform: translateY(1px); background: var(--cream); }
 .secondary-btn .icon { font-size: 14px; }
 .secondary-btn.tee-toggle {
@@ -962,7 +970,36 @@ tr.is-me td.current-hole {
   border-color: var(--green-2);
   box-shadow: 0 0 0 3px rgba(45,157,95,.2);
 }
-.form-section .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.form-section .row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  align-items: start;
+}
+.row2 > div { display: flex; flex-direction: column; min-width: 0; }
+.row2 > div > label {
+  display: flex; align-items: center; flex-wrap: wrap;
+  min-height: 32px;
+  font-size: 12px; font-weight: 700;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+.row2 > div > input {
+  width: 100%;
+  height: 42px;
+  padding: 8px 12px;
+  font-size: 15px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 10px;
+  background: var(--paper);
+  box-sizing: border-box;
+}
+.row2 > div > input:focus {
+  outline: none;
+  border-color: var(--green-mid);
+  box-shadow: 0 0 0 3px rgba(15, 81, 50, 0.12);
+}
 .form-section .switch-row {
   display: flex; align-items: center; justify-content: space-between;
   padding: 12px 0;
@@ -1671,6 +1708,15 @@ body.input-mode-counter #btnQuickPutt { display: none; }
   margin-left: 6px;
   letter-spacing: .04em;
 }
+
+
+/* v19: small screen tweaks for 3-column buttons */
+@media (max-width: 360px) {
+  .secondary-btn { font-size: 10.5px; padding: 10px 4px; min-height: 52px; }
+  .secondary-btn .icon { font-size: 16px !important; }
+}
+/* v19: profile/edit input row alignment */
+.form-section .row2 + .switch-row { margin-top: 12px; }
 
 </style>
 
@@ -4253,7 +4299,7 @@ var qrcode = function() {
     <div class="form-section" style="padding: 0;">
       <div class="row2">
         <div>
-          <label>姓（名字）<span class="required">必須</span><span style="font-size:9px;color:var(--ink-mute);margin-left:6px;">同姓対策：「田中一」もOK</span></label>
+          <label>姓（名字）<span class="required">必須</span></label>
           <input type="text" id="profLastname" maxlength="12" placeholder="例：山田">
         </div>
         <div>
@@ -4398,7 +4444,7 @@ var qrcode = function() {
       </p>
       <div class="row2">
         <div>
-          <label>姓（名字）<span class="required">必須</span><span style="font-size:9px;color:var(--ink-mute);margin-left:6px;">同姓対策：「田中一」もOK</span></label>
+          <label>姓（名字）<span class="required">必須</span></label>
           <input type="text" id="addLastname" maxlength="12" placeholder="例：田中">
         </div>
         <div>
@@ -4422,7 +4468,7 @@ var qrcode = function() {
     <div class="form-section">
       <div class="row2">
         <div>
-          <label>姓（名字）<span class="required">必須</span><span style="font-size:9px;color:var(--ink-mute);margin-left:6px;">同姓対策：「田中一」もOK</span></label>
+          <label>姓（名字）<span class="required">必須</span></label>
           <input type="text" id="editLastname" maxlength="12">
         </div>
         <div>
@@ -4550,7 +4596,7 @@ var qrcode = function() {
       </p>
       <div class="row2">
         <div>
-          <label>姓（名字）<span class="required">必須</span><span style="font-size:9px;color:var(--ink-mute);margin-left:6px;">同姓対策：「田中一」もOK</span></label>
+          <label>姓（名字）<span class="required">必須</span></label>
           <input type="text" id="manualLastname" maxlength="12" placeholder="例：山田">
         </div>
         <div>
@@ -4824,6 +4870,10 @@ function genGroupId() {
   return a + '-' + b;
 }
 function fullName(p) {
+  /* v19: 同姓対策ロジック説明
+     - ホストが「田中一」（姓＋名の頭文字）を lastname に入れた場合は、そのまま「田中一」と表示。
+     - 同伴者が後で firstname に「一郎」を追加した場合は「田中一 一郎」と結合表示。
+     - lastname のみでも識別子として優先表示される。 */
   if (!p) return '';
   const ln = (p.lastname || '').trim();
   const fn = (p.firstname || '').trim();
@@ -5691,6 +5741,8 @@ const Router = {
     if (name === 'gworld') {
       renderTopAndHero();
       renderTable();
+      /* v19: G-WORLD遷移時にホール遷移ボタンを再バインド（DOM同期保証） */
+      try { rebindHoleNav(); } catch(e) {}
     }
     window.scrollTo(0, 0);
   },
@@ -6158,9 +6210,8 @@ function bindEvents() {
     showToast(labels[State.ui.displayMode] + 'に切替');
   });
 
-  /* ヒーロー：前後ホール（◀▶のみ・iマーク削除済） */
-  $('#btnHolePrev').addEventListener('click', () => moveHole(-1));
-  $('#btnHoleNext').addEventListener('click', () => moveHole(1));
+  /* ヒーロー：前後ホール（◀▶のみ・iマーク削除済） v19: rebindHoleNav経由で確実バインド */
+  rebindHoleNav();
 
   /* ヘッダー本マーク = 詳細統合 */
   $('#btnTopDetail').addEventListener('click', openCourseDetail);
@@ -6429,7 +6480,7 @@ function boot() {
   try { renderTopAndHero(); } catch(e) {}
   try { renderTable(); } catch(e) {}
   Router.handleInitial();
-  console.log('G-WORLD v18.0 (ホール遷移修正・1H問題解消・Re-bind導入) booted at', new Date().toISOString());
+  console.log('G-WORLD v19.0 (UIレイアウト統合版・3カラム整列・姓名均一化) booted at', new Date().toISOString());
 }
 
 if (document.readyState === 'loading') {
