@@ -4168,12 +4168,12 @@ var qrcode = function() {
     <div class="form-section" style="padding: 0;">
       <div class="row2">
         <div>
-          <label>姓（任意）</label>
+          <label>姓（名字）<span class="required">必須</span></label>
           <input type="text" id="profLastname" maxlength="12" placeholder="例：山田">
         </div>
         <div>
-          <label>名<span class="required">必須</span></label>
-          <input type="text" id="profFirstname" maxlength="12" placeholder="例：太郎">
+          <label>名（名前・任意）</label>
+          <input type="text" id="profFirstname" maxlength="12" placeholder="例：太郎（任意）">
         </div>
       </div>
       <div class="switch-row">
@@ -4307,16 +4307,16 @@ var qrcode = function() {
     </div>
     <div class="form-section">
       <p style="font-size:11px;color:var(--ink-soft);margin-bottom:8px;line-height:1.5;">
-        ※ 名前のみ入力すれば追加できます（姓は任意）。
+        ※ 姓（名字）のみ入力すれば追加できます。名は任意です。
       </p>
       <div class="row2">
         <div>
-          <label>姓（任意）</label>
+          <label>姓（名字）<span class="required">必須</span></label>
           <input type="text" id="addLastname" maxlength="12" placeholder="例：田中">
         </div>
         <div>
-          <label>名<span class="required">必須</span></label>
-          <input type="text" id="addFirstname" maxlength="12" placeholder="例：一郎">
+          <label>名（名前・任意）</label>
+          <input type="text" id="addFirstname" maxlength="12" placeholder="例：一郎（任意）">
         </div>
       </div>
       <button class="primary-btn" id="btnAddSubmit">追加する</button>
@@ -4335,11 +4335,11 @@ var qrcode = function() {
     <div class="form-section">
       <div class="row2">
         <div>
-          <label>姓（任意）</label>
+          <label>姓（名字）<span class="required">必須</span></label>
           <input type="text" id="editLastname" maxlength="12">
         </div>
         <div>
-          <label>名<span class="required">必須</span></label>
+          <label>名（名前・任意）</label>
           <input type="text" id="editFirstname" maxlength="12">
         </div>
       </div>
@@ -4457,17 +4457,17 @@ var qrcode = function() {
     </div>
     <div class="form-section">
       <p style="font-size:12px; color:var(--ink-soft); margin-bottom:10px; line-height:1.6;" id="manualNameHint">
-        お手数ですが、あなたの名前を入力してください。<br>
-        姓はホストが事前入力していれば自動的にセットされます。
+        招待ホストが入力した「姓」が事前にセットされています。<br>
+        必要に応じて「名」を追加入力してください（任意）。
       </p>
       <div class="row2">
         <div>
-          <label>姓（任意）</label>
+          <label>姓（名字）<span class="required">必須</span></label>
           <input type="text" id="manualLastname" maxlength="12" placeholder="例：山田">
         </div>
         <div>
-          <label>名<span class="required">必須</span></label>
-          <input type="text" id="manualFirstname" maxlength="12" placeholder="例：太郎">
+          <label>名（名前・任意）</label>
+          <input type="text" id="manualFirstname" maxlength="12" placeholder="例：太郎（任意）">
         </div>
       </div>
       <button class="primary-btn" id="btnManualSubmit">この名前で参加する</button>
@@ -5315,9 +5315,9 @@ function openAddCompanion() {
 function submitAddCompanion() {
   const ln = $('#addLastname').value.trim();
   const fn = $('#addFirstname').value.trim();
-  /* v15: 姓は任意・名のみ必須 */
-  if (!fn) {
-    showToast('名前を入力してください', 'error');
+  /* v16: 姓（名字）が必須・名は任意 */
+  if (!ln) {
+    showToast('姓（名字）を入力してください', 'error');
     return;
   }
   if (State.players.length >= 16) {
@@ -5357,9 +5357,9 @@ function submitEditPlayer() {
   const p = State.players[editPlayerIdx];
   const ln = $('#editLastname').value.trim();
   const fn = $('#editFirstname').value.trim();
-  /* v15: 姓は任意・名のみ必須 */
-  if (!fn) {
-    showToast('名前を入力してください', 'error');
+  /* v16: 姓（名字）が必須・名は任意 */
+  if (!ln) {
+    showToast('姓（名字）を入力してください', 'error');
     return;
   }
   p.lastname = ln;
@@ -5723,9 +5723,9 @@ function openManualNameModal(callback, prefillLastname) {
   $('#manualFirstname').value = '';
   const hint = $('#manualNameHint');
   if (hint && prefillLastname) {
-    hint.innerHTML = '招待された「<b>' + escapeHtml(prefillLastname) + '</b>」さんですね。<br>あなたの<b>名</b>を入力してください。';
+    hint.innerHTML = '招待された「<b>' + escapeHtml(prefillLastname) + '</b>」さんですね。<br>必要に応じて<b>名</b>を追加入力してください（任意）。';
   } else if (hint) {
-    hint.innerHTML = 'お手数ですが、あなたの<b>名</b>を入力してください。<br>姓は任意です（あとから編集も可能です）。';
+    hint.innerHTML = '招待ホストが入力した<b>姓（名字）</b>を入力してください。<br><b>名</b>は任意です（あとから編集も可能です）。';
   }
   $('#manualNameModal').classList.add('show');
   /* 姓が事前入力済みなら 名 にフォーカス */
@@ -5737,9 +5737,9 @@ function openManualNameModal(callback, prefillLastname) {
   $('#btnManualSubmit').onclick = () => {
     const ln = $('#manualLastname').value.trim();
     const fn = $('#manualFirstname').value.trim();
-    /* v15: 姓は任意・名のみ必須 */
-    if (!fn) {
-      showToast('名前を入力してください', 'error');
+    /* v16: 姓（名字）が必須・名は任意 */
+    if (!ln) {
+      showToast('姓（名字）を入力してください', 'error');
       return;
     }
     closeAllModals();
@@ -5819,9 +5819,9 @@ function renderMyPage() {
 function saveProfile() {
   const ln = $('#profLastname').value.trim();
   const fn = $('#profFirstname').value.trim();
-  /* v15: 姓は任意・名のみ必須 */
-  if (!fn) {
-    showToast('名前を入力してください', 'error');
+  /* v16: 姓（名字）が必須・名は任意 */
+  if (!ln) {
+    showToast('姓（名字）を入力してください', 'error');
     return;
   }
   State.me.lastname = ln;
@@ -6224,7 +6224,7 @@ function boot() {
   bindEvents();
   applyInputMode();  /* v14: 起動時に入力モードを適用（body class設定など） */
   Router.handleInitial();
-  console.log('G-WORLD v15.0 (六甲国際配布版・アコーディオンUI＋同伴者入力緩和) booted at', new Date().toISOString());
+  console.log('G-WORLD v16.0 (六甲国際配布版・姓必須/名任意に論理逆転) booted at', new Date().toISOString());
 }
 
 if (document.readyState === 'loading') {
