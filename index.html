@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#0F5132">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>G-WORLD v31.0 | 六甲国際パブリックコース</title>
+<title>G-WORLD v32.0 | 六甲国際パブリックコース</title>
 <!-- v31: ホーム画面アイコン -->
 <link rel="apple-touch-icon" href="./icon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="./icon.png">
@@ -2202,6 +2202,468 @@ body.v31-mode-beginner .v31-modal .player-tabs > *:not(.is-me) {
 }
 .v31-modal .player-tabs button.is-me {
   border-color: var(--v31-accent);
+}
+
+
+/* ============================================================
+   v32: 現場主義UI + 9H/18Hモード
+   ============================================================ */
+
+/* 司令塔ヘッダーに 9H/18H バッジを並べる */
+.v32-header {
+  display: flex; align-items: center; gap: 12px;
+}
+.v32-header .v31-h-text { flex: 1; }
+.v32-status-badge {
+  background: rgba(255,255,255,.22);
+  color: #fff;
+  border: 2px solid rgba(255,255,255,.55);
+  border-radius: 12px;
+  padding: 6px 12px;
+  display: flex; flex-direction: column; align-items: center;
+  font-weight: 900;
+  min-width: 56px;
+}
+.v32-status-badge .v32-sb-num { font-size: 22px; line-height: 1; }
+.v32-status-badge .v32-sb-lbl { font-size: 11px; opacity: .9; }
+.v32-status-badge.is-half {
+  background: #f0b945;
+  border-color: #b88300;
+  color: #4a3300;
+}
+
+/* ラウンド構成トグル（9H/18H） */
+.v32-holes-block {
+  border-color: var(--v31-accent) !important;
+  border-width: 2px !important;
+}
+.v32-holes-toggle {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.v32-holes-toggle button {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 10px;
+  background: var(--v31-base-soft);
+  border: 2px solid var(--v31-base-line);
+  border-radius: 12px;
+  color: var(--v31-ink-soft);
+  font-weight: 800;
+  text-align: left;
+  cursor: pointer;
+  transition: all .15s;
+}
+.v32-holes-toggle button .v32-ht-num {
+  font-size: 28px; font-weight: 900; line-height: 1;
+  min-width: 40px; text-align: center;
+}
+.v32-holes-toggle button .v32-ht-lbl {
+  display: flex; flex-direction: column; line-height: 1.2;
+  font-size: 14px;
+}
+.v32-holes-toggle button .v32-ht-lbl small {
+  font-size: 10px; font-weight: 600; opacity: .8; margin-top: 2px;
+}
+.v32-holes-toggle button.active {
+  background: var(--v31-accent);
+  border-color: var(--v31-accent-deep);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(45,157,95,.32);
+}
+.v32-holes-toggle button[data-holes="9"].active {
+  background: #f0b945;
+  border-color: #b88300;
+  color: #4a3300;
+  box-shadow: 0 4px 10px rgba(240,185,69,.32);
+}
+
+/* 時間管理ブロック */
+.v32-time-block .v32-time-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.v32-time-field {
+  display: flex; flex-direction: column; gap: 4px;
+}
+.v32-time-field label {
+  font-size: 11px; font-weight: 700;
+  color: var(--v31-ink-soft);
+}
+.v32-time-field .v31-input {
+  padding: 10px 12px; font-size: 15px;
+}
+.v32-time-row {
+  display: flex; gap: 4px; align-items: center;
+}
+.v32-time-row .v31-input { flex: 1; }
+.v32-time-row .v31-mini-action { white-space: nowrap; padding: 6px 8px; }
+.v32-time-rest .v32-rest-display {
+  padding: 12px 10px;
+  background: var(--v31-accent-soft);
+  border: 1.5px solid var(--v31-accent);
+  border-radius: 10px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--v31-accent-deep);
+}
+
+/* ライブ・スコアカード */
+.v32-livescore-block {
+  background: var(--v31-base);
+}
+.v32-livescore-block .v31-block-title {
+  display: flex; justify-content: space-between; align-items: center;
+}
+.v32-live-meta {
+  font-size: 11px; font-weight: 800;
+  color: var(--v31-accent-deep);
+  background: var(--v31-accent-soft);
+  padding: 3px 8px; border-radius: 999px;
+  letter-spacing: 0;
+}
+.v32-livescore-hint {
+  font-size: 11px; color: var(--v31-ink-soft);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+.v32-livescore-scroll {
+  max-height: 360px;
+  overflow-x: auto; overflow-y: auto;
+  border: 1.5px solid var(--v31-base-line);
+  border-radius: 10px;
+  -webkit-overflow-scrolling: touch;
+}
+.v32-livescore {
+  min-width: 100%;
+  font-size: 13px;
+  border-collapse: collapse;
+}
+.v32-livescore th, .v32-livescore td {
+  padding: 6px 4px;
+  text-align: center;
+  border: 1px solid var(--v31-base-line);
+}
+.v32-livescore .col-fixed {
+  position: sticky; left: 0;
+  background: var(--v31-base);
+  font-weight: 800;
+  text-align: left;
+  padding-left: 8px;
+  z-index: 2;
+}
+.v32-livescore thead th {
+  background: var(--v31-base-soft);
+  font-weight: 800;
+  color: var(--v31-accent-deep);
+  position: sticky; top: 0; z-index: 1;
+}
+.v32-livescore .par-row { background: #f7e8c0; color: #6a4a00; font-weight: 800; }
+.v32-livescore .score-cell {
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 14px;
+  min-width: 36px;
+  position: relative;
+}
+.v32-livescore .score-cell.empty { color: var(--v31-base-line2); }
+.v32-livescore .score-cell.under-1 { background: #c8ecd5; color: #0a4a25; }
+.v32-livescore .score-cell.under-2 { background: #8fd6a8; color: #053018; }
+.v32-livescore .score-cell.under-3 { background: #4fbd7d; color: #fff; }
+.v32-livescore .score-cell.par   { background: #fff; color: #0a3a18; }
+.v32-livescore .score-cell.over-1 { background: #fde2dd; color: #7a1d10; }
+.v32-livescore .score-cell.over-2 { background: #f4a497; color: #5a0e08; }
+.v32-livescore .col-total {
+  background: var(--v31-accent-soft);
+  font-weight: 900;
+  color: var(--v31-accent-deep);
+  min-width: 60px;
+}
+.v32-livescore-summary {
+  margin-top: 8px;
+  padding: 10px 12px;
+  background: var(--v31-base-soft);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--v31-ink);
+  display: none;
+}
+.v32-livescore-summary.show { display: block; }
+
+/* ============================================================
+   行ハイライト + 縦ハイライト（クロス）
+   モーダル/ライブテーブル共通
+   ============================================================ */
+.scoretable .col-row-hl,
+.v32-livescore .col-row-hl {
+  background: rgba(45,157,95,.10) !important;
+}
+.scoretable .col-row-hl.col-fixed,
+.v32-livescore .col-row-hl.col-fixed {
+  background: rgba(45,157,95,.20) !important;
+  color: var(--v31-accent-deep) !important;
+}
+.scoretable .col-col-hl,
+.v32-livescore .col-col-hl {
+  background: rgba(45,157,95,.10) !important;
+}
+.scoretable td.col-row-hl.col-col-hl,
+.scoretable th.col-row-hl.col-col-hl,
+.v32-livescore td.col-row-hl.col-col-hl {
+  background: var(--v31-accent) !important;
+  color: #fff !important;
+  outline: 2px solid var(--v31-accent-deep);
+  outline-offset: -2px;
+  font-weight: 900;
+}
+/* 入力中プレイヤー行は太枠で明示 */
+.v32-livescore tr.is-input-row td:not(.col-fixed),
+#v31ModalScoreTable tr.is-input-row td:not(.col-fixed) {
+  border-top: 2px solid var(--v31-accent) !important;
+  border-bottom: 2px solid var(--v31-accent) !important;
+}
+.v32-livescore tr.is-input-row td.col-fixed,
+#v31ModalScoreTable tr.is-input-row td.col-fixed {
+  background: var(--v31-accent) !important;
+  color: #fff !important;
+  font-weight: 900;
+}
+
+/* ============================================================
+   9Hロック表示
+   ============================================================ */
+body.v32-holes-9 .scoretable td[data-hi="9"],
+body.v32-holes-9 .scoretable td[data-hi="10"],
+body.v32-holes-9 .scoretable td[data-hi="11"],
+body.v32-holes-9 .scoretable td[data-hi="12"],
+body.v32-holes-9 .scoretable td[data-hi="13"],
+body.v32-holes-9 .scoretable td[data-hi="14"],
+body.v32-holes-9 .scoretable td[data-hi="15"],
+body.v32-holes-9 .scoretable td[data-hi="16"],
+body.v32-holes-9 .scoretable td[data-hi="17"],
+body.v32-holes-9 .scoretable th[data-hole="10"],
+body.v32-holes-9 .scoretable th[data-hole="11"],
+body.v32-holes-9 .scoretable th[data-hole="12"],
+body.v32-holes-9 .scoretable th[data-hole="13"],
+body.v32-holes-9 .scoretable th[data-hole="14"],
+body.v32-holes-9 .scoretable th[data-hole="15"],
+body.v32-holes-9 .scoretable th[data-hole="16"],
+body.v32-holes-9 .scoretable th[data-hole="17"],
+body.v32-holes-9 .scoretable th[data-hole="18"] {
+  opacity: .25 !important;
+  pointer-events: none !important;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(120,120,120,.12),
+    rgba(120,120,120,.12) 4px,
+    rgba(120,120,120,.04) 4px,
+    rgba(120,120,120,.04) 8px
+  ) !important;
+}
+body.v32-holes-9 .scoretable td[data-hi="9"] {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  background: var(--v31-base) !important;
+}
+/* 10H以降のセルをきちんとロック（td hi index 9-17 = 10H-18H） */
+body.v32-holes-9 .scoretable td[data-hi="10"],
+body.v32-holes-9 .scoretable td[data-hi="11"],
+body.v32-holes-9 .scoretable td[data-hi="12"],
+body.v32-holes-9 .scoretable td[data-hi="13"],
+body.v32-holes-9 .scoretable td[data-hi="14"],
+body.v32-holes-9 .scoretable td[data-hi="15"],
+body.v32-holes-9 .scoretable td[data-hi="16"],
+body.v32-holes-9 .scoretable td[data-hi="17"] {
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(120,120,120,.18),
+    rgba(120,120,120,.18) 4px,
+    rgba(120,120,120,.06) 4px,
+    rgba(120,120,120,.06) 8px
+  ) !important;
+  color: var(--v31-base-line2) !important;
+}
+
+/* モーダル内 9Hバッジ */
+.v32-mh-holes {
+  background: #d6efe2 !important;
+  color: var(--v31-accent-deep) !important;
+}
+body.v32-holes-9 .v32-mh-holes {
+  background: #fff4d6 !important;
+  color: #8a5b00 !important;
+}
+
+/* 名前ストリップ（下部配置・現場主義UI） */
+.v32-name-strip {
+  flex: 0 0 auto;
+  display: flex; gap: 6px;
+  padding: 6px 12px;
+  background: var(--v31-base);
+  overflow-x: auto;
+  border-top: 1.5px solid var(--v31-base-line);
+  -webkit-overflow-scrolling: touch;
+}
+.v32-name-strip .player-tab {
+  background: var(--v31-base-soft);
+  border: 1.5px solid var(--v31-base-line);
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px; font-weight: 800;
+  white-space: nowrap;
+  color: var(--v31-ink-soft);
+  cursor: pointer;
+}
+.v32-name-strip .player-tab.active {
+  background: var(--v31-accent);
+  border-color: var(--v31-accent-deep);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(45,157,95,.30);
+}
+.v32-name-strip .you-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  background: var(--v31-accent);
+  border-radius: 50%;
+  margin-right: 4px;
+}
+.v32-name-strip .player-tab.active .you-dot {
+  background: #fff;
+}
+
+/* ============================================================
+   9H 集計画面（オーバーレイ）
+   ============================================================ */
+.v32-half-summary {
+  position: fixed;
+  inset: 0;
+  background: rgba(15,42,26,.78);
+  z-index: 10500;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+}
+.v32-half-summary.show { display: flex; }
+.v32-half-summary .v32-hs-card {
+  width: 100%; max-width: 760px;
+  background: var(--v31-base);
+  border-radius: 18px 18px 0 0;
+  padding: 18px 16px calc(20px + env(safe-area-inset-bottom));
+  max-height: 88vh;
+  overflow-y: auto;
+  box-shadow: 0 -8px 24px rgba(0,0,0,.3);
+}
+.v32-hs-header {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 14px;
+}
+.v32-hs-header .v32-hs-ico {
+  font-size: 32px;
+}
+.v32-hs-header .v32-hs-title {
+  flex: 1;
+  font-size: 18px; font-weight: 900; color: var(--v31-accent-deep);
+}
+.v32-hs-header .v32-hs-close {
+  background: var(--v31-base-soft);
+  border: 1px solid var(--v31-base-line2);
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  font-size: 18px; cursor: pointer;
+}
+.v32-hs-section {
+  background: var(--v31-base-soft);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+.v32-hs-section-title {
+  font-size: 12px; font-weight: 800;
+  color: var(--v31-accent-deep);
+  margin-bottom: 8px;
+  letter-spacing: .04em;
+}
+.v32-hs-player-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--v31-base-line);
+  font-weight: 700;
+}
+.v32-hs-player-row:last-child { border-bottom: none; }
+.v32-hs-player-row .v32-hs-name { flex: 1; font-size: 14px; }
+.v32-hs-player-row .v32-hs-total {
+  font-size: 22px; font-weight: 900; color: var(--v31-accent-deep);
+}
+.v32-hs-player-row .v32-hs-diff {
+  font-size: 13px; font-weight: 800;
+  min-width: 50px; text-align: right;
+}
+.v32-hs-player-row .v32-hs-diff.minus { color: var(--v31-accent-deep); }
+.v32-hs-player-row .v32-hs-diff.plus  { color: var(--v31-danger); }
+.v32-hs-player-row .v32-hs-diff.even  { color: #8a5b00; }
+.v32-hs-actions {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  margin-top: 12px;
+}
+.v32-hs-actions button {
+  padding: 14px;
+  border-radius: 10px;
+  font-weight: 900;
+  font-size: 14px;
+  cursor: pointer;
+  border: 2px solid;
+}
+.v32-hs-actions .v32-hs-save {
+  background: var(--v31-accent);
+  border-color: var(--v31-accent-deep);
+  color: #fff;
+}
+.v32-hs-actions .v32-hs-back {
+  background: var(--v31-base);
+  border-color: var(--v31-base-line2);
+  color: var(--v31-ink);
+}
+.v32-hs-meta {
+  font-size: 11px;
+  color: var(--v31-ink-soft);
+  text-align: center;
+  margin-top: 6px;
+}
+
+/* 直接編集オーバーレイ（既存 v31-inline-quick / v31-inline-edit）はそのまま使用 */
+
+/* ライブテーブル コンパクト */
+.v32-livescore th.col-total, .v32-livescore td.col-total {
+  position: sticky; right: 0;
+  z-index: 2;
+}
+
+/* スマホで時間グリッドを縦並びに */
+@media (max-width: 380px) {
+  .v32-time-block .v32-time-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 完了マーク（9Hで全ホール入力済み） */
+.v32-9h-complete-banner {
+  display: none;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, #2d9d5f, #1f7a47);
+  color: #fff;
+  border-radius: 12px;
+  font-weight: 900;
+  font-size: 15px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(45,157,95,.32);
+  animation: v32pulse 1.6s ease-in-out infinite;
+}
+.v32-9h-complete-banner.show { display: block; }
+@keyframes v32pulse {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
 }
 
 </style>
@@ -4520,13 +4982,33 @@ var qrcode = function() {
   <div class="v31-cockpit">
 
     <!-- ヘッダー -->
-    <div class="v31-header">
+    <div class="v31-header v32-header">
       <div class="v31-h-ico">⛳</div>
       <div class="v31-h-text">
         <div class="v31-h-sub">六甲国際パブリック</div>
         <div class="v31-h-main">ラウンド準備</div>
       </div>
+      <!-- v32: 9H/18H ステータスバッジ（常時表示） -->
+      <div class="v32-status-badge" id="v32StatusBadge">
+        <span class="v32-sb-num" id="v32SbNum">18</span>
+        <span class="v32-sb-lbl">H</span>
+      </div>
     </div>
+
+    <!-- v32: 9H / 18H ラウンド構成 -->
+    <section class="v31-block v32-holes-block">
+      <div class="v31-block-title">🏁 ラウンド構成</div>
+      <div class="v32-holes-toggle" id="v32HolesToggle">
+        <button type="button" data-holes="18" class="active">
+          <span class="v32-ht-num">18</span>
+          <span class="v32-ht-lbl">フルラウンド<small>1H〜18H全て入力</small></span>
+        </button>
+        <button type="button" data-holes="9">
+          <span class="v32-ht-num">9</span>
+          <span class="v32-ht-lbl">ハーフ<small>1H〜9Hで完結</small></span>
+        </button>
+      </div>
+    </section>
 
     <!-- ① プレイモード切替（一般 / 初心者カウンター） -->
     <section class="v31-block v31-block-accent">
@@ -4550,6 +5032,32 @@ var qrcode = function() {
              maxlength="6" inputmode="numeric" placeholder="例: 123">
     </section>
 
+    <!-- v32: ⏰ 時間管理（PMスタート ＋ 休憩時間）— メインで直接入力 -->
+    <section class="v31-block v32-time-block">
+      <div class="v31-block-title">⏰ 時間管理</div>
+      <div class="v32-time-grid">
+        <div class="v32-time-field">
+          <label>⛳ PMスタート</label>
+          <div class="v32-time-row">
+            <input type="time" class="v31-input v31-pmtime" id="v32MainPmStart" step="300">
+            <button type="button" class="v31-mini-action" id="v32MainPmSmart">+45分</button>
+          </div>
+        </div>
+        <div class="v32-time-field">
+          <label>☕ 休憩開始</label>
+          <input type="time" class="v31-input v31-pmtime" id="v32RestStart" step="300">
+        </div>
+        <div class="v32-time-field">
+          <label>🏁 休憩終了</label>
+          <input type="time" class="v31-input v31-pmtime" id="v32RestEnd" step="300">
+        </div>
+        <div class="v32-time-field v32-time-rest">
+          <label>⏱ 休憩時間</label>
+          <div class="v32-rest-display" id="v32RestDisplay">— 分</div>
+        </div>
+      </div>
+    </section>
+
     <!-- ③ 同伴者リスト -->
     <section class="v31-block">
       <div class="v31-block-title">
@@ -4564,6 +5072,27 @@ var qrcode = function() {
       <span class="v31-start-ico">🏁</span>
       <span class="v31-start-text">ラウンド開始<small>スコア入力モーダルを起動</small></span>
     </button>
+
+    <!-- v32: 9H完了バナー（9Hモード全入力時のみ表示） -->
+    <div class="v32-9h-complete-banner" id="v329hCompleteBanner">
+      🏁 ハーフラウンド完了！タップで集計を確認
+    </div>
+
+    <!-- v32: ライブ・スコアカード（トップ画面で直接編集可能） -->
+    <section class="v31-block v32-livescore-block">
+      <div class="v31-block-title">
+        📊 ライブ・スコアカード
+        <span class="v32-live-meta">
+          <span id="v32LiveMode">18H</span> ·
+          <span id="v32LiveHole">1H</span>
+        </span>
+      </div>
+      <div class="v32-livescore-hint">スコア数字を直接タップして編集できます</div>
+      <div class="scoretable-scroll v32-livescore-scroll" id="v32LiveScroll">
+        <table class="scoretable v32-livescore" id="v32LiveTable"></table>
+      </div>
+      <div class="v32-livescore-summary" id="v32LiveSummary"></div>
+    </section>
 
     <!-- ⑤ ナビ・コース詳細・予約・電話 -->
     <section class="v31-block">
@@ -4806,6 +5335,34 @@ var qrcode = function() {
 </div>
 
 <!-- フッターバー -->
+
+<!-- v32: 9H 集計画面（ハーフ専用） -->
+<div class="v32-half-summary" id="v32HalfSummary">
+  <div class="v32-hs-card">
+    <div class="v32-hs-header">
+      <div class="v32-hs-ico">🏁</div>
+      <div class="v32-hs-title">9ホール 集計（ハーフラウンド）</div>
+      <button type="button" class="v32-hs-close" id="v32HsClose">×</button>
+    </div>
+
+    <div class="v32-hs-section">
+      <div class="v32-hs-section-title">📊 各プレイヤーのスコア（1H〜9H）</div>
+      <div id="v32HsPlayers"></div>
+    </div>
+
+    <div class="v32-hs-section">
+      <div class="v32-hs-section-title">⏰ タイム情報</div>
+      <div id="v32HsTime"></div>
+    </div>
+
+    <div class="v32-hs-actions">
+      <button type="button" class="v32-hs-back" id="v32HsBack">↩ 戻る</button>
+      <button type="button" class="v32-hs-save" id="v32HsSave">💾 9H完結データを保存</button>
+    </div>
+    <div class="v32-hs-meta">※ 9H完結データはマイページ履歴に「ハーフ」として記録されます</div>
+  </div>
+</div>
+
 <nav class="footer-bar">
   <button class="footer-tab" data-tab="home"><span class="ftab-icon">🏠</span><span>ホーム</span></button>
   <button class="footer-tab active" data-tab="gworld"><span class="ftab-icon">⛳</span><span>G-WORLD</span></button>
@@ -4823,15 +5380,13 @@ var qrcode = function() {
       <div class="v31-mh-meta">
         <span class="v31-mh-pm">⛳ PM <b id="v31ModalPm">— : —</b></span>
         <span class="v31-mh-mode" id="v31ModalModeBadge">🏌️ 一般</span>
+        <span class="v31-mh-mode v32-mh-holes" id="v32ModalHolesBadge">🏁 18H</span>
         <button class="modal-close v31-mh-close" data-close type="button">×</button>
       </div>
     </div>
 
-    <!-- v31 プレイヤータブ（v16 互換 ID） -->
-    <div class="v31-player-tabs player-tabs" id="modalPlayerTabs"></div>
-
     <!-- ============================================================
-         上部 80% — スコアカード（横スクロール）
+         v32: 上部 — スコアカード（横スクロール）— 名前タブは下に移動
          ============================================================ -->
     <div class="v31-modal-top">
       <div class="v31-modal-info">
@@ -4851,8 +5406,11 @@ var qrcode = function() {
       </div>
     </div>
 
+    <!-- v32: 名前ストリップ（現場主義: スコア視線の下に配置） -->
+    <div class="v32-name-strip v31-player-tabs player-tabs" id="modalPlayerTabs"></div>
+
     <!-- ============================================================
-         下部 20% — 親指グリッド（ストローク± / パット± / 切替 / 確定）
+         下部 — 親指グリッド（ストローク± / パット± / 切替 / 確定）
          ============================================================ -->
     <div class="v31-modal-bottom">
       <div class="v31-thumb-grid">
@@ -5305,7 +5863,11 @@ const State = {
     groupName: '',
     /* v31: 司令塔機能 */
     lockerNum: '',
-    pmStart: ''
+    pmStart: '',
+    /* v32: 9H/18H モード ＆ 休憩時間 */
+    holesMode: '18',       /* '18' | '9' */
+    restStart: '',         /* 休憩開始 HH:MM */
+    restEnd: ''            /* 休憩終了 HH:MM */
   },
   players: [],
   ui: {
@@ -5418,6 +5980,60 @@ function v31SmartPmDefault() {
   const mm = String(d.getMinutes()).padStart(2, '0');
   return hh + ':' + mm;
 }
+
+/* =================================================================
+   v32: 9H/18H モード判定 / ロック判定 / アクティブホール数
+   ================================================================= */
+function v32IsHalfMode() {
+  return State.round && State.round.holesMode === '9';
+}
+function v32MaxHole() {
+  return v32IsHalfMode() ? 9 : 18;
+}
+function v32IsHoleLocked(hi /* 0-indexed */) {
+  return v32IsHalfMode() && hi >= 9;
+}
+function v32ApplyHolesBodyClass() {
+  document.body.classList.toggle('v32-holes-9', v32IsHalfMode());
+  document.body.classList.toggle('v32-holes-18', !v32IsHalfMode());
+}
+
+/* 休憩時間（分）を計算 */
+function v32RestMinutes() {
+  const s = (State.round && State.round.restStart) || '';
+  const e = (State.round && State.round.restEnd) || '';
+  if (!s || !e) return null;
+  const [sh, sm] = s.split(':').map(Number);
+  const [eh, em] = e.split(':').map(Number);
+  if (isNaN(sh) || isNaN(sm) || isNaN(eh) || isNaN(em)) return null;
+  const min = (eh * 60 + em) - (sh * 60 + sm);
+  return (min >= 0) ? min : null;
+}
+
+/* 9H完結のスコアサブセット計算（前半9H のみ） */
+function v32HalfTotalScore(p) {
+  return p.scores.slice(0, 9).reduce((s, v) => s + (v || 0), 0);
+}
+function v32HalfTotalPutts(p) {
+  return p.putts.slice(0, 9).reduce((s, v) => s + (v || 0), 0);
+}
+function v32HalfPlayed(p) {
+  return p.scores.slice(0, 9).filter(v => v != null).length;
+}
+function v32HalfPar() {
+  return COURSE.holes.slice(0, 9).reduce((s, h) => s + h.par, 0);
+}
+function v32HalfTotalDiff(p) {
+  const t = v32HalfTotalScore(p);
+  if (t === 0) return null;
+  return t - v32HalfPar();
+}
+function v32HalfAllDone() {
+  if (!v32IsHalfMode()) return false;
+  return State.players.length > 0 &&
+         State.players.every(p => v32HalfPlayed(p) === 9);
+}
+
 
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
@@ -5674,11 +6290,15 @@ function renderTable() {
           ev.stopPropagation();
           const pi = +td.dataset.pi;
           const hi = +td.dataset.hi;
+          v32SetActiveCell(pi, hi);
           v31OpenInlineEdit(td, pi, hi);
         });
       });
     }
   } catch(e) {}
+  /* v32: ライブスコアカード描画 + クロスハイライト */
+  try { v32RenderLiveScore(); } catch(e) {}
+  try { v32ApplyCrossHighlight(); } catch(e) {}
 
 }
 
@@ -5765,8 +6385,15 @@ function openScoreModal(pi, hi) {
     const meIdx = State.players.findIndex(p => p.isMe);
     if (meIdx >= 0) pi = meIdx;
   }
+  /* v32: 9Hモード時、hi >= 9 は強制的に 9H にクランプ */
+  if (v32IsHalfMode() && hi >= 9) {
+    hi = 8;
+    showToast('🏁 9Hモードでは 10H 以降にはアクセスできません');
+  }
   modalPlayerIdx = pi;
   modalHole = hi + 1;
+  /* v32: アクティブセル更新 */
+  v32SetActiveCell(pi, hi);
   const p = State.players[pi];
   const h = COURSE.holes[hi];
 
@@ -5812,6 +6439,8 @@ function renderModalPlayerTabs() {
     t.addEventListener('click', () => {
       saveCurrentModalScore();
       modalPlayerIdx = +t.dataset.pi;
+      /* v32: アクティブセル更新（行ハイライト追従） */
+      v32SetActiveCell(modalPlayerIdx, modalHole - 1);
       const p = State.players[modalPlayerIdx];
       const h = COURSE.holes[modalHole - 1];
       /* v14：モードに応じた初期値 */
@@ -5908,6 +6537,16 @@ function updateModalDisplay() {
   /* v31: モーダルバッジ・親指ラベル同期 */
   try { v31UpdateModalBadges(); } catch(e) {}
   try { v31UpdateThumbLabels(); } catch(e) {}
+  /* v32: クロスハイライト同期（modalHole / modalPlayerIdx の現在位置） */
+  try {
+    v32SetActiveCell(modalPlayerIdx, modalHole - 1);
+    v32ApplyCrossHighlight();
+  } catch(e) {}
+  /* v32: モーダル内 9H/18H バッジ */
+  try {
+    const mb = document.getElementById('v32ModalHolesBadge');
+    if (mb) mb.textContent = v32IsHalfMode() ? '🏁 9H' : '🏁 18H';
+  } catch(e) {}
 
   const confirmBtn = $('#btnConfirm');
   if (modalHole >= COURSE.holes.length) {
@@ -6818,6 +7457,8 @@ function v31CloseInlineEdit(commit) {
         if (p.putts[hi] == null) p.putts[hi] = 0;
       }
       Storage.saveState();
+      /* v32: 入力プレイヤー＆ホールを「アクティブ位置」として記憶 */
+      v32SetActiveCell(pi, hi);
     }
   }
   try { cell.classList.remove('v31-editing'); } catch(e) {}
@@ -6825,6 +7466,10 @@ function v31CloseInlineEdit(commit) {
   try { if (quick && quick.parentNode) quick.remove(); } catch(e) {}
   v31CurrentEdit = null;
   renderTable();
+  /* v32: ライブスコアカード再描画 + クロスハイライト + 9H完了チェック */
+  try { v32RenderLiveScore(); } catch(e) {}
+  try { v32ApplyCrossHighlight(); } catch(e) {}
+  try { v32CheckHalfComplete(); } catch(e) {}
 }
 
 function v31OpenInlineEdit(cell, pi, hi) {
@@ -6832,6 +7477,12 @@ function v31OpenInlineEdit(cell, pi, hi) {
   const p = State.players[pi];
   if (!p) return;
   const h = COURSE.holes[hi];
+
+  /* v32: 9Hモード時の 10H〜18H ロック */
+  if (v32IsHoleLocked(hi)) {
+    showToast('🏁 9Hモードでは 10H 以降は入力できません');
+    return;
+  }
 
   if (v31IsBeginner() && !p.isMe) {
     showToast('🔰 初心者モードでは自分のスコアのみ編集できます');
@@ -6904,6 +7555,273 @@ document.addEventListener('click', (e) => {
   if (e.target === input) return;
   v31CloseInlineEdit(true);
 }, true);
+
+
+/* =================================================================
+   v32: アクティブセル管理（行/縦ハイライトのアンカー）
+   ================================================================= */
+let v32ActivePi = -1;
+let v32ActiveHi = -1;
+
+function v32SetActiveCell(pi, hi) {
+  v32ActivePi = pi;
+  v32ActiveHi = hi;
+}
+
+/* =================================================================
+   v32: クロスハイライト（行 + 縦）
+   #v32LiveTable / #v31ModalScoreTable / #scoreTable 全てに適用
+   ================================================================= */
+function v32ApplyCrossHighlight() {
+  const tables = ['#v32LiveTable', '#v31ModalScoreTable', '#scoreTable'];
+  tables.forEach(sel => {
+    const t = document.querySelector(sel);
+    if (!t) return;
+    /* クリア */
+    t.querySelectorAll('.col-row-hl, .col-col-hl, .is-input-row').forEach(el => {
+      el.classList.remove('col-row-hl', 'col-col-hl', 'is-input-row');
+    });
+    if (v32ActivePi < 0 || v32ActiveHi < 0) return;
+    /* 行（プレイヤー）ハイライト */
+    const row = t.querySelector('tr.player-row[data-pi="' + v32ActivePi + '"]');
+    if (row) {
+      row.classList.add('is-input-row');
+      row.querySelectorAll('td').forEach(td => td.classList.add('col-row-hl'));
+    }
+    /* 縦（ホール）ハイライト */
+    const cells = t.querySelectorAll('td[data-hi="' + v32ActiveHi + '"], th[data-hole="' + (v32ActiveHi + 1) + '"]');
+    cells.forEach(c => c.classList.add('col-col-hl'));
+  });
+}
+
+/* =================================================================
+   v32: ライブスコアカード描画
+   #scoreTable（聖域 v16 が描画したもの）を #v32LiveTable にミラー
+   ================================================================= */
+function v32RenderLiveScore() {
+  const src = document.getElementById('scoreTable');
+  const dst = document.getElementById('v32LiveTable');
+  if (!src || !dst) return;
+  dst.innerHTML = src.innerHTML;
+  /* セルタップで直接編集（v31OpenInlineEdit 使用） */
+  dst.querySelectorAll('[data-action="cell-tap"]').forEach(td => {
+    td.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      const pi = +td.dataset.pi;
+      const hi = +td.dataset.hi;
+      v32SetActiveCell(pi, hi);
+      v31OpenInlineEdit(td, pi, hi);
+    });
+  });
+  /* メタ表示更新 */
+  const lm = document.getElementById('v32LiveMode');
+  if (lm) lm.textContent = v32IsHalfMode() ? '9H' : '18H';
+  const lh = document.getElementById('v32LiveHole');
+  if (lh) lh.textContent = (State.round.currentHole || 1) + 'H';
+  /* サマリー */
+  const sum = document.getElementById('v32LiveSummary');
+  if (sum) {
+    if (State.players.length === 0) {
+      sum.classList.remove('show');
+      sum.innerHTML = '';
+    } else {
+      const half = v32IsHalfMode();
+      const lines = State.players.slice()
+        .sort((a,b) => (a.isMe === b.isMe) ? 0 : (a.isMe ? -1 : 1))
+        .map(p => {
+          const tot   = half ? v32HalfTotalScore(p) : totalScore(p);
+          const dif   = half ? v32HalfTotalDiff(p)  : totalDiff(p);
+          const pl    = half ? v32HalfPlayed(p)     : playedHoles(p);
+          const dtxt  = dif == null ? '—' : diffText(dif);
+          return '<span style="display:inline-block;margin-right:14px;">' +
+                 (p.isMe ? '🏌️ ' : '👤 ') +
+                 '<b>' + escapeHtml(fullName(p) || '(未設定)') + '</b>: ' +
+                 (tot || '—') + ' (' + dtxt + ') / ' + pl + 'H' +
+                 '</span>';
+        }).join('');
+      sum.innerHTML = '合計: ' + lines;
+      sum.classList.add('show');
+    }
+  }
+}
+
+/* =================================================================
+   v32: 休憩時間表示更新
+   ================================================================= */
+function v32UpdateRestDisplay() {
+  const el = document.getElementById('v32RestDisplay');
+  if (!el) return;
+  const mins = v32RestMinutes();
+  if (mins == null) {
+    el.textContent = '— 分';
+  } else if (mins === 0) {
+    el.textContent = '0 分';
+  } else {
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    el.textContent = (h > 0 ? h + '時間' : '') + (m > 0 ? m + '分' : (h > 0 ? '' : '0分'));
+  }
+}
+
+/* =================================================================
+   v32: 9H 完了チェック → 完了バナー表示
+   ================================================================= */
+function v32CheckHalfComplete() {
+  const banner = document.getElementById('v329hCompleteBanner');
+  if (!banner) return;
+  if (v32HalfAllDone()) {
+    banner.classList.add('show');
+  } else {
+    banner.classList.remove('show');
+  }
+}
+
+/* =================================================================
+   v32: 9H 集計画面 表示
+   ================================================================= */
+function v32ShowHalfSummary() {
+  const overlay = document.getElementById('v32HalfSummary');
+  const playersBox = document.getElementById('v32HsPlayers');
+  const timeBox = document.getElementById('v32HsTime');
+  if (!overlay || !playersBox || !timeBox) return;
+
+  /* プレイヤー */
+  const halfPar = v32HalfPar();
+  const sorted = State.players.slice()
+    .sort((a,b) => (a.isMe === b.isMe) ? 0 : (a.isMe ? -1 : 1));
+  playersBox.innerHTML = sorted.map(p => {
+    const tot = v32HalfTotalScore(p);
+    const dif = v32HalfTotalDiff(p);
+    const pl = v32HalfPlayed(p);
+    const pt = v32HalfTotalPutts(p);
+    let dcls = 'even', dtxt = '—';
+    if (dif != null) {
+      if (dif < 0) { dcls = 'minus'; dtxt = diffText(dif); }
+      else if (dif > 0) { dcls = 'plus'; dtxt = diffText(dif); }
+      else { dcls = 'even'; dtxt = 'E'; }
+    }
+    return '<div class="v32-hs-player-row">' +
+      '<span>' + (p.isMe ? '🏌️' : '👤') + '</span>' +
+      '<span class="v32-hs-name">' + escapeHtml(fullName(p) || '(未設定)') +
+        ' <small style="opacity:.7;font-weight:600;">/ ' + pl + 'H · パット' + pt + '</small></span>' +
+      '<span class="v32-hs-total">' + (tot || '—') + '</span>' +
+      '<span class="v32-hs-diff ' + dcls + '">' + dtxt + '</span>' +
+    '</div>';
+  }).join('');
+
+  /* タイム情報 */
+  const pm = (State.round.pmStart || '— : —');
+  const rs = (State.round.restStart || '—');
+  const re = (State.round.restEnd || '—');
+  const rmins = v32RestMinutes();
+  const restTxt = (rmins == null) ? '—' : (rmins + '分');
+  timeBox.innerHTML =
+    '<div style="font-size:13px;line-height:1.8;">' +
+    '⛳ PMスタート: <b>' + pm + '</b><br>' +
+    '☕ 休憩: <b>' + rs + ' 〜 ' + re + '</b>（' + restTxt + '）<br>' +
+    '🏁 PAR(前半9H): <b>' + halfPar + '</b>' +
+    '</div>';
+
+  overlay.classList.add('show');
+}
+
+/* =================================================================
+   v32: 9H完結データ保存（v16 saveRound は無改変、保存記録に holesMode を後付け追加）
+   ================================================================= */
+function v32SaveHalfRound() {
+  const playedAny = State.players.some(p => v32HalfPlayed(p) > 0);
+  if (!playedAny) {
+    showToast('まだスコアが入力されていません', 'warning');
+    return;
+  }
+  if (!confirm('この 9H ハーフラウンドを保存して終了しますか？\n（18Hに切り替えれば新規ラウンド開始）')) return;
+
+  State.round.finishedAt = Date.now();
+  const halfPar = v32HalfPar();
+  const record = {
+    id: 'r' + Date.now(),
+    course: COURSE.name,
+    startedAt: State.round.startedAt,
+    finishedAt: State.round.finishedAt,
+    groupId: State.round.groupId,
+    groupName: State.round.groupName,
+    par: halfPar,
+    tee: State.ui.useLadiesTee ? 'LADIES' : 'REG',
+    /* v32: ハーフ完結データであることを明示 */
+    holesMode: '9',
+    isHalfRound: true,
+    pmStart: State.round.pmStart || '',
+    restStart: State.round.restStart || '',
+    restEnd: State.round.restEnd || '',
+    restMinutes: v32RestMinutes(),
+    players: State.players.map(p => ({
+      lastname: p.lastname,
+      firstname: p.firstname,
+      name: fullName(p),
+      isMe: p.isMe,
+      total: v32HalfTotalScore(p),
+      diff: v32HalfTotalDiff(p),
+      putts: v32HalfTotalPutts(p),
+      played: v32HalfPlayed(p),
+      scores: p.scores.slice(0, 9),
+      puttsArr: p.putts.slice(0, 9)
+    }))
+  };
+  State.history.unshift(record);
+  if (State.history.length > 50) State.history = State.history.slice(0, 50);
+  Storage.saveHistory();
+
+  /* 新規ラウンドへ */
+  State.round.startedAt = Date.now();
+  State.round.finishedAt = null;
+  State.round.currentHole = 1;
+  State.round.groupId = genGroupId();
+  State.round.groupName = (fullNameMe() || 'ゲスト') + 'のハーフ・' + new Date().toLocaleDateString('ja-JP');
+  State.players.forEach(p => {
+    p.scores = Array(18).fill(null);
+    p.putts = Array(18).fill(0);
+  });
+  Storage.saveState();
+
+  renderTopAndHero();
+  renderTable();
+  v32RenderLiveScore();
+  v32CheckHalfComplete();
+  document.getElementById('v32HalfSummary').classList.remove('show');
+  showToast('🏁 9H完結データを保存しました！マイページで確認できます');
+}
+
+/* =================================================================
+   v32: 起動時の v32 同期処理（バインド完了後に呼ぶ）
+   ================================================================= */
+function v32InitAfterBind() {
+  /* holesMode を UI に反映 */
+  const cur = (State.round && State.round.holesMode) || '18';
+  document.querySelectorAll('#v32HolesToggle button').forEach(b => {
+    b.classList.toggle('active', b.dataset.holes === cur);
+  });
+  v32ApplyHolesBodyClass();
+  /* ステータスバッジ */
+  const sb = document.getElementById('v32StatusBadge');
+  const sbn = document.getElementById('v32SbNum');
+  if (sb && sbn) {
+    sb.classList.toggle('is-half', cur === '9');
+    sbn.textContent = cur;
+  }
+  /* モーダルバッジ */
+  const mb = document.getElementById('v32ModalHolesBadge');
+  if (mb) mb.textContent = (cur === '9') ? '🏁 9H' : '🏁 18H';
+  /* PM/休憩 既存値反映 */
+  const pmInp = document.getElementById('v32MainPmStart');
+  if (pmInp) pmInp.value = (State.round.pmStart || '');
+  const rs = document.getElementById('v32RestStart');
+  if (rs) rs.value = (State.round.restStart || '');
+  const re = document.getElementById('v32RestEnd');
+  if (re) re.value = (State.round.restEnd || '');
+  v32UpdateRestDisplay();
+  v32RenderLiveScore();
+  v32CheckHalfComplete();
+}
 
 function bindEvents() {
   /* 表示モード切替（3モード） */
@@ -7341,7 +8259,33 @@ function bindEvents() {
     fwd('v31ShotMinus', 'btnStrokeMinus');
     fwd('v31PuttPlus',  'btnPuttPlus');
     fwd('v31PuttMinus', 'btnPuttMinus');
-    fwd('v31Confirm',   'btnConfirm');
+    /* v32: 9Hモード時、9H確定後はモーダルを閉じて 9H集計画面を表示 */
+    const v31ConfBtn = document.getElementById('v31Confirm');
+    if (v31ConfBtn) {
+      v31ConfBtn.addEventListener('click', () => {
+        if (v32IsHalfMode() && modalHole >= 9) {
+          /* 確定処理を v16 saveCurrentModalScore 経由で実行 */
+          try { saveCurrentModalScore(); } catch(e) {}
+          Storage.saveState();
+          try { renderTable(); } catch(e) {}
+          try { v32RenderLiveScore(); } catch(e) {}
+          try { v32CheckHalfComplete(); } catch(e) {}
+          try { closeAllModals(); } catch(e) {}
+          /* 9H完了なら集計画面を即起動 */
+          setTimeout(() => {
+            if (v32HalfAllDone()) {
+              v32ShowHalfSummary();
+            } else {
+              showToast('🏁 9Hモード: 残りのプレイヤーのスコアを入力してください');
+            }
+          }, 250);
+          return;
+        }
+        /* 通常の確定 → v16 確定ボタンへ委譲 */
+        const o = document.getElementById('btnConfirm');
+        if (o) o.click();
+      }, { once: false });
+    }
 
     const pn = document.getElementById('v31PlayerNext');
     if (pn) {
@@ -7376,6 +8320,123 @@ function bindEvents() {
   v31RenderPlayerList();
   v31UpdateModalBadges();
   v31UpdateThumbLabels();
+
+
+  /* ============================================================
+     v32: 9H/18H 切替バインド
+     ============================================================ */
+  (function v32BindHolesToggle() {
+    const wrap = document.getElementById('v32HolesToggle');
+    if (!wrap) return;
+    wrap.addEventListener('click', (e) => {
+      const b = e.target.closest('button[data-holes]');
+      if (!b) return;
+      const mode = b.dataset.holes;
+      if (mode === State.round.holesMode) return;
+      /* 18→9 切替時、10H以降の入力がある場合は警告 */
+      if (mode === '9') {
+        const hasBack = State.players.some(p =>
+          p.scores.slice(9).some(v => v != null)
+        );
+        if (hasBack) {
+          if (!confirm('10H以降に入力済みのスコアがあります。\n9Hモードに切り替えると、それらは集計に含まれません。\n（データ自体は保持されます）\n切り替えてよろしいですか？')) {
+            return;
+          }
+        }
+      }
+      State.round.holesMode = mode;
+      /* 9Hモード時、currentHole を 1-9 にクランプ */
+      if (mode === '9' && State.round.currentHole > 9) {
+        State.round.currentHole = 9;
+      }
+      Storage.saveState();
+      wrap.querySelectorAll('button').forEach(x =>
+        x.classList.toggle('active', x.dataset.holes === mode)
+      );
+      v32ApplyHolesBodyClass();
+      /* ステータスバッジ更新 */
+      const sb = document.getElementById('v32StatusBadge');
+      const sbn = document.getElementById('v32SbNum');
+      if (sb) sb.classList.toggle('is-half', mode === '9');
+      if (sbn) sbn.textContent = mode;
+      /* モーダルバッジ */
+      const mb = document.getElementById('v32ModalHolesBadge');
+      if (mb) mb.textContent = (mode === '9') ? '🏁 9H' : '🏁 18H';
+      /* 再描画 */
+      try { renderTopAndHero(); } catch(e) {}
+      renderTable();
+      v32RenderLiveScore();
+      v32CheckHalfComplete();
+      showToast(mode === '9' ? '🏁 9Hハーフモードに切替（10H以降ロック）' : '🏁 18Hフルラウンドモードに切替');
+    });
+  })();
+
+  /* PMスタート & 休憩時間 メイン直接入力 */
+  (function v32BindMainTime() {
+    const pmInp = document.getElementById('v32MainPmStart');
+    const pmSmart = document.getElementById('v32MainPmSmart');
+    const rs = document.getElementById('v32RestStart');
+    const re = document.getElementById('v32RestEnd');
+
+    const savePm = () => {
+      State.round.pmStart = (pmInp.value || '').trim();
+      Storage.saveState();
+      v31UpdateModalBadges();
+    };
+    const saveRs = () => {
+      State.round.restStart = (rs.value || '').trim();
+      Storage.saveState();
+      v32UpdateRestDisplay();
+    };
+    const saveRe = () => {
+      State.round.restEnd = (re.value || '').trim();
+      Storage.saveState();
+      v32UpdateRestDisplay();
+    };
+    if (pmInp) {
+      pmInp.value = State.round.pmStart || '';
+      pmInp.addEventListener('input', savePm);
+      pmInp.addEventListener('change', savePm);
+    }
+    if (pmSmart) {
+      pmSmart.addEventListener('click', () => {
+        const v = v31SmartPmDefault();
+        if (pmInp) pmInp.value = v;
+        State.round.pmStart = v;
+        Storage.saveState();
+        v31UpdateModalBadges();
+        showToast('⛳ PMスタート: ' + v);
+      });
+    }
+    if (rs) { rs.value = State.round.restStart || ''; rs.addEventListener('input', saveRs); rs.addEventListener('change', saveRs); }
+    if (re) { re.value = State.round.restEnd   || ''; re.addEventListener('input', saveRe); re.addEventListener('change', saveRe); }
+    v32UpdateRestDisplay();
+  })();
+
+  /* 9H完了バナータップで集計画面 */
+  (function v32BindHalfBanner() {
+    const b = document.getElementById('v329hCompleteBanner');
+    if (!b) return;
+    b.addEventListener('click', () => v32ShowHalfSummary());
+  })();
+
+  /* 9H 集計画面の各種ボタン */
+  (function v32BindHalfSummary() {
+    const close = document.getElementById('v32HsClose');
+    const back  = document.getElementById('v32HsBack');
+    const save  = document.getElementById('v32HsSave');
+    const overlay = document.getElementById('v32HalfSummary');
+    if (close && overlay) close.addEventListener('click', () => overlay.classList.remove('show'));
+    if (back  && overlay) back.addEventListener('click',  () => overlay.classList.remove('show'));
+    if (save) save.addEventListener('click', v32SaveHalfRound);
+    /* オーバーレイ背景タップで閉じる */
+    if (overlay) overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) overlay.classList.remove('show');
+    });
+  })();
+
+  /* v32: 起動同期 */
+  v32InitAfterBind();
 }
 
 /* =================================================================
@@ -7386,7 +8447,7 @@ function boot() {
   bindEvents();
   applyInputMode();  /* v14: 起動時に入力モードを適用（body class設定など） */
   Router.handleInitial();
-  console.log('G-WORLD v31.0 (v16計算エンジン継承・司令塔UI最適化版)', new Date().toISOString());
+  console.log('G-WORLD v32.0 (v16聖域＋現場主義＋9H/18H)', new Date().toISOString());
 }
 
 if (document.readyState === 'loading') {
