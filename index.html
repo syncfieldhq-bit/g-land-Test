@@ -5,7 +5,7 @@
 <!-- 監督指示 §3: ピンチイン・アウト完全許可 -->
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#0F5132">
-<title>G-WORLD v38.0 | 六甲国際パブリックコース</title>
+<title>G-WORLD v38.0 Final | 六甲国際パブリックコース</title>
 
 <!-- ============================================================
      v34: PWA設定 — ホーム画面追加時の名称 = "G-WORLD"
@@ -3994,6 +3994,220 @@ body.v31-mode-beginner .v33-thumb-grid .v31-tg-player {
   display: none !important;
 }
 
+
+/* ============================================================
+   v38.1: 最終完全統合 — レイヤー整理 + ノッチ対策 + 一括登録
+   ============================================================ */
+
+/* --- レイヤー強制整理(モーダル > ボトムシート > フッタ > 通常) --- */
+.modal-backdrop {
+  z-index: 9990 !important;
+}
+.modal-backdrop.show {
+  z-index: 9999 !important;
+}
+#scoreModal.show {
+  z-index: 9990 !important;
+}
+.v38-panel-backdrop {
+  z-index: 10000 !important;
+}
+.v38-panel {
+  z-index: 10010 !important;
+}
+.footer-bar {
+  z-index: 9000 !important;
+}
+/* スコアカード(モーダル本体)は明示的に通常レイヤー */
+.scoretable, .v33-modal-scoretable {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* --- iPhone ノッチ対策: 全体1cm下方シフト + safe-area --- */
+:root {
+  --v381-notch-offset: max(38px, env(safe-area-inset-top));
+}
+html, body {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+/* スクリーン全体に上部余白(約1cm) */
+.screen.active {
+  padding-top: var(--v381-notch-offset) !important;
+}
+/* モーダル本体は上端から safe-area + 8px 確保 */
+.modal-backdrop.show .modal,
+#scoreModal.show .v31-modal {
+  padding-top: 0 !important;
+}
+.v31-modal .v38-dash {
+  padding-top: calc(8px + var(--v381-notch-offset)) !important;
+}
+/* スコアモーダルのスコアテーブル上部を少し詰めて、佐藤さん行が親指圏に来るよう調整 */
+.v33-modal-top {
+  padding-top: 4px !important;
+}
+.scoretable {
+  margin-top: 4px !important;
+}
+/* 自分の行(.row-me)を視覚的にハイライト + 親指タップ圏(画面下半分)に来やすく */
+.scoretable tr.row-me td,
+.scoretable tr[data-pi-me="1"] td {
+  background: linear-gradient(180deg, #fffbe8 0%, #fff6cf 100%) !important;
+  font-weight: 800;
+}
+.scoretable tr.row-me td:first-child {
+  background: linear-gradient(180deg, #ffeaa3 0%, #ffd96b 100%) !important;
+  color: #5a3a00 !important;
+  border-left: 3px solid #d8a020 !important;
+}
+
+/* ボトムシートパネルは画面下半分(親指圏)に確実に配置 */
+.v38-panel {
+  bottom: 0 !important;
+  max-height: 72vh !important;
+}
+
+/* --- ダッシュボード「操作可能」感の視覚強化 --- */
+.v38-dash-card {
+  position: relative;
+  cursor: pointer !important;
+}
+.v38-dash-card::after {
+  content: "▼";
+  position: absolute;
+  top: 4px;
+  right: 5px;
+  font-size: 8px;
+  color: var(--v31-accent, #2d9d5f);
+  opacity: 0.6;
+  font-weight: 900;
+}
+.v38-dash-card:hover {
+  border-color: var(--v31-accent, #2d9d5f) !important;
+  background: #f7fdf9 !important;
+}
+.v38-dash-card.is-toggling {
+  animation: v381pulse 0.3s ease;
+}
+@keyframes v381pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.04); background: var(--v31-accent, #2d9d5f); color: #fff; }
+  100% { transform: scale(1); }
+}
+
+/* --- v38.1 同伴者一括登録パネル --- */
+.v381-batch-block {
+  display: grid;
+  gap: 10px;
+  margin: 8px 0 12px;
+}
+.v381-batch-row {
+  display: grid;
+  grid-template-columns: 28px 1fr 1fr;
+  gap: 6px;
+  align-items: end;
+  background: #f7faf8;
+  border: 1.5px solid #d8e8df;
+  border-radius: 12px;
+  padding: 10px 10px;
+}
+.v381-batch-row.is-filled {
+  background: #f1fbf5;
+  border-color: var(--v31-accent, #2d9d5f);
+}
+.v381-batch-num {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--v31-accent, #2d9d5f);
+  text-align: center;
+  line-height: 1.6;
+}
+.v381-batch-row label {
+  font-size: 11px;
+  color: #4a5a52;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 4px;
+}
+.v381-batch-row input {
+  width: 100%;
+  padding: 11px 10px;
+  font-size: 15px;
+  border: 1.5px solid #c8d6cd;
+  border-radius: 9px;
+  font-family: inherit;
+  -webkit-appearance: none;
+  background: #fff;
+}
+.v381-batch-row input:focus {
+  outline: none;
+  border-color: var(--v31-accent, #2d9d5f);
+  box-shadow: 0 0 0 3px rgba(45,157,95,0.18);
+}
+.v381-batch-hint {
+  font-size: 11px;
+  color: #6a7d72;
+  line-height: 1.5;
+  padding: 6px 10px;
+  background: #fff8e8;
+  border-left: 3px solid #e8a93d;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+.v381-batch-actions {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 8px;
+  margin-top: 6px;
+}
+.v381-batch-clear {
+  background: #f0f4f1;
+  border: 1.5px solid #c8d6cd;
+  border-radius: 10px;
+  padding: 13px 8px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #4a5a52;
+  cursor: pointer;
+  touch-action: manipulation;
+  min-height: 46px;
+}
+.v381-batch-clear:active { transform: scale(0.96); }
+.v381-batch-save {
+  background: var(--v31-accent, #2d9d5f);
+  color: #fff;
+  border: 1.5px solid var(--v31-accent-deep, #1f7a48);
+  border-radius: 10px;
+  padding: 13px 8px;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  touch-action: manipulation;
+  min-height: 46px;
+  box-shadow: 0 2px 8px rgba(45,157,95,0.25);
+}
+.v381-batch-save:active { transform: scale(0.96); }
+.v381-batch-save:disabled {
+  background: #c0d4c8;
+  border-color: #aac0b3;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* v381同伴者追加モーダルの内部を縦長レイアウトに(高さ自動) */
+#addModal .modal {
+  max-height: 90vh;
+  overflow-y: auto;
+  padding-top: var(--v381-notch-offset) !important;
+}
+
+/* --- ダッシュボードの「操作中」フィードバック toast の z-index 引き上げ --- */
+.toast, #toastContainer {
+  z-index: 11000 !important;
+}
+
 </style>
 
 <!-- QR Code Generator (Kazuhiko Arase, MIT) -->
@@ -6899,29 +7113,64 @@ var qrcode = function() {
   </div>
 </div>
 
-<!-- モーダル: 同伴者追加 -->
+<!-- v38.1: 同伴者一括追加モーダル(最大3名分・入力された分だけ反映) -->
 <div class="modal-backdrop" id="addModal">
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-header">
-      <div class="modal-title">同伴者を追加（本名）</div>
+      <div class="modal-title">👥 同伴者を一括追加（最大3名）</div>
       <button class="modal-close" data-close>×</button>
     </div>
     <div class="form-section">
-      <p style="font-size:11px;color:var(--ink-soft);margin-bottom:8px;line-height:1.5;">
-        ※ 姓（名字）のみ入力すれば追加できます。名は任意です。
-      </p>
-      <div class="row2">
-        <div>
-          <label>姓（名字）<span class="required">必須</span></label>
-          <input type="text" id="addLastname" maxlength="12" placeholder="例：田中">
+      <div class="v381-batch-hint">
+        💡 最大3名分の入力欄を用意しています。入力した分だけが保存されます。<br>
+        姓（名字）のみ必須・名は任意。空欄の行はスキップします。
+      </div>
+      <div class="v381-batch-block" id="v381BatchBlock">
+        <div class="v381-batch-row" data-batch-idx="1">
+          <div class="v381-batch-num">1</div>
+          <div>
+            <label>姓（必須）</label>
+            <input type="text" class="v381-batch-ln" data-batch-idx="1" maxlength="12" placeholder="例：田中">
+          </div>
+          <div>
+            <label>名（任意）</label>
+            <input type="text" class="v381-batch-fn" data-batch-idx="1" maxlength="12" placeholder="例：一郎">
+          </div>
         </div>
-        <div>
-          <label>名（名前・任意）</label>
-          <input type="text" id="addFirstname" maxlength="12" placeholder="例：一郎（任意）">
+        <div class="v381-batch-row" data-batch-idx="2">
+          <div class="v381-batch-num">2</div>
+          <div>
+            <label>姓（必須）</label>
+            <input type="text" class="v381-batch-ln" data-batch-idx="2" maxlength="12" placeholder="例：佐藤">
+          </div>
+          <div>
+            <label>名（任意）</label>
+            <input type="text" class="v381-batch-fn" data-batch-idx="2" maxlength="12" placeholder="例：花子">
+          </div>
+        </div>
+        <div class="v381-batch-row" data-batch-idx="3">
+          <div class="v381-batch-num">3</div>
+          <div>
+            <label>姓（必須）</label>
+            <input type="text" class="v381-batch-ln" data-batch-idx="3" maxlength="12" placeholder="例：鈴木">
+          </div>
+          <div>
+            <label>名（任意）</label>
+            <input type="text" class="v381-batch-fn" data-batch-idx="3" maxlength="12" placeholder="例：太郎">
+          </div>
         </div>
       </div>
-      <button class="primary-btn" id="btnAddSubmit">追加する</button>
+      <div class="v381-batch-actions">
+        <button type="button" class="v381-batch-clear" id="v381BatchClear">🗑 全クリア</button>
+        <button type="button" class="v381-batch-save" id="v381BatchSave">✓ 保存（<span id="v381BatchCount">0</span>名）</button>
+      </div>
+      <!-- 旧IDをサンクチュアリに退避(JS互換) -->
+      <span style="display:none" aria-hidden="true">
+        <input type="text" id="addLastname">
+        <input type="text" id="addFirstname">
+        <button id="btnAddSubmit" type="button"></button>
+      </span>
     </div>
   </div>
 </div>
@@ -10835,6 +11084,306 @@ if (document.readyState === 'loading') {
     }
   });
 })();
+
+
+
+/* ============================================================
+   v38.1: ダッシュボード操作化 + 一括登録 + レイヤー整理
+   ============================================================ */
+
+/* --- ダッシュボード: 後半スタート(タップで現在時刻+45分を再計算) --- */
+function v381TogglePmStart() {
+  const now = new Date();
+  now.setMinutes(now.getMinutes() + 45);
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const next = hh + ':' + mm;
+  // クリック2回目で空にする(トグル)
+  if (State.round.pmStart === next) {
+    State.round.pmStart = '';
+    showToast('⏰ 後半スタート時間をクリア');
+  } else {
+    State.round.pmStart = next;
+    showToast('⏰ 後半スタート ' + next + ' に更新');
+  }
+  try { Storage.saveState(); } catch(e) {}
+  try { syncLockerPmDisplay(); } catch(e) {}
+  v38UpdateDashboard();
+  // 既存UI連動
+  const pm1 = document.getElementById('v34PmBigTime');
+  if (pm1) pm1.textContent = State.round.pmStart || '— : —';
+  const pm2 = document.getElementById('v31PmStartInput');
+  if (pm2) pm2.value = State.round.pmStart || '';
+  const pm3 = document.getElementById('v32MainPmStart');
+  if (pm3) pm3.value = State.round.pmStart || '';
+}
+
+/* --- ダッシュボード: ロッカー番号(プロンプトで入力) --- */
+function v381EditLocker() {
+  const cur = State.round.lockerNum || '';
+  const v = window.prompt('🔐 ロッカー番号を入力（クリアは空欄でOK）', cur);
+  if (v === null) return; // キャンセル
+  const clean = (v + '').trim().replace(/[^0-9A-Za-z\-]/g, '').slice(0, 6);
+  State.round.lockerNum = clean;
+  try { Storage.saveState(); } catch(e) {}
+  try { syncLockerPmDisplay(); } catch(e) {}
+  v38UpdateDashboard();
+  const lk = document.getElementById('v31LockerInput');
+  if (lk) lk.value = clean;
+  showToast(clean ? '🔐 ロッカー ' + clean : '🔐 ロッカークリア');
+}
+
+/* --- ダッシュボード: モード総合切替(ゲーム→ホール→入力 を順にトグル) --- */
+function v381CycleMode() {
+  // 簡易仕様: 3クリックで gameMode → holesMode → inputMode を順に切替
+  // 1回目: gameMode toggle, 2回目: holesMode toggle, 3回目: inputMode rotate
+  if (!window._v381ModeStep) window._v381ModeStep = 0;
+  const step = window._v381ModeStep % 3;
+  window._v381ModeStep++;
+  if (step === 0) {
+    State.ui.gameMode = (State.ui.gameMode === 'beginner') ? 'standard' : 'beginner';
+    showToast('🏌️ ゲーム: ' + (State.ui.gameMode === 'beginner' ? '初心者' : '一般'));
+  } else if (step === 1) {
+    State.round.holesMode = (State.round.holesMode === '9') ? '18' : '9';
+    showToast('🏁 ' + State.round.holesMode + 'H モード');
+  } else {
+    const order = ['simple','counter','stroke_putt'];
+    const cur = V38.inputMode || State.ui.inputMode || 'simple';
+    const next = order[(order.indexOf(cur) + 1) % order.length];
+    V38.inputMode = next;
+    if (next !== 'stroke_putt') State.ui.inputMode = next;
+    showToast('⌨ 入力: ' + (next === 'counter' ? 'カウンター' : next === 'stroke_putt' ? '数字+パット' : 'シンプル'));
+  }
+  try { Storage.saveState(); } catch(e) {}
+  try { renderTable(); } catch(e) {}
+  try { v32RenderLiveScore(); } catch(e) {}
+  try { v32UpdateHolesUI && v32UpdateHolesUI(); } catch(e) {}
+  v38UpdateDashboard();
+}
+
+/* --- パルスアニメーション付きでカード更新 --- */
+function v381PulseCard(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.add('is-toggling');
+  setTimeout(() => el.classList.remove('is-toggling'), 320);
+}
+
+/* ============================================================
+   v38.1: 同伴者一括登録
+   ============================================================ */
+function v381OpenBatchAdd() {
+  // 入力欄クリア
+  for (let i = 1; i <= 3; i++) {
+    const ln = document.querySelector('.v381-batch-ln[data-batch-idx="' + i + '"]');
+    const fn = document.querySelector('.v381-batch-fn[data-batch-idx="' + i + '"]');
+    if (ln) ln.value = '';
+    if (fn) fn.value = '';
+    const row = document.querySelector('.v381-batch-row[data-batch-idx="' + i + '"]');
+    if (row) row.classList.remove('is-filled');
+  }
+  v381UpdateBatchCount();
+  const m = document.getElementById('addModal');
+  if (m) m.classList.add('show');
+  setTimeout(() => {
+    const first = document.querySelector('.v381-batch-ln[data-batch-idx="1"]');
+    if (first) first.focus();
+  }, 300);
+}
+
+function v381UpdateBatchCount() {
+  let n = 0;
+  for (let i = 1; i <= 3; i++) {
+    const ln = document.querySelector('.v381-batch-ln[data-batch-idx="' + i + '"]');
+    const row = document.querySelector('.v381-batch-row[data-batch-idx="' + i + '"]');
+    if (ln && ln.value.trim()) {
+      n++;
+      if (row) row.classList.add('is-filled');
+    } else if (row) {
+      row.classList.remove('is-filled');
+    }
+  }
+  const c = document.getElementById('v381BatchCount');
+  if (c) c.textContent = n;
+  const sv = document.getElementById('v381BatchSave');
+  if (sv) sv.disabled = (n === 0);
+  return n;
+}
+
+function v381BatchClear() {
+  for (let i = 1; i <= 3; i++) {
+    const ln = document.querySelector('.v381-batch-ln[data-batch-idx="' + i + '"]');
+    const fn = document.querySelector('.v381-batch-fn[data-batch-idx="' + i + '"]');
+    if (ln) ln.value = '';
+    if (fn) fn.value = '';
+  }
+  v381UpdateBatchCount();
+  showToast('🗑 入力欄をクリア');
+}
+
+function v381BatchSave() {
+  // 入力された行だけを追加
+  const added = [];
+  let skipped = 0;
+  for (let i = 1; i <= 3; i++) {
+    const lnEl = document.querySelector('.v381-batch-ln[data-batch-idx="' + i + '"]');
+    const fnEl = document.querySelector('.v381-batch-fn[data-batch-idx="' + i + '"]');
+    if (!lnEl) continue;
+    const ln = lnEl.value.trim();
+    const fn = fnEl ? fnEl.value.trim() : '';
+    if (!ln) { skipped++; continue; }
+    if (State.players.length >= 16) {
+      showToast('最大16名まで', 'error');
+      break;
+    }
+    const newPlayer = {
+      id: uuid(),
+      lastname: ln,
+      firstname: fn,
+      isMe: false,
+      isProxy: true,
+      scores: Array(18).fill(null),
+      putts: Array(18).fill(0)
+    };
+    State.players.push(newPlayer);
+    added.push(ln + (fn ? ' ' + fn : ''));
+  }
+  if (added.length === 0) {
+    showToast('⚠ 1名以上の姓を入力してください', 'error');
+    return;
+  }
+  try { Storage.saveState(); } catch(e) {}
+  try { closeAllModals(); } catch(e) {}
+  try { renderTable(); } catch(e) {}
+  try { v31RenderPlayerList && v31RenderPlayerList(); } catch(e) {}
+  try { v33SyncMeToPlayer && v33SyncMeToPlayer(); } catch(e) {}
+  showToast('✓ ' + added.length + '名を追加: ' + added.join(' / '));
+}
+
+/* ============================================================
+   v38.1: renderTable の後処理で「自分の行」をマーキング
+   ============================================================ */
+function v381MarkMyRow() {
+  try {
+    const tables = document.querySelectorAll('.scoretable');
+    tables.forEach(t => {
+      t.querySelectorAll('tr').forEach(tr => {
+        tr.classList.remove('row-me');
+      });
+      // td[data-pi="N"] から自分のインデックスを特定
+      const meIdx = State.players.findIndex(p => p.isMe);
+      if (meIdx < 0) return;
+      const meCell = t.querySelector('td[data-pi="' + meIdx + '"]');
+      if (meCell && meCell.parentElement) {
+        meCell.parentElement.classList.add('row-me');
+      }
+    });
+  } catch(e) {}
+}
+
+/* ============================================================
+   v38.1 初期化フック
+   ============================================================ */
+function v381Boot() {
+  // ダッシュボード操作化のバインド
+  const teeBtn = document.getElementById('v38DashTee');
+  if (teeBtn) {
+    teeBtn.onclick = (e) => { e.preventDefault(); v381PulseCard('v38DashTee'); v38ToggleTee(); };
+  }
+  const dispBtn = document.getElementById('v38DashDisp');
+  if (dispBtn) {
+    dispBtn.onclick = (e) => { e.preventDefault(); v381PulseCard('v38DashDisp'); v38CycleDisplayMode(); };
+  }
+  // PMカードを button化(divだったので onclick直付け)
+  const pmCard = document.querySelector('.v38-dc-pm');
+  if (pmCard) {
+    pmCard.style.cursor = 'pointer';
+    pmCard.setAttribute('role', 'button');
+    pmCard.onclick = (e) => { e.preventDefault(); v381TogglePmStart(); };
+  }
+  // ロッカーカード
+  const lkCard = document.querySelector('.v38-dc-locker');
+  if (lkCard) {
+    lkCard.style.cursor = 'pointer';
+    lkCard.setAttribute('role', 'button');
+    lkCard.onclick = (e) => { e.preventDefault(); v381EditLocker(); };
+  }
+  // モードカード
+  const mdCard = document.querySelector('.v38-dc-mode');
+  if (mdCard) {
+    mdCard.style.cursor = 'pointer';
+    mdCard.setAttribute('role', 'button');
+    mdCard.onclick = (e) => { e.preventDefault(); v381CycleMode(); };
+  }
+
+  // 一括登録: openAddCompanion を上書き
+  if (typeof window !== 'undefined') {
+    window.openAddCompanion = v381OpenBatchAdd;
+  }
+  // 旧btnAddCompanion クリックも v381OpenBatchAdd へ
+  const oldBtn = document.getElementById('btnAddCompanion');
+  if (oldBtn) {
+    oldBtn.onclick = (e) => { e.preventDefault(); v381OpenBatchAdd(); };
+  }
+  // 一括登録パネル内のイベント
+  const clearBtn = document.getElementById('v381BatchClear');
+  if (clearBtn) clearBtn.onclick = v381BatchClear;
+  const saveBtn = document.getElementById('v381BatchSave');
+  if (saveBtn) saveBtn.onclick = v381BatchSave;
+  // 入力欄監視
+  document.querySelectorAll('.v381-batch-ln, .v381-batch-fn').forEach(inp => {
+    inp.addEventListener('input', v381UpdateBatchCount);
+    inp.addEventListener('blur', v381UpdateBatchCount);
+  });
+  // Enter で次の欄へ
+  for (let i = 1; i <= 3; i++) {
+    const ln = document.querySelector('.v381-batch-ln[data-batch-idx="' + i + '"]');
+    const fn = document.querySelector('.v381-batch-fn[data-batch-idx="' + i + '"]');
+    if (ln) ln.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); if (fn) fn.focus(); }
+    });
+    if (fn) fn.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const nextLn = document.querySelector('.v381-batch-ln[data-batch-idx="' + (i+1) + '"]');
+        if (nextLn) nextLn.focus();
+        else v381BatchSave();
+      }
+    });
+  }
+
+  // 旧btnAddSubmit を一括保存に置換
+  const oldSubmit = document.getElementById('btnAddSubmit');
+  if (oldSubmit) oldSubmit.onclick = v381BatchSave;
+
+  // renderTable の後にマーキング(MutationObserverで監視)
+  const observer = new MutationObserver(() => v381MarkMyRow());
+  document.querySelectorAll('.scoretable').forEach(t => {
+    observer.observe(t, { childList: true, subtree: true });
+  });
+  v381MarkMyRow();
+
+  v38UpdateDashboard();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => setTimeout(v381Boot, 250));
+} else {
+  setTimeout(v381Boot, 250);
+}
+
+/* renderTable 終了後の自動マーキング再実行 */
+(function v381HookRenderTable() {
+  if (typeof window === 'undefined' || !window.renderTable) return;
+  const orig = window.renderTable;
+  window.renderTable = function() {
+    const r = orig.apply(this, arguments);
+    try { v381MarkMyRow(); } catch(e) {}
+    return r;
+  };
+})();
+
+console.log('G-WORLD v38.0 最終完全統合版 (レイヤー修正+ノッチ対策+操作ダッシュボード+一括登録)');
 
 </script>
 
