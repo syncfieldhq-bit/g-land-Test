@@ -5,17 +5,28 @@
 <!-- 監督指示 §3: ピンチイン・アウト完全許可 -->
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#0F5132">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>G-WORLD v33.0 | 六甲国際パブリックコース</title>
-<!-- v31: ホーム画面アイコン -->
+<title>G-WORLD v34.0 | 六甲国際パブリックコース</title>
+
+<!-- ============================================================
+     v34: PWA設定 — ホーム画面追加時の名称 = "G-WORLD"
+     ============================================================ -->
+<!-- 1. マニフェスト（外部 manifest.json があれば優先、無ければインライン data:URL を使用） -->
+<link rel="manifest" href="./manifest.json">
+<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiRy1XT1JMRCIsInNob3J0X25hbWUiOiJHLVdPUkxEIiwiZGVzY3JpcHRpb24iOiLjgrTjg6vjg5XjgrnjgrPjgqLlhaXlipvjgqLjg5fjg6oiLCJzdGFydF91cmwiOiIuLyIsInNjb3BlIjoiLi8iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsIm9yaWVudGF0aW9uIjoicG9ydHJhaXQiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI2ZmZmZmZiIsInRoZW1lX2NvbG9yIjoiIzJkOWQ1ZiIsImljb25zIjpbeyJzcmMiOiIuL2ljb24ucG5nIiwic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3BuZyIsInB1cnBvc2UiOiJhbnkgbWFza2FibGUifSx7InNyYyI6Ii4vaWNvbi5wbmciLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2UvcG5nIiwicHVycG9zZSI6ImFueSBtYXNrYWJsZSJ9XX0=">
+
+<!-- 2. アイコン -->
 <link rel="apple-touch-icon" href="./icon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="./icon.png">
 <link rel="apple-touch-icon" sizes="152x152" href="./icon.png">
 <link rel="icon" type="image/png" href="./icon.png">
+
+<!-- 3. iOS / Android PWA 表示最適化 -->
+<meta name="apple-mobile-web-app-title" content="G-WORLD">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="G-WORLD">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="G-WORLD">
+<meta name="theme-color" content="#2d9d5f">
 
 <style>
 /* =================================================================
@@ -2945,6 +2956,184 @@ body.v31-mode-beginner .v33-thumb-grid .v31-tg-player {
   .v33-tg .v31-tg-op { font-size: 22px !important; }
 }
 
+
+/* ============================================================
+   v34: ボタンサイズ 2/3 縮小・後半スタート時間UI・直接編集ヒント
+   ============================================================ */
+
+/* ============================================================
+   後半スタート時間ブロック（メイン画面）
+   ============================================================ */
+.v34-pmstart-block {
+  border-color: var(--v31-accent) !important;
+  border-width: 2px !important;
+  background: linear-gradient(180deg, var(--v31-accent-soft) 0%, var(--v31-base) 60%);
+}
+.v34-pm-bigdisplay {
+  background: var(--v31-base);
+  border: 2px solid var(--v31-accent);
+  border-radius: 14px;
+  padding: 12px 14px;
+  text-align: center;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 8px rgba(45,157,95,.10);
+}
+.v34-pm-bd-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--v31-ink-soft);
+  letter-spacing: .08em;
+  margin-bottom: 4px;
+}
+.v34-pm-bd-time {
+  font-size: 38px;
+  font-weight: 900;
+  color: var(--v31-accent-deep);
+  line-height: 1;
+  font-feature-settings: 'tnum';
+  letter-spacing: .02em;
+}
+.v34-pm-bd-sub {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--v31-ink-soft);
+  margin-top: 4px;
+}
+
+.v34-pm-edit-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 6px;
+  align-items: center;
+}
+.v34-pm-input {
+  padding: 10px 12px !important;
+  font-size: 16px !important;
+  font-weight: 700;
+}
+.v34-pm-action {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-weight: 800;
+  cursor: pointer;
+  min-width: 56px;
+  line-height: 1.1;
+}
+.v34-pm-action-smart {
+  background: var(--v31-accent);
+  border: 1.5px solid var(--v31-accent-deep);
+  color: #fff;
+}
+.v34-pm-action-smart:active { background: var(--v31-accent-deep); }
+.v34-pm-action-clear {
+  background: var(--v31-base);
+  border: 1.5px solid var(--v31-base-line2);
+  color: var(--v31-ink-soft);
+}
+.v34-pm-action .v34-pm-act-ico { font-size: 14px; }
+.v34-pm-action .v34-pm-act-lbl { font-size: 11px; }
+
+.v34-pm-hint {
+  font-size: 11px;
+  color: var(--v31-ink-soft);
+  margin-top: 6px;
+  text-align: center;
+}
+
+/* 休憩時間サブセクション */
+.v34-rest-details {
+  margin-top: 12px;
+  border-top: 1px dashed var(--v31-base-line);
+  padding-top: 8px;
+}
+.v34-rest-details summary {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--v31-ink-soft);
+  cursor: pointer;
+  padding: 4px 0;
+  outline: none;
+}
+.v34-rest-details summary::-webkit-details-marker { display: none; }
+.v34-rest-details[open] summary { color: var(--v31-accent-deep); }
+.v34-rest-grid {
+  margin-top: 8px;
+}
+
+/* ============================================================
+   操作ボタン 2/3 サイズ縮小（v33: min 60px → v34: 40px）
+   ============================================================ */
+.v33-tg {
+  min-height: 40px !important;
+  padding: 6px 8px !important;
+  font-size: 11px !important;
+  gap: 4px !important;
+  border-radius: 9px !important;
+}
+.v33-tg .v31-tg-op {
+  font-size: 18px !important;
+  font-weight: 900 !important;
+}
+.v33-tg .v31-tg-lbl {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+}
+
+/* 確定ボタンは視認性のため少しだけ大きく */
+.v31-tg.v33-tg.v31-tg-confirm {
+  font-size: 12px !important;
+}
+.v31-tg.v33-tg.v31-tg-confirm .v31-tg-op {
+  font-size: 20px !important;
+}
+
+/* グリッドのギャップを少し広げ、誤タップを防ぐ */
+.v33-thumb-grid {
+  gap: 6px !important;
+  max-width: 320px;          /* ボタン縮小に合わせ全体幅を抑える */
+  margin-left: auto !important;
+}
+
+/* モーダル下部の余白調整 */
+.v33-modal-bottom {
+  padding: 8px 12px calc(16px + env(safe-area-inset-bottom)) !important;
+}
+
+/* 親指グリッド上の情報バッジは現状維持（ボタン縮小の効果を打ち消さない） */
+.v33-thumb-info {
+  padding: 5px 10px !important;
+  margin-bottom: 6px !important;
+}
+
+/* レスポンシブ小型画面 */
+@media (max-width: 380px) {
+  .v33-tg {
+    min-height: 36px !important;
+    font-size: 10px !important;
+  }
+  .v33-tg .v31-tg-op { font-size: 16px !important; }
+  .v33-thumb-grid { max-width: 280px; }
+  .v34-pm-bd-time { font-size: 32px; }
+  .v34-pm-edit-row { grid-template-columns: 1fr auto auto; }
+}
+
+/* ============================================================
+   直接編集ヒント（モーダル冒頭）
+   ============================================================ */
+.v34-edit-hint {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px;
+  background: var(--v31-accent-soft);
+  border-bottom: 1px solid var(--v31-accent);
+  color: var(--v31-accent-deep);
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  justify-content: center;
+}
+.v34-edit-hint .v34-eh-ico { font-size: 14px; }
+
 </style>
 
 <!-- QR Code Generator (Kazuhiko Arase, MIT) -->
@@ -5311,30 +5500,49 @@ var qrcode = function() {
              maxlength="6" inputmode="numeric" placeholder="例: 123">
     </section>
 
-    <!-- v32: ⏰ 時間管理（PMスタート ＋ 休憩時間）— メインで直接入力 -->
-    <section class="v31-block v32-time-block">
-      <div class="v31-block-title">⏰ 時間管理</div>
-      <div class="v32-time-grid">
-        <div class="v32-time-field">
-          <label>⛳ PMスタート</label>
-          <div class="v32-time-row">
-            <input type="time" class="v31-input v31-pmtime" id="v32MainPmStart" step="300">
-            <button type="button" class="v31-mini-action" id="v32MainPmSmart">+45分</button>
+    <!-- v34: ⛳ 後半スタート時間（メイン画面の専用ブロック） -->
+    <section class="v31-block v34-pmstart-block">
+      <div class="v31-block-title">⛳ 後半スタート時間</div>
+
+      <!-- 一目で予定時刻がわかる大型表示 -->
+      <div class="v34-pm-bigdisplay">
+        <div class="v34-pm-bd-label">後半スタート予定</div>
+        <div class="v34-pm-bd-time" id="v34PmBigTime">— : —</div>
+        <div class="v34-pm-bd-sub" id="v34PmBigSub">タップして時刻を調整</div>
+      </div>
+
+      <!-- 編集行 -->
+      <div class="v34-pm-edit-row">
+        <input type="time" class="v31-input v34-pm-input" id="v32MainPmStart" step="300">
+        <button type="button" class="v34-pm-action v34-pm-action-smart" id="v32MainPmSmart">
+          <span class="v34-pm-act-ico">📍</span>
+          <span class="v34-pm-act-lbl">+45分</span>
+        </button>
+        <button type="button" class="v34-pm-action v34-pm-action-clear" id="v34PmClear">
+          <span class="v34-pm-act-ico">✕</span>
+          <span class="v34-pm-act-lbl">クリア</span>
+        </button>
+      </div>
+      <div class="v34-pm-hint">起動時に「現在時刻 ＋ 45 分」を自動セットします</div>
+
+      <!-- 休憩時間（サブ） -->
+      <details class="v34-rest-details">
+        <summary>☕ 休憩時間（任意・タップで開く）</summary>
+        <div class="v32-time-grid v34-rest-grid">
+          <div class="v32-time-field">
+            <label>☕ 休憩開始</label>
+            <input type="time" class="v31-input v31-pmtime" id="v32RestStart" step="300">
+          </div>
+          <div class="v32-time-field">
+            <label>🏁 休憩終了</label>
+            <input type="time" class="v31-input v31-pmtime" id="v32RestEnd" step="300">
+          </div>
+          <div class="v32-time-field v32-time-rest">
+            <label>⏱ 休憩時間</label>
+            <div class="v32-rest-display" id="v32RestDisplay">— 分</div>
           </div>
         </div>
-        <div class="v32-time-field">
-          <label>☕ 休憩開始</label>
-          <input type="time" class="v31-input v31-pmtime" id="v32RestStart" step="300">
-        </div>
-        <div class="v32-time-field">
-          <label>🏁 休憩終了</label>
-          <input type="time" class="v31-input v31-pmtime" id="v32RestEnd" step="300">
-        </div>
-        <div class="v32-time-field v32-time-rest">
-          <label>⏱ 休憩時間</label>
-          <div class="v32-rest-display" id="v32RestDisplay">— 分</div>
-        </div>
-      </div>
+      </details>
     </section>
 
     <!-- ③ 同伴者リスト ＋ 招待QR（同伴者追加直下に配置） -->
@@ -5664,9 +5872,14 @@ var qrcode = function() {
       </div>
     </div>
 
+    <!-- v34: 直接編集ヒント（いつでも修正可能であることを明示） -->
+    <div class="v34-edit-hint" id="v34EditHint">
+      <span class="v34-eh-ico">✏️</span>
+      <span class="v34-eh-text">スコア数字を直接タップで修正できます</span>
+    </div>
+
     <!-- ============================================================
          v33: モーダル本体 = スコアカード最大化
-              （ホール番号バナー、ストローク表示、名前リストはすべて削除）
          ============================================================ -->
     <div class="v31-modal-top v33-modal-top">
       <div class="v31-scoretable-wrap v33-scoretable-wrap">
@@ -5917,17 +6130,11 @@ var qrcode = function() {
       </div>
       <button class="primary-btn" id="btnSaveSettings">💾 設定を保存</button>
 
-      <!-- ============================================================
-           v31: PMスタート時刻設定（スマート初期値 = 現在時刻+45分）
-           ============================================================ -->
-      <div class="v31-settings-section">
-        <div class="v31-ss-title">⛳ 午後スタート時間</div>
-        <div class="v31-ss-row">
-          <input type="time" id="v31PmStartInput" class="v31-input v31-pmtime" step="300">
-          <button type="button" class="v31-mini-action" id="v31PmSmartFill">📍 +45分</button>
-          <button type="button" class="v31-mini-action v31-mini-clear" id="v31PmClear">クリア</button>
-        </div>
-        <div class="v31-ss-hint">起動時に「現在時刻 ＋45分」を自動で初期化します</div>
+      <!-- v34: 後半スタート時間はメイン画面に統合（設定モーダルからは削除） -->
+      <div class="v31-sanctuary" aria-hidden="true">
+        <input type="time" id="v31PmStartInput">
+        <button id="v31PmSmartFill"></button>
+        <button id="v31PmClear"></button>
       </div>
 
       <!-- ============================================================
@@ -8263,6 +8470,47 @@ function v33SyncMeToPlayer() {
   try { Storage.saveState(); } catch(e) {}
 }
 
+
+/* =================================================================
+   v34: 後半スタート時間 大型表示の同期更新
+   ================================================================= */
+function v34UpdatePmBigDisplay() {
+  const big = document.getElementById('v34PmBigTime');
+  const sub = document.getElementById('v34PmBigSub');
+  if (!big) return;
+  const pm = (State.round && State.round.pmStart) ? State.round.pmStart : '';
+  if (pm) {
+    big.textContent = pm;
+    if (sub) sub.textContent = '✓ 後半スタート予定をセット済';
+  } else {
+    big.textContent = '— : —';
+    if (sub) sub.textContent = 'タップして時刻を調整';
+  }
+}
+
+/* =================================================================
+   v34: 起動時に「現在時刻 + 45分」を後半スタート時間に自動セット
+   既存値がある場合は維持
+   ================================================================= */
+function v34InitPmDefault() {
+  if (!State.round) return;
+  if (State.round.pmStart && State.round.pmStart.length > 0) {
+    /* 既存値あり */
+    v34UpdatePmBigDisplay();
+    return;
+  }
+  /* 既存値なし → +45分 で自動セット */
+  try {
+    const v = v31SmartPmDefault();
+    State.round.pmStart = v;
+    Storage.saveState();
+  } catch(e) {}
+  v34UpdatePmBigDisplay();
+  /* メイン入力欄にも反映 */
+  const inp = document.getElementById('v32MainPmStart');
+  if (inp) inp.value = State.round.pmStart || '';
+}
+
 function bindEvents() {
   /* 表示モード切替（3モード） */
   $('#displayToggle').addEventListener('click', (e) => {
@@ -8782,10 +9030,11 @@ function bindEvents() {
     });
   })();
 
-  /* PMスタート & 休憩時間 メイン直接入力 */
-  (function v32BindMainTime() {
+  /* v34: 後半スタート時間 & 休憩時間 メイン直接入力 */
+  (function v34BindMainTime() {
     const pmInp = document.getElementById('v32MainPmStart');
     const pmSmart = document.getElementById('v32MainPmSmart');
+    const pmClear = document.getElementById('v34PmClear');
     const rs = document.getElementById('v32RestStart');
     const re = document.getElementById('v32RestEnd');
 
@@ -8793,6 +9042,7 @@ function bindEvents() {
       State.round.pmStart = (pmInp.value || '').trim();
       Storage.saveState();
       v31UpdateModalBadges();
+      v34UpdatePmBigDisplay();
     };
     const saveRs = () => {
       State.round.restStart = (rs.value || '').trim();
@@ -8816,12 +9066,24 @@ function bindEvents() {
         State.round.pmStart = v;
         Storage.saveState();
         v31UpdateModalBadges();
-        showToast('⛳ PMスタート: ' + v);
+        v34UpdatePmBigDisplay();
+        showToast('⛳ 後半スタート: ' + v);
+      });
+    }
+    if (pmClear) {
+      pmClear.addEventListener('click', () => {
+        if (pmInp) pmInp.value = '';
+        State.round.pmStart = '';
+        Storage.saveState();
+        v31UpdateModalBadges();
+        v34UpdatePmBigDisplay();
+        showToast('⛳ 後半スタート時間をクリア');
       });
     }
     if (rs) { rs.value = State.round.restStart || ''; rs.addEventListener('input', saveRs); rs.addEventListener('change', saveRs); }
     if (re) { re.value = State.round.restEnd   || ''; re.addEventListener('input', saveRe); re.addEventListener('change', saveRe); }
     v32UpdateRestDisplay();
+    v34UpdatePmBigDisplay();
   })();
 
   /* 9H完了バナータップで集計画面 */
@@ -8881,11 +9143,13 @@ function bindEvents() {
     });
   })();
 
-  /* v32/v33: 起動同期 */
+  /* v32/v33/v34: 起動同期 */
   try { v33SyncMeToPlayer(); } catch(e) {}
   v32InitAfterBind();
   try { v31RenderPlayerList(); } catch(e) {}
   try { v33UpdateThumbInfo(); } catch(e) {}
+  /* v34: 起動時に後半スタート時間を「現在時刻+45分」で自動セット（既存値があれば維持） */
+  try { v34InitPmDefault(); } catch(e) {}
 }
 
 /* =================================================================
@@ -8896,7 +9160,7 @@ function boot() {
   bindEvents();
   applyInputMode();  /* v14: 起動時に入力モードを適用（body class設定など） */
   Router.handleInitial();
-  console.log('G-WORLD v33.0 (v16聖域＋現場ミニマル＋プロフィール連携)', new Date().toISOString());
+  console.log('G-WORLD v34.0 (v16聖域＋PWA＋現場最適化UI)', new Date().toISOString());
 }
 
 if (document.readyState === 'loading') {
