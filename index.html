@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#0F5132">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>G-WORLD v32.0 | 六甲国際パブリックコース</title>
+<title>G-WORLD v33.0 | 六甲国際パブリックコース</title>
 <!-- v31: ホーム画面アイコン -->
 <link rel="apple-touch-icon" href="./icon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="./icon.png">
@@ -2666,6 +2666,285 @@ body.v32-holes-9 .v32-mh-holes {
   50% { transform: scale(1.02); }
 }
 
+
+/* ============================================================
+   v33: ストレスゼロ現場仕様 UI/UX
+   ============================================================ */
+
+/* メイン: 同伴者追加ボタン（プライマリ） */
+.v33-add-companion-btn {
+  width: 100%;
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px;
+  background: var(--v31-accent-soft);
+  border: 1.5px solid var(--v31-accent);
+  border-radius: 12px;
+  color: var(--v31-accent-deep);
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 8px;
+}
+.v33-add-companion-btn:active { background: var(--v31-accent); color: #fff; }
+.v33-add-companion-btn .v33-acb-ico {
+  font-size: 22px; font-weight: 900;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--v31-accent); color: #fff;
+  display: flex; align-items: center; justify-content: center; line-height: 1;
+}
+.v33-add-companion-btn .v33-acb-text {
+  display: flex; flex-direction: column; line-height: 1.2;
+  font-size: 14px; text-align: left;
+}
+.v33-add-companion-btn .v33-acb-text small {
+  font-size: 10px; font-weight: 600; opacity: .8;
+}
+
+/* メイン: 招待QRボタン（同伴者追加直下） */
+.v33-invite-qr-btn {
+  width: 100%;
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px;
+  background: var(--v31-base);
+  border: 2px dashed var(--v31-accent);
+  border-radius: 12px;
+  color: var(--v31-accent-deep);
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 6px;
+}
+.v33-invite-qr-btn:active {
+  background: var(--v31-accent-soft); border-style: solid;
+}
+.v33-invite-qr-btn .v33-iqr-ico { font-size: 28px; }
+.v33-invite-qr-btn .v33-iqr-text {
+  display: flex; flex-direction: column; line-height: 1.2;
+  font-size: 14px; text-align: left;
+}
+.v33-invite-qr-btn .v33-iqr-text small {
+  font-size: 10px; font-weight: 600; opacity: .75;
+}
+
+/* モーダル: スコアカード最大化 */
+.v33-modal-top {
+  flex: 1 1 auto !important;
+  min-height: 0;
+  display: flex; flex-direction: column;
+  background: var(--v31-base);
+  padding: 0;
+}
+.v33-scoretable-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+.v33-st-scroll {
+  height: 100%;
+  overflow-x: auto; overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 指タップしやすい大型セル */
+.v33-modal-scoretable {
+  min-width: 100%;
+  border-collapse: collapse;
+  font-size: 16px;
+}
+.v33-modal-scoretable th,
+.v33-modal-scoretable td {
+  padding: 12px 8px;
+  text-align: center;
+  border: 1px solid var(--v31-base-line);
+}
+.v33-modal-scoretable thead th {
+  background: var(--v31-base-soft);
+  font-weight: 900;
+  color: var(--v31-accent-deep);
+  position: sticky; top: 0; z-index: 2;
+  font-size: 14px;
+}
+.v33-modal-scoretable .col-fixed {
+  position: sticky; left: 0;
+  background: var(--v31-base);
+  text-align: left; padding-left: 12px;
+  font-weight: 900; font-size: 14px;
+  min-width: 80px; max-width: 110px;
+  z-index: 3;
+  border-right: 2px solid var(--v31-base-line);
+}
+.v33-modal-scoretable thead .col-fixed { z-index: 4; }
+.v33-modal-scoretable .col-total {
+  position: sticky; right: 0;
+  background: var(--v31-accent-soft);
+  font-weight: 900; font-size: 16px;
+  color: var(--v31-accent-deep);
+  border-left: 2px solid var(--v31-accent);
+  z-index: 3; min-width: 72px;
+}
+.v33-modal-scoretable .par-row {
+  background: #f7e8c0; color: #6a4a00; font-weight: 800;
+}
+.v33-modal-scoretable .score-cell {
+  font-size: 22px;
+  font-weight: 900;
+  min-width: 56px;
+  min-height: 56px;
+  cursor: pointer;
+  position: relative;
+  line-height: 1.1;
+}
+.v33-modal-scoretable .score-cell.empty { color: var(--v31-base-line2); font-size: 18px; }
+.v33-modal-scoretable .score-cell.under-1 { background: #c8ecd5; color: #0a4a25; }
+.v33-modal-scoretable .score-cell.under-2 { background: #8fd6a8; color: #053018; }
+.v33-modal-scoretable .score-cell.under-3 { background: #4fbd7d; color: #fff; }
+.v33-modal-scoretable .score-cell.par   { background: #fff; color: #0a3a18; }
+.v33-modal-scoretable .score-cell.over-1 { background: #fde2dd; color: #7a1d10; }
+.v33-modal-scoretable .score-cell.over-2 { background: #f4a497; color: #5a0e08; }
+.v33-modal-scoretable .score-cell.current-hole {
+  outline: 3px solid var(--v31-accent);
+  outline-offset: -3px;
+}
+.v33-modal-scoretable td.col-row-hl.col-col-hl,
+.v33-modal-scoretable th.col-row-hl.col-col-hl {
+  background: var(--v31-accent) !important;
+  color: #fff !important;
+  outline: 3px solid var(--v31-accent-deep);
+  outline-offset: -3px;
+  font-weight: 900;
+}
+.v33-modal-scoretable tr.is-input-row td.col-fixed {
+  background: var(--v31-accent) !important;
+  color: #fff !important; font-weight: 900;
+}
+
+/* 親指グリッド 2列3行 右寄せ */
+.v33-modal-bottom {
+  flex: 0 0 auto !important;
+  padding: 10px 12px calc(20px + env(safe-area-inset-bottom)) !important;
+  background: linear-gradient(to bottom, var(--v31-base) 0%, var(--v31-base-soft) 100%);
+  border-top: 2px solid var(--v31-accent-soft);
+}
+.v33-thumb-info {
+  display: flex; flex-direction: column; gap: 4px;
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  background: var(--v31-base);
+  border: 1.5px solid var(--v31-base-line2);
+  border-radius: 10px;
+}
+.v33-ti-row {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
+}
+.v33-ti-hole { font-size: 18px; font-weight: 900; color: var(--v31-accent-deep); }
+.v33-ti-par  { font-size: 12px; font-weight: 700; color: var(--v31-ink-soft); }
+.v33-ti-current {
+  border-top: 1px dashed var(--v31-base-line);
+  padding-top: 4px;
+}
+.v33-ti-name {
+  font-size: 15px; font-weight: 900; color: var(--v31-ink);
+  flex: 1; min-width: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.v33-ti-stroke {
+  font-size: 28px; font-weight: 900; color: var(--v31-accent);
+  line-height: 1;
+}
+
+.v33-thumb-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  grid-template-rows: auto auto auto !important;
+  gap: 8px;
+  margin-left: auto;
+  max-width: 100%;
+}
+
+.v33-tg {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  min-height: 60px !important;
+  padding: 10px 6px !important;
+  font-size: 13px !important;
+  line-height: 1.1 !important;
+  font-weight: 900 !important;
+  border-radius: 12px !important;
+}
+.v33-tg .v31-tg-op {
+  font-size: 26px !important; font-weight: 900 !important; line-height: 1 !important;
+}
+.v33-tg .v31-tg-lbl {
+  font-size: 13px !important; font-weight: 800 !important;
+  text-align: left; line-height: 1.1;
+}
+
+.v31-tg.v33-tg.v31-tg-shot-plus,
+.v31-tg.v33-tg.v31-tg-shot-minus {
+  background: var(--v31-accent-soft) !important;
+  border: 2px solid var(--v31-accent) !important;
+  color: var(--v31-accent-deep) !important;
+}
+.v31-tg.v33-tg.v31-tg-shot-plus:active,
+.v31-tg.v33-tg.v31-tg-shot-minus:active {
+  background: var(--v31-accent) !important; color: #fff !important;
+}
+.v31-tg.v33-tg.v31-tg-putt-plus,
+.v31-tg.v33-tg.v31-tg-putt-minus {
+  background: var(--v31-base-soft) !important;
+  border: 2px solid var(--v31-base-line2) !important;
+  color: var(--v31-ink) !important;
+}
+.v31-tg.v33-tg.v31-tg-putt-plus:active,
+.v31-tg.v33-tg.v31-tg-putt-minus:active {
+  background: var(--v31-base-line2) !important;
+}
+.v31-tg.v33-tg.v31-tg-player {
+  background: var(--v31-base) !important;
+  border: 2px solid var(--v31-accent) !important;
+  color: var(--v31-accent-deep) !important;
+}
+.v31-tg.v33-tg.v31-tg-player:active {
+  background: var(--v31-accent-soft) !important;
+}
+.v31-tg.v33-tg.v31-tg-confirm {
+  background: var(--v31-accent) !important;
+  border: 2px solid var(--v31-accent-deep) !important;
+  color: #fff !important;
+  font-size: 14px !important;
+  box-shadow: 0 4px 10px rgba(45,157,95,.30);
+}
+.v31-tg.v33-tg.v31-tg-confirm:active {
+  background: var(--v31-accent-deep) !important;
+  transform: translateY(1px);
+}
+
+/* ビギナーモード: パット系を非表示 */
+body.v31-mode-beginner .v33-thumb-grid {
+  grid-template-columns: 1fr 1fr !important;
+}
+body.v31-mode-beginner .v33-thumb-grid .v31-tg-putt-plus,
+body.v31-mode-beginner .v33-thumb-grid .v31-tg-putt-minus,
+body.v31-mode-beginner .v33-thumb-grid .v31-tg-player {
+  display: none !important;
+}
+
+/* フッターz-index */
+.footer-bar { z-index: 9999 !important; }
+.modal-backdrop.show { z-index: 10000 !important; }
+.v32-half-summary.show { z-index: 10500 !important; }
+
+/* レスポンシブ */
+@media (max-width: 380px) {
+  .v33-modal-scoretable .score-cell {
+    font-size: 19px; min-width: 46px; min-height: 50px; padding: 10px 6px;
+  }
+  .v33-modal-scoretable .col-fixed { min-width: 70px; font-size: 13px; padding-left: 8px; }
+  .v33-tg { min-height: 54px !important; font-size: 12px !important; }
+  .v33-tg .v31-tg-op { font-size: 22px !important; }
+}
+
 </style>
 
 <!-- QR Code Generator (Kazuhiko Arase, MIT) -->
@@ -5058,13 +5337,21 @@ var qrcode = function() {
       </div>
     </section>
 
-    <!-- ③ 同伴者リスト -->
+    <!-- ③ 同伴者リスト ＋ 招待QR（同伴者追加直下に配置） -->
     <section class="v31-block">
-      <div class="v31-block-title">
-        👥 同伴者
-        <button type="button" class="v31-mini-action" id="v31AddCompanion">＋ 追加</button>
-      </div>
+      <div class="v31-block-title">👥 同伴者</div>
       <div class="v31-player-list" id="v31PlayerList"></div>
+      <button type="button" class="v33-add-companion-btn" id="v31AddCompanion">
+        <span class="v33-acb-ico">＋</span>
+        <span class="v33-acb-text">同伴者を追加<small>姓または名で簡単追加</small></span>
+      </button>
+      <button type="button" class="v33-invite-qr-btn" id="v33InviteQR">
+        <span class="v33-iqr-ico">📱</span>
+        <span class="v33-iqr-text">
+          招待QRコードを表示
+          <small>同伴者にスコア入力画面を共有</small>
+        </span>
+      </button>
     </section>
 
     <!-- ④ ラウンド開始（巨大ボタン） -->
@@ -5078,21 +5365,13 @@ var qrcode = function() {
       🏁 ハーフラウンド完了！タップで集計を確認
     </div>
 
-    <!-- v32: ライブ・スコアカード（トップ画面で直接編集可能） -->
-    <section class="v31-block v32-livescore-block">
-      <div class="v31-block-title">
-        📊 ライブ・スコアカード
-        <span class="v32-live-meta">
-          <span id="v32LiveMode">18H</span> ·
-          <span id="v32LiveHole">1H</span>
-        </span>
-      </div>
-      <div class="v32-livescore-hint">スコア数字を直接タップして編集できます</div>
-      <div class="scoretable-scroll v32-livescore-scroll" id="v32LiveScroll">
-        <table class="scoretable v32-livescore" id="v32LiveTable"></table>
-      </div>
-      <div class="v32-livescore-summary" id="v32LiveSummary"></div>
-    </section>
+    <!-- v33: ライブスコアカード削除 — 編集はモーダルへ集約。v32内部参照は聖域へ -->
+    <div class="v31-sanctuary" aria-hidden="true">
+      <span id="v32LiveMode">18H</span>
+      <span id="v32LiveHole">1H</span>
+      <div id="v32LiveScroll"><table id="v32LiveTable"></table></div>
+      <div id="v32LiveSummary"></div>
+    </div>
 
     <!-- ⑤ ナビ・コース詳細・予約・電話 -->
     <section class="v31-block">
@@ -5386,57 +5665,56 @@ var qrcode = function() {
     </div>
 
     <!-- ============================================================
-         v32: 上部 — スコアカード（横スクロール）— 名前タブは下に移動
+         v33: モーダル本体 = スコアカード最大化
+              （ホール番号バナー、ストローク表示、名前リストはすべて削除）
          ============================================================ -->
-    <div class="v31-modal-top">
-      <div class="v31-modal-info">
-        <div class="v31-mi-hole">
-          <span class="v31-mi-num" id="modalHoleNum">1H</span>
-          <span class="v31-mi-par" id="modalHolePar">PAR 4 · 352y</span>
-        </div>
-        <div class="v31-mi-stroke">
-          <span class="v31-mi-s-num" id="modalStroke">0</span>
-          <span class="v31-mi-s-diff" id="modalStrokeDiff">未入力</span>
-        </div>
-      </div>
-      <div class="v31-scoretable-wrap">
-        <div class="scoretable-scroll v31-st-scroll" id="v31ModalTableScroll">
-          <table class="scoretable" id="v31ModalScoreTable"></table>
+    <div class="v31-modal-top v33-modal-top">
+      <div class="v31-scoretable-wrap v33-scoretable-wrap">
+        <div class="scoretable-scroll v31-st-scroll v33-st-scroll" id="v31ModalTableScroll">
+          <table class="scoretable v33-modal-scoretable" id="v31ModalScoreTable"></table>
         </div>
       </div>
     </div>
 
-    <!-- v32: 名前ストリップ（現場主義: スコア視線の下に配置） -->
-    <div class="v32-name-strip v31-player-tabs player-tabs" id="modalPlayerTabs"></div>
+    <!-- v33: 聖域 — 計算ロジックが参照する DOM を隠して保持 -->
+    <div class="v31-sanctuary" aria-hidden="true">
+      <span id="modalHoleNum">1H</span>
+      <span id="modalHolePar"></span>
+      <span id="modalStroke">0</span>
+      <span id="modalStrokeDiff"></span>
+      <div id="modalPlayerTabs"></div>
+    </div>
 
-    <!-- ============================================================
-         下部 — 親指グリッド（ストローク± / パット± / 切替 / 確定）
-         ============================================================ -->
-    <div class="v31-modal-bottom">
-      <div class="v31-thumb-grid">
-        <button type="button" class="v31-tg v31-tg-shot-plus" id="v31ShotPlus">
-          <span class="v31-tg-op">＋</span>
-          <span class="v31-tg-lbl" id="v31ShotPlusLbl">ストローク</span>
+    <!-- v33: 下部 — 2列3行 右寄せ親指グリッド -->
+    <div class="v31-modal-bottom v33-modal-bottom">
+      <div class="v33-thumb-info">
+        <div class="v33-ti-row">
+          <span class="v33-ti-hole" id="v33HoleBadge">1H</span>
+          <span class="v33-ti-par" id="v33ParBadge">PAR 4</span>
+        </div>
+        <div class="v33-ti-row v33-ti-current">
+          <span class="v33-ti-name" id="v33PlayerBadge">—</span>
+          <span class="v33-ti-stroke" id="v33StrokeBadge">0</span>
+        </div>
+      </div>
+      <div class="v31-thumb-grid v33-thumb-grid">
+        <button type="button" class="v31-tg v33-tg v31-tg-shot-plus" id="v31ShotPlus">
+          <span class="v31-tg-op">＋</span><span class="v31-tg-lbl">ストローク</span>
         </button>
-        <button type="button" class="v31-tg v31-tg-putt-plus" id="v31PuttPlus">
-          <span class="v31-tg-op">＋</span>
-          <span class="v31-tg-lbl">パット</span>
+        <button type="button" class="v31-tg v33-tg v31-tg-shot-minus" id="v31ShotMinus">
+          <span class="v31-tg-op">−</span><span class="v31-tg-lbl">ストローク</span>
         </button>
-        <button type="button" class="v31-tg v31-tg-shot-minus" id="v31ShotMinus">
-          <span class="v31-tg-op">−</span>
-          <span class="v31-tg-lbl" id="v31ShotMinusLbl">ストローク</span>
+        <button type="button" class="v31-tg v33-tg v31-tg-putt-plus" id="v31PuttPlus">
+          <span class="v31-tg-op">＋</span><span class="v31-tg-lbl">パット</span>
         </button>
-        <button type="button" class="v31-tg v31-tg-putt-minus" id="v31PuttMinus">
-          <span class="v31-tg-op">−</span>
-          <span class="v31-tg-lbl">パット</span>
+        <button type="button" class="v31-tg v33-tg v31-tg-putt-minus" id="v31PuttMinus">
+          <span class="v31-tg-op">−</span><span class="v31-tg-lbl">パット</span>
         </button>
-        <button type="button" class="v31-tg v31-tg-player" id="v31PlayerNext">
-          <span class="v31-tg-op">👥</span>
-          <span class="v31-tg-lbl">プレイヤー切替</span>
+        <button type="button" class="v31-tg v33-tg v31-tg-player" id="v31PlayerNext">
+          <span class="v31-tg-op">👥</span><span class="v31-tg-lbl">プレイヤー切替</span>
         </button>
-        <button type="button" class="v31-tg v31-tg-confirm" id="v31Confirm">
-          <span class="v31-tg-op">✓</span>
-          <span class="v31-tg-lbl">確定<br>次へ</span>
+        <button type="button" class="v31-tg v33-tg v31-tg-confirm" id="v31Confirm">
+          <span class="v31-tg-op">✓</span><span class="v31-tg-lbl">確定・次へ</span>
         </button>
       </div>
     </div>
@@ -5675,18 +5953,7 @@ var qrcode = function() {
         </div>
       </div>
 
-      <!-- ============================================================
-           v31: 招待QR
-           ============================================================ -->
-      <div class="v31-settings-section">
-        <button type="button" class="v31-big-action" id="v31OpenInviteQR">
-          <span class="v31-ba-ico">📱</span>
-          <span class="v31-ba-text">
-            招待QRを表示
-            <small>同伴者にスコア入力を共有</small>
-          </span>
-        </button>
-      </div>
+      <!-- v33: 招待QRは「同伴者追加」直下へ移管 -->
 
     </div>
   </div>
@@ -6123,6 +6390,8 @@ function initState() {
       me.firstname = State.me.firstname;
     }
   }
+  /* v33: 最終同期 — 自分エントリ未存在なら作成、存在すれば名前同期 */
+  try { if (typeof v33SyncMeToPlayer === 'function') v33SyncMeToPlayer(); } catch(e) {}
 }
 
 /* =================================================================
@@ -6299,6 +6568,8 @@ function renderTable() {
   /* v32: ライブスコアカード描画 + クロスハイライト */
   try { v32RenderLiveScore(); } catch(e) {}
   try { v32ApplyCrossHighlight(); } catch(e) {}
+  /* v33: プレイヤーリスト（司令塔の同伴者）も同期 — プロフィール変更即時反映 */
+  try { v31RenderPlayerList(); } catch(e) {}
 
 }
 
@@ -6556,6 +6827,8 @@ function updateModalDisplay() {
     confirmBtn.classList.remove('final');
     confirmBtn.textContent = State.settings.autoNext ? '確定して次のホール ▶' : '確定する';
   }
+  /* v33: 親指グリッド上の情報バッジ更新 */
+  try { v33UpdateThumbInfo(); } catch(e) {}
 }
 
 function applyPuttSectionEnabled() {
@@ -6902,8 +7175,10 @@ const Router = {
     if (name === 'home') renderHome();
     if (name === 'mypage') renderMyPage();
     if (name === 'gworld') {
+      try { v33SyncMeToPlayer(); } catch(e) {}
       renderTopAndHero();
       renderTable();
+      try { v31RenderPlayerList(); } catch(e) {}
     }
     window.scrollTo(0, 0);
   },
@@ -7823,6 +8098,171 @@ function v32InitAfterBind() {
   v32CheckHalfComplete();
 }
 
+
+/* =================================================================
+   v33: 親指グリッド情報バッジ更新
+   ================================================================= */
+function v33UpdateThumbInfo() {
+  const p = State.players[modalPlayerIdx];
+  const h = COURSE.holes[modalHole - 1];
+  if (!h) return;
+  const holeEl = document.getElementById('v33HoleBadge');
+  const parEl  = document.getElementById('v33ParBadge');
+  const nameEl = document.getElementById('v33PlayerBadge');
+  const strkEl = document.getElementById('v33StrokeBadge');
+  if (holeEl) holeEl.textContent = h.no + 'H';
+  if (parEl)  parEl.textContent  = 'PAR ' + h.par + ' · ' + getYard(h) + 'y';
+  if (nameEl) nameEl.textContent = p ? (fullName(p) || '(未設定)') : '—';
+  if (strkEl) {
+    if (!modalStroke || modalStroke <= 0) {
+      strkEl.textContent = '0';
+    } else {
+      const diff = modalStroke - h.par;
+      const sign = diff === 0 ? 'E' : (diff > 0 ? '+' + diff : '' + diff);
+      strkEl.textContent = modalStroke + ' (' + sign + ')';
+    }
+  }
+}
+
+/* =================================================================
+   v33: ＋/− 即時反映 — v16 計算エンジンを経由してスコア配列に書き込み
+   ================================================================= */
+function v33CommitImmediate() {
+  try { saveCurrentModalScore(); } catch(e) {}
+  try { renderTable(); } catch(e) {}
+  try { v33UpdateThumbInfo(); } catch(e) {}
+  try {
+    v32SetActiveCell(modalPlayerIdx, modalHole - 1);
+    v32ApplyCrossHighlight();
+  } catch(e) {}
+}
+
+/* =================================================================
+   v33: 全プレイヤー入力済み判定（現在ホール）
+   ================================================================= */
+function v33AllPlayersDoneForCurrentHole() {
+  if (!State.players || State.players.length === 0) return false;
+  const hi = modalHole - 1;
+  return State.players.every(p => p.scores[hi] != null && p.scores[hi] > 0);
+}
+
+/* =================================================================
+   v33: 「確定・次へ」ゲート
+   全員入力完了なら次ホール（v16 confirmAndNext）、未完了なら次の未入力者へ
+   ================================================================= */
+function v33ConfirmAndAdvance() {
+  v33CommitImmediate();
+  if (v33AllPlayersDoneForCurrentHole()) {
+    if (v32IsHalfMode() && modalHole >= 9) {
+      try { Storage.saveState(); } catch(e) {}
+      try { closeAllModals(); } catch(e) {}
+      try { renderTable(); } catch(e) {}
+      try { v32CheckHalfComplete(); } catch(e) {}
+      setTimeout(() => {
+        if (v32HalfAllDone()) v32ShowHalfSummary();
+        else showToast('🏁 9Hハーフラウンド完了');
+      }, 250);
+      return;
+    }
+    try { confirmAndNext(); } catch(e) { console.warn(e); }
+    try { v33UpdateThumbInfo(); } catch(e) {}
+    try {
+      v32SetActiveCell(modalPlayerIdx, modalHole - 1);
+      v32ApplyCrossHighlight();
+    } catch(e) {}
+  } else {
+    const hi = modalHole - 1;
+    let nextIdx = -1;
+    for (let off = 1; off <= State.players.length; off++) {
+      const i = (modalPlayerIdx + off) % State.players.length;
+      const pp = State.players[i];
+      if (!pp.scores[hi] || pp.scores[hi] <= 0) { nextIdx = i; break; }
+    }
+    if (nextIdx >= 0) {
+      v33SwitchToPlayer(nextIdx);
+      const remaining = State.players.filter(p => !p.scores[hi] || p.scores[hi] <= 0).length;
+      showToast('⚠ 残り ' + remaining + ' 名未入力 → ' + fullName(State.players[nextIdx]) + ' さんへ');
+    }
+  }
+}
+
+/* =================================================================
+   v33: プレイヤー切替（保存→フォーカス移動→ハイライト同期）
+   ================================================================= */
+function v33SwitchToPlayer(targetIdx) {
+  if (targetIdx < 0 || targetIdx >= State.players.length) return;
+  try { saveCurrentModalScore(); } catch(e) {}
+  try { renderTable(); } catch(e) {}
+  modalPlayerIdx = targetIdx;
+  const p = State.players[targetIdx];
+  const h = COURSE.holes[modalHole - 1];
+  if (p && h) {
+    if (p.scores[modalHole - 1] != null) {
+      modalStroke = p.scores[modalHole - 1];
+      modalPutt = p.putts[modalHole - 1] || 0;
+    } else if (State.ui.inputMode === 'simple') {
+      modalStroke = h.par;
+      modalPutt = 2;
+    } else {
+      modalStroke = 0;
+      modalPutt = 0;
+    }
+  }
+  try { v32SetActiveCell(targetIdx, modalHole - 1); } catch(e) {}
+  try { v32ApplyCrossHighlight(); } catch(e) {}
+  try { updateModalDisplay(); } catch(e) {}
+  try { v33UpdateThumbInfo(); } catch(e) {}
+}
+
+/* =================================================================
+   v33: 次プレイヤー候補（未入力者優先）
+   ================================================================= */
+function v33PickNextPlayer() {
+  if (!State.players.length) return -1;
+  const hi = modalHole - 1;
+  for (let off = 1; off <= State.players.length; off++) {
+    const i = (modalPlayerIdx + off) % State.players.length;
+    if (!State.players[i].scores[hi] || State.players[i].scores[hi] <= 0) return i;
+  }
+  return (modalPlayerIdx + 1) % State.players.length;
+}
+
+/* =================================================================
+   v33: プロフィール → 同伴者リスト「自分」 同期
+   ================================================================= */
+function v33SyncMeToPlayer() {
+  if (!State.players || State.players.length === 0) {
+    State.players = [{
+      id: State.me.id || 'me',
+      lastname: State.me.lastname || '',
+      firstname: State.me.firstname || '',
+      isMe: true,
+      isProxy: false,
+      scores: Array(18).fill(null),
+      putts: Array(18).fill(0)
+    }];
+  }
+  let me = State.players.find(p => p.isMe);
+  if (!me) {
+    me = {
+      id: State.me.id || 'me',
+      lastname: State.me.lastname || '',
+      firstname: State.me.firstname || '',
+      isMe: true,
+      isProxy: false,
+      scores: Array(18).fill(null),
+      putts: Array(18).fill(0)
+    };
+    State.players.unshift(me);
+  } else {
+    if (State.me.lastname || State.me.firstname) {
+      me.lastname  = State.me.lastname  || '';
+      me.firstname = State.me.firstname || '';
+    }
+  }
+  try { Storage.saveState(); } catch(e) {}
+}
+
 function bindEvents() {
   /* 表示モード切替（3モード） */
   $('#displayToggle').addEventListener('click', (e) => {
@@ -8233,85 +8673,56 @@ function bindEvents() {
   /* ============================================================
      v31: モーダル内 親指グリッド（v16 既存ボタンへ委譲）
      ============================================================ */
-  (function v31BindThumb() {
-    const fwd = (newId, origId) => {
-      const a = document.getElementById(newId);
-      const b = document.getElementById(origId);
-      if (!a || !b) return;
-      a.addEventListener('click', () => {
-        const p = State.players[modalPlayerIdx];
-        /* v31: ビギナー時の制限 */
-        if (v31IsBeginner() && (newId.includes('Putt') || newId === 'v31PlayerNext')) {
-          if (newId !== 'v31Confirm') {
-            showToast('🔰 初心者モードでは無効です');
-            return;
-          }
-        }
-        /* v31: 標準時のパットは自分のみ */
-        if (v31IsStandard() && newId.includes('Putt') && p && !p.isMe) {
-          showToast('パットは自分(佐藤さん)のみ記録します');
-          return;
-        }
-        b.click();
-      });
-    };
-    fwd('v31ShotPlus',  'btnStrokePlus');
-    fwd('v31ShotMinus', 'btnStrokeMinus');
-    fwd('v31PuttPlus',  'btnPuttPlus');
-    fwd('v31PuttMinus', 'btnPuttMinus');
-    /* v32: 9Hモード時、9H確定後はモーダルを閉じて 9H集計画面を表示 */
-    const v31ConfBtn = document.getElementById('v31Confirm');
-    if (v31ConfBtn) {
-      v31ConfBtn.addEventListener('click', () => {
-        if (v32IsHalfMode() && modalHole >= 9) {
-          /* 確定処理を v16 saveCurrentModalScore 経由で実行 */
-          try { saveCurrentModalScore(); } catch(e) {}
-          Storage.saveState();
-          try { renderTable(); } catch(e) {}
-          try { v32RenderLiveScore(); } catch(e) {}
-          try { v32CheckHalfComplete(); } catch(e) {}
-          try { closeAllModals(); } catch(e) {}
-          /* 9H完了なら集計画面を即起動 */
-          setTimeout(() => {
-            if (v32HalfAllDone()) {
-              v32ShowHalfSummary();
-            } else {
-              showToast('🏁 9Hモード: 残りのプレイヤーのスコアを入力してください');
-            }
-          }, 250);
-          return;
-        }
-        /* 通常の確定 → v16 確定ボタンへ委譲 */
-        const o = document.getElementById('btnConfirm');
-        if (o) o.click();
-      }, { once: false });
-    }
-
+  /* ============================================================
+     v33: 親指グリッド — ＋/− 即時反映、プレイヤー切替、確定ゲート
+     ============================================================ */
+  (function v33BindThumb() {
+    const sp = document.getElementById('v31ShotPlus');
+    const sm = document.getElementById('v31ShotMinus');
+    const pp = document.getElementById('v31PuttPlus');
+    const pm = document.getElementById('v31PuttMinus');
     const pn = document.getElementById('v31PlayerNext');
-    if (pn) {
-      pn.addEventListener('click', () => {
-        if (v31IsBeginner()) { showToast('🔰 初心者モードでは自分のみ'); return; }
-        if (!State.players.length) return;
-        let next = modalPlayerIdx + 1;
-        if (next >= State.players.length) next = 0;
-        modalPlayerIdx = next;
-        const p = State.players[next];
-        const h = COURSE.holes[modalHole - 1];
-        if (p.scores[modalHole - 1] != null) {
-          modalStroke = p.scores[modalHole - 1];
-          modalPutt = p.putts[modalHole - 1] || 0;
-        } else if (State.ui.inputMode === 'simple') {
-          modalStroke = h.par; modalPutt = 2;
-        } else {
-          modalStroke = 0; modalPutt = 0;
-        }
-        renderModalPlayerTabs();
-        updateModalDisplay();
-        v31UpdateModalBadges();
-        v31UpdateThumbLabels();
-      });
-    }
+    const cf = document.getElementById('v31Confirm');
+
+    if (sp) sp.addEventListener('click', () => {
+      if (modalStroke < 20) modalStroke++;
+      try { updateModalDisplay(); } catch(e) {}
+      v33CommitImmediate();
+    });
+    if (sm) sm.addEventListener('click', () => {
+      if (modalStroke > 0) modalStroke--;
+      try { updateModalDisplay(); } catch(e) {}
+      v33CommitImmediate();
+    });
+    if (pp) pp.addEventListener('click', () => {
+      if (!State.settings.puttEnabled) { showToast('入力設定でパットを ON にしてください'); return; }
+      const p = State.players[modalPlayerIdx];
+      if (v31IsStandard() && p && !p.isMe) { showToast('パットは自分(佐藤さん)のみ記録します'); return; }
+      if (v31IsBeginner()) { showToast('🔰 初心者モードではパットは記録しません'); return; }
+      if (modalPutt < 10) modalPutt++;
+      try { updateModalDisplay(); } catch(e) {}
+      v33CommitImmediate();
+    });
+    if (pm) pm.addEventListener('click', () => {
+      if (!State.settings.puttEnabled) { showToast('入力設定でパットを ON にしてください'); return; }
+      const p = State.players[modalPlayerIdx];
+      if (v31IsStandard() && p && !p.isMe) { showToast('パットは自分(佐藤さん)のみ記録します'); return; }
+      if (v31IsBeginner()) { showToast('🔰 初心者モードではパットは記録しません'); return; }
+      if (modalPutt > 0) modalPutt--;
+      try { updateModalDisplay(); } catch(e) {}
+      v33CommitImmediate();
+    });
+
+    if (pn) pn.addEventListener('click', () => {
+      if (v31IsBeginner()) { showToast('🔰 初心者モードでは自分のみ'); return; }
+      if (!State.players.length) return;
+      const nxt = v33PickNextPlayer();
+      if (nxt >= 0) v33SwitchToPlayer(nxt);
+    });
+
+    if (cf) cf.addEventListener('click', () => v33ConfirmAndAdvance());
   })();
+
 
   /* ============================================================
      v31: 起動時の同期処理
@@ -8435,8 +8846,46 @@ function bindEvents() {
     });
   })();
 
-  /* v32: 起動同期 */
+  /* v33: 招待QR（同伴者追加直下）→ btnInviteQR 委譲 */
+  (function v33BindInviteQR() {
+    const b = document.getElementById('v33InviteQR');
+    if (!b) return;
+    b.addEventListener('click', () => {
+      const o = document.getElementById('btnInviteQR');
+      if (o) o.click();
+    });
+  })();
+
+  /* v33: プロフィール保存後 → 同伴者リスト即時反映 */
+  (function v33HookSaveProfile() {
+    const b = document.getElementById('btnSaveProfile');
+    if (!b) return;
+    b.addEventListener('click', () => {
+      setTimeout(() => {
+        try { v33SyncMeToPlayer(); } catch(e) {}
+        try { v31RenderPlayerList(); } catch(e) {}
+        try { renderTable(); } catch(e) {}
+      }, 50);
+    });
+  })();
+
+  /* v33: タブ切替(g-world)時にも同期 */
+  (function v33HookTabSwitch() {
+    document.querySelectorAll('.footer-tab[data-tab="gworld"]').forEach(t => {
+      t.addEventListener('click', () => {
+        setTimeout(() => {
+          try { v33SyncMeToPlayer(); } catch(e) {}
+          try { v31RenderPlayerList(); } catch(e) {}
+        }, 50);
+      });
+    });
+  })();
+
+  /* v32/v33: 起動同期 */
+  try { v33SyncMeToPlayer(); } catch(e) {}
   v32InitAfterBind();
+  try { v31RenderPlayerList(); } catch(e) {}
+  try { v33UpdateThumbInfo(); } catch(e) {}
 }
 
 /* =================================================================
@@ -8447,7 +8896,7 @@ function boot() {
   bindEvents();
   applyInputMode();  /* v14: 起動時に入力モードを適用（body class設定など） */
   Router.handleInitial();
-  console.log('G-WORLD v32.0 (v16聖域＋現場主義＋9H/18H)', new Date().toISOString());
+  console.log('G-WORLD v33.0 (v16聖域＋現場ミニマル＋プロフィール連携)', new Date().toISOString());
 }
 
 if (document.readyState === 'loading') {
