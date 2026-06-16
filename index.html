@@ -2827,35 +2827,38 @@ body.v32-holes-9 .v32-mh-holes {
   color: #fff !important; font-weight: 900;
 }
 
-/* 修正版：親指グリッド 2行3列 */
+/* プロ仕様：洗練された親指グリッド */
 .v33-modal-bottom {
-  /* 1. レイアウトを強制確定させる */
-  position: fixed !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 140px !important; /* ボタンが並ぶ分の高さを物理的に確保 */
-  z-index: 1000 !important;
-
-  /* 2. 中身の並べ方（Flexbox） */
+  flex: 0 0 auto !important;
   display: flex !important;
   flex-wrap: wrap !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  
-  /* 3. 見た目 */
-  background: var(--v31-base) !important;
-  border-top: 2px solid var(--v31-accent-soft) !important;
-  padding: 10px !important;
+  justify-content: center !important;
+  gap: 12px !important;
+  padding: 16px !important;
+  background: #ffffff !important;
+  border-top: 1px solid #e0e0e0 !important;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.05) !important;
+  width: 100% !important;
 }
 
-/* ボタンを強制的に等分する */
 .v33-modal-bottom button, 
 .v33-modal-bottom div[role="button"] {
-  flex: 0 0 32% !important; /* 3列に並ぶ */
+  flex: 0 0 28% !important;
   height: 50px !important;
-  margin: 0 !important;
-  box-sizing: border-box !important;
+  border-radius: 8px !important;
+  border: none !important;
+  background-color: #f0f0f0 !important;
+  color: #333 !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  transition: background-color 0.2s !important;
+}
+
+.v33-modal-bottom button:active {
+  background-color: #dcdcdc !important;
 }
 .v33-thumb-info {
   display: flex; flex-direction: column; gap: 4px;
