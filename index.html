@@ -5,7 +5,7 @@
 <!-- 監督指示 §3: ピンチイン・アウト完全許可 -->
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#0F5132">
-<title>G-WORLD v37.0 | 六甲国際パブリックコース</title>
+<title>G-WORLD v38.0 | 六甲国際パブリックコース</title>
 
 <!-- ============================================================
      v34: PWA設定 — ホーム画面追加時の名称 = "G-WORLD"
@@ -2827,38 +2827,12 @@ body.v32-holes-9 .v32-mh-holes {
   color: #fff !important; font-weight: 900;
 }
 
-/* プロ仕様：洗練された親指グリッド */
+/* 親指グリッド 2列3行 右寄せ */
 .v33-modal-bottom {
   flex: 0 0 auto !important;
-  display: flex !important;
-  flex-wrap: wrap !important;
-  justify-content: center !important;
-  gap: 12px !important;
-  padding: 16px !important;
-  background: #ffffff !important;
-  border-top: 1px solid #e0e0e0 !important;
-  box-shadow: 0 -2px 10px rgba(0,0,0,0.05) !important;
-  width: 100% !important;
-}
-
-.v33-modal-bottom button, 
-.v33-modal-bottom div[role="button"] {
-  flex: 0 0 28% !important;
-  height: 200px !important;
-  border-radius: 8px !important;
-  border: none !important;
-  background-color: #f0f0f0 !important;
-  color: #333 !important;
-  font-weight: 600 !important;
-  font-size: 15px !important;
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  transition: background-color 0.2s !important;
-}
-
-.v33-modal-bottom button:active {
-  background-color: #dcdcdc !important;
+  padding: 10px 12px calc(20px + env(safe-area-inset-bottom)) !important;
+  background: linear-gradient(to bottom, var(--v31-base) 0%, var(--v31-base-soft) 100%);
+  border-top: 2px solid var(--v31-accent-soft);
 }
 .v33-thumb-info {
   display: flex; flex-direction: column; gap: 4px;
@@ -3450,6 +3424,574 @@ body.v31-mode-beginner .v33-thumb-grid .v31-tg-player {
   .v33-modal-bottom {
     padding-bottom: calc(20px + env(safe-area-inset-bottom)) !important;
   }
+}
+
+
+/* ============================================================
+   v38: UI刷新 — ダッシュボード + セルタップ式ボトムシート
+   ============================================================ */
+
+/* --- 旧6ボタン群・関連要素を視覚的に完全消去(聖域DOM保護のためdisplay:none) --- */
+.v33-modal-bottom,
+.v31-modal-bottom,
+.v35-thumb-grid,
+.v33-thumb-grid,
+.v33-thumb-info,
+.v31-mh,
+.v34-edit-hint,
+.v36-edit-hint,
+#v34EditHint,
+.v31-sanctuary {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* スコアモーダル全体を画面いっぱいに(下部ボタン廃止により余白吸収) */
+.v31-modal,
+#scoreModal .modal {
+  height: 100vh !important;
+  max-height: 100vh !important;
+  width: 100vw !important;
+  max-width: 100vw !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+}
+.v31-modal-top,
+.v33-modal-top {
+  flex: 1 1 auto !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 8px 10px calc(12px + env(safe-area-inset-bottom)) !important;
+}
+.v31-scoretable-wrap,
+.v33-scoretable-wrap {
+  flex: 1 1 auto !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+.scoretable-scroll,
+.v31-st-scroll,
+.v33-st-scroll {
+  flex: 1 1 auto !important;
+  overflow: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+/* ============================================================
+   v38 ダッシュボード — モーダル最上部に常時表示
+   ============================================================ */
+.v38-dash {
+  flex: 0 0 auto;
+  background: linear-gradient(180deg, #ffffff 0%, #f7faf8 100%);
+  border-bottom: 2px solid var(--v31-accent, #2d9d5f);
+  padding: 8px 8px 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  z-index: 5;
+}
+.v38-dash-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr) 36px;
+  gap: 5px;
+  align-items: stretch;
+}
+.v38-dash-card {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 6px;
+  background: #ffffff;
+  border: 1.5px solid #d8e8df;
+  border-radius: 10px;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  min-height: 46px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.08s, border-color 0.15s, background 0.15s;
+}
+.v38-dash-card:active {
+  transform: scale(0.96);
+  background: #eef9f2;
+}
+.v38-dash-card.v38-dc-highlight {
+  background: linear-gradient(135deg, #fff6db 0%, #ffe9a0 100%);
+  border-color: #e8a93d;
+  box-shadow: 0 0 0 2px rgba(232,169,61,0.18);
+}
+.v38-dc-ico {
+  font-size: 18px;
+  line-height: 1;
+  flex: 0 0 auto;
+}
+.v38-dc-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.v38-dc-label {
+  font-size: 9px;
+  color: #6a7d72;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+.v38-dc-value {
+  font-size: 14px;
+  color: #1a2620;
+  font-weight: 900;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.v38-dc-highlight .v38-dc-value {
+  color: #b06b00;
+  font-size: 16px;
+}
+.v38-dc-mode .v38-dc-value {
+  font-size: 11px;
+  font-weight: 800;
+}
+.v38-dc-sep {
+  color: #aab8b0;
+  margin: 0 2px;
+  font-weight: 400;
+}
+.v38-dash-close {
+  background: #f0f4f1;
+  border: 1.5px solid #c8d6cd;
+  border-radius: 10px;
+  font-size: 22px;
+  font-weight: 900;
+  color: #4a5a52;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  touch-action: manipulation;
+}
+.v38-dash-close:active { background: #d8e2dc; }
+.v38-dash-hint {
+  margin-top: 6px;
+  padding: 4px 8px;
+  background: #f1f8f4;
+  border-radius: 8px;
+  font-size: 11px;
+  color: #2a5a3a;
+  text-align: center;
+  font-weight: 700;
+}
+.v38-sanctuary-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* タブレット縦表示 (480px未満) でも見やすく */
+@media (max-width: 480px) {
+  .v38-dash-row {
+    grid-template-columns: repeat(3, 1fr) 32px;
+    grid-template-rows: auto auto;
+    gap: 4px;
+  }
+  .v38-dash-close {
+    grid-column: 4;
+    grid-row: 1 / span 2;
+  }
+  .v38-dash-card.v38-dc-mode {
+    grid-column: 1 / span 3;
+  }
+  .v38-dc-value { font-size: 13px; }
+  .v38-dc-highlight .v38-dc-value { font-size: 15px; }
+}
+
+/* ============================================================
+   v38 ボトムシート入力パネル
+   ============================================================ */
+.v38-panel-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.28);
+  z-index: 9000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+}
+.v38-panel-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.v38-panel {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 9100;
+  background: #ffffff;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  box-shadow: 0 -8px 28px rgba(0,0,0,0.22);
+  transform: translateY(100%);
+  transition: transform 0.22s cubic-bezier(.22,.9,.3,1);
+  display: flex;
+  flex-direction: column;
+  max-height: 78vh;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.v38-panel.is-open {
+  transform: translateY(0);
+}
+.v38-panel-handle {
+  width: 44px; height: 5px;
+  background: #d8e0db;
+  border-radius: 3px;
+  margin: 8px auto 4px;
+  flex: 0 0 auto;
+}
+.v38-panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 16px 10px;
+  border-bottom: 1px solid #eef2ef;
+  flex: 0 0 auto;
+}
+.v38-panel-head-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.v38-ph-hole {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--v31-accent, #2d9d5f);
+  letter-spacing: -0.02em;
+}
+.v38-ph-par {
+  font-size: 13px;
+  font-weight: 700;
+  background: #f0f4f1;
+  color: #2a4a36;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+.v38-ph-player {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1a2620;
+}
+.v38-panel-head-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.v38-ph-score-lbl {
+  font-size: 11px;
+  color: #6a7d72;
+  font-weight: 700;
+}
+.v38-ph-score {
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--v31-accent-deep, #1f7a48);
+  min-width: 40px;
+  text-align: center;
+}
+.v38-panel-close {
+  background: #f0f4f1;
+  border: 1.5px solid #c8d6cd;
+  border-radius: 12px;
+  font-size: 24px;
+  font-weight: 900;
+  color: #4a5a52;
+  width: 42px; height: 42px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.v38-panel-close:active { background: #d8e2dc; }
+.v38-panel-mode-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 8px 16px 6px;
+  border-bottom: 1px solid #eef2ef;
+  flex: 0 0 auto;
+}
+.v38-pmt-btn {
+  flex: 1 1 auto;
+  background: #f4f8f6;
+  border: 1.5px solid #d8e2dc;
+  border-radius: 10px;
+  padding: 9px 4px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #4a5a52;
+  cursor: pointer;
+  touch-action: manipulation;
+  min-height: 40px;
+}
+.v38-pmt-btn:active { transform: scale(0.96); }
+.v38-pmt-btn.is-active {
+  background: var(--v31-accent, #2d9d5f);
+  color: #ffffff;
+  border-color: var(--v31-accent-deep, #1f7a48);
+  box-shadow: 0 2px 8px rgba(45,157,95,0.32);
+}
+
+/* パネル本体 */
+.v38-panel-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 14px 14px 10px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* --- モード別UI: シンプル(天気予報パネル風) --- */
+.v38-simple-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.v38-simple-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: 2px solid #d8e2dc;
+  border-radius: 14px;
+  padding: 14px 4px;
+  min-height: 80px;
+  font-family: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 0.06s, background 0.12s, border-color 0.12s;
+}
+.v38-simple-btn:active { transform: scale(0.95); }
+.v38-simple-btn .v38-sb-val {
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1;
+  color: #1a2620;
+}
+.v38-simple-btn .v38-sb-lbl {
+  font-size: 10px;
+  font-weight: 700;
+  margin-top: 4px;
+  color: #6a7d72;
+}
+.v38-simple-btn.v38-sb-eagle { background: linear-gradient(135deg, #fff4ff, #ffe5fb); border-color: #c46bc4; }
+.v38-simple-btn.v38-sb-birdie { background: linear-gradient(135deg, #ffece8, #ffd8d0); border-color: #e25d3f; }
+.v38-simple-btn.v38-sb-par { background: linear-gradient(135deg, #f1f8f4, #dff2e6); border-color: var(--v31-accent, #2d9d5f); }
+.v38-simple-btn.v38-sb-par .v38-sb-val { color: var(--v31-accent-deep, #1f7a48); }
+.v38-simple-btn.v38-sb-bogey { background: linear-gradient(135deg, #f0f4ff, #d8e3ff); border-color: #5074d0; }
+.v38-simple-btn.v38-sb-dbogey { background: linear-gradient(135deg, #f4eef9, #e1d4ee); border-color: #7848b0; }
+
+.v38-simple-row2 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.v38-simple-row2 .v38-simple-btn {
+  min-height: 60px;
+}
+.v38-simple-row2 .v38-sb-val { font-size: 22px; }
+
+.v38-quick-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 6px;
+}
+.v38-quick-btn {
+  background: #f4f8f6;
+  border: 2px solid #c8d6cd;
+  border-radius: 12px;
+  padding: 12px 6px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #2a4a36;
+  cursor: pointer;
+  touch-action: manipulation;
+  min-height: 50px;
+}
+.v38-quick-btn:active { transform: scale(0.96); }
+.v38-quick-btn.v38-qb-clear { background: #fff0f0; border-color: #e8a3a3; color: #8a3030; }
+
+/* --- モード別UI: カウンター(巨大±) --- */
+.v38-counter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 10px 0 14px;
+}
+.v38-counter-btn {
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  border: 3px solid var(--v31-accent, #2d9d5f);
+  background: #ffffff;
+  font-size: 54px;
+  font-weight: 900;
+  color: var(--v31-accent-deep, #1f7a48);
+  cursor: pointer;
+  touch-action: manipulation;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  box-shadow: 0 3px 10px rgba(45,157,95,0.18);
+}
+.v38-counter-btn.v38-cb-minus {
+  color: #b03030;
+  border-color: #d05050;
+  box-shadow: 0 3px 10px rgba(208,80,80,0.18);
+}
+.v38-counter-btn:active { transform: scale(0.94); box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+.v38-counter-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 110px;
+}
+.v38-counter-display .v38-cd-val {
+  font-size: 64px;
+  font-weight: 900;
+  color: #1a2620;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+.v38-counter-display .v38-cd-lbl {
+  font-size: 12px;
+  font-weight: 700;
+  color: #6a7d72;
+  margin-top: 6px;
+}
+
+/* --- モード別UI: ストローク+パット(数字キーパッド) --- */
+.v38-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+  margin-bottom: 10px;
+}
+.v38-key {
+  background: #ffffff;
+  border: 2px solid #d8e2dc;
+  border-radius: 14px;
+  font-size: 28px;
+  font-weight: 900;
+  color: #1a2620;
+  padding: 16px 4px;
+  cursor: pointer;
+  touch-action: manipulation;
+  min-height: 60px;
+}
+.v38-key:active { transform: scale(0.95); background: #f1f8f4; }
+.v38-key.v38-key-fn {
+  font-size: 15px;
+  background: #f4f8f6;
+}
+.v38-key.v38-key-clear { color: #b03030; background: #fff0f0; border-color: #e8a3a3; }
+.v38-key.v38-key-par {
+  color: #ffffff;
+  background: var(--v31-accent, #2d9d5f);
+  border-color: var(--v31-accent-deep, #1f7a48);
+}
+
+.v38-putt-block {
+  border-top: 2px dashed #d8e2dc;
+  padding-top: 12px;
+  margin-top: 8px;
+}
+.v38-putt-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.v38-putt-head-lbl {
+  font-size: 13px;
+  font-weight: 800;
+  color: #2a4a36;
+}
+.v38-putt-head-val {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--v31-accent-deep, #1f7a48);
+}
+.v38-putt-btns {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+}
+.v38-pb {
+  background: #ffffff;
+  border: 2px solid #d8e2dc;
+  border-radius: 10px;
+  padding: 10px 2px;
+  font-size: 18px;
+  font-weight: 900;
+  cursor: pointer;
+  touch-action: manipulation;
+  min-height: 48px;
+}
+.v38-pb:active { transform: scale(0.95); background: #f1f8f4; }
+.v38-pb.is-active {
+  background: var(--v31-accent, #2d9d5f);
+  color: #ffffff;
+  border-color: var(--v31-accent-deep, #1f7a48);
+}
+
+/* パネル下部ナビ */
+.v38-panel-foot {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 5px;
+  padding: 8px 10px calc(10px + env(safe-area-inset-bottom));
+  border-top: 1px solid #eef2ef;
+  background: #fafcfb;
+  flex: 0 0 auto;
+}
+.v38-pf-btn {
+  background: #ffffff;
+  border: 1.5px solid #c8d6cd;
+  border-radius: 10px;
+  padding: 10px 2px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #2a4a36;
+  cursor: pointer;
+  touch-action: manipulation;
+  min-height: 44px;
+}
+.v38-pf-btn:active { transform: scale(0.96); background: #f1f8f4; }
+.v38-pf-btn.v38-pf-next {
+  background: var(--v31-accent, #2d9d5f);
+  color: #ffffff;
+  border-color: var(--v31-accent-deep, #1f7a48);
+}
+
+/* セル直接編集インラインUI を v38 では使わない(パネル経由) */
+.v31-inline-edit,
+.v31-inline-quick {
+  display: none !important;
 }
 
 </style>
@@ -6179,21 +6721,62 @@ var qrcode = function() {
 <div class="modal-backdrop" id="scoreModal">
   <div class="modal v31-modal">
 
-    <!-- v31 モーダルヘッダー -->
-    <div class="v31-mh">
-      <div class="v31-mh-title" id="scoreModalTitle">スコア入力</div>
-      <div class="v31-mh-meta">
-        <span class="v31-mh-pm">⛳ PM <b id="v31ModalPm">— : —</b></span>
-        <span class="v31-mh-mode" id="v31ModalModeBadge">🏌️ 一般</span>
-        <span class="v31-mh-mode v32-mh-holes" id="v32ModalHolesBadge">🏁 18H</span>
-        <button class="modal-close v31-mh-close" data-close type="button">×</button>
+    <!-- v38: ラウンド設定ダッシュボード(モーダル上部・最優先表示) -->
+    <div class="v38-dash">
+      <div class="v38-dash-row">
+        <button class="v38-dash-card v38-dc-tee" id="v38DashTee" type="button">
+          <span class="v38-dc-ico">⛳</span>
+          <span class="v38-dc-body">
+            <span class="v38-dc-label">使用ティー</span>
+            <span class="v38-dc-value" id="v38DashTeeVal">REG</span>
+          </span>
+        </button>
+        <button class="v38-dash-card v38-dc-disp" id="v38DashDisp" type="button">
+          <span class="v38-dc-ico">🔢</span>
+          <span class="v38-dc-body">
+            <span class="v38-dc-label">スコア表示</span>
+            <span class="v38-dc-value" id="v38DashDispVal">数字</span>
+          </span>
+        </button>
+        <div class="v38-dash-card v38-dc-pm v38-dc-highlight">
+          <span class="v38-dc-ico">⏰</span>
+          <span class="v38-dc-body">
+            <span class="v38-dc-label">後半スタート</span>
+            <span class="v38-dc-value" id="v38DashPm">— : —</span>
+          </span>
+        </div>
+        <div class="v38-dash-card v38-dc-locker">
+          <span class="v38-dc-ico">🔐</span>
+          <span class="v38-dc-body">
+            <span class="v38-dc-label">ロッカー</span>
+            <span class="v38-dc-value" id="v38DashLocker">—</span>
+          </span>
+        </div>
+        <div class="v38-dash-card v38-dc-mode">
+          <span class="v38-dc-ico">🏌️</span>
+          <span class="v38-dc-body">
+            <span class="v38-dc-label">モード</span>
+            <span class="v38-dc-value">
+              <span id="v38DashGame">一般</span>
+              <span class="v38-dc-sep">·</span>
+              <span id="v38DashHoles">18H</span>
+              <span class="v38-dc-sep">·</span>
+              <span id="v38DashInput">シンプル</span>
+            </span>
+          </span>
+        </div>
+        <button class="v38-dash-close" data-close type="button" aria-label="閉じる">×</button>
       </div>
-    </div>
-
-    <!-- v36: デュアル入力方式 — 自動保存を明示 -->
-    <div class="v34-edit-hint v36-edit-hint" id="v34EditHint">
-      <span class="v34-eh-ico">✏️</span>
-      <span class="v34-eh-text">セルを直接タップして修正、または下のボタンで連続入力（入力した瞬間に自動保存）</span>
+      <div class="v38-dash-hint">
+        <span>💡 セルをタップ → 下から入力パネルが現れます（自動保存）</span>
+      </div>
+      <!-- v38 聖域: 旧IDをここに退避(JS互換のため) -->
+      <span class="v38-sanctuary-hidden" aria-hidden="true">
+        <span id="scoreModalTitle">スコア入力</span>
+        <span id="v31ModalPm">— : —</span>
+        <span id="v31ModalModeBadge">🏌️ 一般</span>
+        <span id="v32ModalHolesBadge">🏁 18H</span>
+      </span>
     </div>
 
     <!-- ============================================================
@@ -6207,51 +6790,27 @@ var qrcode = function() {
       </div>
     </div>
 
-    <!-- v33: 聖域 — 計算ロジックが参照する DOM を隠して保持 -->
+    <!-- v33+v38: 聖域 — 計算ロジック・旧ボタンIDをすべて退避 -->
     <div class="v31-sanctuary" aria-hidden="true">
       <span id="modalHoleNum">1H</span>
       <span id="modalHolePar"></span>
       <span id="modalStroke">0</span>
       <span id="modalStrokeDiff"></span>
       <div id="modalPlayerTabs"></div>
+      <!-- v38: 旧6ボタン群IDを聖域に退避(JS互換確保) -->
+      <button id="v31ShotPlus" type="button"></button>
+      <button id="v31ShotMinus" type="button"></button>
+      <button id="v31PuttPlus" type="button"></button>
+      <button id="v31PuttMinus" type="button"></button>
+      <button id="v31PlayerNext" type="button"></button>
+      <button id="v31Confirm" type="button"></button>
+      <span id="v33HoleBadge">1H</span>
+      <span id="v33ParBadge">PAR 4</span>
+      <span id="v33PlayerBadge">—</span>
+      <span id="v33StrokeBadge">0</span>
+      <span id="v34EditHint"></span>
     </div>
 
-    <!-- v33: 下部 — 2列3行 右寄せ親指グリッド -->
-    <div class="v31-modal-bottom v33-modal-bottom">
-      <!-- <div class="v33-thumb-info">
-        <div class="v33-ti-row">
-          <span class="v33-ti-hole" id="v33HoleBadge">1H</span>
-          <span class="v33-ti-par" id="v33ParBadge">PAR 4</span>
-        </div>
-        <div class="v33-ti-row v33-ti-current">
-          <span class="v33-ti-name" id="v33PlayerBadge">—</span>
-          <span class="v33-ti-stroke" id="v33StrokeBadge">0</span>
-        </div>
-      </div> -->
-      <!-- v35: 3列2行 右寄せ親指グリッド
-           上段: [ストローク+] [プレイヤー移動] [パット+]
-           下段: [ストローク-] [次のホールへ]    [パット-] -->
-      <div class="v31-thumb-grid v33-thumb-grid v35-thumb-grid">
-        <button type="button" class="v31-tg v33-tg v35-tg v35-tg-shot-plus v31-tg-shot-plus" id="v31ShotPlus">
-          <span class="v31-tg-op">＋</span><span class="v31-tg-lbl">ストローク</span>
-        </button>
-        <button type="button" class="v31-tg v33-tg v35-tg v35-tg-player v31-tg-player" id="v31PlayerNext">
-          <span class="v31-tg-op">👥</span><span class="v31-tg-lbl">プレイヤー<br>移動</span>
-        </button>
-        <button type="button" class="v31-tg v33-tg v35-tg v35-tg-putt-plus v31-tg-putt-plus" id="v31PuttPlus">
-          <span class="v31-tg-op">＋</span><span class="v31-tg-lbl">パット</span>
-        </button>
-        <button type="button" class="v31-tg v33-tg v35-tg v35-tg-shot-minus v31-tg-shot-minus" id="v31ShotMinus">
-          <span class="v31-tg-op">−</span><span class="v31-tg-lbl">ストローク</span>
-        </button>
-        <button type="button" class="v31-tg v33-tg v35-tg v35-tg-confirm v31-tg-confirm v36-tg-next" id="v31Confirm">
-          <span class="v31-tg-op">▶</span><span class="v31-tg-lbl">次の<br>ホールへ</span>
-        </button>
-        <button type="button" class="v31-tg v33-tg v35-tg v35-tg-putt-minus v31-tg-putt-minus" id="v31PuttMinus">
-          <span class="v31-tg-op">−</span><span class="v31-tg-lbl">パット</span>
-        </button>
-      </div>
-    </div>
 
     <!-- ============================================================
          聖域 — v16 計算エンジンが参照する DOM（非表示で保持）
@@ -6278,6 +6837,41 @@ var qrcode = function() {
 
   </div>
 </div>
+
+<!-- ============================================================
+     v38: セルタップ → ボトムシート入力パネル
+     入力モード(シンプル/カウンター/ストローク+パット)で内容を動的に切替
+     ============================================================ -->
+<div class="v38-panel" id="v38InputPanel" aria-hidden="true">
+  <div class="v38-panel-handle"></div>
+  <div class="v38-panel-head">
+    <div class="v38-panel-head-left">
+      <span class="v38-ph-hole" id="v38PanelHole">1H</span>
+      <span class="v38-ph-par" id="v38PanelPar">PAR 4</span>
+      <span class="v38-ph-player" id="v38PanelPlayer">—</span>
+    </div>
+    <div class="v38-panel-head-right">
+      <span class="v38-ph-score-lbl">現在</span>
+      <span class="v38-ph-score" id="v38PanelScore">—</span>
+      <button type="button" class="v38-panel-close" id="v38PanelClose" aria-label="閉じる">×</button>
+    </div>
+  </div>
+  <div class="v38-panel-mode-tabs" id="v38PanelModeTabs">
+    <button type="button" class="v38-pmt-btn" data-pmode="simple">天気予報式</button>
+    <button type="button" class="v38-pmt-btn" data-pmode="counter">カウンター</button>
+    <button type="button" class="v38-pmt-btn" data-pmode="stroke_putt">数字+パット</button>
+  </div>
+  <div class="v38-panel-body" id="v38PanelBody">
+    <!-- 動的にモード別UIを描画 -->
+  </div>
+  <div class="v38-panel-foot">
+    <button type="button" class="v38-pf-btn v38-pf-prev" id="v38PanelPrevHole">◀ 前ホール</button>
+    <button type="button" class="v38-pf-btn v38-pf-player" id="v38PanelPrevPlayer">◀ 前の人</button>
+    <button type="button" class="v38-pf-btn v38-pf-player" id="v38PanelNextPlayer">次の人 ▶</button>
+    <button type="button" class="v38-pf-btn v38-pf-next" id="v38PanelNextHole">次ホール ▶</button>
+  </div>
+</div>
+<div class="v38-panel-backdrop" id="v38PanelBackdrop" aria-hidden="true"></div>
 
 <!-- モーダル: 招待QR -->
 <div class="modal-backdrop" id="qrModal">
@@ -9730,7 +10324,7 @@ function boot() {
   bindEvents();
   applyInputMode();  /* v14: 起動時に入力モードを適用（body class設定など） */
   Router.handleInitial();
-  console.log('G-WORLD v37.0 (ボタン縦幅2/3+下20px余白+画面内収容保証)', new Date().toISOString());
+  console.log('G-WORLD v38.0 (V37基盤 + ダッシュボード + ボトムシートパネル)', new Date().toISOString());
 }
 
 if (document.readyState === 'loading') {
@@ -9739,6 +10333,508 @@ if (document.readyState === 'loading') {
   boot();
 }
 
+
+
+/* ============================================================
+   v38: UI刷新 — セルタップ式ボトムシート + ダッシュボード
+   v16計算エンジンは無変更。すべて v36UpdateScore 経由で保存。
+   ============================================================ */
+
+const V38 = {
+  panelOpen: false,
+  pi: 0,
+  hi: 0,
+  // パネル内モード(ダッシュボードと連動): 'simple' | 'counter' | 'stroke_putt'
+  inputMode: 'simple',
+};
+
+/* --- 入力モード判定(stroke_putt は State.ui.inputMode='simple' かつ自分セルで有効) --- */
+function v38GetInputMode() {
+  // V38.inputMode を最優先(ユーザがパネル内タブで切り替えたもの)
+  return V38.inputMode || State.ui.inputMode || 'simple';
+}
+
+/* --- ダッシュボード更新 --- */
+function v38UpdateDashboard() {
+  try {
+    // ティー
+    const teeVal = State.ui.useLadiesTee ? 'LADIES' : 'REG';
+    const teeEl = document.getElementById('v38DashTeeVal');
+    if (teeEl) teeEl.textContent = teeVal;
+
+    // スコア表示モード
+    const disp = State.ui.displayMode || 'number';
+    const dispLbl = disp === 'symbol' ? '記号' : (disp === 'diff' ? '±差分' : '数字');
+    const dispEl = document.getElementById('v38DashDispVal');
+    if (dispEl) dispEl.textContent = dispLbl;
+
+    // PMスタート
+    const pmEl = document.getElementById('v38DashPm');
+    if (pmEl) pmEl.textContent = State.round.pmStart || '— : —';
+
+    // ロッカー
+    const lk = (State.round.lockerNum || '').toString().trim();
+    const lkEl = document.getElementById('v38DashLocker');
+    if (lkEl) lkEl.textContent = lk || '—';
+
+    // モード
+    const gameLbl = (State.ui.gameMode === 'beginner') ? '初心者' : '一般';
+    const gEl = document.getElementById('v38DashGame');
+    if (gEl) gEl.textContent = gameLbl;
+
+    const hLbl = (State.round.holesMode === '9') ? '9H' : '18H';
+    const hEl = document.getElementById('v38DashHoles');
+    if (hEl) hEl.textContent = hLbl;
+
+    const iLbl = (v38GetInputMode() === 'counter') ? 'カウンター'
+               : (v38GetInputMode() === 'stroke_putt') ? '数字+パット'
+               : 'シンプル';
+    const iEl = document.getElementById('v38DashInput');
+    if (iEl) iEl.textContent = iLbl;
+  } catch(e) { /* noop */ }
+}
+
+/* --- ティー切替 --- */
+function v38ToggleTee() {
+  State.ui.useLadiesTee = !State.ui.useLadiesTee;
+  try { Storage.saveState(); } catch(e) {}
+  try { renderTopAndHero(); } catch(e) {}
+  try { renderTable(); } catch(e) {}
+  v38UpdateDashboard();
+  showToast(State.ui.useLadiesTee ? '⛳ LADIES TEE に切替' : '⛳ REG TEE に切替');
+}
+
+/* --- 表示モード切替(数字→±→記号→数字) --- */
+function v38CycleDisplayMode() {
+  const order = ['number', 'diff', 'symbol'];
+  const cur = State.ui.displayMode || 'number';
+  const next = order[(order.indexOf(cur) + 1) % order.length];
+  State.ui.displayMode = next;
+  try { Storage.saveState(); } catch(e) {}
+  try { renderTable(); } catch(e) {}
+  v38UpdateDashboard();
+  const lbl = next === 'symbol' ? '記号' : (next === 'diff' ? '±差分' : '数字');
+  showToast('🔢 スコア表示: ' + lbl);
+}
+
+/* ============================================================
+   v38 ボトムシートパネル — open/close
+   ============================================================ */
+function v38OpenInputPanel(pi, hi) {
+  // ロック判定
+  try {
+    if (v32IsHoleLocked && v32IsHoleLocked(hi)) {
+      showToast('🏁 9Hモードでは 10H 以降は入力できません');
+      return;
+    }
+  } catch(e) {}
+  // ビギナーは自分のみ
+  if (v31IsBeginner && v31IsBeginner()) {
+    const me = State.players[pi];
+    if (!me || !me.isMe) {
+      const meIdx = State.players.findIndex(p => p.isMe);
+      if (meIdx >= 0) pi = meIdx;
+      else { showToast('🔰 自分のプレイヤーが見つかりません'); return; }
+    }
+  }
+
+  V38.pi = pi;
+  V38.hi = hi;
+  V38.inputMode = State.ui.inputMode || 'simple';
+
+  // モーダル変数同期(既存ロジックとの互換)
+  modalPlayerIdx = pi;
+  modalHole = hi + 1;
+  v35ActivePi = pi; v35ActiveHi = hi;
+  try { v32SetActiveCell(pi, hi); } catch(e) {}
+  try { v32ApplyCrossHighlight(); } catch(e) {}
+
+  // 描画
+  v38RenderPanelHead();
+  v38RenderPanelModeTabs();
+  v38RenderPanelBody();
+
+  // 開く
+  const panel = document.getElementById('v38InputPanel');
+  const bd = document.getElementById('v38PanelBackdrop');
+  if (panel) panel.classList.add('is-open');
+  if (bd) bd.classList.add('is-open');
+  V38.panelOpen = true;
+}
+
+function v38ClosePanel() {
+  const panel = document.getElementById('v38InputPanel');
+  const bd = document.getElementById('v38PanelBackdrop');
+  if (panel) panel.classList.remove('is-open');
+  if (bd) bd.classList.remove('is-open');
+  V38.panelOpen = false;
+}
+
+/* --- ヘッダー(ホール・PAR・プレイヤー・現在値) --- */
+function v38RenderPanelHead() {
+  const p = State.players[V38.pi];
+  const h = COURSE.holes[V38.hi];
+  if (!p || !h) return;
+  const cur = (p.scores[V38.hi] != null) ? p.scores[V38.hi] : null;
+
+  const setText = (id, t) => { const el = document.getElementById(id); if (el) el.textContent = t; };
+  setText('v38PanelHole', (V38.hi + 1) + 'H');
+  setText('v38PanelPar', 'PAR ' + h.par);
+  setText('v38PanelPlayer', fullName(p) || ('プレイヤー' + (V38.pi+1)));
+  setText('v38PanelScore', cur != null ? String(cur) : '—');
+}
+
+/* --- モード切替タブ(パネル内) --- */
+function v38RenderPanelModeTabs() {
+  const tabs = document.getElementById('v38PanelModeTabs');
+  if (!tabs) return;
+  const cur = v38GetInputMode();
+  tabs.querySelectorAll('.v38-pmt-btn').forEach(b => {
+    if (b.dataset.pmode === cur) b.classList.add('is-active');
+    else b.classList.remove('is-active');
+  });
+}
+
+/* --- 本体(モード別UI) --- */
+function v38RenderPanelBody() {
+  const body = document.getElementById('v38PanelBody');
+  if (!body) return;
+  const mode = v38GetInputMode();
+  if (mode === 'counter') {
+    body.innerHTML = v38BuildCounterHtml();
+  } else if (mode === 'stroke_putt') {
+    body.innerHTML = v38BuildKeypadHtml();
+  } else {
+    body.innerHTML = v38BuildSimpleHtml();
+  }
+  v38BindPanelBodyEvents(body, mode);
+}
+
+/* === シンプルモード: 天気予報パネル風 === */
+function v38BuildSimpleHtml() {
+  const h = COURSE.holes[V38.hi];
+  const par = h ? h.par : 4;
+  // 上段: ±2, ±1, 0(PAR), の主要5ボタン
+  // 下段: −3, −2 を超える稀ケース用補助 + クリア + 数値直接
+  const items = [
+    { diff: -2, lbl: 'イーグル', cls: 'v38-sb-eagle', val: par - 2 },
+    { diff: -1, lbl: 'バーディ', cls: 'v38-sb-birdie', val: par - 1 },
+    { diff:  0, lbl: 'パー',     cls: 'v38-sb-par',    val: par     },
+    { diff:  1, lbl: 'ボギー',   cls: 'v38-sb-bogey',  val: par + 1 },
+    { diff:  2, lbl: 'Dボギー',  cls: 'v38-sb-dbogey', val: par + 2 },
+  ];
+  let h1 = '<div class="v38-simple-grid">';
+  items.forEach(it => {
+    const v = Math.max(1, it.val);
+    h1 += '<button type="button" class="v38-simple-btn ' + it.cls + '" data-sv="' + v + '">';
+    h1 += '<span class="v38-sb-val">' + v + '</span>';
+    h1 += '<span class="v38-sb-lbl">' + it.lbl + '</span>';
+    h1 += '</button>';
+  });
+  h1 += '</div>';
+  // 下段: +3 / +4 / +5 / 10
+  h1 += '<div class="v38-simple-row2">';
+  [par+3, par+4, par+5, 10].forEach(v => {
+    h1 += '<button type="button" class="v38-simple-btn" data-sv="' + v + '">';
+    h1 += '<span class="v38-sb-val">' + v + '</span>';
+    h1 += '<span class="v38-sb-lbl">+' + (v - par) + '</span>';
+    h1 += '</button>';
+  });
+  h1 += '</div>';
+  // クイック行
+  h1 += '<div class="v38-quick-row">';
+  h1 += '<button type="button" class="v38-quick-btn v38-qb-clear" data-act="clear">🗑 クリア</button>';
+  h1 += '<button type="button" class="v38-quick-btn" data-act="close">✓ 確定して閉じる</button>';
+  h1 += '</div>';
+  return h1;
+}
+
+/* === カウンターモード: 巨大±のみ === */
+function v38BuildCounterHtml() {
+  const p = State.players[V38.pi];
+  const cur = (p && p.scores[V38.hi] != null) ? p.scores[V38.hi] : 0;
+  let h = '<div class="v38-counter">';
+  h += '<button type="button" class="v38-counter-btn v38-cb-minus" data-act="minus">−</button>';
+  h += '<div class="v38-counter-display">';
+  h += '  <span class="v38-cd-val" id="v38CounterVal">' + cur + '</span>';
+  h += '  <span class="v38-cd-lbl">タップしてカウント</span>';
+  h += '</div>';
+  h += '<button type="button" class="v38-counter-btn v38-cb-plus" data-act="plus">＋</button>';
+  h += '</div>';
+  h += '<div class="v38-quick-row">';
+  h += '<button type="button" class="v38-quick-btn v38-qb-clear" data-act="clear">🗑 クリア</button>';
+  h += '<button type="button" class="v38-quick-btn" data-act="close">✓ 確定して閉じる</button>';
+  h += '</div>';
+  return h;
+}
+
+/* === ストローク+パットモード: 数字キーパッド + パット行 === */
+function v38BuildKeypadHtml() {
+  const p = State.players[V38.pi];
+  const h = COURSE.holes[V38.hi];
+  const par = h ? h.par : 4;
+  const curPutt = (p && p.putts && p.putts[V38.hi] != null) ? p.putts[V38.hi] : 0;
+  const canPutt = !v31IsBeginner() && (p.isMe || State.ui.inputMode !== 'simple');
+
+  let html = '<div class="v38-keypad">';
+  ['1','2','3','4','5','6','7','8','9'].forEach(n => {
+    html += '<button type="button" class="v38-key" data-num="' + n + '">' + n + '</button>';
+  });
+  html += '<button type="button" class="v38-key v38-key-fn v38-key-clear" data-act="clear">🗑</button>';
+  html += '<button type="button" class="v38-key" data-num="10">10</button>';
+  html += '<button type="button" class="v38-key v8-key-fn v38-key-par" data-act="par">PAR ' + par + '</button>';
+  html += '</div>';
+
+  if (canPutt) {
+    html += '<div class="v38-putt-block">';
+    html += '  <div class="v38-putt-head"><span class="v38-putt-head-lbl">🏌️ パット数</span>';
+    html += '    <span class="v38-putt-head-val" id="v38PuttVal">' + curPutt + '</span></div>';
+    html += '  <div class="v38-putt-btns">';
+    for (let i = 0; i <= 5; i++) {
+      const act = (i === curPutt) ? ' is-active' : '';
+      html += '<button type="button" class="v38-pb' + act + '" data-putt="' + i + '">' + i + '</button>';
+    }
+    html += '  </div>';
+    html += '</div>';
+  }
+
+  html += '<div class="v38-quick-row" style="margin-top:10px;">';
+  html += '<button type="button" class="v38-quick-btn v38-qb-clear" data-act="clear">🗑 スコア</button>';
+  html += '<button type="button" class="v38-quick-btn" data-act="close">✓ 確定して閉じる</button>';
+  html += '</div>';
+  return html;
+}
+
+/* --- パネル本体イベントバインド --- */
+function v38BindPanelBodyEvents(body, mode) {
+  body.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const act = btn.dataset.act;
+      const sv = btn.dataset.sv;
+      const num = btn.dataset.num;
+      const putt = btn.dataset.putt;
+
+      if (sv != null) {
+        // シンプルモード: 直接値設定
+        v36UpdateScore(V38.pi, V38.hi, { stroke: parseInt(sv, 10) });
+        v38AfterInputFeedback();
+        return;
+      }
+      if (num != null) {
+        // 数字キー
+        v36UpdateScore(V38.pi, V38.hi, { stroke: parseInt(num, 10) });
+        v38AfterInputFeedback();
+        return;
+      }
+      if (putt != null) {
+        v36UpdateScore(V38.pi, V38.hi, { putt: parseInt(putt, 10) });
+        v38AfterInputFeedback();
+        return;
+      }
+      if (act === 'plus') {
+        const p = State.players[V38.pi];
+        const cur = (p.scores[V38.hi] != null) ? p.scores[V38.hi] : 0;
+        v36UpdateScore(V38.pi, V38.hi, { stroke: Math.min(20, cur + 1) });
+        v38AfterInputFeedback();
+        return;
+      }
+      if (act === 'minus') {
+        const p = State.players[V38.pi];
+        const cur = (p.scores[V38.hi] != null) ? p.scores[V38.hi] : 0;
+        const nv = cur - 1;
+        if (nv <= 0) v36UpdateScore(V38.pi, V38.hi, { stroke: null });
+        else v36UpdateScore(V38.pi, V38.hi, { stroke: nv });
+        v38AfterInputFeedback();
+        return;
+      }
+      if (act === 'par') {
+        const h = COURSE.holes[V38.hi];
+        v36UpdateScore(V38.pi, V38.hi, { stroke: h.par });
+        v38AfterInputFeedback();
+        return;
+      }
+      if (act === 'clear') {
+        v36UpdateScore(V38.pi, V38.hi, { stroke: null });
+        v38AfterInputFeedback();
+        return;
+      }
+      if (act === 'close') {
+        v38ClosePanel();
+        return;
+      }
+    });
+  });
+}
+
+/* --- 入力後の即時フィードバック(画面更新+スコア表示) --- */
+function v38AfterInputFeedback() {
+  // 自動保存は v36UpdateScore 内で完結。ここでは UI 反映のみ。
+  try { renderTable(); } catch(e) {}
+  try { v32RenderLiveScore(); } catch(e) {}
+  try { v32ApplyCrossHighlight(); } catch(e) {}
+  v38RenderPanelHead();
+  // モード別のローカル表示更新
+  const mode = v38GetInputMode();
+  if (mode === 'counter') {
+    const p = State.players[V38.pi];
+    const cur = (p && p.scores[V38.hi] != null) ? p.scores[V38.hi] : 0;
+    const el = document.getElementById('v38CounterVal');
+    if (el) el.textContent = cur;
+  } else if (mode === 'stroke_putt') {
+    const p = State.players[V38.pi];
+    const cp = (p && p.putts && p.putts[V38.hi] != null) ? p.putts[V38.hi] : 0;
+    const el = document.getElementById('v38PuttVal');
+    if (el) el.textContent = cp;
+    // パットボタンのアクティブ状態同期
+    const body = document.getElementById('v38PanelBody');
+    if (body) {
+      body.querySelectorAll('.v38-pb').forEach(b => {
+        if (parseInt(b.dataset.putt,10) === cp) b.classList.add('is-active');
+        else b.classList.remove('is-active');
+      });
+    }
+  }
+  try { v32CheckHalfComplete(); } catch(e) {}
+}
+
+/* --- パネルナビゲーション(前/次ホール・前/次プレイヤー) --- */
+function v38PanelMoveHole(delta) {
+  const ni = V38.hi + delta;
+  if (ni < 0) { showToast('最初のホールです'); return; }
+  const maxH = (State.round.holesMode === '9') ? 9 : COURSE.holes.length;
+  if (ni >= maxH) {
+    showToast('最終ホールです');
+    return;
+  }
+  v38OpenInputPanel(V38.pi, ni);
+}
+function v38PanelMovePlayer(delta) {
+  if (v31IsBeginner()) {
+    showToast('🔰 初心者モードでは自分のみ');
+    return;
+  }
+  const n = State.players.length;
+  if (n === 0) return;
+  const ni = (V38.pi + delta + n) % n;
+  v38OpenInputPanel(ni, V38.hi);
+}
+
+/* ============================================================
+   v38 セルタップを v31OpenInlineEdit から v38OpenInputPanel へ完全切り替え
+   ============================================================ */
+function v38OverrideCellTap() {
+  // v31OpenInlineEdit を v38OpenInputPanel ラッパに差し替え
+  // (既存 renderTable 内の呼び出しはそのまま、関数だけ置換)
+  if (typeof window !== 'undefined') {
+    window.v31OpenInlineEdit = function(cell, pi, hi) {
+      // セルパラメータは無視してパネル起動
+      v38OpenInputPanel(pi, hi);
+    };
+  }
+}
+
+/* ============================================================
+   v38 イベント結線
+   ============================================================ */
+function v38BindEvents() {
+  // ダッシュボードカード
+  const teeBtn = document.getElementById('v38DashTee');
+  if (teeBtn) teeBtn.addEventListener('click', v38ToggleTee);
+  const dispBtn = document.getElementById('v38DashDisp');
+  if (dispBtn) dispBtn.addEventListener('click', v38CycleDisplayMode);
+
+  // パネル モードタブ
+  const tabs = document.getElementById('v38PanelModeTabs');
+  if (tabs) {
+    tabs.addEventListener('click', (e) => {
+      const b = e.target.closest('.v38-pmt-btn');
+      if (!b) return;
+      const m = b.dataset.pmode;
+      V38.inputMode = m;
+      // シンプル/カウンター は State.ui.inputMode にも反映(stroke_putt はパネル限定)
+      if (m === 'simple' || m === 'counter') {
+        State.ui.inputMode = m;
+        try { Storage.saveState(); } catch(e) {}
+      }
+      v38UpdateDashboard();
+      v38RenderPanelModeTabs();
+      v38RenderPanelBody();
+    });
+  }
+
+  // 閉じる
+  const closeBtn = document.getElementById('v38PanelClose');
+  if (closeBtn) closeBtn.addEventListener('click', v38ClosePanel);
+  const bd = document.getElementById('v38PanelBackdrop');
+  if (bd) bd.addEventListener('click', v38ClosePanel);
+
+  // フットナビ
+  const ph = document.getElementById('v38PanelPrevHole');
+  if (ph) ph.addEventListener('click', () => v38PanelMoveHole(-1));
+  const nh = document.getElementById('v38PanelNextHole');
+  if (nh) nh.addEventListener('click', () => v38PanelMoveHole(1));
+  const pp = document.getElementById('v38PanelPrevPlayer');
+  if (pp) pp.addEventListener('click', () => v38PanelMovePlayer(-1));
+  const np = document.getElementById('v38PanelNextPlayer');
+  if (np) np.addEventListener('click', () => v38PanelMovePlayer(1));
+
+  // ロッカー入力変更時にダッシュボードも更新
+  const lk = document.getElementById('v31LockerInput');
+  if (lk) {
+    ['input','change','blur'].forEach(ev =>
+      lk.addEventListener(ev, () => { v38UpdateDashboard(); })
+    );
+  }
+
+  // セルタップを上書き
+  v38OverrideCellTap();
+}
+
+/* ============================================================
+   v38 初期化フック(boot後)
+   ============================================================ */
+function v38Boot() {
+  v38BindEvents();
+  v38UpdateDashboard();
+  // 既存の inputMode が未定義なら 'simple' を強制
+  if (!State.ui.inputMode) State.ui.inputMode = 'simple';
+  V38.inputMode = State.ui.inputMode;
+}
+
+/* DOMContentLoaded 後に確実に実行 */
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(v38Boot, 100);
+  });
+} else {
+  setTimeout(v38Boot, 100);
+}
+
+/* PMスタート・ロッカー・ティー・表示モードが変わったら都度更新 */
+(function v38InstallObservers() {
+  // saveSettings 後のフック
+  if (typeof window !== 'undefined') {
+    const origSave = window.saveSettings;
+    if (typeof origSave === 'function') {
+      window.saveSettings = function() {
+        const r = origSave.apply(this, arguments);
+        try { v38UpdateDashboard(); } catch(e) {}
+        return r;
+      };
+    }
+  }
+  // PMスタート変更時(v34PmAdd45 / v34PmClear)
+  const obsIds = ['v34PmAdd45', 'v34PmClear', 'v31PmStartInput', 'v32MainPmStart'];
+  obsIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      ['click','input','change','blur'].forEach(ev =>
+        el.addEventListener(ev, () => setTimeout(v38UpdateDashboard, 50))
+      );
+    }
+  });
+})();
 
 </script>
 
