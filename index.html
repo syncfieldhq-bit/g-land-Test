@@ -2827,12 +2827,17 @@ body.v32-holes-9 .v32-mh-holes {
   color: #fff !important; font-weight: 900;
 }
 
-/* 親指グリッド 2列3行 右寄せ */
+/* 親指グリッド 2行3列・右寄せ・サイズ固定 */
 .v33-modal-bottom {
   flex: 0 0 auto !important;
   padding: 10px 12px calc(20px + env(safe-area-inset-bottom)) !important;
   background: linear-gradient(to bottom, var(--v31-base) 0%, var(--v31-base-soft) 100%);
   border-top: 2px solid var(--v31-accent-soft);
+  
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 8px !important;
+  margin-left: 33% !important;
 }
 .v33-thumb-info {
   display: flex; flex-direction: column; gap: 4px;
