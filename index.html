@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <!-- 監督指示 §3: ピンチイン・アウト完全許可 -->
-<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=5.0,user-scalable=yes,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#0F5132">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>G-WORLD v29.0 | 六甲国際パブリックコース</title>
+<title>G-WORLD v30.0 | 六甲国際パブリックコース</title>
 <style>
 /* =================================================================
    G-WORLD v12.0 - 配布版 Final
@@ -2081,6 +2081,311 @@ body.input-mode-counter #btnQuickPutt { display: none; }
 .screen { padding-bottom: 96px !important; }
 /* モーダル群はフッターより下の z-index には行かない（モーダル前面維持） */
 .modal-backdrop, .modal { z-index: 10000 !important; }
+
+
+/* ============================================================
+   v30: 2色テーマ + ダブルタップ拡大無効 + 直接編集 + モード切替
+   ============================================================ */
+:root {
+  --v30-base: #ffffff;
+  --v30-base-soft: #f7faf8;
+  --v30-base-line: #e2ebe5;
+  --v30-accent: #2d9d5f;
+  --v30-accent-deep: #1f7a47;
+  --v30-accent-soft: #d6efe2;
+  --v30-ink: #0f2a1a;
+  --v30-ink-soft: #5a7a68;
+}
+
+/* ダブルタップ拡大の物理無効化 */
+html, body {
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+button, .vtg-btn, .v27-mini-btn, .v27-start-btn, .v27-nav-btn,
+.v30-sm-btn, .v30-mode-toggle button, .vlc-btn, .footer-tab,
+.score-cell, .v30-inline-edit {
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* モード切替トグル */
+.v30-mode-section {
+  margin: 14px 14px 8px;
+  padding: 10px 12px 12px;
+  background: var(--v30-base);
+  border: 2px solid var(--v30-accent);
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(45,157,95,.10);
+}
+.v30-mode-label {
+  font-size: 13px; font-weight: 800;
+  color: var(--v30-accent-deep);
+  margin-bottom: 8px;
+  letter-spacing: .04em;
+}
+.v30-mode-toggle {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.v30-mode-toggle button {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 10px;
+  background: var(--v30-base-soft);
+  border: 2px solid var(--v30-base-line);
+  border-radius: 12px;
+  color: var(--v30-ink-soft);
+  font-weight: 800;
+  text-align: left;
+  transition: all .15s;
+  cursor: pointer;
+}
+.v30-mode-toggle button .v30-mode-ico { font-size: 26px; line-height: 1; }
+.v30-mode-toggle button .v30-mode-name {
+  display: flex; flex-direction: column; line-height: 1.2;
+  font-size: 15px;
+}
+.v30-mode-toggle button .v30-mode-name small {
+  font-size: 10px; font-weight: 600; color: var(--v30-ink-soft);
+  margin-top: 2px;
+}
+.v30-mode-toggle button.active {
+  background: var(--v30-accent);
+  border-color: var(--v30-accent-deep);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(45,157,95,.32);
+}
+.v30-mode-toggle button.active .v30-mode-name small {
+  color: rgba(255,255,255,.85);
+}
+
+/* ゲーム設定メニュー */
+.v30-settings-menu {
+  margin: 14px 14px 20px;
+  padding: 10px 12px 12px;
+  background: var(--v30-base);
+  border: 1.5px solid var(--v30-base-line);
+  border-radius: 14px;
+}
+.v30-sm-title {
+  font-size: 13px; font-weight: 800;
+  color: var(--v30-accent-deep);
+  margin-bottom: 8px;
+  letter-spacing: .04em;
+}
+.v30-sm-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.v30-sm-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 10px;
+  background: var(--v30-base-soft);
+  border: 1.5px solid var(--v30-base-line);
+  border-radius: 12px;
+  color: var(--v30-ink);
+  font-weight: 700;
+  text-align: left;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.v30-sm-btn:active {
+  background: var(--v30-accent-soft);
+  border-color: var(--v30-accent);
+  transform: translateY(1px);
+}
+.v30-sm-btn .v30-sm-ico { font-size: 22px; line-height: 1; }
+.v30-sm-btn .v30-sm-lbl { line-height: 1.25; }
+.v30-sm-btn .v30-sm-lbl small {
+  font-size: 10px; font-weight: 500; color: var(--v30-ink-soft);
+}
+
+/* モーダル: スコアテーブル最大化（top 80% / bottom 20%） */
+.modal-v27 .modal-v27-body {
+  display: flex !important;
+  flex-direction: column;
+  height: 100% !important;
+}
+.modal-v27 .modal-v27-top {
+  flex: 4 1 0% !important;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.modal-v27 .v27-modal-tablewrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+.modal-v27 .v27-modal-scroll {
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.modal-v27 #modalScoreTable {
+  font-size: 15px !important;
+  min-width: 100%;
+}
+.modal-v27 #modalScoreTable .score-cell {
+  font-size: 17px !important;
+  font-weight: 800;
+  min-width: 42px;
+  padding: 8px 6px;
+}
+.modal-v27 .modal-v27-bottom {
+  flex: 1 1 0% !important;
+  min-height: 0;
+  display: grid !important;
+  grid-template-columns: 88px 1fr !important;
+  gap: 8px;
+  padding: 6px 10px 10px;
+}
+
+/* 直接編集 inline-edit */
+.score-cell { cursor: pointer; position: relative; }
+.score-cell.v30-editing {
+  background: var(--v30-accent) !important;
+  color: #fff !important;
+  outline: 3px solid var(--v30-accent-deep);
+  outline-offset: -2px;
+  z-index: 5;
+}
+.v30-inline-edit {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  border: none;
+  background: var(--v30-accent);
+  color: #fff;
+  font-size: 20px;
+  font-weight: 900;
+  outline: none;
+  padding: 0;
+  margin: 0;
+  z-index: 10;
+  caret-color: #fff;
+}
+.v30-inline-edit::-webkit-outer-spin-button,
+.v30-inline-edit::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.v30-inline-quick {
+  position: absolute;
+  background: var(--v30-base);
+  border: 2px solid var(--v30-accent);
+  border-radius: 10px;
+  padding: 6px;
+  display: flex;
+  gap: 4px;
+  z-index: 11;
+  box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  white-space: nowrap;
+}
+.v30-inline-quick button {
+  background: var(--v30-base);
+  border: 1.5px solid var(--v30-base-line);
+  color: var(--v30-ink);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.v30-inline-quick button:active {
+  background: var(--v30-accent);
+  color: #fff;
+}
+
+/* モーダルモードインジケータ */
+.v30-modal-mode-indicator {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 8px;
+  background: var(--v30-accent-soft);
+  border: 1.5px solid var(--v30-accent);
+  border-radius: 10px;
+  color: var(--v30-accent-deep);
+}
+.v30-modal-mode-indicator.beginner {
+  background: #fff4d6;
+  border-color: #f0b945;
+  color: #8a5b00;
+}
+.v30-modal-mode-indicator .v30-mmi-ico { font-size: 22px; }
+.v30-modal-mode-indicator .v30-mmi-text {
+  display: flex; flex-direction: column; line-height: 1.15;
+}
+.v30-modal-mode-indicator .v30-mmi-text small {
+  font-size: 9px; font-weight: 700; opacity: .8;
+}
+.v30-modal-mode-indicator .v30-mmi-text b {
+  font-size: 14px; font-weight: 900;
+}
+
+/* ビギナーモード時のモーダル外観 */
+body.v30-mode-beginner .modal-v27 .vtg-putt-plus,
+body.v30-mode-beginner .modal-v27 .vtg-putt-minus,
+body.v30-mode-beginner .modal-v27 .vtg-player {
+  visibility: hidden;
+  pointer-events: none;
+}
+body.v30-mode-beginner .modal-v27 .v27-thumb-grid {
+  grid-template-columns: 1fr 1fr !important;
+  grid-template-rows: 1fr 1fr 1fr !important;
+}
+body.v30-mode-beginner .modal-v27 .vtg-shot-plus { grid-column: 1/3; grid-row: 1; }
+body.v30-mode-beginner .modal-v27 .vtg-shot-minus { grid-column: 1/3; grid-row: 2; }
+body.v30-mode-beginner .modal-v27 .vtg-confirm { grid-column: 1/3; grid-row: 3; }
+body.v30-mode-beginner .modal-v27 .player-tabs > *:not(.is-me) {
+  display: none !important;
+}
+
+/* パット入力の制限 */
+body.v30-mode-standard .modal-v27 .vtg-putt-plus.v30-putt-disabled,
+body.v30-mode-standard .modal-v27 .vtg-putt-minus.v30-putt-disabled {
+  opacity: 0.35;
+  pointer-events: none;
+  filter: grayscale(1);
+}
+
+/* PMピッカー info */
+.v30-pmpicker-info {
+  text-align: center;
+  font-size: 12px;
+  color: var(--v30-ink-soft);
+  background: var(--v30-base-soft);
+  padding: 8px 10px;
+  border-radius: 8px;
+  margin: 8px 0;
+  border: 1px dashed var(--v30-base-line);
+}
+
+/* フッターのz-index最大化 */
+.footer-bar {
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+}
+.modal-backdrop.show { z-index: 10000 !important; }
+
+/* 2色化 */
+.v27-start-btn {
+  background: var(--v30-accent) !important;
+  border-color: var(--v30-accent-deep) !important;
+}
+.v27-start-btn:active {
+  background: var(--v30-accent-deep) !important;
+}
+.btn-confirm, .vtg-confirm {
+  background: var(--v30-accent) !important;
+  border-color: var(--v30-accent-deep) !important;
+  color: #fff !important;
+}
 
 </style>
 
@@ -4400,6 +4705,21 @@ var qrcode = function() {
       <div class="vp-title">六甲国際パブリック<br><b>ラウンド準備</b></div>
     </div>
 
+    <!-- v30: モード切替トグル（標準 / 初心者用カウンター） -->
+    <div class="v30-mode-section">
+      <div class="v30-mode-label">🎯 プレイモード</div>
+      <div class="v30-mode-toggle" id="v30ModeToggle">
+        <button type="button" data-gmode="standard" class="active">
+          <span class="v30-mode-ico">🏌️</span>
+          <span class="v30-mode-name">標準<small>4人＋自分パット</small></span>
+        </button>
+        <button type="button" data-gmode="beginner">
+          <span class="v30-mode-ico">🔰</span>
+          <span class="v30-mode-name">初心者<small>自分のみカウンター</small></span>
+        </button>
+      </div>
+    </div>
+
     <!-- ロッカー番号 & PMスタート -->
     <div class="v27-row2">
       <div class="v27-field">
@@ -4449,6 +4769,30 @@ var qrcode = function() {
         <span>📖</span><span>コース詳細</span>
       </button>
     </div>
+
+    <!-- v30: ゲーム設定メニュー（モーダルから移管した機能を集約） -->
+    <div class="v30-settings-menu">
+      <div class="v30-sm-title">⚙️ ゲーム設定</div>
+      <div class="v30-sm-grid">
+        <button type="button" class="v30-sm-btn" id="v30BtnInviteQR">
+          <span class="v30-sm-ico">📱</span>
+          <span class="v30-sm-lbl">招待QR<br><small>同伴者にスコア入力を共有</small></span>
+        </button>
+        <button type="button" class="v30-sm-btn" id="v30BtnSettings">
+          <span class="v30-sm-ico">⚙️</span>
+          <span class="v30-sm-lbl">入力設定<br><small>パット記録 ON/OFF など</small></span>
+        </button>
+        <button type="button" class="v30-sm-btn" id="v30BtnTeeToggle">
+          <span class="v30-sm-ico">⛳</span>
+          <span class="v30-sm-lbl"><span id="v30TeeLabel">REGティ</span><br><small>タップでLADIESに切替</small></span>
+        </button>
+        <button type="button" class="v30-sm-btn" id="v30BtnDisplayMode">
+          <span class="v30-sm-ico">🔢</span>
+          <span class="v30-sm-lbl"><span id="v30DispLabel">数字表示</span><br><small>スコアカード表示モード</small></span>
+        </button>
+      </div>
+    </div>
+
   </div>
 
 
@@ -4709,24 +5053,16 @@ var qrcode = function() {
       <!-- 下部2/5：L字レイアウト -->
       <div class="modal-v27-bottom">
 
-        <!-- 左縦：PMスタート / 予約 / 電話 / コース詳細 -->
+        <!-- v30: モーダル左縦カラム — PMスタート + モード表示のみに集中 -->
         <div class="v27-left-col">
           <button class="vlc-btn vlc-pm" id="modalPmStartBtn" type="button">
             <span class="vlc-ico">⛳</span>
             <span class="vlc-text">PMスタート<br><b id="pmStart">— : —</b></span>
           </button>
-          <a class="vlc-btn vlc-reserve" href="https://firstee.jp/rok-pc/rok-pc" target="_blank" rel="noopener">
-            <span class="vlc-ico">📅</span>
-            <span class="vlc-text">予約サイト</span>
-          </a>
-          <a class="vlc-btn vlc-tel" href="tel:0785830351">
-            <span class="vlc-ico">📞</span>
-            <span class="vlc-text">緊急電話</span>
-          </a>
-          <button class="vlc-btn vlc-detail" id="modalCourseDetailBtn" type="button">
-            <span class="vlc-ico">📖</span>
-            <span class="vlc-text">コース詳細</span>
-          </button>
+          <div class="v30-modal-mode-indicator" id="v30ModalModeIndicator">
+            <span class="v30-mmi-ico">🏌️</span>
+            <span class="v30-mmi-text"><small>モード</small><b id="v30ModalModeName">標準</b></span>
+          </div>
         </div>
 
         <!-- 右：親指用 操作グリッド（メイン操作） -->
@@ -4759,21 +5095,23 @@ var qrcode = function() {
           </div>
         </div>
 
-        <!-- 下横：ロッカー（表示専用） + REGティ -->
+        <!-- v30: モーダル下横バー — ロッカー/現在ホール/ティの表示のみ（操作はトップへ移管） -->
         <div class="v27-bottom-row">
           <div class="vbr-info">
             <span class="vbr-ico">🔐</span>
             <span class="vbr-lbl">ロッカー</span>
             <b class="vbr-val" id="lockerNum">—</b>
           </div>
-          <button class="vbr-btn" id="modalTeeToggle" type="button">
+          <div class="vbr-info">
+            <span class="vbr-ico">📍</span>
+            <span class="vbr-lbl">現在</span>
+            <b class="vbr-val" id="v30ModalCurHole">1H</b>
+          </div>
+          <div class="vbr-info">
             <span class="vbr-ico">⛳</span>
-            <span class="vbr-lbl" id="modalTeeLabel">REGティ</span>
-          </button>
-          <button class="vbr-btn vbr-settings" id="modalSettingsBtn" type="button">
-            <span class="vbr-ico">⚙️</span>
-            <span class="vbr-lbl">入力設定</span>
-          </button>
+            <span class="vbr-lbl">ティ</span>
+            <b class="vbr-val" id="v30ModalTee">REG</b>
+          </div>
         </div>
 
         <!-- 既存「クリア／確定」行は内部処理用に保持（聖域） -->
@@ -4798,13 +5136,9 @@ var qrcode = function() {
     <div class="pmpicker-body">
       <div class="pmpicker-hint">スタート時間を選択</div>
       <input type="time" id="pmStartTimeInput" class="pmpicker-input" step="300">
-      <div class="pmpicker-quick">
-        <button data-pmtime="12:00">12:00</button>
-        <button data-pmtime="12:30">12:30</button>
-        <button data-pmtime="13:00">13:00</button>
-        <button data-pmtime="13:30">13:30</button>
-        <button data-pmtime="14:00">14:00</button>
-        <button data-pmtime="14:30">14:30</button>
+      <!-- v30: スマートタイムピッカー — 起動時に「現在時刻+45分」を自動セット -->
+      <div class="v30-pmpicker-info" id="v30PmpickerInfo">
+        起動時に「現在時刻＋45分」を自動セット
       </div>
       <div class="pmpicker-actions">
         <button class="btn-clear" id="btnPmStartClear">クリア</button>
@@ -5168,10 +5502,9 @@ const State = {
     showPuttInTable: false,
     sortMeFirst: true,
     useLadiesTee: false,
-    /* 監督指示v14 §1 - 用語再定義：
-       'simple'   = PAR基準スタート、±で素早く調整（監督愛用モード）
-       'counter'  = 0スタート、＋で1打ずつカウント */
-    inputMode: 'simple'        // 'simple' | 'counter' （デフォルトはシンプル）
+    inputMode: 'simple',       // 'simple' | 'counter'
+    /* v30: ゲームモード（プレイレベル別の UI/ロジック分岐） */
+    gameMode: 'standard'       // 'standard'(一般・中上級者) | 'beginner'(初心者カウンター)
   },
   settings: {
     puttEnabled: true,
@@ -5331,6 +5664,148 @@ function fmtDate(ts) {
 function getYard(hole) {
   return State.ui.useLadiesTee ? hole.ladiesYard : hole.regYard;
 }
+
+
+/* =================================================================
+   v30: ゲームモード/スマートPM/直接編集ヘルパ
+   ================================================================= */
+function isBeginnerMode() {
+  return State.ui && State.ui.gameMode === 'beginner';
+}
+function isStandardMode() {
+  return !isBeginnerMode();
+}
+function applyGameModeBodyClass() {
+  document.body.classList.toggle('v30-mode-beginner', isBeginnerMode());
+  document.body.classList.toggle('v30-mode-standard', isStandardMode());
+}
+
+/* スマートPMピッカー — 現在時刻+45分（5分単位丸め） */
+function smartPmDefault() {
+  const d = new Date();
+  d.setMinutes(d.getMinutes() + 45);
+  const m = Math.round(d.getMinutes() / 5) * 5;
+  d.setMinutes(m);
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mm = String(d.getMinutes()).padStart(2, '0');
+  return hh + ':' + mm;
+}
+
+/* 直接編集 inline-edit — セルタップ → その場で数値入力 */
+let v30CurrentEdit = null;
+
+function v30CloseInlineEdit(commit) {
+  if (!v30CurrentEdit) return;
+  const { cell, input, quick, pi, hi } = v30CurrentEdit;
+  const newVal = (input.value || '').trim();
+  if (commit) {
+    const n = parseInt(newVal, 10);
+    const p = State.players[pi];
+    if (p) {
+      if (newVal === '' || isNaN(n) || n <= 0) {
+        p.scores[hi] = null;
+        p.putts[hi] = 0;
+      } else {
+        const clamped = Math.max(1, Math.min(20, n));
+        p.scores[hi] = clamped;
+        if (p.putts[hi] == null) p.putts[hi] = 0;
+      }
+      try { Storage.saveState(); } catch(e) {}
+    }
+  }
+  try { cell.classList.remove('v30-editing'); } catch(e) {}
+  try { input.remove(); } catch(e) {}
+  try { if (quick && quick.parentNode) quick.remove(); } catch(e) {}
+  v30CurrentEdit = null;
+  try { renderTable(); } catch(e) {}
+}
+
+function v30OpenInlineEdit(cell, pi, hi) {
+  if (v30CurrentEdit) v30CloseInlineEdit(true);
+  const p = State.players[pi];
+  if (!p) return;
+  const h = COURSE.holes[hi];
+
+  /* ビギナーモード時は自分のみ編集可 */
+  if (isBeginnerMode() && !p.isMe) {
+    showToast('🔰 初心者モード中は自分のスコアのみ編集できます');
+    return;
+  }
+
+  cell.classList.add('v30-editing');
+  const curVal = (p.scores[hi] != null) ? p.scores[hi] : '';
+
+  const input = document.createElement('input');
+  input.type = 'number';
+  input.inputMode = 'numeric';
+  input.min = '1';
+  input.max = '20';
+  input.value = curVal;
+  input.className = 'v30-inline-edit';
+  input.setAttribute('aria-label', h.no + 'H ' + fullName(p) + 'のスコア');
+  cell.appendChild(input);
+
+  /* クイックアクションバー */
+  const quick = document.createElement('div');
+  quick.className = 'v30-inline-quick';
+  quick.innerHTML = '<button type="button" data-act="par">🎯 PAR' + h.par + '</button>' +
+                    '<button type="button" data-act="clear">クリア</button>' +
+                    '<button type="button" data-act="ok">✓ OK</button>';
+  document.body.appendChild(quick);
+  const rect = cell.getBoundingClientRect();
+  quick.style.top = (window.scrollY + rect.bottom + 4) + 'px';
+  let left = window.scrollX + rect.left;
+  setTimeout(() => {
+    const qw = quick.offsetWidth;
+    const vw = window.innerWidth;
+    if (left + qw > vw - 8) left = vw - qw - 8;
+    if (left < 8) left = 8;
+    quick.style.left = left + 'px';
+  }, 0);
+
+  v30CurrentEdit = { cell, input, quick, pi, hi };
+
+  quick.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-act]');
+    if (!b) return;
+    e.stopPropagation();
+    const act = b.dataset.act;
+    if (act === 'par') {
+      input.value = h.par;
+      input.focus();
+    } else if (act === 'clear') {
+      input.value = '';
+      input.focus();
+    } else if (act === 'ok') {
+      v30CloseInlineEdit(true);
+    }
+  });
+  quick.addEventListener('mousedown', (e) => e.preventDefault());
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); v30CloseInlineEdit(true); }
+    else if (e.key === 'Escape') { e.preventDefault(); v30CloseInlineEdit(false); }
+  });
+  input.addEventListener('blur', () => {
+    setTimeout(() => {
+      if (v30CurrentEdit && document.activeElement !== v30CurrentEdit.input) {
+        v30CloseInlineEdit(true);
+      }
+    }, 200);
+  });
+
+  setTimeout(() => { input.focus(); input.select(); }, 50);
+}
+
+/* 外側クリックで edit 終了 */
+document.addEventListener('click', (e) => {
+  if (!v30CurrentEdit) return;
+  const { cell, quick, input } = v30CurrentEdit;
+  if (cell.contains(e.target)) return;
+  if (quick && quick.contains(e.target)) return;
+  if (e.target === input) return;
+  v30CloseInlineEdit(true);
+}, true);
 
 /* =================================================================
    §7. 初期化
@@ -5500,10 +5975,12 @@ function renderTable() {
   t.innerHTML = html;
 
   t.querySelectorAll('[data-action="cell-tap"]').forEach(td => {
-    td.addEventListener('click', () => {
+    td.addEventListener('click', (ev) => {
       const pi = +td.dataset.pi;
       const hi = +td.dataset.hi;
-      openScoreModal(pi, hi);
+      /* v30: 直接編集（モーダルを開かず、その場で数値入力） */
+      ev.stopPropagation();
+      v30OpenInlineEdit(td, pi, hi);
     });
   });
   t.querySelectorAll('[data-action="player-tap"]').forEach(td => {
@@ -5518,10 +5995,37 @@ function renderTable() {
 
   centerCurrentHole();
 
-  /* v27: モーダル内スコア表ミラー反映 */
+  /* v27/v30: モーダル内スコア表ミラー反映 + 直接編集再バインド */
   try {
     const modalTbl = document.getElementById('modalScoreTable');
-    if (modalTbl) modalTbl.innerHTML = t.innerHTML;
+    if (modalTbl) {
+      modalTbl.innerHTML = t.innerHTML;
+      modalTbl.querySelectorAll('[data-action="cell-tap"]').forEach(td => {
+        td.addEventListener('click', (ev) => {
+          const pi = +td.dataset.pi;
+          const hi = +td.dataset.hi;
+          ev.stopPropagation();
+          modalPlayerIdx = pi;
+          modalHole = hi + 1;
+          const p = State.players[pi];
+          const h = COURSE.holes[hi];
+          if (p) {
+            if (p.scores[hi] != null) {
+              modalStroke = p.scores[hi];
+              modalPutt = p.putts[hi] || 0;
+            } else if (State.ui.inputMode === 'simple') {
+              modalStroke = h.par;
+              modalPutt = 2;
+            } else {
+              modalStroke = 0;
+              modalPutt = 0;
+            }
+            try { updateModalDisplay(); } catch(e) {}
+          }
+          v30OpenInlineEdit(td, pi, hi);
+        });
+      });
+    }
     if (typeof applyCrossHighlight === 'function') applyCrossHighlight();
     if (typeof renderV27PlayerList === 'function') renderV27PlayerList();
   } catch(e) {}
@@ -5605,6 +6109,11 @@ let modalStroke = 0;
 let modalPutt = 0;
 
 function openScoreModal(pi, hi) {
+  /* v30: ビギナーモード時は強制的に自分にフォーカス */
+  if (isBeginnerMode()) {
+    const meIdx = State.players.findIndex(p => p.isMe);
+    if (meIdx >= 0) pi = meIdx;
+  }
   modalPlayerIdx = pi;
   modalHole = hi + 1;
   const p = State.players[pi];
@@ -5763,6 +6272,16 @@ function updateModalDisplay() {
   }
   /* v27: ホール移動時もクロスハイライト追従 */
   try { applyCrossHighlight(); } catch(e) {}
+  /* v30: モード反映 */
+  try { updateV30ModalModeIndicator(); } catch(e) {}
+  try { updateV30PuttButtonsForCurrentPlayer(); } catch(e) {}
+  try { updateV30ThumbLabelsForBeginner(); } catch(e) {}
+  try {
+    const ch = document.getElementById('v30ModalCurHole');
+    if (ch) ch.textContent = modalHole + 'H';
+    const teeEl = document.getElementById('v30ModalTee');
+    if (teeEl) teeEl.textContent = State.ui.useLadiesTee ? 'L' : 'REG';
+  } catch(e) {}
 }
 
 function applyPuttSectionEnabled() {
@@ -5780,10 +6299,19 @@ function applyPuttSectionEnabled() {
 }
 
 function saveCurrentModalScore() {
-  /* シンプル・カウンターとも modalStroke / modalPutt が現在値 */
   const p = State.players[modalPlayerIdx];
+  if (!p) return;
+  /* v30: ビギナーモード — 自分のみ保存、パットは記録しない */
+  if (isBeginnerMode()) {
+    if (!p.isMe) return;
+    p.scores[modalHole - 1] = modalStroke > 0 ? modalStroke : null;
+    p.putts[modalHole - 1] = 0;
+    Storage.saveState();
+    return;
+  }
+  /* v30: 標準モード — 自分以外はパット記録しない（強制0） */
   p.scores[modalHole - 1] = modalStroke > 0 ? modalStroke : null;
-  p.putts[modalHole - 1] = modalPutt;
+  p.putts[modalHole - 1] = p.isMe ? modalPutt : 0;
   Storage.saveState();
 }
 
@@ -6761,11 +7289,18 @@ function bindEvents() {
   });
   $('#btnPuttMinus').addEventListener('click', () => {
     if (!State.settings.puttEnabled) return;
+    /* v30: 標準モード時は自分のみパット入力可、ビギナー時は無効 */
+    const p = State.players[modalPlayerIdx];
+    if (isStandardMode() && p && !p.isMe) { showToast('パットは自分(佐藤さん)のみ記録します'); return; }
+    if (isBeginnerMode()) { showToast('🔰 初心者モードではパットは記録しません'); return; }
     if (modalPutt > 0) modalPutt--;
     updateModalDisplay();
   });
   $('#btnPuttPlus').addEventListener('click', () => {
     if (!State.settings.puttEnabled) return;
+    const p = State.players[modalPlayerIdx];
+    if (isStandardMode() && p && !p.isMe) { showToast('パットは自分(佐藤さん)のみ記録します'); return; }
+    if (isBeginnerMode()) { showToast('🔰 初心者モードではパットは記録しません'); return; }
     if (modalPutt < 10) modalPutt++;
     updateModalDisplay();
   });
@@ -6865,7 +7400,9 @@ function bindEvents() {
       const modal = document.getElementById('pmStartModal');
       const inp = document.getElementById('pmStartTimeInput');
       if (!modal || !inp) return;
-      inp.value = (State.round && State.round.pmStart) ? State.round.pmStart : '';
+      /* v30: 既存値があればそれ、なければ「現在時刻+45分」を自動セット */
+      const existing = (State.round && State.round.pmStart) ? State.round.pmStart : '';
+      inp.value = existing || smartPmDefault();
       modal.classList.add('show');
     };
     const topBtn = document.getElementById('topPmStartBtn');
@@ -6951,6 +7488,68 @@ function bindEvents() {
       const orig = document.getElementById('btnSettings');
       if (orig) orig.click();
     });
+  })();
+
+  /* v30: ゲームモード切替トグル */
+  (function bindV30ModeToggle() {
+    const wrap = document.getElementById('v30ModeToggle');
+    if (!wrap) return;
+    const cur = (State.ui && State.ui.gameMode) ? State.ui.gameMode : 'standard';
+    wrap.querySelectorAll('button[data-gmode]').forEach(b => {
+      b.classList.toggle('active', b.dataset.gmode === cur);
+    });
+    wrap.addEventListener('click', (e) => {
+      const b = e.target.closest('button[data-gmode]');
+      if (!b) return;
+      const m = b.dataset.gmode;
+      if (m === State.ui.gameMode) return;
+      State.ui.gameMode = m;
+      try { Storage.saveState(); } catch(e) {}
+      wrap.querySelectorAll('button[data-gmode]').forEach(x => {
+        x.classList.toggle('active', x.dataset.gmode === m);
+      });
+      applyGameModeBodyClass();
+      updateV30ModalModeIndicator();
+      updateV30ThumbLabelsForBeginner();
+      const labels = {
+        standard: '🏌️ 標準モード（4人ストローク＋自分パット）',
+        beginner: '🔰 初心者モード（自分のストロークのみ）'
+      };
+      showToast(labels[m] || '');
+    });
+  })();
+
+  /* v30: ゲーム設定メニュー — 既存ハンドラに委譲 */
+  (function bindV30SettingsMenu() {
+    const map = [
+      ['v30BtnInviteQR',    'btnInviteQR'],
+      ['v30BtnSettings',    'btnSettings'],
+      ['v30BtnTeeToggle',   'btnTeeToggle']
+    ];
+    map.forEach(([newId, origId]) => {
+      const b = document.getElementById(newId);
+      if (!b) return;
+      b.addEventListener('click', () => {
+        const o = document.getElementById(origId);
+        if (o && typeof o.click === 'function') o.click();
+        setTimeout(updateV30DisplayLabels, 80);
+      });
+    });
+    /* 表示モード循環 */
+    const dmBtn = document.getElementById('v30BtnDisplayMode');
+    if (dmBtn) {
+      dmBtn.addEventListener('click', () => {
+        const cycle = ['number', 'diff', 'symbol'];
+        const cur = State.ui.displayMode || 'number';
+        const next = cycle[(cycle.indexOf(cur) + 1) % cycle.length];
+        State.ui.displayMode = next;
+        try { Storage.saveState(); } catch(e) {}
+        try { renderTable(); } catch(e) {}
+        updateV30DisplayLabels();
+        const labels = { number: '🔢 数字表示', diff: '± スコア差表示', symbol: '記号(★◎◯―△□)' };
+        showToast(labels[next] + 'に切替');
+      });
+    }
   })();
 
   /* モーダル内 ティ切替ボタン（既存 btnTeeToggle に委譲） */
@@ -7108,7 +7707,63 @@ function bindEvents() {
 /* =================================================================
    §23. アプリ起動
    ================================================================= */
+
+/* =================================================================
+   v30: モーダル内モード表示・サムグリッド調整・パット制限
+   ================================================================= */
+function updateV30ModalModeIndicator() {
+  const wrap = document.getElementById('v30ModalModeIndicator');
+  const nameEl = document.getElementById('v30ModalModeName');
+  if (!wrap || !nameEl) return;
+  if (isBeginnerMode()) {
+    wrap.classList.add('beginner');
+    nameEl.textContent = '🔰 初心者';
+  } else {
+    wrap.classList.remove('beginner');
+    nameEl.textContent = '🏌️ 標準';
+  }
+}
+
+function updateV30PuttButtonsForCurrentPlayer() {
+  const pPlus  = document.getElementById('g6PuttPlus');
+  const pMinus = document.getElementById('g6PuttMinus');
+  if (!pPlus || !pMinus) return;
+  const p = State.players[modalPlayerIdx];
+  const allowPutt = isStandardMode() && p && p.isMe;
+  pPlus.classList.toggle('v30-putt-disabled', !allowPutt);
+  pMinus.classList.toggle('v30-putt-disabled', !allowPutt);
+}
+
+function updateV30ThumbLabelsForBeginner() {
+  const plus  = document.getElementById('g6ShotPlusLabel');
+  const minus = document.getElementById('g6ShotMinusLabel');
+  if (isBeginnerMode()) {
+    if (plus)  plus.textContent  = '自分の打数';
+    if (minus) minus.textContent = '自分の打数';
+  } else {
+    if (plus)  plus.textContent  = 'ストローク';
+    if (minus) minus.textContent = 'ストローク';
+  }
+}
+
+function updateV30DisplayLabels() {
+  const dispLbl = document.getElementById('v30DispLabel');
+  if (dispLbl) {
+    const m = State.ui.displayMode || 'number';
+    dispLbl.textContent = (m === 'number') ? '数字表示' : (m === 'diff') ? '± 差表示' : '記号表示';
+  }
+  const teeLbl = document.getElementById('v30TeeLabel');
+  if (teeLbl) {
+    teeLbl.textContent = State.ui.useLadiesTee ? 'LADIESティ' : 'REGティ';
+  }
+}
+
 function boot() {
+  /* v30: ゲームモード body class & UI 同期 */
+  try { applyGameModeBodyClass(); } catch(e) {}
+  try { updateV30DisplayLabels(); } catch(e) {}
+  try { updateV30ModalModeIndicator(); } catch(e) {}
+
   initState();
   bindEvents();
   applyInputMode();  /* v14: 起動時に入力モードを適用（body class設定など） */
@@ -7116,7 +7771,7 @@ function boot() {
   try { syncLockerPmDisplay(); } catch(e) {}
   try { renderV27PlayerList(); } catch(e) {}
   Router.handleInitial();
-  console.log('G-WORLD v29.0 (V16基盤・実戦特化UI再構築)', new Date().toISOString());
+  console.log('G-WORLD v30.0 (究極統合版・モード切替＋直接編集)', new Date().toISOString());
 }
 
 if (document.readyState === 'loading') {
