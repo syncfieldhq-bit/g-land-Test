@@ -1896,9 +1896,7 @@ button, input, .v31-tg, .v31-start-btn, .v31-sub-btn,
 .v31-modal {
   width: 100% !important;
   max-width: 100vw !important;
-  /*height: calc(100vh - env(safe-area-inset-bottom)) !important;  */
-  /* ボタンが隠れないように、少しだけ高さを削る */
-  height: calc(100vh - env(safe-area-inset-bottom) - 80px) !important;
+  height: calc(100vh - env(safe-area-inset-bottom)) !important;
   max-height: 100vh !important;
   border-radius: 16px 16px 0 0 !important;
   display: flex !important;
@@ -2746,15 +2744,7 @@ body.v32-holes-9 .v32-mh-holes {
   padding: 0;
 }
 .v33-scoretable-wrap {
-  /* 代わりに以下の指定で「最大高さ」を制限する */
-  max-height: 60vh; 
-  flex-shrink: 0;
-  
-  display: flex; flex-direction: column;
-  background: var(--v31-base);
-  padding: 0;
-}
-  /*flex: 1 1 auto;
+  flex: 1 1 auto;
   min-height: 0;
   overflow: hidden;
 }
