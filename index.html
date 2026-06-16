@@ -2830,30 +2830,24 @@ body.v32-holes-9 .v32-mh-holes {
 /* 修正版：親指グリッド 2行3列 */
 .v33-modal-bottom {
   flex: 0 0 auto !important;
-  padding: 10px 12px calc(20px + env(safe-area-inset-bottom)) !important;
-  background: linear-gradient(to bottom, var(--v31-base) 0%, var(--v31-base-soft) 100%);
+  padding: 15px !important;
+  background: var(--v31-base) !important;
   border-top: 2px solid var(--v31-accent-soft);
   
-  /* グリッドを「3列・2行」で定義 */
-  display: grid !important;
-  grid-template-columns: repeat(3, 1fr) !important;
-  grid-template-rows: repeat(2, 50px) !important; /* 行の高さを50pxで固定 */
-  gap: 8px !important;
-  
-  /* 左の余白を消して、画面幅いっぱいに広げる */
-  margin-left: 0 !important; 
-  width: 100% !important;
+  /* グリッドではなく、シンプルな Flexbox に変更 */
+  display: flex !important;
+  flex-wrap: wrap !important; /* ボタンが入りきらなくなったら自動で改行 */
+  gap: 10px !important;
+  justify-content: center !important; /* 常に中央寄せ */
 }
 
-/* ボタンの中身を強制的にグリッドいっぱいに広げる */
+/* ボタンのサイズを絶対固定（px指定） */
 .v33-modal-bottom button, 
 .v33-modal-bottom div[role="button"] {
-  height: 50px !important; 
-  width: 100% !important;
+  flex: 0 0 30% !important; /* 画面幅の約3割をボタンの横幅にする */
+  height: 55px !important;  /* 縦幅を指にちょうどいいサイズに固定 */
   font-size: 14px !important;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  padding: 0 !important;
 }
 .v33-thumb-info {
   display: flex; flex-direction: column; gap: 4px;
