@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#0F5132">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>G-WORLD v27.0 | 六甲国際パブリックコース</title>
+<title>G-WORLD v29.0 | 六甲国際パブリックコース</title>
 <style>
 /* =================================================================
    G-WORLD v12.0 - 配布版 Final
@@ -1608,13 +1608,49 @@ body.input-mode-counter #btnQuickPutt { display: none; }
    ================================================================= */
 
 /* ========== トップ画面：スコアカード本体を非表示・準備セクションのみ ========== */
-#screen-gworld .top-bar,
-#screen-gworld .toggle-bar,
-#screen-gworld .card-wrap,
-#screen-gworld .center-actions,
-#screen-gworld .secondary-actions,
-#screen-gworld .save-round-wrap {
+/* ============================================================
+   v28: トップ画面（#screen-gworld）の徹底的な「引き算」
+   - スコアカード・ホール情報・スコア設定・ラウンド終了等
+     スコア入力関連UIを完全に非表示
+   - 司令塔機能（.v27-prep 配下）のみ表示
+   ============================================================ */
+#screen-gworld > .topbar,
+#screen-gworld > .top-bar,
+#screen-gworld > .hero-current,
+#screen-gworld > .toggle-bar,
+#screen-gworld > .settings-accordion,
+#screen-gworld > .card-wrap,
+#screen-gworld > .save-section,
+#screen-gworld > .save-round-wrap,
+#screen-gworld > .center-actions,
+#screen-gworld > .secondary-actions {
   display: none !important;
+}
+
+/* ============================================================
+   v28: フッター死活監視 - 常に最前面・タップ可能を保証
+   ============================================================ */
+.footer-bar {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 9999 !important;     /* モーダル以外の全要素より前面 */
+  pointer-events: auto !important;
+  background: #fff;
+  border-top: 1.5px solid var(--line-strong);
+  box-shadow: 0 -4px 12px rgba(0,0,0,.08);
+}
+.footer-bar .footer-tab {
+  pointer-events: auto !important;
+  cursor: pointer;
+}
+/* モーダル展開時のみフッターを下げる（z-index で）*/
+.modal-backdrop.show { z-index: 10000; }
+
+/* 準備セクション下にフッター分の余白を確保 */
+#screen-gworld .v27-prep {
+  padding-bottom: 96px !important;
 }
 
 /* 準備セクション本体 */
@@ -2028,6 +2064,23 @@ body.input-mode-counter #btnQuickPutt { display: none; }
   .vbr-info, .vbr-btn { min-height: 38px; font-size: 11px; }
   .vbr-ico { font-size: 15px; }
 }
+
+
+/* ============================================================
+   v29: フッターの死活監視 — 常に最前面・常にタップ可
+   ============================================================ */
+.bottom-nav, nav.bottom-nav, #bottomNav, .footer-nav {
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+  background: var(--paper, #fff) !important;
+}
+.screen { padding-bottom: 96px !important; }
+/* モーダル群はフッターより下の z-index には行かない（モーダル前面維持） */
+.modal-backdrop, .modal { z-index: 10000 !important; }
 
 </style>
 
@@ -4399,118 +4452,7 @@ var qrcode = function() {
   </div>
 
 
-  <div class="topbar">
-    <div class="topbar-row">
-      <div class="topbar-title">
-        <div class="topbar-course" id="topCourse">六甲国際パブリックコース</div>
-        <div class="topbar-meta">
-          <span class="dot"></span>
-          <span id="topMeta">スタンドアロン · オフライン入力</span>
-        </div>
-      </div>
-      <button class="topbar-btn" id="btnTopDetail" title="コース詳細・ローカルルール">📖</button>
-    </div>
-  </div>
-
-  <div class="hero-current">
-    <div class="hero-row">
-      <div class="hero-left">
-        <div class="hero-hole"><span id="heroHoleNum">1</span><span class="hl">H</span></div>
-        <div>
-          <div class="hero-par">PAR <span class="par-num" id="heroPar">4</span></div>
-          <div class="hero-yard" id="heroYard">
-            <span class="yardchip" id="heroYardReg">REG 352y</span>
-            <span class="yardchip ladies" id="heroYardLadies">L 321y</span>
-            <span id="heroHdcp">HDCP 11</span>
-          </div>
-        </div>
-      </div>
-      <div class="hero-nav">
-        <button class="hero-nav-btn" id="btnHolePrev" title="前のホール">◀</button>
-        <button class="hero-nav-btn" id="btnHoleNext" title="次のホール">▶</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- v15: アコーディオン設定パネル（表示モード＋入力モードを格納） -->
-  <div class="settings-accordion is-open" id="settingsAccordion">
-    <button class="accordion-header" id="accordionToggle" type="button" aria-expanded="true">
-      <span class="ah-label">⚙️ スコア設定</span>
-      <span class="ah-arrow" id="accordionArrow">▼ 閉じる</span>
-    </button>
-    <div class="accordion-body" id="accordionBody">
-      <div class="toggle-bar">
-    <div class="toggle-label">スコア表示モード</div>
-    <div class="display-toggle" id="displayToggle">
-      <button data-mode="number" class="active">数字</button>
-      <button data-mode="diff">スコア差(±)</button>
-      <button data-mode="symbol">記号</button>
-    </div>
-  </div>
-
-  <!-- 入力モード切替バー（表示モードのすぐ下・階層的に配置） -->
-  <div class="toggle-bar input-mode-bar">
-    <div class="toggle-label">スコア入力モード</div>
-    <div class="input-mode-main-toggle" id="inputModeMainToggle">
-      <button data-mode="simple" class="active" title="PAR基準から±で素早く調整">
-        <span class="im-icon">⚡</span>
-        <span class="im-name">シンプル<span class="im-sub">(±)</span></span>
-      </button>
-      <button data-mode="counter" title="0から＋ボタンで1打ずつカウント">
-        <span class="im-icon">🔢</span>
-        <span class="im-name">カウンター<span class="im-sub">(＋−)</span></span>
-      </button>
-    </div>
-  </div>
-    </div>
-  </div>
-
-  <div class="card-wrap">
-    <div class="card">
-      <div class="card-header">
-        <span class="icon">📋</span>
-        <span>デジタルスコアカード</span>
-        <span class="badge" id="currentHoleBadge">現在 1H</span>
-      </div>
-      <div class="scoretable-scroll" id="tableScroll">
-        <table class="scoretable" id="scoreTable"></table>
-      </div>
-    </div>
-  </div>
-
-  <div class="save-section">
-    <button class="save-round-btn" id="btnSaveRound">
-      <span class="icon">🏁</span>
-      <span>ラウンド終了 ＆ 保存</span>
-    </button>
-  </div>
-
-  <div class="center-actions">
-    <button class="invite-qr-btn" id="btnInviteQR">
-      <span class="qr-icon">⚏</span>
-      <span class="qr-label">
-        <span class="main">招待QRを表示</span>
-        <span class="sub">配布用コピーQR（スタンドアロン）</span>
-      </span>
-      <span class="pulse-dot"></span>
-    </button>
-    <button class="add-companion-btn" id="btnAddCompanion">
-      <span class="plus">＋</span>
-      <span>同伴者を追加</span>
-    </button>
-  </div>
-
-  <div class="secondary-actions">
-    <button class="secondary-btn" id="btnCourseDetail">
-      <span class="icon">📖</span><span>コース詳細・ルール</span>
-    </button>
-    <button class="secondary-btn" id="btnSettings">
-      <span class="icon">⚙️</span><span>入力設定</span>
-    </button>
-    <button class="secondary-btn tee-toggle" id="btnTeeToggle">
-      <span class="icon">⛳</span><span id="teeToggleLabel">REGティ</span>
-    </button>
-  </div>
+  <!-- v29: 旧スコア入力UI（.topbar / .hero-current / .settings-accordion / .toggle-bar / .card-wrap / .save-section / .center-actions / .secondary-actions）は完全削除。スコア入力はモーダル(#scoreModal)に集約。 -->
 </div>
 
 <!-- ============================================================
@@ -5309,8 +5251,31 @@ const Storage = {
 /* =================================================================
    §6. ユーティリティ
    ================================================================= */
-const $ = (sel) => document.querySelector(sel);
+// v29: $() ヘルパ — 削除されたDOM要素への参照が来ても no-op スタブを返してクラッシュを防ぐ
+const __NULL_STUB__ = (() => {
+  const handler = {
+    get(target, prop) {
+      if (prop === 'addEventListener' || prop === 'removeEventListener') return () => {};
+      if (prop === 'querySelector' || prop === 'querySelectorAll') return () => null;
+      if (prop === 'classList') return { add(){}, remove(){}, toggle(){}, contains(){return false;} };
+      if (prop === 'style') return new Proxy({}, { set(){return true;}, get(){return '';} });
+      if (prop === 'dataset') return new Proxy({}, { set(){return true;}, get(){return undefined;} });
+      if (prop === 'textContent' || prop === 'innerHTML' || prop === 'value' || prop === 'innerText') return '';
+      if (prop === 'disabled' || prop === 'checked') return false;
+      if (prop === 'setAttribute' || prop === 'removeAttribute' || prop === 'focus' || prop === 'blur' || prop === 'click' || prop === 'scrollIntoView' || prop === 'append' || prop === 'appendChild' || prop === 'remove') return () => {};
+      if (prop === 'getBoundingClientRect') return () => ({top:0,left:0,width:0,height:0,right:0,bottom:0});
+      if (prop === 'offsetWidth' || prop === 'offsetHeight' || prop === 'scrollLeft' || prop === 'scrollTop') return 0;
+      if (prop === 'parentNode' || prop === 'parentElement' || prop === 'nextElementSibling' || prop === 'previousElementSibling') return null;
+      if (prop === 'children') return [];
+      return undefined;
+    },
+    set() { return true; }
+  };
+  return new Proxy({ __isNullStub: true }, handler);
+})();
+const $ = (sel) => document.querySelector(sel) || __NULL_STUB__;
 const $$ = (sel) => document.querySelectorAll(sel);
+
 
 function escapeHtml(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => (
@@ -7151,7 +7116,7 @@ function boot() {
   try { syncLockerPmDisplay(); } catch(e) {}
   try { renderV27PlayerList(); } catch(e) {}
   Router.handleInitial();
-  console.log('G-WORLD v27.0 (V16基盤・実戦特化UI再構築)', new Date().toISOString());
+  console.log('G-WORLD v29.0 (V16基盤・実戦特化UI再構築)', new Date().toISOString());
 }
 
 if (document.readyState === 'loading') {
