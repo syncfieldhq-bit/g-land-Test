@@ -5,7 +5,7 @@
 <!-- 監督指示 §3: ピンチイン・アウト完全許可 -->
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#0F5132">
-<title>G-WORLD v36.0 | 六甲国際パブリックコース</title>
+<title>G-WORLD v37.0 | 六甲国際パブリックコース</title>
 
 <!-- ============================================================
      v34: PWA設定 — ホーム画面追加時の名称 = "G-WORLD"
@@ -3292,6 +3292,137 @@ body.v31-mode-beginner .v33-thumb-grid .v31-tg-player {
     width: 80% !important;
     margin-left: 20% !important;
     max-width: 80% !important;
+  }
+}
+
+
+/* ============================================================
+   v37: ボタン縦幅 2/3 圧縮 + 画面下部 20px 余白強制
+   現在のボタン高 52px → 35px (2/3 = 66.6%)
+   フォント・アイコンサイズは押しやすさ維持のため微調整
+   ============================================================ */
+
+/* v37: ボタン本体の縦幅を強制圧縮 */
+.v35-tg,
+.v35-thumb-grid .v35-tg,
+.v35-thumb-grid button.v35-tg {
+  /* 元 52px → 52 * 0.66 ≒ 35px に強制 */
+  min-height: 35px !important;
+  height: 35px !important;
+  max-height: 35px !important;
+  padding: 2px 4px !important;
+  border-radius: 8px !important;
+  gap: 2px !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+}
+
+/* フォント・アイコンサイズは押しやすさ維持のため最小限調整 */
+.v35-tg .v31-tg-op {
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+}
+.v35-tg .v31-tg-lbl {
+  font-size: 9px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  text-align: center !important;
+}
+/* 次のホールへボタンだけ少しだけ強調 */
+.v36-tg-next .v31-tg-op { font-size: 14px !important; }
+.v36-tg-next .v31-tg-lbl { font-size: 9px !important; }
+
+/* ============================================================
+   v37: モーダル下部コンテナの縦幅圧縮 + 20px下余白強制
+   ============================================================ */
+.v33-modal-bottom {
+  /* 縦幅を内容に応じて自動、ただし下部余白 20px+safe-area を強制 */
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+  padding-top: 6px !important;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom)) !important;
+  margin-bottom: 0 !important;
+  min-height: auto !important;
+  flex: 0 0 auto !important;
+}
+
+/* v37: 親指グリッド自体にも margin-bottom: 20px を保険として付与 */
+.v35-thumb-grid {
+  margin-bottom: 20px !important;
+  gap: 5px !important;
+}
+
+/* v37: 親指グリッド上部の情報バッジも圧縮 */
+.v33-thumb-info {
+  padding: 3px 8px !important;
+  margin-bottom: 4px !important;
+  font-size: 11px !important;
+}
+.v33-ti-row { gap: 6px !important; }
+.v33-ti-hole { font-size: 14px !important; }
+.v33-ti-par { font-size: 10px !important; }
+.v33-ti-name { font-size: 12px !important; }
+.v33-ti-stroke { font-size: 20px !important; }
+.v33-ti-current { padding-top: 2px !important; }
+
+/* ============================================================
+   v37: モーダル全体の縦配分を再保証
+   上部スコアテーブル: flex 1（残り全部）
+   下部ボタンエリア: flex 0 0 auto（固定）
+   v31-modal: 100vh - safe-area
+   ============================================================ */
+.v31-modal {
+  height: calc(100vh - env(safe-area-inset-bottom)) !important;
+  max-height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+.v33-modal-top {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* ============================================================
+   v37: 「次のホールへ」ボタンの色を維持
+   ============================================================ */
+.v36-tg-next.v31-tg.v33-tg.v35-tg.v31-tg-confirm {
+  background: var(--v31-accent) !important;
+  border: 1.5px solid var(--v31-accent-deep) !important;
+  color: #fff !important;
+}
+
+/* ============================================================
+   v37: レスポンシブ調整
+   ============================================================ */
+@media (max-width: 380px) {
+  .v35-tg {
+    min-height: 32px !important;
+    height: 32px !important;
+    max-height: 32px !important;
+  }
+  .v35-tg .v31-tg-op { font-size: 13px !important; }
+  .v35-tg .v31-tg-lbl { font-size: 8px !important; }
+}
+@media (max-width: 320px) {
+  .v35-tg {
+    min-height: 30px !important;
+    height: 30px !important;
+    max-height: 30px !important;
+  }
+}
+
+/* iPhone SE 第1世代等の極小画面（縦480px以下）でさらに圧縮 */
+@media (max-height: 568px) {
+  .v35-tg {
+    min-height: 30px !important;
+    height: 30px !important;
+    max-height: 30px !important;
+  }
+  .v33-modal-bottom {
+    padding-bottom: calc(20px + env(safe-area-inset-bottom)) !important;
   }
 }
 
@@ -9573,7 +9704,7 @@ function boot() {
   bindEvents();
   applyInputMode();  /* v14: 起動時に入力モードを適用（body class設定など） */
   Router.handleInitial();
-  console.log('G-WORLD v36.0 (v16聖域＋v36UpdateScore統合＋右寄せ2/3レイアウト)', new Date().toISOString());
+  console.log('G-WORLD v37.0 (ボタン縦幅2/3+下20px余白+画面内収容保証)', new Date().toISOString());
 }
 
 if (document.readyState === 'loading') {
