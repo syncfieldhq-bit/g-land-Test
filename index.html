@@ -5,7 +5,7 @@
 <!-- 監督指示 §3: ピンチイン・アウト完全許可 -->
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#0F5132">
-<title>G-WORLD v35.0 | 六甲国際パブリックコース</title>
+<title>G-WORLD v36.0 | 六甲国際パブリックコース</title>
 
 <!-- ============================================================
      v34: PWA設定 — ホーム画面追加時の名称 = "G-WORLD"
@@ -3217,6 +3217,84 @@ body.v31-mode-beginner .v33-thumb-grid .v31-tg-player {
   .v35-tg .v31-tg-lbl { font-size: 9px !important; }
 }
 
+
+/* ============================================================
+   v36: 親指最適化レイアウト（右寄せ・横2/3・下20px+）
+   ============================================================ */
+.v35-thumb-grid {
+  width: 66.6% !important;
+  margin-left: 33.3% !important;
+  margin-right: 0 !important;
+  max-width: 66.6% !important;
+}
+.v33-modal-bottom {
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+  padding-top: 8px !important;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom)) !important;
+  min-height: auto !important;
+}
+
+/* 「次のホールへ」ボタン */
+.v36-tg-next.v31-tg.v33-tg.v35-tg.v31-tg-confirm {
+  background: var(--v31-accent) !important;
+  border: 2px solid var(--v31-accent-deep) !important;
+  color: #fff !important;
+}
+.v36-tg-next.v31-tg.v33-tg.v35-tg.v31-tg-confirm .v31-tg-lbl {
+  font-size: 10px !important;
+}
+.v36-tg-next.v31-tg.v33-tg.v35-tg.v31-tg-confirm .v31-tg-op {
+  font-size: 18px !important;
+}
+
+/* デュアル入力ヒント */
+.v36-edit-hint {
+  background: linear-gradient(90deg, #d6efe2 0%, #fff4d6 50%, #d6efe2 100%) !important;
+  font-weight: 800 !important;
+  font-size: 10px !important;
+  padding: 5px 8px !important;
+  text-align: center !important;
+}
+
+/* 自動保存トースト */
+.v36-autosave-flash {
+  position: fixed;
+  right: 14px;
+  bottom: calc(96px + env(safe-area-inset-bottom));
+  background: rgba(45,157,95,.92);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  z-index: 10500;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity .2s, transform .2s;
+}
+.v36-autosave-flash.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* レスポンシブ */
+@media (max-width: 380px) {
+  .v35-thumb-grid {
+    width: 72% !important;
+    margin-left: 28% !important;
+    max-width: 72% !important;
+  }
+}
+@media (max-width: 320px) {
+  .v35-thumb-grid {
+    width: 80% !important;
+    margin-left: 20% !important;
+    max-width: 80% !important;
+  }
+}
+
 </style>
 
 <!-- QR Code Generator (Kazuhiko Arase, MIT) -->
@@ -5955,10 +6033,10 @@ var qrcode = function() {
       </div>
     </div>
 
-    <!-- v34: 直接編集ヒント（いつでも修正可能であることを明示） -->
-    <div class="v34-edit-hint" id="v34EditHint">
+    <!-- v36: デュアル入力方式 — 自動保存を明示 -->
+    <div class="v34-edit-hint v36-edit-hint" id="v34EditHint">
       <span class="v34-eh-ico">✏️</span>
-      <span class="v34-eh-text">スコア数字を直接タップで修正できます</span>
+      <span class="v34-eh-text">セルを直接タップして修正、または下のボタンで連続入力（入力した瞬間に自動保存）</span>
     </div>
 
     <!-- ============================================================
@@ -5995,7 +6073,7 @@ var qrcode = function() {
       </div>
       <!-- v35: 3列2行 右寄せ親指グリッド
            上段: [ストローク+] [プレイヤー移動] [パット+]
-           下段: [ストローク-] [確定・次へ]      [パット-] -->
+           下段: [ストローク-] [次のホールへ]    [パット-] -->
       <div class="v31-thumb-grid v33-thumb-grid v35-thumb-grid">
         <button type="button" class="v31-tg v33-tg v35-tg v35-tg-shot-plus v31-tg-shot-plus" id="v31ShotPlus">
           <span class="v31-tg-op">＋</span><span class="v31-tg-lbl">ストローク</span>
@@ -6009,8 +6087,8 @@ var qrcode = function() {
         <button type="button" class="v31-tg v33-tg v35-tg v35-tg-shot-minus v31-tg-shot-minus" id="v31ShotMinus">
           <span class="v31-tg-op">−</span><span class="v31-tg-lbl">ストローク</span>
         </button>
-        <button type="button" class="v31-tg v33-tg v35-tg v35-tg-confirm v31-tg-confirm" id="v31Confirm">
-          <span class="v31-tg-op">✓</span><span class="v31-tg-lbl">確定<br>次へ</span>
+        <button type="button" class="v31-tg v33-tg v35-tg v35-tg-confirm v31-tg-confirm v36-tg-next" id="v31Confirm">
+          <span class="v31-tg-op">▶</span><span class="v31-tg-lbl">次の<br>ホールへ</span>
         </button>
         <button type="button" class="v31-tg v33-tg v35-tg v35-tg-putt-minus v31-tg-putt-minus" id="v31PuttMinus">
           <span class="v31-tg-op">−</span><span class="v31-tg-lbl">パット</span>
@@ -8020,27 +8098,18 @@ let v31CurrentEdit = null;
 function v31CloseInlineEdit(commit) {
   if (!v31CurrentEdit) return;
   const { cell, input, quick, pi, hi } = v31CurrentEdit;
-  if (commit) {
-    const raw = (input.value || '').trim();
-    const n = parseInt(raw, 10);
-    const p = State.players[pi];
-    if (p) {
-      if (raw === '' || isNaN(n) || n <= 0) {
-        p.scores[hi] = null;
-      } else {
-        p.scores[hi] = Math.max(1, Math.min(20, n));
-        if (p.putts[hi] == null) p.putts[hi] = 0;
-      }
-      Storage.saveState();
-      /* v32: 入力プレイヤー＆ホールを「アクティブ位置」として記憶 */
-      v32SetActiveCell(pi, hi);
-    }
-  }
+  const rawVal = (input.value || '').trim();
   try { cell.classList.remove('v31-editing'); } catch(e) {}
   try { input.remove(); } catch(e) {}
   try { if (quick && quick.parentNode) quick.remove(); } catch(e) {}
   v31CurrentEdit = null;
-  renderTable();
+
+  if (commit) {
+    /* v36: 共通 updateScore 経由で配列書き込み + 自動保存 + 再描画 */
+    v36UpdateScore(pi, hi, { stroke: rawVal });
+  } else {
+    try { renderTable(); } catch(e) {}
+  }
   /* v32: ライブスコアカード再描画 + クロスハイライト + 9H完了チェック */
   try { v32RenderLiveScore(); } catch(e) {}
   try { v32ApplyCrossHighlight(); } catch(e) {}
@@ -8674,41 +8743,26 @@ function v35IncrementStroke(delta) {
     v35ActivePi = modalPlayerIdx;
     v35ActiveHi = modalHole - 1;
   }
-  if (v32IsHoleLocked(v35ActiveHi)) {
-    showToast('🏁 9Hモードでは 10H 以降は入力できません');
-    return;
-  }
-  const p = State.players[v35ActivePi];
+  const pi = v35ActivePi, hi = v35ActiveHi;
+  const p = State.players[pi];
   if (!p) return;
-  if (v31IsBeginner() && !p.isMe) {
-    showToast('🔰 初心者モードでは自分のスコアのみ');
-    return;
-  }
-  modalPlayerIdx = v35ActivePi;
-  modalHole = v35ActiveHi + 1;
-  if (p.scores[v35ActiveHi] != null) {
-    modalStroke = p.scores[v35ActiveHi];
+  let cur;
+  if (p.scores[hi] != null) {
+    cur = p.scores[hi];
   } else if (State.ui.inputMode === 'simple') {
-    modalStroke = COURSE.holes[v35ActiveHi].par;
+    cur = COURSE.holes[hi].par;
   } else {
-    modalStroke = 0;
+    cur = 0;
   }
-  modalStroke = Math.max(0, Math.min(20, modalStroke + delta));
-  try { saveCurrentModalScore(); } catch(e) {}
-  try { renderTable(); } catch(e) {}
-  try { updateModalDisplay(); } catch(e) {}
-  try { v33UpdateThumbInfo(); } catch(e) {}
-  v35HighlightActiveCell();
+  const next = Math.max(0, Math.min(20, cur + delta));
+  /* v36: 共通 updateScore 経由 */
+  v36UpdateScore(pi, hi, { stroke: next });
 }
 
 function v35IncrementPutt(delta) {
   if (v35ActivePi < 0 || v35ActiveHi < 0) {
     v35ActivePi = modalPlayerIdx;
     v35ActiveHi = modalHole - 1;
-  }
-  if (v32IsHoleLocked(v35ActiveHi)) {
-    showToast('🏁 9Hモードでは 10H 以降は入力できません');
-    return;
   }
   if (!State.settings.puttEnabled) {
     showToast('入力設定でパットを ON にしてください');
@@ -8718,21 +8772,17 @@ function v35IncrementPutt(delta) {
     showToast('🔰 初心者モードではパットは記録しません');
     return;
   }
-  const p = State.players[v35ActivePi];
+  const pi = v35ActivePi, hi = v35ActiveHi;
+  const p = State.players[pi];
   if (!p) return;
   if (v31IsStandard() && !p.isMe) {
     showToast('パットは自分(佐藤さん)のみ記録します');
     return;
   }
-  modalPlayerIdx = v35ActivePi;
-  modalHole = v35ActiveHi + 1;
-  modalPutt = p.putts[v35ActiveHi] || 0;
-  modalPutt = Math.max(0, Math.min(10, modalPutt + delta));
-  try { saveCurrentModalScore(); } catch(e) {}
-  try { renderTable(); } catch(e) {}
-  try { updateModalDisplay(); } catch(e) {}
-  try { v33UpdateThumbInfo(); } catch(e) {}
-  v35HighlightActiveCell();
+  const cur = p.putts[hi] || 0;
+  const next = Math.max(0, Math.min(10, cur + delta));
+  /* v36: 共通 updateScore 経由 */
+  v36UpdateScore(pi, hi, { putt: next });
 }
 
 /* document-level セルタップ委譲 */
@@ -8754,6 +8804,139 @@ function v35BindDocumentCellTap() {
     if (!ok) return;
     try { v31OpenInlineEdit(td, pi, hi); } catch(e) {}
   }, true);
+}
+
+
+/* =================================================================
+   v36: 共通スコア更新関数（デュアル入力の終端を統合）
+   方式A（直接タップ）と方式B（ボタン連続）の両方がここを通る
+   v16計算エンジンには触れず、配列書き込み＋永続化＋再描画
+   ================================================================= */
+function v36UpdateScore(pi, hi, opts) {
+  opts = opts || {};
+  const p = State.players[pi];
+  if (!p) return false;
+
+  if (v32IsHoleLocked(hi)) {
+    if (!opts.silent) showToast('🏁 9Hモードでは 10H 以降は入力できません');
+    return false;
+  }
+  if (v31IsBeginner() && !p.isMe) {
+    if (!opts.silent) showToast('🔰 初心者モードでは自分のスコアのみ');
+    return false;
+  }
+
+  /* 1) 配列書き込み（v16互換のデータ構造） */
+  if ('stroke' in opts) {
+    const s = opts.stroke;
+    if (s == null || s === '' || isNaN(s) || parseInt(s,10) <= 0) {
+      p.scores[hi] = null;
+    } else {
+      p.scores[hi] = Math.max(1, Math.min(20, parseInt(s, 10)));
+      if (p.putts[hi] == null) p.putts[hi] = 0;
+    }
+  }
+  if ('putt' in opts) {
+    if (v31IsStandard() && !p.isMe) {
+      /* 自分以外: パット書き込み不可 */
+    } else if (v31IsBeginner()) {
+      /* ビギナー: パット記録しない */
+    } else {
+      const pt = opts.putt;
+      if (pt == null || isNaN(pt) || pt < 0) {
+        p.putts[hi] = 0;
+      } else {
+        p.putts[hi] = Math.max(0, Math.min(10, parseInt(pt, 10)));
+      }
+    }
+  }
+
+  /* 2) リアルタイム永続化 */
+  try { Storage.saveState(); } catch(e) {}
+
+  /* 3) モーダル変数同期 */
+  modalPlayerIdx = pi;
+  modalHole = hi + 1;
+  if (p.scores[hi] != null) {
+    modalStroke = p.scores[hi];
+    modalPutt = p.putts[hi] || 0;
+  }
+
+  /* 4) アクティブセル同期 */
+  v35ActivePi = pi;
+  v35ActiveHi = hi;
+
+  /* 5) 再描画 */
+  if (opts.doRender !== false) {
+    try { renderTable(); } catch(e) {}
+    try { updateModalDisplay(); } catch(e) {}
+    try { v33UpdateThumbInfo(); } catch(e) {}
+    try { v35HighlightActiveCell(); } catch(e) {}
+  }
+
+  /* 6) 自動保存フラッシュ */
+  if (!opts.silent) v36AutosaveFlash();
+
+  return true;
+}
+
+/* 自動保存トースト */
+let v36AutosaveTimer = null;
+function v36AutosaveFlash() {
+  let el = document.getElementById('v36AutosaveFlash');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'v36AutosaveFlash';
+    el.className = 'v36-autosave-flash';
+    el.textContent = '💾 自動保存';
+    document.body.appendChild(el);
+  }
+  el.classList.add('show');
+  if (v36AutosaveTimer) clearTimeout(v36AutosaveTimer);
+  v36AutosaveTimer = setTimeout(() => el.classList.remove('show'), 1000);
+}
+
+/* =================================================================
+   v36: 「次のホールへ」— 純粋なホール移動（保存は不要、入力時に自動保存済）
+   ================================================================= */
+function v36MoveToNextHole() {
+  const maxH = v32IsHalfMode() ? 9 : 18;
+  if (modalHole >= maxH) {
+    if (v32IsHalfMode() && v32HalfAllDone()) {
+      try { closeAllModals(); } catch(e) {}
+      setTimeout(() => v32ShowHalfSummary(), 200);
+      return;
+    }
+    showToast('🏁 最終ホールです（' + maxH + 'H）');
+    return;
+  }
+  /* v16聖域 moveHole(1) でホール移動 */
+  try { moveHole(1); } catch(e) {}
+  modalHole = State.round.currentHole;
+  v35ActivePi = modalPlayerIdx;
+  v35ActiveHi = modalHole - 1;
+
+  /* 初期値ロード */
+  const p = State.players[modalPlayerIdx];
+  const h = COURSE.holes[modalHole - 1];
+  if (p && h) {
+    if (p.scores[modalHole - 1] != null) {
+      modalStroke = p.scores[modalHole - 1];
+      modalPutt = p.putts[modalHole - 1] || 0;
+    } else if (State.ui.inputMode === 'simple') {
+      modalStroke = h.par;
+      modalPutt = 2;
+    } else {
+      modalStroke = 0;
+      modalPutt = 0;
+    }
+  }
+  try { updateModalDisplay(); } catch(e) {}
+  try { v33UpdateThumbInfo(); } catch(e) {}
+  try { v35HighlightActiveCell(); } catch(e) {}
+  try { v32SetActiveCell(v35ActivePi, v35ActiveHi); } catch(e) {}
+  try { v32ApplyCrossHighlight(); } catch(e) {}
+  showToast('▶ ' + modalHole + 'H へ');
 }
 
 function bindEvents() {
@@ -9195,7 +9378,7 @@ function bindEvents() {
       }
     });
 
-    if (cf) cf.addEventListener('click', () => v33ConfirmAndAdvance());
+    if (cf) cf.addEventListener('click', () => v36MoveToNextHole());
   })();
 
 
@@ -9390,7 +9573,7 @@ function boot() {
   bindEvents();
   applyInputMode();  /* v14: 起動時に入力モードを適用（body class設定など） */
   Router.handleInitial();
-  console.log('G-WORLD v35.0 (v16聖域＋document委譲＋3列2行右寄せ)', new Date().toISOString());
+  console.log('G-WORLD v36.0 (v16聖域＋v36UpdateScore統合＋右寄せ2/3レイアウト)', new Date().toISOString());
 }
 
 if (document.readyState === 'loading') {
