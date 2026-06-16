@@ -5,7 +5,7 @@
 <!-- 監督指示 §3: ピンチイン・アウト完全許可 -->
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#0F5132">
-<title>G-WORLD v34.0 | 六甲国際パブリックコース</title>
+<title>G-WORLD v35.0 | 六甲国際パブリックコース</title>
 
 <!-- ============================================================
      v34: PWA設定 — ホーム画面追加時の名称 = "G-WORLD"
@@ -3134,6 +3134,89 @@ body.v31-mode-beginner .v33-thumb-grid .v31-tg-player {
 }
 .v34-edit-hint .v34-eh-ico { font-size: 14px; }
 
+
+/* ============================================================
+   v35: 親指グリッド 3列2行 右寄せ + 画面下部余白 + 選択セルハイライト
+   ============================================================ */
+.v35-thumb-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr 1fr !important;
+  grid-template-rows: auto auto !important;
+  gap: 6px !important;
+  margin-left: auto !important;
+  max-width: 100% !important;
+}
+.v35-tg-shot-plus  { grid-column: 1; grid-row: 1; }
+.v35-tg-player     { grid-column: 2; grid-row: 1; }
+.v35-tg-putt-plus  { grid-column: 3; grid-row: 1; }
+.v35-tg-shot-minus { grid-column: 1; grid-row: 2; }
+.v35-tg-confirm    { grid-column: 2; grid-row: 2; }
+.v35-tg-putt-minus { grid-column: 3; grid-row: 2; }
+
+.v35-tg {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 2px !important;
+  min-height: 52px !important;
+  padding: 4px 4px !important;
+  border-radius: 10px !important;
+  line-height: 1 !important;
+}
+.v35-tg .v31-tg-op {
+  font-size: 18px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+}
+.v35-tg .v31-tg-lbl {
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  text-align: center !important;
+  line-height: 1.1 !important;
+  white-space: normal !important;
+}
+.v35-tg-confirm { font-size: 11px !important; }
+.v35-tg-confirm .v31-tg-op { font-size: 20px !important; }
+
+/* 画面下部余白 */
+.v33-modal-bottom {
+  padding: 10px 12px calc(28px + env(safe-area-inset-bottom)) !important;
+  flex: 0 0 auto !important;
+}
+.v31-modal {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* ============================================================
+   v35: 選択セルハイライト（入力待機状態の可視化）
+   ============================================================ */
+.v35-selected-cell {
+  background: var(--v31-accent) !important;
+  color: #fff !important;
+  outline: 3px solid var(--v31-accent-deep) !important;
+  outline-offset: -3px !important;
+  box-shadow: 0 0 0 4px rgba(45,157,95,.30) !important;
+  z-index: 4;
+  position: relative;
+}
+.scoretable td[data-action="cell-tap"] {
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(45,157,95,.25);
+}
+.scoretable td[data-action="cell-tap"]:active {
+  background: var(--v31-accent-soft) !important;
+}
+
+/* レスポンシブ */
+@media (max-width: 380px) {
+  .v35-tg { min-height: 46px !important; }
+  .v35-tg .v31-tg-op { font-size: 16px !important; }
+  .v35-tg .v31-tg-lbl { font-size: 9px !important; }
+}
+
 </style>
 
 <!-- QR Code Generator (Kazuhiko Arase, MIT) -->
@@ -5910,24 +5993,27 @@ var qrcode = function() {
           <span class="v33-ti-stroke" id="v33StrokeBadge">0</span>
         </div>
       </div>
-      <div class="v31-thumb-grid v33-thumb-grid">
-        <button type="button" class="v31-tg v33-tg v31-tg-shot-plus" id="v31ShotPlus">
+      <!-- v35: 3列2行 右寄せ親指グリッド
+           上段: [ストローク+] [プレイヤー移動] [パット+]
+           下段: [ストローク-] [確定・次へ]      [パット-] -->
+      <div class="v31-thumb-grid v33-thumb-grid v35-thumb-grid">
+        <button type="button" class="v31-tg v33-tg v35-tg v35-tg-shot-plus v31-tg-shot-plus" id="v31ShotPlus">
           <span class="v31-tg-op">＋</span><span class="v31-tg-lbl">ストローク</span>
         </button>
-        <button type="button" class="v31-tg v33-tg v31-tg-shot-minus" id="v31ShotMinus">
-          <span class="v31-tg-op">−</span><span class="v31-tg-lbl">ストローク</span>
+        <button type="button" class="v31-tg v33-tg v35-tg v35-tg-player v31-tg-player" id="v31PlayerNext">
+          <span class="v31-tg-op">👥</span><span class="v31-tg-lbl">プレイヤー<br>移動</span>
         </button>
-        <button type="button" class="v31-tg v33-tg v31-tg-putt-plus" id="v31PuttPlus">
+        <button type="button" class="v31-tg v33-tg v35-tg v35-tg-putt-plus v31-tg-putt-plus" id="v31PuttPlus">
           <span class="v31-tg-op">＋</span><span class="v31-tg-lbl">パット</span>
         </button>
-        <button type="button" class="v31-tg v33-tg v31-tg-putt-minus" id="v31PuttMinus">
+        <button type="button" class="v31-tg v33-tg v35-tg v35-tg-shot-minus v31-tg-shot-minus" id="v31ShotMinus">
+          <span class="v31-tg-op">−</span><span class="v31-tg-lbl">ストローク</span>
+        </button>
+        <button type="button" class="v31-tg v33-tg v35-tg v35-tg-confirm v31-tg-confirm" id="v31Confirm">
+          <span class="v31-tg-op">✓</span><span class="v31-tg-lbl">確定<br>次へ</span>
+        </button>
+        <button type="button" class="v31-tg v33-tg v35-tg v35-tg-putt-minus v31-tg-putt-minus" id="v31PuttMinus">
           <span class="v31-tg-op">−</span><span class="v31-tg-lbl">パット</span>
-        </button>
-        <button type="button" class="v31-tg v33-tg v31-tg-player" id="v31PlayerNext">
-          <span class="v31-tg-op">👥</span><span class="v31-tg-lbl">プレイヤー切替</span>
-        </button>
-        <button type="button" class="v31-tg v33-tg v31-tg-confirm" id="v31Confirm">
-          <span class="v31-tg-op">✓</span><span class="v31-tg-lbl">確定・次へ</span>
         </button>
       </div>
     </div>
@@ -6717,7 +6803,9 @@ function renderTable() {
       }
       const puttMini = (State.ui.showPuttInTable && p.putts[hi] > 0 && sc != null)
         ? '<span class="putt-mini">p' + p.putts[hi] + '</span>' : '';
-      html += '<td class="' + (cls + cur + outEnd).trim() + '" data-pi="' + realIdx + '" data-hi="' + hi + '" data-action="cell-tap">' + txt + puttMini + '</td>';
+      /* v35: 一意ID をtdに必ず付与 — タップ伝搬を確実化 */
+      const cellId = 'cell-p' + realIdx + '-h' + hi;
+      html += '<td class="' + (cls + cur + outEnd).trim() + '" id="' + cellId + '" data-pi="' + realIdx + '" data-hi="' + hi + '" data-action="cell-tap">' + txt + puttMini + '</td>';
     });
 
     const total = totalScore(p);
@@ -6777,6 +6865,8 @@ function renderTable() {
   try { v32ApplyCrossHighlight(); } catch(e) {}
   /* v33: プレイヤーリスト（司令塔の同伴者）も同期 — プロフィール変更即時反映 */
   try { v31RenderPlayerList(); } catch(e) {}
+  /* v35: 再描画後もアクティブセルのハイライトを維持 */
+  try { v35HighlightActiveCell(); } catch(e) {}
 
 }
 
@@ -6872,6 +6962,9 @@ function openScoreModal(pi, hi) {
   modalHole = hi + 1;
   /* v32: アクティブセル更新 */
   v32SetActiveCell(pi, hi);
+  /* v35: アクティブセル同期（モーダル開時） */
+  v35ActivePi = pi;
+  v35ActiveHi = hi;
   const p = State.players[pi];
   const h = COURSE.holes[hi];
 
@@ -8377,6 +8470,10 @@ function v33ConfirmAndAdvance() {
       v32SetActiveCell(modalPlayerIdx, modalHole - 1);
       v32ApplyCrossHighlight();
     } catch(e) {}
+    /* v35: アクティブセルを次ホールの現在プレイヤーへ */
+    v35ActivePi = modalPlayerIdx;
+    v35ActiveHi = modalHole - 1;
+    try { v35HighlightActiveCell(); } catch(e) {}
   } else {
     const hi = modalHole - 1;
     let nextIdx = -1;
@@ -8509,6 +8606,154 @@ function v34InitPmDefault() {
   /* メイン入力欄にも反映 */
   const inp = document.getElementById('v32MainPmStart');
   if (inp) inp.value = State.round.pmStart || '';
+}
+
+
+/* =================================================================
+   v35: アクティブセル管理 — 「入力待機状態」を保持し ＋−ボタンと連動
+   ================================================================= */
+let v35ActivePi = -1;
+let v35ActiveHi = -1;
+
+function v35GetCellId(pi, hi) {
+  return 'cell-p' + pi + '-h' + hi;
+}
+
+function v35SetActiveCell(pi, hi) {
+  v35ActivePi = pi;
+  v35ActiveHi = hi;
+  if (v32IsHoleLocked(hi)) {
+    showToast('🏁 9Hモードでは 10H 以降は入力できません');
+    v35ActivePi = -1; v35ActiveHi = -1;
+    return false;
+  }
+  const p = State.players[pi];
+  if (v31IsBeginner() && p && !p.isMe) {
+    showToast('🔰 初心者モードでは自分のスコアのみ編集できます');
+    v35ActivePi = -1; v35ActiveHi = -1;
+    return false;
+  }
+  try { v32SetActiveCell(pi, hi); } catch(e) {}
+  try { v32ApplyCrossHighlight(); } catch(e) {}
+  modalPlayerIdx = pi;
+  modalHole = hi + 1;
+  const h = COURSE.holes[hi];
+  if (p) {
+    if (p.scores[hi] != null) {
+      modalStroke = p.scores[hi];
+      modalPutt = p.putts[hi] || 0;
+    } else if (State.ui.inputMode === 'simple') {
+      modalStroke = h ? h.par : 4;
+      modalPutt = 2;
+    } else {
+      modalStroke = 0; modalPutt = 0;
+    }
+  }
+  try { updateModalDisplay(); } catch(e) {}
+  try { v33UpdateThumbInfo(); } catch(e) {}
+  v35HighlightActiveCell();
+  return true;
+}
+
+function v35HighlightActiveCell() {
+  document.querySelectorAll('.v35-selected-cell').forEach(el =>
+    el.classList.remove('v35-selected-cell')
+  );
+  if (v35ActivePi < 0 || v35ActiveHi < 0) return;
+  ['#scoreTable', '#v31ModalScoreTable', '#v32LiveTable'].forEach(sel => {
+    const t = document.querySelector(sel);
+    if (!t) return;
+    const cell = t.querySelector('[data-pi="' + v35ActivePi + '"][data-hi="' + v35ActiveHi + '"]');
+    if (cell) cell.classList.add('v35-selected-cell');
+  });
+}
+
+/* ＋−ボタン即時反映（アクティブセル連動） */
+function v35IncrementStroke(delta) {
+  if (v35ActivePi < 0 || v35ActiveHi < 0) {
+    v35ActivePi = modalPlayerIdx;
+    v35ActiveHi = modalHole - 1;
+  }
+  if (v32IsHoleLocked(v35ActiveHi)) {
+    showToast('🏁 9Hモードでは 10H 以降は入力できません');
+    return;
+  }
+  const p = State.players[v35ActivePi];
+  if (!p) return;
+  if (v31IsBeginner() && !p.isMe) {
+    showToast('🔰 初心者モードでは自分のスコアのみ');
+    return;
+  }
+  modalPlayerIdx = v35ActivePi;
+  modalHole = v35ActiveHi + 1;
+  if (p.scores[v35ActiveHi] != null) {
+    modalStroke = p.scores[v35ActiveHi];
+  } else if (State.ui.inputMode === 'simple') {
+    modalStroke = COURSE.holes[v35ActiveHi].par;
+  } else {
+    modalStroke = 0;
+  }
+  modalStroke = Math.max(0, Math.min(20, modalStroke + delta));
+  try { saveCurrentModalScore(); } catch(e) {}
+  try { renderTable(); } catch(e) {}
+  try { updateModalDisplay(); } catch(e) {}
+  try { v33UpdateThumbInfo(); } catch(e) {}
+  v35HighlightActiveCell();
+}
+
+function v35IncrementPutt(delta) {
+  if (v35ActivePi < 0 || v35ActiveHi < 0) {
+    v35ActivePi = modalPlayerIdx;
+    v35ActiveHi = modalHole - 1;
+  }
+  if (v32IsHoleLocked(v35ActiveHi)) {
+    showToast('🏁 9Hモードでは 10H 以降は入力できません');
+    return;
+  }
+  if (!State.settings.puttEnabled) {
+    showToast('入力設定でパットを ON にしてください');
+    return;
+  }
+  if (v31IsBeginner()) {
+    showToast('🔰 初心者モードではパットは記録しません');
+    return;
+  }
+  const p = State.players[v35ActivePi];
+  if (!p) return;
+  if (v31IsStandard() && !p.isMe) {
+    showToast('パットは自分(佐藤さん)のみ記録します');
+    return;
+  }
+  modalPlayerIdx = v35ActivePi;
+  modalHole = v35ActiveHi + 1;
+  modalPutt = p.putts[v35ActiveHi] || 0;
+  modalPutt = Math.max(0, Math.min(10, modalPutt + delta));
+  try { saveCurrentModalScore(); } catch(e) {}
+  try { renderTable(); } catch(e) {}
+  try { updateModalDisplay(); } catch(e) {}
+  try { v33UpdateThumbInfo(); } catch(e) {}
+  v35HighlightActiveCell();
+}
+
+/* document-level セルタップ委譲 */
+function v35BindDocumentCellTap() {
+  if (v35BindDocumentCellTap._done) return;
+  v35BindDocumentCellTap._done = true;
+  document.addEventListener('click', (e) => {
+    if (e.target && e.target.classList && (
+        e.target.classList.contains('v31-inline-edit') ||
+        (e.target.closest && e.target.closest('.v31-inline-quick'))
+    )) return;
+    const td = e.target.closest && e.target.closest('td[data-action="cell-tap"]');
+    if (!td) return;
+    const pi = parseInt(td.dataset.pi, 10);
+    const hi = parseInt(td.dataset.hi, 10);
+    if (isNaN(pi) || isNaN(hi)) return;
+    e.stopPropagation();
+    const ok = v35SetActiveCell(pi, hi);
+    if (!ok) return;
+    try { v31OpenInlineEdit(td, pi, hi); } catch(e) {}
+  }, true);
 }
 
 function bindEvents() {
@@ -8932,40 +9177,22 @@ function bindEvents() {
     const pn = document.getElementById('v31PlayerNext');
     const cf = document.getElementById('v31Confirm');
 
-    if (sp) sp.addEventListener('click', () => {
-      if (modalStroke < 20) modalStroke++;
-      try { updateModalDisplay(); } catch(e) {}
-      v33CommitImmediate();
-    });
-    if (sm) sm.addEventListener('click', () => {
-      if (modalStroke > 0) modalStroke--;
-      try { updateModalDisplay(); } catch(e) {}
-      v33CommitImmediate();
-    });
-    if (pp) pp.addEventListener('click', () => {
-      if (!State.settings.puttEnabled) { showToast('入力設定でパットを ON にしてください'); return; }
-      const p = State.players[modalPlayerIdx];
-      if (v31IsStandard() && p && !p.isMe) { showToast('パットは自分(佐藤さん)のみ記録します'); return; }
-      if (v31IsBeginner()) { showToast('🔰 初心者モードではパットは記録しません'); return; }
-      if (modalPutt < 10) modalPutt++;
-      try { updateModalDisplay(); } catch(e) {}
-      v33CommitImmediate();
-    });
-    if (pm) pm.addEventListener('click', () => {
-      if (!State.settings.puttEnabled) { showToast('入力設定でパットを ON にしてください'); return; }
-      const p = State.players[modalPlayerIdx];
-      if (v31IsStandard() && p && !p.isMe) { showToast('パットは自分(佐藤さん)のみ記録します'); return; }
-      if (v31IsBeginner()) { showToast('🔰 初心者モードではパットは記録しません'); return; }
-      if (modalPutt > 0) modalPutt--;
-      try { updateModalDisplay(); } catch(e) {}
-      v33CommitImmediate();
-    });
+    /* v35: アクティブセル連動 — タップ選択中のセルを書き換える */
+    if (sp) sp.addEventListener('click', () => v35IncrementStroke(+1));
+    if (sm) sm.addEventListener('click', () => v35IncrementStroke(-1));
+    if (pp) pp.addEventListener('click', () => v35IncrementPutt(+1));
+    if (pm) pm.addEventListener('click', () => v35IncrementPutt(-1));
 
     if (pn) pn.addEventListener('click', () => {
       if (v31IsBeginner()) { showToast('🔰 初心者モードでは自分のみ'); return; }
       if (!State.players.length) return;
       const nxt = v33PickNextPlayer();
-      if (nxt >= 0) v33SwitchToPlayer(nxt);
+      if (nxt >= 0) {
+        v33SwitchToPlayer(nxt);
+        v35ActivePi = nxt;
+        v35ActiveHi = modalHole - 1;
+        v35HighlightActiveCell();
+      }
     });
 
     if (cf) cf.addEventListener('click', () => v33ConfirmAndAdvance());
@@ -9143,6 +9370,9 @@ function bindEvents() {
     });
   })();
 
+  /* v35: document-level セルタップ委譲 — タップ伝搬を確実化 */
+  try { v35BindDocumentCellTap(); } catch(e) {}
+
   /* v32/v33/v34: 起動同期 */
   try { v33SyncMeToPlayer(); } catch(e) {}
   v32InitAfterBind();
@@ -9160,7 +9390,7 @@ function boot() {
   bindEvents();
   applyInputMode();  /* v14: 起動時に入力モードを適用（body class設定など） */
   Router.handleInitial();
-  console.log('G-WORLD v34.0 (v16聖域＋PWA＋現場最適化UI)', new Date().toISOString());
+  console.log('G-WORLD v35.0 (v16聖域＋document委譲＋3列2行右寄せ)', new Date().toISOString());
 }
 
 if (document.readyState === 'loading') {
