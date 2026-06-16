@@ -3,11 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <!-- 監督指示 §3: ピンチイン・アウト完全許可 -->
-<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#0F5132">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>G-WORLD v30.0 | 六甲国際パブリックコース</title>
+<title>G-WORLD v31.0 | 六甲国際パブリックコース</title>
+<!-- v31: ホーム画面アイコン -->
+<link rel="apple-touch-icon" href="./icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="./icon.png">
+<link rel="apple-touch-icon" sizes="152x152" href="./icon.png">
+<link rel="icon" type="image/png" href="./icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="G-WORLD">
+
 <style>
 /* =================================================================
    G-WORLD v12.0 - 配布版 Final
@@ -1603,498 +1612,20 @@ body.input-mode-counter #btnQuickPutt { display: none; }
 }
 
 
-/* =================================================================
-   v27: 実戦特化UI スタイル
-   ================================================================= */
-
-/* ========== トップ画面：スコアカード本体を非表示・準備セクションのみ ========== */
 /* ============================================================
-   v28: トップ画面（#screen-gworld）の徹底的な「引き算」
-   - スコアカード・ホール情報・スコア設定・ラウンド終了等
-     スコア入力関連UIを完全に非表示
-   - 司令塔機能（.v27-prep 配下）のみ表示
-   ============================================================ */
-#screen-gworld > .topbar,
-#screen-gworld > .top-bar,
-#screen-gworld > .hero-current,
-#screen-gworld > .toggle-bar,
-#screen-gworld > .settings-accordion,
-#screen-gworld > .card-wrap,
-#screen-gworld > .save-section,
-#screen-gworld > .save-round-wrap,
-#screen-gworld > .center-actions,
-#screen-gworld > .secondary-actions {
-  display: none !important;
-}
-
-/* ============================================================
-   v28: フッター死活監視 - 常に最前面・タップ可能を保証
-   ============================================================ */
-.footer-bar {
-  position: fixed !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  z-index: 9999 !important;     /* モーダル以外の全要素より前面 */
-  pointer-events: auto !important;
-  background: #fff;
-  border-top: 1.5px solid var(--line-strong);
-  box-shadow: 0 -4px 12px rgba(0,0,0,.08);
-}
-.footer-bar .footer-tab {
-  pointer-events: auto !important;
-  cursor: pointer;
-}
-/* モーダル展開時のみフッターを下げる（z-index で）*/
-.modal-backdrop.show { z-index: 10000; }
-
-/* 準備セクション下にフッター分の余白を確保 */
-#screen-gworld .v27-prep {
-  padding-bottom: 96px !important;
-}
-
-/* 準備セクション本体 */
-.v27-prep {
-  padding: 12px 14px 28px;
-  max-width: 760px; margin: 0 auto;
-  box-sizing: border-box;
-}
-.v27-prep-header {
-  display: flex; align-items: center; gap: 12px;
-  padding: 14px 16px;
-  background: linear-gradient(135deg, #0F5132, #1B7A4B);
-  color: #fff;
-  border-radius: 14px;
-  box-shadow: var(--shadow-1);
-  margin-bottom: 14px;
-}
-.v27-prep-header .vp-ico { font-size: 36px; }
-.v27-prep-header .vp-title { font-size: 14px; font-weight: 800; line-height: 1.2; }
-.v27-prep-header .vp-title b { font-size: 20px; font-weight: 900; }
-
-/* 2カラム入力（ロッカー・PMスタート） */
-.v27-row2 {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-  margin-bottom: 14px;
-}
-.v27-field { display: flex; flex-direction: column; }
-.v27-field label {
-  font-size: 12px; font-weight: 900; color: var(--ink-soft);
-  margin-bottom: 6px;
-}
-.v27-field input[type="text"],
-.v27-time-btn {
-  width: 100%; height: 52px;
-  padding: 10px 14px;
-  font-size: 20px; font-weight: 900;
-  border: 2px solid var(--line-strong);
-  border-radius: 12px;
-  background: var(--paper);
-  color: var(--ink);
-  box-sizing: border-box;
-  text-align: center;
-}
-.v27-field input[type="text"]:focus,
-.v27-time-btn:focus {
-  outline: none;
-  border-color: var(--green-mid);
-  box-shadow: 0 0 0 3px rgba(15,81,50,.15);
-}
-.v27-time-btn {
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.v27-time-ico { font-size: 20px; }
-
-/* セクション共通 */
-.v27-section { margin-bottom: 14px; }
-.v27-section-title {
-  font-size: 14px; font-weight: 900;
-  color: var(--green-2);
-  margin-bottom: 8px;
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 8px;
-}
-.v27-add-btn {
-  background: var(--green-2); color: #fff;
-  border: none; border-radius: 8px;
-  padding: 6px 12px;
-  font-size: 12px; font-weight: 900;
-  cursor: pointer;
-}
-
-/* 同伴者一覧 */
-.v27-player-list {
-  display: flex; flex-direction: column; gap: 8px;
-}
-.v27-player-card {
-  display: flex; align-items: center; gap: 10px;
-  padding: 12px 14px;
-  background: var(--paper);
-  border: 2px solid var(--line-strong);
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all .15s;
-  min-height: 56px;
-}
-.v27-player-card.is-focus {
-  background: linear-gradient(135deg, #FFF6CC, #FFE99E);
-  border-color: #C99B2B;
-  box-shadow: 0 0 0 3px rgba(201,155,43,.2);
-}
-.v27-player-card.is-me::after {
-  content: "自分";
-  margin-left: auto;
-  background: var(--green-2); color: #fff;
-  font-size: 10px; font-weight: 900;
-  padding: 2px 8px; border-radius: 4px;
-}
-.vpc-avatar {
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  background: var(--green-mist);
-  display: grid; place-items: center;
-  font-size: 18px;
-}
-.vpc-name { font-size: 16px; font-weight: 900; color: var(--ink); flex: 1; }
-.vpc-delete {
-  background: #FFEFEC; color: #8B2A18;
-  border: 1px solid #E5B5A9;
-  border-radius: 8px;
-  padding: 4px 10px;
-  font-size: 11px; font-weight: 900;
-  cursor: pointer;
-}
-
-/* Googleナビ大型ボタン */
-.v27-nav-btn {
-  display: flex; align-items: center; gap: 14px;
-  padding: 14px 18px;
-  background: linear-gradient(135deg, #2D6FB8, #1A4F8B);
-  color: #fff;
-  text-decoration: none;
-  border-radius: 14px;
-  box-shadow: var(--shadow-1);
-  min-height: 64px;
-}
-.v27-nav-btn .vp-ico { font-size: 32px; }
-.v27-nav-btn span:not(.vp-ico) { font-size: 13px; font-weight: 800; line-height: 1.3; }
-.v27-nav-btn b { font-size: 17px; font-weight: 900; }
-
-/* ラウンド開始（特大） */
-.v27-start-btn {
-  width: 100%;
-  display: flex; align-items: center; justify-content: center; gap: 14px;
-  padding: 22px 18px;
-  background: linear-gradient(135deg, #F39C12, #E67E22);
-  color: #fff;
-  border: none;
-  border-radius: 18px;
-  font-weight: 900;
-  box-shadow: 0 6px 0 #B5651A, 0 8px 12px rgba(0,0,0,.18);
-  cursor: pointer;
-  margin: 14px 0 12px;
-  min-height: 84px;
-  transition: transform .1s;
-}
-.v27-start-btn:active { transform: translateY(3px); box-shadow: 0 3px 0 #B5651A, 0 4px 8px rgba(0,0,0,.15); }
-.v27-start-btn .vsb-ico { font-size: 40px; }
-.v27-start-btn .vsb-text { font-size: 22px; font-weight: 900; text-align: left; line-height: 1.15; }
-.v27-start-btn .vsb-text small { display: block; font-size: 12px; font-weight: 700; opacity: .9; margin-top: 2px; }
-
-/* 下部 3ミニボタン */
-.v27-bottom-actions {
-  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
-  margin-top: 10px;
-}
-.v27-mini-btn {
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 4px;
-  min-height: 60px;
-  padding: 10px 4px;
-  border-radius: 12px;
-  border: 2px solid var(--line-strong);
-  background: var(--paper);
-  color: var(--ink);
-  text-decoration: none;
-  font-size: 12px; font-weight: 900;
-  line-height: 1.15;
-  cursor: pointer;
-}
-.v27-mini-btn span:first-child { font-size: 22px; }
-.v27-reserve { background: linear-gradient(135deg,#E8F5EE,#C9E6D6); border-color: #4FA876; color: #0F5132; }
-.v27-tel     { background: linear-gradient(135deg,#FFE5DF,#F9C6BB); border-color: #C97864; color: #8B2A18; }
-.v27-detail  { background: linear-gradient(135deg,#FFFDF5,#F4EFDF); border-color: var(--line-strong); }
-
-/* =================================================================
-   v27: スコア入力モーダル（3:2 L字+親指）
-   ================================================================= */
-.modal-v27 {
-  max-width: 480px;
-  width: 96%;
-  max-height: 92vh;
-}
-.modal-v27 .modal-v27-body {
-  display: flex; flex-direction: column;
-  height: calc(92vh - 90px);
-  min-height: 540px;
-  overflow: hidden;
-}
-.modal-v27 .modal-v27-top {
-  flex: 3;
-  display: flex; flex-direction: column;
-  padding: 4px 6px;
-  border-bottom: 2px solid var(--line);
-  overflow: hidden;
-}
-.modal-v27 .modal-v27-bottom {
-  flex: 2;
-  display: grid;
-  grid-template-columns: 80px 1fr;
-  grid-template-rows: 1fr auto;
-  grid-template-areas:
-    "left right"
-    "bottom bottom";
-  gap: 6px;
-  padding: 6px 4px;
-}
-
-/* 上部ミニバー（現在ホール・打数・パット） */
-.v27-mini-bar {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
-  background: linear-gradient(135deg, #FFFDF5, #F4EFDF);
-  border: 2px solid var(--line-strong);
-  border-radius: 10px;
-  margin-bottom: 6px;
-}
-.v27-mini-hole { display: flex; flex-direction: column; align-items: flex-start; }
-.v27-mini-hole .hole-num { font-size: 28px; font-weight: 900; color: var(--green-2); line-height: 1; }
-.v27-mini-hole .hole-par { font-size: 11px; font-weight: 800; color: var(--ink-soft); }
-.v27-mini-stroke { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-.v27-mini-stroke .stroke-num { font-size: 44px; font-weight: 900; line-height: 1; letter-spacing: 1px; }
-.v27-mini-stroke .stroke-diff { font-size: 13px; font-weight: 900; }
-.v27-mini-putt { display: flex; flex-direction: column; align-items: center; }
-.v27-mini-putt .vmp-lbl { font-size: 10px; font-weight: 800; color: var(--ink-soft); }
-.v27-mini-putt .putt-num { font-size: 28px; font-weight: 900; }
-
-/* スコア表ミラー：縦も大きく */
-.v27-modal-tablewrap {
-  flex: 1;
-  border: 2px solid var(--line-strong);
-  border-radius: 10px;
-  overflow: hidden;
-  background: var(--paper);
-  margin-bottom: 4px;
-  min-height: 200px;
-}
-.v27-modal-scroll {
-  overflow-x: auto;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  height: 100%;
-  scroll-snap-type: x proximity;
-}
-.modal-v27 #modalScoreTable { font-size: 13px; min-width: 100%; }
-
-/* モードバッジ（コンパクト） */
-.modal-v27 .v27-badge {
-  display: flex; align-items: center; gap: 6px;
-  padding: 4px 10px;
-  font-size: 11px; font-weight: 900;
-  border-radius: 8px;
-}
-.modal-v27 .quick-par-mini {
-  margin-left: auto;
-  padding: 4px 10px;
-  font-size: 11px;
-  min-height: 26px;
-}
-
-/* 左縦列（4ボタン） */
-.v27-left-col {
-  grid-area: left;
-  display: flex; flex-direction: column;
-  gap: 5px;
-}
-.vlc-btn {
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 2px;
-  flex: 1;
-  padding: 4px 2px;
-  border-radius: 10px;
-  border: 2px solid var(--line-strong);
-  text-decoration: none;
-  font-size: 10px; font-weight: 900;
-  text-align: center; line-height: 1.1;
-  cursor: pointer;
-  box-shadow: var(--shadow-1);
-  min-height: 50px;
-}
-.vlc-btn:active { transform: translateY(1px); }
-.vlc-btn .vlc-ico { font-size: 18px; line-height: 1; }
-.vlc-btn .vlc-text { font-size: 10px; font-weight: 900; }
-.vlc-btn .vlc-text b { font-size: 13px; }
-.vlc-pm      { background: linear-gradient(135deg, #FFF6CC, #FFE99E); border-color: #C99B2B; color: #6B4A0E; }
-.vlc-reserve { background: linear-gradient(135deg, #1B7A4B, #0F5132); color: #fff; border-color: #0F5132; }
-.vlc-tel     { background: linear-gradient(135deg, #C0392B, #8B1A0E); color: #fff; border-color: #8B1A0E; }
-.vlc-detail  { background: linear-gradient(135deg, #FFFDF5, #F4EFDF); }
-
-/* 右側 親指グリッド（メイン操作） */
-.v27-right-col { grid-area: right; }
-.v27-thumb-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 6px;
-  height: 100%;
-  min-height: 130px;
-}
-.vtg-btn {
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 2px;
-  padding: 6px 2px;
-  border-radius: 12px;
-  border: 2px solid var(--line-strong);
-  background: linear-gradient(180deg, #FFF 0%, #F4F8F6 100%);
-  font-size: 12px; font-weight: 900;
-  line-height: 1.1;
-  cursor: pointer;
-  box-shadow: var(--shadow-1);
-  -webkit-tap-highlight-color: transparent;
-}
-.vtg-btn:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,.2); }
-.vtg-btn .vtg-ico { font-size: 22px; font-weight: 900; line-height: 1; }
-.vtg-btn .vtg-lbl { font-size: 10.5px; font-weight: 900; }
-
-.vtg-shot-plus, .vtg-putt-plus { background: linear-gradient(180deg,#E8F5EE,#C9E6D6); border-color: #4FA876; color: #0F5132; }
-.vtg-shot-minus, .vtg-putt-minus { background: linear-gradient(180deg,#FFEFEC,#FAD3CB); border-color: #C97864; color: #8B2A18; }
-.vtg-player { background: linear-gradient(180deg,#EDF1FC,#C9D4EC); border-color: #5772A6; color: #1F3A6B; }
-.vtg-confirm {
-  background: linear-gradient(135deg, #F39C12, #E67E22);
-  color: #fff;
-  border-color: #B5651A;
-  box-shadow: 0 4px 0 #B5651A;
-}
-.vtg-confirm:active { box-shadow: 0 1px 0 #B5651A; }
-.vtg-confirm .vtg-ico { font-size: 26px; color: #fff; }
-
-/* 下横列（ロッカー・REGティ・設定） */
-.v27-bottom-row {
-  grid-area: bottom;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 6px;
-  padding-top: 4px;
-  border-top: 1px dashed var(--line);
-}
-.vbr-info, .vbr-btn {
-  display: flex; align-items: center; justify-content: center;
-  gap: 4px;
-  padding: 6px 8px;
-  min-height: 42px;
-  border-radius: 10px;
-  border: 2px solid var(--line-strong);
-  font-size: 12px; font-weight: 900;
-  color: var(--ink);
-}
-.vbr-info { background: #FFFDF5; border-style: dashed; }
-.vbr-btn { background: var(--paper); cursor: pointer; }
-.vbr-btn:active { transform: translateY(1px); }
-.vbr-ico { font-size: 18px; line-height: 1; }
-.vbr-lbl { font-size: 12px; font-weight: 900; }
-.vbr-val { font-size: 16px; font-weight: 900; }
-
-/* ========== クロスハイライト ========== */
-#scoreTable td.cross-hl,
-#scoreTable th.cross-hl,
-#modalScoreTable td.cross-hl,
-#modalScoreTable th.cross-hl {
-  background: linear-gradient(180deg, #FFF6CC 0%, #FFE99E 100%) !important;
-  box-shadow: inset 0 0 0 2px #C99B2B;
-}
-#scoreTable tr.cross-hl > td,
-#modalScoreTable tr.cross-hl > td {
-  background: linear-gradient(180deg, #FFFBE6 0%, #FFF1B8 100%);
-}
-#scoreTable td.cross-hl.cross-hl-cell,
-#modalScoreTable td.cross-hl.cross-hl-cell {
-  background: linear-gradient(180deg, #FFE588 0%, #FFD250 100%) !important;
-  box-shadow: inset 0 0 0 3px #B5871F;
-}
-
-/* ========== PMピッカーモーダル ========== */
-.modal-pmpicker { max-width: 380px; }
-.pmpicker-body { padding: 16px; }
-.pmpicker-hint { font-size: 13px; font-weight: 800; color: var(--ink-soft); margin-bottom: 12px; text-align: center; }
-.pmpicker-input {
-  width: 100%; font-size: 32px; font-weight: 900;
-  padding: 14px; border: 2px solid var(--line-strong); border-radius: 12px;
-  text-align: center; background: var(--paper); color: var(--ink);
-  margin-bottom: 14px; box-sizing: border-box;
-}
-.pmpicker-quick { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 14px; }
-.pmpicker-quick button {
-  padding: 10px; border: 1.5px solid var(--line-strong); border-radius: 10px;
-  background: var(--paper); font-size: 14px; font-weight: 900; color: var(--ink); cursor: pointer;
-}
-.pmpicker-quick button:active { background: var(--green-mist); border-color: var(--green-2); color: var(--green-2); }
-.pmpicker-actions { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; }
-.pmpicker-actions .btn-clear { padding: 12px; border-radius: 10px; background: #E5E5E5; border: 1.5px solid #BBB; font-weight: 900; cursor: pointer; }
-.pmpicker-actions .btn-confirm { padding: 12px; border-radius: 10px; background: linear-gradient(135deg, #1B7A4B, #0F5132); color: #fff; border: none; font-weight: 900; cursor: pointer; font-size: 15px; }
-
-/* ========== 小画面対応 ========== */
-@media (max-width: 380px) {
-  .v27-start-btn { padding: 18px 14px; min-height: 76px; }
-  .v27-start-btn .vsb-ico { font-size: 34px; }
-  .v27-start-btn .vsb-text { font-size: 19px; }
-  .modal-v27 .modal-v27-bottom { grid-template-columns: 68px 1fr; }
-  .vlc-btn { font-size: 9px; min-height: 46px; }
-  .vlc-btn .vlc-ico { font-size: 16px; }
-  .vtg-btn .vtg-ico { font-size: 19px; }
-  .vtg-btn .vtg-lbl { font-size: 10px; }
-  .v27-mini-stroke .stroke-num { font-size: 36px; }
-  .v27-mini-putt .putt-num { font-size: 24px; }
-  .vbr-info, .vbr-btn { min-height: 38px; font-size: 11px; }
-  .vbr-ico { font-size: 15px; }
-}
-
-
-/* ============================================================
-   v29: フッターの死活監視 — 常に最前面・常にタップ可
-   ============================================================ */
-.bottom-nav, nav.bottom-nav, #bottomNav, .footer-nav {
-  position: fixed !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  z-index: 9999 !important;
-  pointer-events: auto !important;
-  background: var(--paper, #fff) !important;
-}
-.screen { padding-bottom: 96px !important; }
-/* モーダル群はフッターより下の z-index には行かない（モーダル前面維持） */
-.modal-backdrop, .modal { z-index: 10000 !important; }
-
-
-/* ============================================================
-   v30: 2色テーマ + ダブルタップ拡大無効 + 直接編集 + モード切替
+   v31: 2色テーマ + 司令塔UI + 親指グリッド + 直接編集
    ============================================================ */
 :root {
-  --v30-base: #ffffff;
-  --v30-base-soft: #f7faf8;
-  --v30-base-line: #e2ebe5;
-  --v30-accent: #2d9d5f;
-  --v30-accent-deep: #1f7a47;
-  --v30-accent-soft: #d6efe2;
-  --v30-ink: #0f2a1a;
-  --v30-ink-soft: #5a7a68;
+  --v31-base: #ffffff;
+  --v31-base-soft: #f6faf7;
+  --v31-base-line: #dde8e1;
+  --v31-base-line2: #c4d4ca;
+  --v31-accent: #2d9d5f;
+  --v31-accent-deep: #1f7a47;
+  --v31-accent-soft: #d6efe2;
+  --v31-ink: #102a1a;
+  --v31-ink-soft: #5a7a68;
+  --v31-danger: #c0392b;
 }
 
 /* ダブルタップ拡大の物理無効化 */
@@ -2102,289 +1633,575 @@ html, body {
   touch-action: manipulation;
   -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
+  background: var(--v31-base-soft);
 }
-button, .vtg-btn, .v27-mini-btn, .v27-start-btn, .v27-nav-btn,
-.v30-sm-btn, .v30-mode-toggle button, .vlc-btn, .footer-tab,
-.score-cell, .v30-inline-edit {
+* { -webkit-tap-highlight-color: transparent; }
+button, input, .v31-tg, .v31-start-btn, .v31-sub-btn,
+.v31-settings-btn, .v31-big-action, .v31-mode-toggle button,
+.v31-ss-segments button, .v31-mini-action, .footer-tab,
+.score-cell, .v31-inline-edit {
   touch-action: manipulation !important;
-  -webkit-tap-highlight-color: transparent !important;
   user-select: none;
   -webkit-user-select: none;
 }
 
-/* モード切替トグル */
-.v30-mode-section {
-  margin: 14px 14px 8px;
-  padding: 10px 12px 12px;
-  background: var(--v30-base);
-  border: 2px solid var(--v30-accent);
+/* ============================================================
+   v31: 聖域 — v16計算エンジンが参照するDOMを物理的に非表示
+   ============================================================ */
+.v31-sanctuary {
+  position: fixed !important;
+  width: 1px !important; height: 1px !important;
+  left: -9999px !important; top: -9999px !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+/* ============================================================
+   司令塔（トップ画面）
+   ============================================================ */
+.v31-cockpit {
+  padding: 14px 14px 110px;
+  max-width: 760px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.v31-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px;
+  background: var(--v31-accent);
+  color: #fff;
   border-radius: 14px;
-  box-shadow: 0 4px 12px rgba(45,157,95,.10);
+  margin-bottom: 14px;
+  box-shadow: 0 4px 12px rgba(45,157,95,.20);
 }
-.v30-mode-label {
+.v31-header .v31-h-ico { font-size: 30px; }
+.v31-header .v31-h-sub { font-size: 12px; opacity: .9; }
+.v31-header .v31-h-main { font-size: 20px; font-weight: 900; line-height: 1.1; }
+
+.v31-block {
+  background: var(--v31-base);
+  border: 1.5px solid var(--v31-base-line);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+.v31-block-accent { border-color: var(--v31-accent); border-width: 2px; }
+.v31-block-title {
   font-size: 13px; font-weight: 800;
-  color: var(--v30-accent-deep);
-  margin-bottom: 8px;
+  color: var(--v31-accent-deep);
+  margin-bottom: 10px;
   letter-spacing: .04em;
+  display: flex; align-items: center; justify-content: space-between;
 }
-.v30-mode-toggle {
+
+/* モード切替トグル */
+.v31-mode-toggle {
   display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
 }
-.v30-mode-toggle button {
-  display: flex; align-items: center; gap: 8px;
-  padding: 12px 10px;
-  background: var(--v30-base-soft);
-  border: 2px solid var(--v30-base-line);
+.v31-mode-toggle button {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 10px;
+  background: var(--v31-base-soft);
+  border: 2px solid var(--v31-base-line);
   border-radius: 12px;
-  color: var(--v30-ink-soft);
+  color: var(--v31-ink-soft);
   font-weight: 800;
   text-align: left;
   transition: all .15s;
   cursor: pointer;
 }
-.v30-mode-toggle button .v30-mode-ico { font-size: 26px; line-height: 1; }
-.v30-mode-toggle button .v30-mode-name {
-  display: flex; flex-direction: column; line-height: 1.2;
-  font-size: 15px;
+.v31-mode-toggle button .v31-mode-ico { font-size: 26px; line-height: 1; }
+.v31-mode-toggle button .v31-mode-name {
+  display: flex; flex-direction: column;
+  line-height: 1.2; font-size: 14px;
 }
-.v30-mode-toggle button .v30-mode-name small {
-  font-size: 10px; font-weight: 600; color: var(--v30-ink-soft);
-  margin-top: 2px;
+.v31-mode-toggle button .v31-mode-name small {
+  font-size: 10px; font-weight: 600; opacity: .8; margin-top: 2px;
 }
-.v30-mode-toggle button.active {
-  background: var(--v30-accent);
-  border-color: var(--v30-accent-deep);
+.v31-mode-toggle button.active {
+  background: var(--v31-accent);
+  border-color: var(--v31-accent-deep);
   color: #fff;
   box-shadow: 0 4px 10px rgba(45,157,95,.32);
 }
-.v30-mode-toggle button.active .v30-mode-name small {
-  color: rgba(255,255,255,.85);
-}
 
-/* ゲーム設定メニュー */
-.v30-settings-menu {
-  margin: 14px 14px 20px;
-  padding: 10px 12px 12px;
-  background: var(--v30-base);
-  border: 1.5px solid var(--v30-base-line);
-  border-radius: 14px;
-}
-.v30-sm-title {
-  font-size: 13px; font-weight: 800;
-  color: var(--v30-accent-deep);
-  margin-bottom: 8px;
-  letter-spacing: .04em;
-}
-.v30-sm-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-}
-.v30-sm-btn {
-  display: flex; align-items: center; gap: 8px;
-  padding: 12px 10px;
-  background: var(--v30-base-soft);
-  border: 1.5px solid var(--v30-base-line);
-  border-radius: 12px;
-  color: var(--v30-ink);
+/* 入力フィールド */
+.v31-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--v31-base-line2);
+  border-radius: 10px;
+  background: var(--v31-base);
+  font-size: 16px;
   font-weight: 700;
-  text-align: left;
-  font-size: 13px;
+  color: var(--v31-ink);
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color .15s;
+}
+.v31-input:focus { border-color: var(--v31-accent); }
+
+/* ミニアクション */
+.v31-mini-action {
+  background: var(--v31-accent-soft);
+  color: var(--v31-accent-deep);
+  border: 1.5px solid var(--v31-accent);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 800;
   cursor: pointer;
-  transition: all .15s;
 }
-.v30-sm-btn:active {
-  background: var(--v30-accent-soft);
-  border-color: var(--v30-accent);
-  transform: translateY(1px);
-}
-.v30-sm-btn .v30-sm-ico { font-size: 22px; line-height: 1; }
-.v30-sm-btn .v30-sm-lbl { line-height: 1.25; }
-.v30-sm-btn .v30-sm-lbl small {
-  font-size: 10px; font-weight: 500; color: var(--v30-ink-soft);
+.v31-mini-action:active { background: var(--v31-accent); color: #fff; }
+.v31-mini-clear {
+  background: var(--v31-base-soft);
+  color: var(--v31-ink-soft);
+  border-color: var(--v31-base-line2);
 }
 
-/* モーダル: スコアテーブル最大化（top 80% / bottom 20%） */
-.modal-v27 .modal-v27-body {
+/* プレイヤーリスト */
+.v31-player-list {
+  display: flex; flex-direction: column; gap: 8px;
+}
+.v31-player-card {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  background: var(--v31-base-soft);
+  border: 1.5px solid var(--v31-base-line);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.v31-player-card.is-me {
+  border-color: var(--v31-accent);
+  background: var(--v31-accent-soft);
+}
+.v31-player-card .v31-pc-ico { font-size: 22px; }
+.v31-player-card .v31-pc-name { flex: 1; font-weight: 800; }
+.v31-player-card .v31-pc-tag {
+  font-size: 10px;
+  padding: 2px 8px;
+  background: var(--v31-accent);
+  color: #fff;
+  border-radius: 999px;
+  font-weight: 800;
+}
+.v31-player-card .v31-pc-edit {
+  background: transparent;
+  border: 1px solid var(--v31-base-line2);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 11px;
+  color: var(--v31-ink-soft);
+  cursor: pointer;
+}
+
+/* ラウンド開始ボタン（巨大） */
+.v31-start-btn {
+  width: 100%;
+  display: flex; align-items: center; gap: 12px;
+  padding: 18px 20px;
+  background: var(--v31-accent);
+  color: #fff;
+  border: 2px solid var(--v31-accent-deep);
+  border-radius: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  margin: 4px 0 12px;
+  box-shadow: 0 6px 16px rgba(45,157,95,.30);
+}
+.v31-start-btn:active { background: var(--v31-accent-deep); transform: translateY(2px); }
+.v31-start-btn .v31-start-ico { font-size: 30px; }
+.v31-start-btn .v31-start-text {
+  display: flex; flex-direction: column; line-height: 1.2;
+  font-size: 18px; text-align: left;
+}
+.v31-start-btn .v31-start-text small { font-size: 11px; opacity: .9; font-weight: 600; }
+
+/* Googleナビ */
+.v31-nav-main {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px;
+  background: var(--v31-accent-soft);
+  border: 1.5px solid var(--v31-accent);
+  border-radius: 12px;
+  color: var(--v31-accent-deep);
+  font-weight: 700;
+  text-decoration: none;
+  margin-bottom: 8px;
+}
+.v31-nav-main .v31-nav-ico { font-size: 26px; }
+
+/* サブグリッド */
+.v31-sub-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;
+}
+.v31-sub-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 10px 4px;
+  background: var(--v31-base-soft);
+  border: 1.5px solid var(--v31-base-line);
+  border-radius: 10px;
+  color: var(--v31-ink);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+}
+.v31-sub-btn:active {
+  background: var(--v31-accent-soft);
+  border-color: var(--v31-accent);
+}
+.v31-sub-btn span:first-child { font-size: 22px; }
+
+/* 設定ボタン */
+.v31-settings-btn {
+  width: 100%;
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px;
+  background: var(--v31-base);
+  border: 1.5px solid var(--v31-accent);
+  border-radius: 12px;
+  color: var(--v31-accent-deep);
+  font-weight: 800;
+  cursor: pointer;
+}
+.v31-settings-btn:active { background: var(--v31-accent-soft); }
+.v31-settings-btn .v31-set-ico { font-size: 24px; }
+.v31-settings-btn .v31-set-text {
+  flex: 1; display: flex; flex-direction: column; line-height: 1.2;
+  font-size: 15px; text-align: left;
+}
+.v31-settings-btn .v31-set-text small {
+  font-size: 10px; font-weight: 600; color: var(--v31-ink-soft);
+}
+.v31-settings-btn .v31-set-arrow { font-size: 14px; color: var(--v31-accent); }
+
+/* ============================================================
+   モーダル（v31 親指グリッド設計）
+   ============================================================ */
+.v31-modal {
+  width: 100% !important;
+  max-width: 100vw !important;
+  height: calc(100vh - env(safe-area-inset-bottom)) !important;
+  max-height: 100vh !important;
+  border-radius: 16px 16px 0 0 !important;
   display: flex !important;
-  flex-direction: column;
-  height: 100% !important;
+  flex-direction: column !important;
+  padding: 0 !important;
+  background: var(--v31-base) !important;
+  overflow: hidden !important;
 }
-.modal-v27 .modal-v27-top {
-  flex: 4 1 0% !important;
+
+.v31-mh {
+  flex: 0 0 auto;
+  padding: 10px 14px 8px;
+  border-bottom: 1.5px solid var(--v31-base-line);
+  background: var(--v31-base);
+}
+.v31-mh-title {
+  font-size: 15px; font-weight: 900; color: var(--v31-accent-deep);
+}
+.v31-mh-meta {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 4px;
+  font-size: 12px; color: var(--v31-ink-soft);
+}
+.v31-mh-pm b { color: var(--v31-accent-deep); font-weight: 900; }
+.v31-mh-mode {
+  background: var(--v31-accent-soft);
+  color: var(--v31-accent-deep);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 800;
+}
+.v31-mh-close {
+  margin-left: auto;
+  background: var(--v31-base-soft);
+  border: 1px solid var(--v31-base-line2);
+  font-size: 20px; line-height: 1;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  cursor: pointer; color: var(--v31-ink);
+}
+
+/* プレイヤータブ */
+.v31-player-tabs {
+  flex: 0 0 auto;
+  display: flex; gap: 6px;
+  padding: 8px 14px 4px;
+  overflow-x: auto;
+  background: var(--v31-base);
+}
+
+/* 上部 80% — スコアテーブル */
+.v31-modal-top {
+  flex: 4 1 0%;
   min-height: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  display: flex; flex-direction: column;
+  background: var(--v31-base);
 }
-.modal-v27 .v27-modal-tablewrap {
+.v31-modal-info {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px;
+  padding: 4px 14px 8px;
+}
+.v31-mi-hole { display: flex; flex-direction: column; line-height: 1.2; }
+.v31-mi-num {
+  font-size: 24px; font-weight: 900; color: var(--v31-accent-deep);
+}
+.v31-mi-par { font-size: 11px; color: var(--v31-ink-soft); font-weight: 700; }
+.v31-mi-stroke { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.1; }
+.v31-mi-s-num {
+  font-size: 32px; font-weight: 900; color: var(--v31-ink);
+}
+.v31-mi-s-diff {
+  font-size: 12px; font-weight: 800;
+  padding: 2px 8px; border-radius: 6px;
+  background: var(--v31-base-soft);
+  color: var(--v31-ink-soft);
+}
+.v31-mi-s-diff.minus { background: #d6efe2; color: var(--v31-accent-deep); }
+.v31-mi-s-diff.plus  { background: #fde2dd; color: var(--v31-danger); }
+.v31-mi-s-diff.even  { background: #fff4d6; color: #8a5b00; }
+
+.v31-scoretable-wrap {
   flex: 1 1 auto;
   min-height: 0;
   overflow: hidden;
+  border-top: 1.5px solid var(--v31-base-line);
 }
-.modal-v27 .v27-modal-scroll {
+.v31-st-scroll {
   height: 100%;
-  overflow-x: auto;
-  overflow-y: auto;
+  overflow-x: auto; overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
-.modal-v27 #modalScoreTable {
-  font-size: 15px !important;
+#v31ModalScoreTable {
+  font-size: 16px;
   min-width: 100%;
+  border-collapse: collapse;
 }
-.modal-v27 #modalScoreTable .score-cell {
-  font-size: 17px !important;
+#v31ModalScoreTable .score-cell {
+  font-size: 18px;
   font-weight: 800;
-  min-width: 42px;
-  padding: 8px 6px;
+  min-width: 44px;
+  padding: 10px 6px;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
 }
-.modal-v27 .modal-v27-bottom {
-  flex: 1 1 0% !important;
-  min-height: 0;
-  display: grid !important;
-  grid-template-columns: 88px 1fr !important;
-  gap: 8px;
-  padding: 6px 10px 10px;
+#v31ModalScoreTable .score-cell.current-hole {
+  background: var(--v31-accent-soft);
+  outline: 2px solid var(--v31-accent);
+  outline-offset: -2px;
+  color: var(--v31-accent-deep);
 }
 
 /* 直接編集 inline-edit */
-.score-cell { cursor: pointer; position: relative; }
-.score-cell.v30-editing {
-  background: var(--v30-accent) !important;
+.score-cell.v31-editing {
+  background: var(--v31-accent) !important;
   color: #fff !important;
-  outline: 3px solid var(--v30-accent-deep);
-  outline-offset: -2px;
+  outline: 3px solid var(--v31-accent-deep) !important;
+  outline-offset: -2px !important;
   z-index: 5;
 }
-.v30-inline-edit {
+.v31-inline-edit {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
+  width: 100%; height: 100%;
   text-align: center;
   border: none;
-  background: var(--v30-accent);
+  background: var(--v31-accent);
   color: #fff;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 900;
   outline: none;
-  padding: 0;
-  margin: 0;
+  padding: 0; margin: 0;
   z-index: 10;
   caret-color: #fff;
 }
-.v30-inline-edit::-webkit-outer-spin-button,
-.v30-inline-edit::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+.v31-inline-edit::-webkit-outer-spin-button,
+.v31-inline-edit::-webkit-inner-spin-button {
+  -webkit-appearance: none; margin: 0;
 }
-.v30-inline-quick {
+.v31-inline-quick {
   position: absolute;
-  background: var(--v30-base);
-  border: 2px solid var(--v30-accent);
+  background: var(--v31-base);
+  border: 2px solid var(--v31-accent);
   border-radius: 10px;
   padding: 6px;
-  display: flex;
-  gap: 4px;
+  display: flex; gap: 4px;
   z-index: 11;
-  box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  box-shadow: 0 6px 16px rgba(0,0,0,.18);
   white-space: nowrap;
 }
-.v30-inline-quick button {
-  background: var(--v30-base);
-  border: 1.5px solid var(--v30-base-line);
-  color: var(--v30-ink);
-  padding: 6px 10px;
+.v31-inline-quick button {
+  background: var(--v31-base);
+  border: 1.5px solid var(--v31-base-line2);
+  color: var(--v31-ink);
+  padding: 8px 12px;
   border-radius: 8px;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
 }
-.v30-inline-quick button:active {
-  background: var(--v30-accent);
+.v31-inline-quick button:active {
+  background: var(--v31-accent); color: #fff;
+}
+
+/* 下部 20% — 親指グリッド */
+.v31-modal-bottom {
+  flex: 1 1 0%;
+  min-height: 0;
+  padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+  border-top: 1.5px solid var(--v31-base-line);
+  background: var(--v31-base-soft);
+}
+.v31-thumb-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 6px;
+  height: 100%;
+}
+.v31-tg {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px;
+  background: var(--v31-base);
+  border: 1.5px solid var(--v31-base-line2);
+  border-radius: 12px;
+  color: var(--v31-ink);
+  font-weight: 800;
+  cursor: pointer;
+  padding: 6px;
+  min-height: 56px;
+  font-size: 12px;
+  line-height: 1.1;
+}
+.v31-tg .v31-tg-op { font-size: 22px; line-height: 1; font-weight: 900; }
+.v31-tg-shot-plus, .v31-tg-shot-minus {
+  background: var(--v31-accent-soft);
+  border-color: var(--v31-accent);
+  color: var(--v31-accent-deep);
+}
+.v31-tg-confirm {
+  background: var(--v31-accent);
+  border-color: var(--v31-accent-deep);
   color: #fff;
+  font-size: 13px;
+}
+.v31-tg:active { transform: translateY(1px); }
+.v31-tg.v31-disabled {
+  opacity: .4; filter: grayscale(1); pointer-events: none;
 }
 
-/* モーダルモードインジケータ */
-.v30-modal-mode-indicator {
-  display: flex; align-items: center; gap: 8px;
-  padding: 10px 8px;
-  background: var(--v30-accent-soft);
-  border: 1.5px solid var(--v30-accent);
-  border-radius: 10px;
-  color: var(--v30-accent-deep);
-}
-.v30-modal-mode-indicator.beginner {
-  background: #fff4d6;
-  border-color: #f0b945;
-  color: #8a5b00;
-}
-.v30-modal-mode-indicator .v30-mmi-ico { font-size: 22px; }
-.v30-modal-mode-indicator .v30-mmi-text {
-  display: flex; flex-direction: column; line-height: 1.15;
-}
-.v30-modal-mode-indicator .v30-mmi-text small {
-  font-size: 9px; font-weight: 700; opacity: .8;
-}
-.v30-modal-mode-indicator .v30-mmi-text b {
-  font-size: 14px; font-weight: 900;
-}
-
-/* ビギナーモード時のモーダル外観 */
-body.v30-mode-beginner .modal-v27 .vtg-putt-plus,
-body.v30-mode-beginner .modal-v27 .vtg-putt-minus,
-body.v30-mode-beginner .modal-v27 .vtg-player {
-  visibility: hidden;
-  pointer-events: none;
-}
-body.v30-mode-beginner .modal-v27 .v27-thumb-grid {
+/* ビギナーモード時の親指グリッド再配置 */
+body.v31-mode-beginner .v31-thumb-grid {
   grid-template-columns: 1fr 1fr !important;
-  grid-template-rows: 1fr 1fr 1fr !important;
 }
-body.v30-mode-beginner .modal-v27 .vtg-shot-plus { grid-column: 1/3; grid-row: 1; }
-body.v30-mode-beginner .modal-v27 .vtg-shot-minus { grid-column: 1/3; grid-row: 2; }
-body.v30-mode-beginner .modal-v27 .vtg-confirm { grid-column: 1/3; grid-row: 3; }
-body.v30-mode-beginner .modal-v27 .player-tabs > *:not(.is-me) {
+body.v31-mode-beginner .v31-tg-putt-plus,
+body.v31-mode-beginner .v31-tg-putt-minus,
+body.v31-mode-beginner .v31-tg-player {
+  display: none !important;
+}
+body.v31-mode-beginner .v31-modal .player-tabs > *:not(.is-me) {
   display: none !important;
 }
 
-/* パット入力の制限 */
-body.v30-mode-standard .modal-v27 .vtg-putt-plus.v30-putt-disabled,
-body.v30-mode-standard .modal-v27 .vtg-putt-minus.v30-putt-disabled {
-  opacity: 0.35;
-  pointer-events: none;
-  filter: grayscale(1);
+/* ============================================================
+   設定モーダル拡張
+   ============================================================ */
+.v31-settings-section {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1.5px solid var(--v31-base-line);
 }
-
-/* PMピッカー info */
-.v30-pmpicker-info {
-  text-align: center;
-  font-size: 12px;
-  color: var(--v30-ink-soft);
-  background: var(--v30-base-soft);
-  padding: 8px 10px;
+.v31-ss-title {
+  font-size: 13px; font-weight: 800; color: var(--v31-accent-deep);
+  margin-bottom: 8px;
+}
+.v31-ss-hint {
+  font-size: 11px; color: var(--v31-ink-soft); margin-top: 4px;
+}
+.v31-ss-row {
+  display: flex; gap: 6px; align-items: center;
+}
+.v31-pmtime {
+  flex: 1;
+}
+.v31-ss-segments {
+  display: flex; gap: 4px;
+}
+.v31-ss-segments button {
+  flex: 1;
+  padding: 10px 8px;
+  background: var(--v31-base-soft);
+  border: 1.5px solid var(--v31-base-line);
   border-radius: 8px;
-  margin: 8px 0;
-  border: 1px dashed var(--v30-base-line);
+  color: var(--v31-ink-soft);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.v31-ss-segments button.active {
+  background: var(--v31-accent);
+  border-color: var(--v31-accent-deep);
+  color: #fff;
+}
+.v31-big-action {
+  width: 100%;
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px;
+  background: var(--v31-accent-soft);
+  border: 1.5px solid var(--v31-accent);
+  border-radius: 12px;
+  color: var(--v31-accent-deep);
+  font-weight: 800;
+  cursor: pointer;
+}
+.v31-big-action:active { background: var(--v31-accent); color: #fff; }
+.v31-big-action .v31-ba-ico { font-size: 26px; }
+.v31-big-action .v31-ba-text {
+  display: flex; flex-direction: column;
+  text-align: left; font-size: 14px;
+}
+.v31-big-action .v31-ba-text small {
+  font-size: 10px; font-weight: 600; opacity: .8;
 }
 
-/* フッターのz-index最大化 */
+/* ============================================================
+   フッターのz-index最大化を再保証
+   ============================================================ */
 .footer-bar {
   z-index: 9999 !important;
   pointer-events: auto !important;
+  background: var(--v31-base) !important;
+  border-top: 1.5px solid var(--v31-base-line2);
 }
 .modal-backdrop.show { z-index: 10000 !important; }
 
-/* 2色化 */
-.v27-start-btn {
-  background: var(--v30-accent) !important;
-  border-color: var(--v30-accent-deep) !important;
+/* v31 で screen-gworld に padding-bottom を追加 */
+#screen-gworld { padding-bottom: 96px; }
+
+/* ビギナーモード時のプレイヤータブ（自分のみ） */
+.v31-modal .player-tabs button {
+  background: var(--v31-base-soft);
+  border: 1.5px solid var(--v31-base-line);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px; font-weight: 700;
+  cursor: pointer; white-space: nowrap;
+  color: var(--v31-ink-soft);
 }
-.v27-start-btn:active {
-  background: var(--v30-accent-deep) !important;
+.v31-modal .player-tabs button.active {
+  background: var(--v31-accent);
+  border-color: var(--v31-accent-deep);
+  color: #fff;
 }
-.btn-confirm, .vtg-confirm {
-  background: var(--v30-accent) !important;
-  border-color: var(--v30-accent-deep) !important;
-  color: #fff !important;
+.v31-modal .player-tabs button.is-me {
+  border-color: var(--v31-accent);
 }
 
 </style>
@@ -4697,106 +4514,120 @@ var qrcode = function() {
      画面: G-WORLD（スコアカード）
      ============================================================ -->
 <div class="screen active" id="screen-gworld">
+  <!-- ============================================================
+       v31: 司令塔（トップ画面）— モード切替 / ロッカー / 同伴者 / アクション
+       ============================================================ -->
+  <div class="v31-cockpit">
 
-  <!-- v27: 実戦特化トップ画面 - 準備セクション -->
-  <div class="v27-prep">
-    <div class="v27-prep-header">
-      <span class="vp-ico">⛳</span>
-      <div class="vp-title">六甲国際パブリック<br><b>ラウンド準備</b></div>
+    <!-- ヘッダー -->
+    <div class="v31-header">
+      <div class="v31-h-ico">⛳</div>
+      <div class="v31-h-text">
+        <div class="v31-h-sub">六甲国際パブリック</div>
+        <div class="v31-h-main">ラウンド準備</div>
+      </div>
     </div>
 
-    <!-- v30: モード切替トグル（標準 / 初心者用カウンター） -->
-    <div class="v30-mode-section">
-      <div class="v30-mode-label">🎯 プレイモード</div>
-      <div class="v30-mode-toggle" id="v30ModeToggle">
+    <!-- ① プレイモード切替（一般 / 初心者カウンター） -->
+    <section class="v31-block v31-block-accent">
+      <div class="v31-block-title">🎯 プレイモード</div>
+      <div class="v31-mode-toggle" id="v31ModeToggle">
         <button type="button" data-gmode="standard" class="active">
-          <span class="v30-mode-ico">🏌️</span>
-          <span class="v30-mode-name">標準<small>4人＋自分パット</small></span>
+          <span class="v31-mode-ico">🏌️</span>
+          <span class="v31-mode-name">一般（4人用）<small>4人ストローク＋自分パット</small></span>
         </button>
         <button type="button" data-gmode="beginner">
-          <span class="v30-mode-ico">🔰</span>
-          <span class="v30-mode-name">初心者<small>自分のみカウンター</small></span>
+          <span class="v31-mode-ico">🔰</span>
+          <span class="v31-mode-name">初心者（カウンター）<small>自分のストロークのみ</small></span>
         </button>
       </div>
-    </div>
+    </section>
 
-    <!-- ロッカー番号 & PMスタート -->
-    <div class="v27-row2">
-      <div class="v27-field">
-        <label>🔐 貴重品ロッカー番号</label>
-        <input type="text" id="topLockerInput" maxlength="6" inputmode="numeric" placeholder="例: 123">
+    <!-- ② ロッカー番号 -->
+    <section class="v31-block">
+      <div class="v31-block-title">🔐 貴重品ロッカー番号</div>
+      <input type="text" class="v31-input" id="v31LockerInput"
+             maxlength="6" inputmode="numeric" placeholder="例: 123">
+    </section>
+
+    <!-- ③ 同伴者リスト -->
+    <section class="v31-block">
+      <div class="v31-block-title">
+        👥 同伴者
+        <button type="button" class="v31-mini-action" id="v31AddCompanion">＋ 追加</button>
       </div>
-      <div class="v27-field">
-        <label>⛳ 午後スタート時間</label>
-        <button class="v27-time-btn" id="topPmStartBtn" type="button">
-          <span id="topPmStartDisp">— : —</span>
-          <span class="v27-time-ico">🕒</span>
-        </button>
-      </div>
-    </div>
+      <div class="v31-player-list" id="v31PlayerList"></div>
+    </section>
 
-    <!-- 同伴者リスト（タップで選択 → ラウンド開始時のフォーカスプレイヤー） -->
-    <div class="v27-section">
-      <div class="v27-section-title">
-        👥 同伴者（タップで自分の編集対象を選択）
-        <button class="v27-add-btn" id="v27AddCompanion" type="button">＋ 追加</button>
-      </div>
-      <div class="v27-player-list" id="v27PlayerList"></div>
-    </div>
-
-    <!-- 主要アクション -->
-    <div class="v27-section">
-      <a class="v27-nav-btn" href="https://www.google.com/maps/dir/?api=1&destination=六甲国際パブリックコース" target="_blank" rel="noopener">
-        <span class="vp-ico">🧭</span>
-        <span>Googleナビで<br><b>六甲国際パブリック</b>へ</span>
-      </a>
-    </div>
-
-    <!-- 大きな「ラウンド開始」ボタン -->
-    <button class="v27-start-btn" id="v27StartRound" type="button">
-      <span class="vsb-ico">🏁</span>
-      <span class="vsb-text">ラウンド開始<br><small id="v27StartHint">スコア入力モーダルを起動</small></span>
+    <!-- ④ ラウンド開始（巨大ボタン） -->
+    <button type="button" class="v31-start-btn" id="v31StartRound">
+      <span class="v31-start-ico">🏁</span>
+      <span class="v31-start-text">ラウンド開始<small>スコア入力モーダルを起動</small></span>
     </button>
 
-    <div class="v27-bottom-actions">
-      <a class="v27-mini-btn v27-reserve" href="https://firstee.jp/rok-pc/rok-pc" target="_blank" rel="noopener">
-        <span>📅</span><span>予約サイト</span>
+    <!-- ⑤ ナビ・コース詳細・予約・電話 -->
+    <section class="v31-block">
+      <div class="v31-block-title">🧭 ナビゲーション & 連絡</div>
+      <a class="v31-nav-main" href="https://www.google.com/maps/dir/?api=1&destination=六甲国際パブリックコース" target="_blank" rel="noopener">
+        <span class="v31-nav-ico">🧭</span>
+        <span>Googleナビで<br><b>六甲国際パブリック</b>へ</span>
       </a>
-      <a class="v27-mini-btn v27-tel" href="tel:0785830351">
-        <span>📞</span><span>緊急電話</span>
-      </a>
-      <button class="v27-mini-btn v27-detail" id="v27CourseDetailBtn" type="button">
-        <span>📖</span><span>コース詳細</span>
-      </button>
-    </div>
-
-    <!-- v30: ゲーム設定メニュー（モーダルから移管した機能を集約） -->
-    <div class="v30-settings-menu">
-      <div class="v30-sm-title">⚙️ ゲーム設定</div>
-      <div class="v30-sm-grid">
-        <button type="button" class="v30-sm-btn" id="v30BtnInviteQR">
-          <span class="v30-sm-ico">📱</span>
-          <span class="v30-sm-lbl">招待QR<br><small>同伴者にスコア入力を共有</small></span>
-        </button>
-        <button type="button" class="v30-sm-btn" id="v30BtnSettings">
-          <span class="v30-sm-ico">⚙️</span>
-          <span class="v30-sm-lbl">入力設定<br><small>パット記録 ON/OFF など</small></span>
-        </button>
-        <button type="button" class="v30-sm-btn" id="v30BtnTeeToggle">
-          <span class="v30-sm-ico">⛳</span>
-          <span class="v30-sm-lbl"><span id="v30TeeLabel">REGティ</span><br><small>タップでLADIESに切替</small></span>
-        </button>
-        <button type="button" class="v30-sm-btn" id="v30BtnDisplayMode">
-          <span class="v30-sm-ico">🔢</span>
-          <span class="v30-sm-lbl"><span id="v30DispLabel">数字表示</span><br><small>スコアカード表示モード</small></span>
+      <div class="v31-sub-grid">
+        <a class="v31-sub-btn" href="https://firstee.jp/rok-pc/rok-pc" target="_blank" rel="noopener">
+          <span>📅</span><span>予約サイト</span>
+        </a>
+        <a class="v31-sub-btn" href="tel:0785830351">
+          <span>📞</span><span>緊急電話</span>
+        </a>
+        <button type="button" class="v31-sub-btn" id="v31CourseDetailBtn">
+          <span>📖</span><span>コース詳細</span>
         </button>
       </div>
-    </div>
+    </section>
+
+    <!-- ⑥ 設定（PMスタート時刻 / 招待QR / 入力設定 / ティ / 表示モード） -->
+    <section class="v31-block">
+      <div class="v31-block-title">⚙️ 設定</div>
+      <button type="button" class="v31-settings-btn" id="v31OpenSettings">
+        <span class="v31-set-ico">⚙️</span>
+        <span class="v31-set-text">
+          すべての設定を開く
+          <small>PMスタート / 招待QR / 入力設定 / ティ / 表示モード</small>
+        </span>
+        <span class="v31-set-arrow">▶</span>
+      </button>
+    </section>
 
   </div>
 
-
-  <!-- v29: 旧スコア入力UI（.topbar / .hero-current / .settings-accordion / .toggle-bar / .card-wrap / .save-section / .center-actions / .secondary-actions）は完全削除。スコア入力はモーダル(#scoreModal)に集約。 -->
+  <!-- ============================================================
+       v31: 聖域 — v16 計算エンジンが参照する DOM 要素群（非表示）
+       これらは内部処理用に保持。視覚的には完全に隠す。
+       ============================================================ -->
+  <div class="v31-sanctuary" aria-hidden="true">
+    <span id="topCourse">六甲国際パブリックコース</span>
+    <span id="topMeta"></span>
+    <button id="btnTopDetail"></button>
+    <span id="heroHoleNum">1</span>
+    <span id="heroPar">4</span>
+    <span id="heroYard"></span>
+    <span id="heroYardReg"></span>
+    <span id="heroYardLadies"></span>
+    <span id="heroHdcp"></span>
+    <button id="btnHolePrev"></button>
+    <button id="btnHoleNext"></button>
+    <div id="settingsAccordion"><button id="accordionToggle"></button><span id="accordionArrow"></span><div id="accordionBody"></div></div>
+    <div id="displayToggle"><button data-mode="number" class="active"></button><button data-mode="diff"></button><button data-mode="symbol"></button></div>
+    <div id="inputModeMainToggle"><button data-mode="simple" class="active"></button><button data-mode="counter"></button></div>
+    <span id="currentHoleBadge"></span>
+    <div id="tableScroll"><table id="scoreTable"></table></div>
+    <button id="btnSaveRound"></button>
+    <button id="btnInviteQR"></button>
+    <button id="btnAddCompanion"></button>
+    <button id="btnCourseDetail"></button>
+    <button id="btnSettings"></button>
+    <button id="btnTeeToggle"><span id="teeToggleLabel">REGティ</span></button>
+  </div>
 </div>
 
 <!-- ============================================================
@@ -4982,169 +4813,99 @@ var qrcode = function() {
   <button class="footer-tab" data-tab="mypage"><span class="ftab-icon">👤</span><span>マイページ</span></button>
 </nav>
 
-<!-- v27: 実戦特化スコア入力モーダル -->
+<!-- モーダル: スコア入力 -->
 <div class="modal-backdrop" id="scoreModal">
-  <div class="modal modal-v27">
-    <div class="modal-handle"></div>
-    <div class="modal-header">
-      <div class="modal-title" id="scoreModalTitle">スコア入力</div>
-      <button class="modal-close" data-close>×</button>
+  <div class="modal v31-modal">
+
+    <!-- v31 モーダルヘッダー -->
+    <div class="v31-mh">
+      <div class="v31-mh-title" id="scoreModalTitle">スコア入力</div>
+      <div class="v31-mh-meta">
+        <span class="v31-mh-pm">⛳ PM <b id="v31ModalPm">— : —</b></span>
+        <span class="v31-mh-mode" id="v31ModalModeBadge">🏌️ 一般</span>
+        <button class="modal-close v31-mh-close" data-close type="button">×</button>
+      </div>
     </div>
-    <!-- v27: コンパクトプレイヤータブ -->
-    <div class="player-tabs" id="modalPlayerTabs"></div>
+
+    <!-- v31 プレイヤータブ（v16 互換 ID） -->
+    <div class="v31-player-tabs player-tabs" id="modalPlayerTabs"></div>
 
     <!-- ============================================================
-         v27: モーダル本体（上3/5 = スコア表ミラー / 下2/5 = L字+親指）
+         上部 80% — スコアカード（横スクロール）
          ============================================================ -->
-    <div class="modal-v27-body">
-
-      <!-- 上部3/5：18ホール横スクロール スコア表のみ -->
-      <div class="modal-v27-top">
-        <div class="v27-mini-bar">
-          <div class="v27-mini-hole">
-            <span class="hole-num" id="modalHoleNum">1H</span>
-            <span class="hole-par" id="modalHolePar">PAR 4 · 352y</span>
-          </div>
-          <div class="v27-mini-stroke">
-            <span class="stroke-num" id="modalStroke">0</span>
-            <span class="stroke-diff" id="modalStrokeDiff">未入力</span>
-          </div>
-          <div class="v27-mini-putt">
-            <span class="vmp-lbl">パット</span>
-            <span class="putt-num" id="modalPutt">0</span>
-          </div>
+    <div class="v31-modal-top">
+      <div class="v31-modal-info">
+        <div class="v31-mi-hole">
+          <span class="v31-mi-num" id="modalHoleNum">1H</span>
+          <span class="v31-mi-par" id="modalHolePar">PAR 4 · 352y</span>
         </div>
-
-        <!-- v27: スコア表ミラー（18H横スクロール） -->
-        <div class="v27-modal-tablewrap">
-          <div class="scoretable-scroll v27-modal-scroll" id="modalTableScroll">
-            <table class="scoretable" id="modalScoreTable"></table>
-          </div>
+        <div class="v31-mi-stroke">
+          <span class="v31-mi-s-num" id="modalStroke">0</span>
+          <span class="v31-mi-s-diff" id="modalStrokeDiff">未入力</span>
         </div>
-
-        <!-- モード表示（コンパクト） -->
-        <div class="modal-mode-badge v27-badge">
-          <span class="mb-icon" id="modalModeIcon">⚡</span>
-          <span class="mb-label" id="modalModeLabel">シンプル(±)</span>
-          <button class="quick-par-btn quick-par-mini" id="btnQuickPar" title="PARに戻す">
-            <span class="qp-icon">🎯</span><span>PAR</span>
-          </button>
-        </div>
-
-        <!-- 内部処理用に保持（聖域・隠す） -->
-        <div class="stroke-row" style="display:none;">
-          <button class="stroke-btn minus" id="btnStrokeMinus">−</button>
-          <button class="stroke-btn plus" id="btnStrokePlus">＋</button>
-        </div>
-        <div class="putt-section" id="puttSection" style="display:none;">
-          <div class="putt-label">
-            <button class="quick-putt-btn" id="btnQuickPutt">🎯 2に戻す</button>
-            <button class="toggle-mini" id="puttToggleMini">ON</button>
-          </div>
-          <div class="putt-row">
-            <button class="putt-btn" id="btnPuttMinus">−</button>
-            <div class="putt-num" id="modalPuttHidden">0</div>
-            <button class="putt-btn" id="btnPuttPlus">＋</button>
-          </div>
-        </div>
-        <span id="modalModeHint" style="display:none;"></span>
       </div>
-
-      <!-- 下部2/5：L字レイアウト -->
-      <div class="modal-v27-bottom">
-
-        <!-- v30: モーダル左縦カラム — PMスタート + モード表示のみに集中 -->
-        <div class="v27-left-col">
-          <button class="vlc-btn vlc-pm" id="modalPmStartBtn" type="button">
-            <span class="vlc-ico">⛳</span>
-            <span class="vlc-text">PMスタート<br><b id="pmStart">— : —</b></span>
-          </button>
-          <div class="v30-modal-mode-indicator" id="v30ModalModeIndicator">
-            <span class="v30-mmi-ico">🏌️</span>
-            <span class="v30-mmi-text"><small>モード</small><b id="v30ModalModeName">標準</b></span>
-          </div>
+      <div class="v31-scoretable-wrap">
+        <div class="scoretable-scroll v31-st-scroll" id="v31ModalTableScroll">
+          <table class="scoretable" id="v31ModalScoreTable"></table>
         </div>
-
-        <!-- 右：親指用 操作グリッド（メイン操作） -->
-        <div class="v27-right-col">
-          <div class="v27-thumb-grid">
-            <button class="vtg-btn vtg-shot-plus" id="g6ShotPlus">
-              <span class="vtg-ico">＋</span>
-              <span class="vtg-lbl" id="g6ShotPlusLabel">ストローク</span>
-            </button>
-            <button class="vtg-btn vtg-putt-plus" id="g6PuttPlus">
-              <span class="vtg-ico">＋</span>
-              <span class="vtg-lbl">パット</span>
-            </button>
-            <button class="vtg-btn vtg-shot-minus" id="g6ShotMinus">
-              <span class="vtg-ico">−</span>
-              <span class="vtg-lbl" id="g6ShotMinusLabel">ストローク</span>
-            </button>
-            <button class="vtg-btn vtg-putt-minus" id="g6PuttMinus">
-              <span class="vtg-ico">−</span>
-              <span class="vtg-lbl">パット</span>
-            </button>
-            <button class="vtg-btn vtg-player" id="g6PlayerNext">
-              <span class="vtg-ico">👥</span>
-              <span class="vtg-lbl">切替 ▶</span>
-            </button>
-            <button class="vtg-btn vtg-confirm" id="g6Confirm">
-              <span class="vtg-ico">✓</span>
-              <span class="vtg-lbl">確定<br>次へ</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- v30: モーダル下横バー — ロッカー/現在ホール/ティの表示のみ（操作はトップへ移管） -->
-        <div class="v27-bottom-row">
-          <div class="vbr-info">
-            <span class="vbr-ico">🔐</span>
-            <span class="vbr-lbl">ロッカー</span>
-            <b class="vbr-val" id="lockerNum">—</b>
-          </div>
-          <div class="vbr-info">
-            <span class="vbr-ico">📍</span>
-            <span class="vbr-lbl">現在</span>
-            <b class="vbr-val" id="v30ModalCurHole">1H</b>
-          </div>
-          <div class="vbr-info">
-            <span class="vbr-ico">⛳</span>
-            <span class="vbr-lbl">ティ</span>
-            <b class="vbr-val" id="v30ModalTee">REG</b>
-          </div>
-        </div>
-
-        <!-- 既存「クリア／確定」行は内部処理用に保持（聖域） -->
-        <div class="confirm-row" style="display:none;">
-          <button class="btn-clear" id="btnClear">クリア</button>
-          <button class="btn-confirm" id="btnConfirm">確定して次のホール ▶</button>
-        </div>
-
       </div>
     </div>
-  </div>
-</div>
 
-<!-- v27: PMスタート タイムピッカー モーダル -->
-<div class="modal-backdrop" id="pmStartModal">
-  <div class="modal modal-pmpicker">
-    <div class="modal-handle"></div>
-    <div class="modal-header">
-      <div class="modal-title">⛳ 午後スタート時間</div>
-      <button class="modal-close" data-close>×</button>
-    </div>
-    <div class="pmpicker-body">
-      <div class="pmpicker-hint">スタート時間を選択</div>
-      <input type="time" id="pmStartTimeInput" class="pmpicker-input" step="300">
-      <!-- v30: スマートタイムピッカー — 起動時に「現在時刻+45分」を自動セット -->
-      <div class="v30-pmpicker-info" id="v30PmpickerInfo">
-        起動時に「現在時刻＋45分」を自動セット
+    <!-- ============================================================
+         下部 20% — 親指グリッド（ストローク± / パット± / 切替 / 確定）
+         ============================================================ -->
+    <div class="v31-modal-bottom">
+      <div class="v31-thumb-grid">
+        <button type="button" class="v31-tg v31-tg-shot-plus" id="v31ShotPlus">
+          <span class="v31-tg-op">＋</span>
+          <span class="v31-tg-lbl" id="v31ShotPlusLbl">ストローク</span>
+        </button>
+        <button type="button" class="v31-tg v31-tg-putt-plus" id="v31PuttPlus">
+          <span class="v31-tg-op">＋</span>
+          <span class="v31-tg-lbl">パット</span>
+        </button>
+        <button type="button" class="v31-tg v31-tg-shot-minus" id="v31ShotMinus">
+          <span class="v31-tg-op">−</span>
+          <span class="v31-tg-lbl" id="v31ShotMinusLbl">ストローク</span>
+        </button>
+        <button type="button" class="v31-tg v31-tg-putt-minus" id="v31PuttMinus">
+          <span class="v31-tg-op">−</span>
+          <span class="v31-tg-lbl">パット</span>
+        </button>
+        <button type="button" class="v31-tg v31-tg-player" id="v31PlayerNext">
+          <span class="v31-tg-op">👥</span>
+          <span class="v31-tg-lbl">プレイヤー切替</span>
+        </button>
+        <button type="button" class="v31-tg v31-tg-confirm" id="v31Confirm">
+          <span class="v31-tg-op">✓</span>
+          <span class="v31-tg-lbl">確定<br>次へ</span>
+        </button>
       </div>
-      <div class="pmpicker-actions">
-        <button class="btn-clear" id="btnPmStartClear">クリア</button>
-        <button class="btn-confirm" id="btnPmStartSave">保存</button>
-      </div>
     </div>
+
+    <!-- ============================================================
+         聖域 — v16 計算エンジンが参照する DOM（非表示で保持）
+         ============================================================ -->
+    <div class="v31-sanctuary" aria-hidden="true">
+      <span id="modalModeIcon">⚡</span>
+      <span id="modalModeLabel"></span>
+      <span id="modalModeHint"></span>
+      <button id="btnQuickPar"></button>
+      <button id="btnStrokeMinus"></button>
+      <button id="btnStrokePlus"></button>
+      <div id="puttSection">
+        <button id="btnQuickPutt"></button>
+        <button id="puttToggleMini">ON</button>
+        <button id="btnPuttMinus"></button>
+        <div id="modalPutt">0</div>
+        <button id="btnPuttPlus"></button>
+      </div>
+      <button id="modalHolePrev"></button>
+      <button id="modalHoleNext"></button>
+      <button id="btnClear"></button>
+      <button id="btnConfirm"></button>
+    </div>
+
   </div>
 </div>
 
@@ -5319,6 +5080,56 @@ var qrcode = function() {
         <label class="switch"><input type="checkbox" id="setLadiesTee"><span class="switch-slider"></span></label>
       </div>
       <button class="primary-btn" id="btnSaveSettings">💾 設定を保存</button>
+
+      <!-- ============================================================
+           v31: PMスタート時刻設定（スマート初期値 = 現在時刻+45分）
+           ============================================================ -->
+      <div class="v31-settings-section">
+        <div class="v31-ss-title">⛳ 午後スタート時間</div>
+        <div class="v31-ss-row">
+          <input type="time" id="v31PmStartInput" class="v31-input v31-pmtime" step="300">
+          <button type="button" class="v31-mini-action" id="v31PmSmartFill">📍 +45分</button>
+          <button type="button" class="v31-mini-action v31-mini-clear" id="v31PmClear">クリア</button>
+        </div>
+        <div class="v31-ss-hint">起動時に「現在時刻 ＋45分」を自動で初期化します</div>
+      </div>
+
+      <!-- ============================================================
+           v31: 表示モード（数字 / ±差 / 記号）
+           ============================================================ -->
+      <div class="v31-settings-section">
+        <div class="v31-ss-title">🔢 スコア表示モード</div>
+        <div class="v31-ss-segments" id="v31DispSegments">
+          <button type="button" data-disp="number" class="active">数字</button>
+          <button type="button" data-disp="diff">スコア差(±)</button>
+          <button type="button" data-disp="symbol">記号</button>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           v31: ティ切替（REG / LADIES）
+           ============================================================ -->
+      <div class="v31-settings-section">
+        <div class="v31-ss-title">⛳ 使用ティ</div>
+        <div class="v31-ss-segments" id="v31TeeSegments">
+          <button type="button" data-tee="reg" class="active">REG（白/黄）</button>
+          <button type="button" data-tee="ladies">LADIES（赤/緑）</button>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           v31: 招待QR
+           ============================================================ -->
+      <div class="v31-settings-section">
+        <button type="button" class="v31-big-action" id="v31OpenInviteQR">
+          <span class="v31-ba-ico">📱</span>
+          <span class="v31-ba-text">
+            招待QRを表示
+            <small>同伴者にスコア入力を共有</small>
+          </span>
+        </button>
+      </div>
+
     </div>
   </div>
 </div>
@@ -5492,9 +5303,9 @@ const State = {
     currentHole: 1,
     groupId: '',
     groupName: '',
-    lockerNum: '',          /* v27: ロッカー番号（メイン画面で入力） */
-    pmStart: '',            /* v27: 午後スタート時間 HH:MM */
-    focusPlayerId: ''       /* v27: トップ画面で選択した編集対象プレイヤー */
+    /* v31: 司令塔機能 */
+    lockerNum: '',
+    pmStart: ''
   },
   players: [],
   ui: {
@@ -5503,8 +5314,8 @@ const State = {
     sortMeFirst: true,
     useLadiesTee: false,
     inputMode: 'simple',       // 'simple' | 'counter'
-    /* v30: ゲームモード（プレイレベル別の UI/ロジック分岐） */
-    gameMode: 'standard'       // 'standard'(一般・中上級者) | 'beginner'(初心者カウンター)
+    /* v31: ゲームモード（一般 / 初心者カウンター） */
+    gameMode: 'standard'       // 'standard' | 'beginner'
   },
   settings: {
     puttEnabled: true,
@@ -5584,31 +5395,32 @@ const Storage = {
 /* =================================================================
    §6. ユーティリティ
    ================================================================= */
-// v29: $() ヘルパ — 削除されたDOM要素への参照が来ても no-op スタブを返してクラッシュを防ぐ
-const __NULL_STUB__ = (() => {
-  const handler = {
-    get(target, prop) {
-      if (prop === 'addEventListener' || prop === 'removeEventListener') return () => {};
-      if (prop === 'querySelector' || prop === 'querySelectorAll') return () => null;
-      if (prop === 'classList') return { add(){}, remove(){}, toggle(){}, contains(){return false;} };
-      if (prop === 'style') return new Proxy({}, { set(){return true;}, get(){return '';} });
-      if (prop === 'dataset') return new Proxy({}, { set(){return true;}, get(){return undefined;} });
-      if (prop === 'textContent' || prop === 'innerHTML' || prop === 'value' || prop === 'innerText') return '';
-      if (prop === 'disabled' || prop === 'checked') return false;
-      if (prop === 'setAttribute' || prop === 'removeAttribute' || prop === 'focus' || prop === 'blur' || prop === 'click' || prop === 'scrollIntoView' || prop === 'append' || prop === 'appendChild' || prop === 'remove') return () => {};
-      if (prop === 'getBoundingClientRect') return () => ({top:0,left:0,width:0,height:0,right:0,bottom:0});
-      if (prop === 'offsetWidth' || prop === 'offsetHeight' || prop === 'scrollLeft' || prop === 'scrollTop') return 0;
-      if (prop === 'parentNode' || prop === 'parentElement' || prop === 'nextElementSibling' || prop === 'previousElementSibling') return null;
-      if (prop === 'children') return [];
-      return undefined;
-    },
-    set() { return true; }
-  };
-  return new Proxy({ __isNullStub: true }, handler);
-})();
-const $ = (sel) => document.querySelector(sel) || __NULL_STUB__;
-const $$ = (sel) => document.querySelectorAll(sel);
 
+/* =================================================================
+   v31: 司令塔 + 親指モーダル + 直接編集 ヘルパ
+   ================================================================= */
+function v31IsBeginner() {
+  return State.ui && State.ui.gameMode === 'beginner';
+}
+function v31IsStandard() {
+  return !v31IsBeginner();
+}
+function v31ApplyBodyClass() {
+  document.body.classList.toggle('v31-mode-beginner', v31IsBeginner());
+  document.body.classList.toggle('v31-mode-standard', v31IsStandard());
+}
+function v31SmartPmDefault() {
+  const d = new Date();
+  d.setMinutes(d.getMinutes() + 45);
+  const m = Math.round(d.getMinutes() / 5) * 5;
+  d.setMinutes(m);
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mm = String(d.getMinutes()).padStart(2, '0');
+  return hh + ':' + mm;
+}
+
+const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => document.querySelectorAll(sel);
 
 function escapeHtml(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => (
@@ -5664,148 +5476,6 @@ function fmtDate(ts) {
 function getYard(hole) {
   return State.ui.useLadiesTee ? hole.ladiesYard : hole.regYard;
 }
-
-
-/* =================================================================
-   v30: ゲームモード/スマートPM/直接編集ヘルパ
-   ================================================================= */
-function isBeginnerMode() {
-  return State.ui && State.ui.gameMode === 'beginner';
-}
-function isStandardMode() {
-  return !isBeginnerMode();
-}
-function applyGameModeBodyClass() {
-  document.body.classList.toggle('v30-mode-beginner', isBeginnerMode());
-  document.body.classList.toggle('v30-mode-standard', isStandardMode());
-}
-
-/* スマートPMピッカー — 現在時刻+45分（5分単位丸め） */
-function smartPmDefault() {
-  const d = new Date();
-  d.setMinutes(d.getMinutes() + 45);
-  const m = Math.round(d.getMinutes() / 5) * 5;
-  d.setMinutes(m);
-  const hh = String(d.getHours()).padStart(2, '0');
-  const mm = String(d.getMinutes()).padStart(2, '0');
-  return hh + ':' + mm;
-}
-
-/* 直接編集 inline-edit — セルタップ → その場で数値入力 */
-let v30CurrentEdit = null;
-
-function v30CloseInlineEdit(commit) {
-  if (!v30CurrentEdit) return;
-  const { cell, input, quick, pi, hi } = v30CurrentEdit;
-  const newVal = (input.value || '').trim();
-  if (commit) {
-    const n = parseInt(newVal, 10);
-    const p = State.players[pi];
-    if (p) {
-      if (newVal === '' || isNaN(n) || n <= 0) {
-        p.scores[hi] = null;
-        p.putts[hi] = 0;
-      } else {
-        const clamped = Math.max(1, Math.min(20, n));
-        p.scores[hi] = clamped;
-        if (p.putts[hi] == null) p.putts[hi] = 0;
-      }
-      try { Storage.saveState(); } catch(e) {}
-    }
-  }
-  try { cell.classList.remove('v30-editing'); } catch(e) {}
-  try { input.remove(); } catch(e) {}
-  try { if (quick && quick.parentNode) quick.remove(); } catch(e) {}
-  v30CurrentEdit = null;
-  try { renderTable(); } catch(e) {}
-}
-
-function v30OpenInlineEdit(cell, pi, hi) {
-  if (v30CurrentEdit) v30CloseInlineEdit(true);
-  const p = State.players[pi];
-  if (!p) return;
-  const h = COURSE.holes[hi];
-
-  /* ビギナーモード時は自分のみ編集可 */
-  if (isBeginnerMode() && !p.isMe) {
-    showToast('🔰 初心者モード中は自分のスコアのみ編集できます');
-    return;
-  }
-
-  cell.classList.add('v30-editing');
-  const curVal = (p.scores[hi] != null) ? p.scores[hi] : '';
-
-  const input = document.createElement('input');
-  input.type = 'number';
-  input.inputMode = 'numeric';
-  input.min = '1';
-  input.max = '20';
-  input.value = curVal;
-  input.className = 'v30-inline-edit';
-  input.setAttribute('aria-label', h.no + 'H ' + fullName(p) + 'のスコア');
-  cell.appendChild(input);
-
-  /* クイックアクションバー */
-  const quick = document.createElement('div');
-  quick.className = 'v30-inline-quick';
-  quick.innerHTML = '<button type="button" data-act="par">🎯 PAR' + h.par + '</button>' +
-                    '<button type="button" data-act="clear">クリア</button>' +
-                    '<button type="button" data-act="ok">✓ OK</button>';
-  document.body.appendChild(quick);
-  const rect = cell.getBoundingClientRect();
-  quick.style.top = (window.scrollY + rect.bottom + 4) + 'px';
-  let left = window.scrollX + rect.left;
-  setTimeout(() => {
-    const qw = quick.offsetWidth;
-    const vw = window.innerWidth;
-    if (left + qw > vw - 8) left = vw - qw - 8;
-    if (left < 8) left = 8;
-    quick.style.left = left + 'px';
-  }, 0);
-
-  v30CurrentEdit = { cell, input, quick, pi, hi };
-
-  quick.addEventListener('click', (e) => {
-    const b = e.target.closest('button[data-act]');
-    if (!b) return;
-    e.stopPropagation();
-    const act = b.dataset.act;
-    if (act === 'par') {
-      input.value = h.par;
-      input.focus();
-    } else if (act === 'clear') {
-      input.value = '';
-      input.focus();
-    } else if (act === 'ok') {
-      v30CloseInlineEdit(true);
-    }
-  });
-  quick.addEventListener('mousedown', (e) => e.preventDefault());
-
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') { e.preventDefault(); v30CloseInlineEdit(true); }
-    else if (e.key === 'Escape') { e.preventDefault(); v30CloseInlineEdit(false); }
-  });
-  input.addEventListener('blur', () => {
-    setTimeout(() => {
-      if (v30CurrentEdit && document.activeElement !== v30CurrentEdit.input) {
-        v30CloseInlineEdit(true);
-      }
-    }, 200);
-  });
-
-  setTimeout(() => { input.focus(); input.select(); }, 50);
-}
-
-/* 外側クリックで edit 終了 */
-document.addEventListener('click', (e) => {
-  if (!v30CurrentEdit) return;
-  const { cell, quick, input } = v30CurrentEdit;
-  if (cell.contains(e.target)) return;
-  if (quick && quick.contains(e.target)) return;
-  if (e.target === input) return;
-  v30CloseInlineEdit(true);
-}, true);
 
 /* =================================================================
    §7. 初期化
@@ -5976,11 +5646,11 @@ function renderTable() {
 
   t.querySelectorAll('[data-action="cell-tap"]').forEach(td => {
     td.addEventListener('click', (ev) => {
+      ev.stopPropagation();
       const pi = +td.dataset.pi;
       const hi = +td.dataset.hi;
-      /* v30: 直接編集（モーダルを開かず、その場で数値入力） */
-      ev.stopPropagation();
-      v30OpenInlineEdit(td, pi, hi);
+      /* v31: 直接編集（モーダルを開かずその場で数値入力） */
+      v31OpenInlineEdit(td, pi, hi);
     });
   });
   t.querySelectorAll('[data-action="player-tap"]').forEach(td => {
@@ -5994,41 +5664,22 @@ function renderTable() {
   $('#currentHoleBadge').textContent = '現在 ' + State.round.currentHole + 'H';
 
   centerCurrentHole();
-
-  /* v27/v30: モーダル内スコア表ミラー反映 + 直接編集再バインド */
+  /* v31: モーダル内スコアテーブルにミラー反映 + 直接編集再バインド */
   try {
-    const modalTbl = document.getElementById('modalScoreTable');
-    if (modalTbl) {
-      modalTbl.innerHTML = t.innerHTML;
-      modalTbl.querySelectorAll('[data-action="cell-tap"]').forEach(td => {
+    const mt = document.getElementById('v31ModalScoreTable');
+    if (mt) {
+      mt.innerHTML = t.innerHTML;
+      mt.querySelectorAll('[data-action="cell-tap"]').forEach(td => {
         td.addEventListener('click', (ev) => {
+          ev.stopPropagation();
           const pi = +td.dataset.pi;
           const hi = +td.dataset.hi;
-          ev.stopPropagation();
-          modalPlayerIdx = pi;
-          modalHole = hi + 1;
-          const p = State.players[pi];
-          const h = COURSE.holes[hi];
-          if (p) {
-            if (p.scores[hi] != null) {
-              modalStroke = p.scores[hi];
-              modalPutt = p.putts[hi] || 0;
-            } else if (State.ui.inputMode === 'simple') {
-              modalStroke = h.par;
-              modalPutt = 2;
-            } else {
-              modalStroke = 0;
-              modalPutt = 0;
-            }
-            try { updateModalDisplay(); } catch(e) {}
-          }
-          v30OpenInlineEdit(td, pi, hi);
+          v31OpenInlineEdit(td, pi, hi);
         });
       });
     }
-    if (typeof applyCrossHighlight === 'function') applyCrossHighlight();
-    if (typeof renderV27PlayerList === 'function') renderV27PlayerList();
   } catch(e) {}
+
 }
 
 function centerCurrentHole() {
@@ -6109,8 +5760,8 @@ let modalStroke = 0;
 let modalPutt = 0;
 
 function openScoreModal(pi, hi) {
-  /* v30: ビギナーモード時は強制的に自分にフォーカス */
-  if (isBeginnerMode()) {
+  /* v31: ビギナーモード時は強制的に自分にフォーカス */
+  if (v31IsBeginner()) {
     const meIdx = State.players.findIndex(p => p.isMe);
     if (meIdx >= 0) pi = meIdx;
   }
@@ -6142,14 +5793,6 @@ function openScoreModal(pi, hi) {
   updateModalDisplay();
   applyPuttSectionEnabled();
   $('#scoreModal').classList.add('show');
-  /* v27: モーダル展開時にスコア表ミラーを即反映 */
-  try {
-    const t = document.getElementById('scoreTable');
-    const m = document.getElementById('modalScoreTable');
-    if (t && m) m.innerHTML = t.innerHTML;
-  } catch(e) {}
-  try { syncLockerPmDisplay(); } catch(e) {}
-  try { applyCrossHighlight(); } catch(e) {}
 }
 
 function renderModalPlayerTabs() {
@@ -6262,6 +5905,10 @@ function updateModalDisplay() {
   $('#btnPuttMinus').disabled = modalPutt <= 0;
   $('#btnPuttPlus').disabled = modalPutt >= 10;
 
+  /* v31: モーダルバッジ・親指ラベル同期 */
+  try { v31UpdateModalBadges(); } catch(e) {}
+  try { v31UpdateThumbLabels(); } catch(e) {}
+
   const confirmBtn = $('#btnConfirm');
   if (modalHole >= COURSE.holes.length) {
     confirmBtn.classList.add('final');
@@ -6270,18 +5917,6 @@ function updateModalDisplay() {
     confirmBtn.classList.remove('final');
     confirmBtn.textContent = State.settings.autoNext ? '確定して次のホール ▶' : '確定する';
   }
-  /* v27: ホール移動時もクロスハイライト追従 */
-  try { applyCrossHighlight(); } catch(e) {}
-  /* v30: モード反映 */
-  try { updateV30ModalModeIndicator(); } catch(e) {}
-  try { updateV30PuttButtonsForCurrentPlayer(); } catch(e) {}
-  try { updateV30ThumbLabelsForBeginner(); } catch(e) {}
-  try {
-    const ch = document.getElementById('v30ModalCurHole');
-    if (ch) ch.textContent = modalHole + 'H';
-    const teeEl = document.getElementById('v30ModalTee');
-    if (teeEl) teeEl.textContent = State.ui.useLadiesTee ? 'L' : 'REG';
-  } catch(e) {}
 }
 
 function applyPuttSectionEnabled() {
@@ -6299,19 +5934,10 @@ function applyPuttSectionEnabled() {
 }
 
 function saveCurrentModalScore() {
+  /* シンプル・カウンターとも modalStroke / modalPutt が現在値 */
   const p = State.players[modalPlayerIdx];
-  if (!p) return;
-  /* v30: ビギナーモード — 自分のみ保存、パットは記録しない */
-  if (isBeginnerMode()) {
-    if (!p.isMe) return;
-    p.scores[modalHole - 1] = modalStroke > 0 ? modalStroke : null;
-    p.putts[modalHole - 1] = 0;
-    Storage.saveState();
-    return;
-  }
-  /* v30: 標準モード — 自分以外はパット記録しない（強制0） */
   p.scores[modalHole - 1] = modalStroke > 0 ? modalStroke : null;
-  p.putts[modalHole - 1] = p.isMe ? modalPutt : 0;
+  p.putts[modalHole - 1] = modalPutt;
   Storage.saveState();
 }
 
@@ -6331,118 +5957,6 @@ function resetPuttTo2() {
 
 function closeAllModals() {
   $$('.modal-backdrop').forEach(m => m.classList.remove('show'));
-  /* v27: クロスハイライトクリア */
-  try {
-    document.querySelectorAll('#scoreTable .cross-hl, #modalScoreTable .cross-hl').forEach(el => el.classList.remove('cross-hl', 'cross-hl-cell'));
-  } catch(e) {}
-}
-
-/* =================================================================
-   v27: クロスハイライト（メイン + モーダルミラー両方）
-   ================================================================= */
-function applyCrossHighlight() {
-  document.querySelectorAll('#scoreTable .cross-hl, #modalScoreTable .cross-hl').forEach(el => el.classList.remove('cross-hl', 'cross-hl-cell'));
-  const sm = document.getElementById('scoreModal');
-  if (!sm || !sm.classList.contains('show')) return;
-  const hi = (modalHole - 1);
-  const pi = modalPlayerIdx;
-  ['#scoreTable', '#modalScoreTable'].forEach(rootSel => {
-    document.querySelectorAll(rootSel + ' th[data-hole]').forEach(th => {
-      if (parseInt(th.dataset.hole, 10) === modalHole) th.classList.add('cross-hl');
-    });
-    document.querySelectorAll(rootSel + ' td[data-hi="' + hi + '"]').forEach(td => {
-      td.classList.add('cross-hl');
-    });
-    document.querySelectorAll(rootSel + ' tr[data-pi="' + pi + '"]').forEach(tr => {
-      tr.classList.add('cross-hl');
-    });
-    const cell = document.querySelector(rootSel + ' td[data-pi="' + pi + '"][data-hi="' + hi + '"]');
-    if (cell) cell.classList.add('cross-hl-cell');
-  });
-  try {
-    const sc = document.getElementById('modalTableScroll');
-    if (sc) {
-      const curTh = sc.querySelector('th[data-hole="' + modalHole + '"]');
-      if (curTh) {
-        const sw = sc.clientWidth;
-        sc.scrollTo({ left: Math.max(0, curTh.offsetLeft - sw/2 + curTh.offsetWidth/2), behavior: 'smooth' });
-      }
-    }
-  } catch(e) {}
-}
-
-/* =================================================================
-   v27: ロッカー番号 / PMスタート 表示同期
-   ================================================================= */
-function syncLockerPmDisplay() {
-  const locker = (State.round && State.round.lockerNum) ? State.round.lockerNum : '';
-  const pm = (State.round && State.round.pmStart) ? State.round.pmStart : '';
-  const topInp = document.getElementById('topLockerInput');
-  if (topInp && topInp.value !== locker) topInp.value = locker;
-  const topPm = document.getElementById('topPmStartDisp');
-  if (topPm) topPm.textContent = pm || '— : —';
-  const lk = document.getElementById('lockerNum');
-  if (lk) lk.textContent = locker || '—';
-  const pmv = document.getElementById('pmStart');
-  if (pmv) pmv.textContent = pm || '— : —';
-}
-
-/* =================================================================
-   v27: トップ画面 同伴者リストレンダラ
-   ================================================================= */
-function renderV27PlayerList() {
-  const wrap = document.getElementById('v27PlayerList');
-  if (!wrap) return;
-  const players = State.players || [];
-  if (players.length === 0) {
-    wrap.innerHTML = '<div style="padding:14px;text-align:center;color:var(--ink-mute);font-size:13px;">同伴者が登録されていません。<br>「＋ 追加」から登録してください。</div>';
-    return;
-  }
-  let html = '';
-  players.forEach((p, idx) => {
-    const isFocus = State.round.focusPlayerId === p.id || (idx === 0 && !State.round.focusPlayerId);
-    const isMe = p.isMe;
-    const cls = 'v27-player-card' + (isFocus ? ' is-focus' : '') + (isMe ? ' is-me' : '');
-    const name = fullName(p) || '名前未設定';
-    const icon = isMe ? '🏌️' : '👤';
-    html += '<div class="' + cls + '" data-pid="' + escapeHtml(p.id) + '" data-pidx="' + idx + '">';
-    html += '  <span class="vpc-avatar">' + icon + '</span>';
-    html += '  <span class="vpc-name">' + escapeHtml(name) + '</span>';
-    if (!isMe) {
-      html += '  <button class="vpc-delete" data-del="' + escapeHtml(p.id) + '">削除</button>';
-    }
-    html += '</div>';
-  });
-  wrap.innerHTML = html;
-
-  /* タップで選択 */
-  wrap.querySelectorAll('.v27-player-card').forEach(el => {
-    el.addEventListener('click', (ev) => {
-      if (ev.target && ev.target.classList && ev.target.classList.contains('vpc-delete')) return;
-      const pid = el.dataset.pid;
-      State.round.focusPlayerId = pid;
-      try { Storage.saveState(); } catch(e) {}
-      renderV27PlayerList();
-      const p = State.players.find(pp => pp.id === pid);
-      const startHint = document.getElementById('v27StartHint');
-      if (startHint && p) startHint.textContent = fullName(p) + ' から入力開始';
-      showToast('🎯 ' + fullName(p) + ' を編集対象に設定');
-    });
-  });
-  /* 削除 */
-  wrap.querySelectorAll('.vpc-delete').forEach(b => {
-    b.addEventListener('click', (ev) => {
-      ev.stopPropagation();
-      const pid = b.dataset.del;
-      if (!confirm('このプレイヤーを削除しますか？')) return;
-      State.players = State.players.filter(pp => pp.id !== pid);
-      if (State.round.focusPlayerId === pid) State.round.focusPlayerId = '';
-      Storage.saveState();
-      renderTable();
-      renderV27PlayerList();
-      showToast('プレイヤーを削除しました');
-    });
-  });
 }
 
 /* =================================================================
@@ -7205,6 +6719,192 @@ function saveSettings() {
 /* =================================================================
    §22. イベントバインド
    ================================================================= */
+
+/* =================================================================
+   v31: 司令塔 同伴者リスト描画 / モーダルバッジ更新 / 親指ラベル更新 / 直接編集
+   ================================================================= */
+function v31RenderPlayerList() {
+  const wrap = document.getElementById('v31PlayerList');
+  if (!wrap) return;
+  const players = State.players.slice().sort((a,b) => (a.isMe === b.isMe) ? 0 : (a.isMe ? -1 : 1));
+  wrap.innerHTML = '';
+  if (players.length === 0) {
+    wrap.innerHTML = '<div style="font-size:12px;color:var(--v31-ink-soft);padding:8px 4px;">同伴者が登録されていません。「＋追加」ボタンから登録してください。</div>';
+    return;
+  }
+  players.forEach((p) => {
+    const realIdx = State.players.indexOf(p);
+    const card = document.createElement('div');
+    card.className = 'v31-player-card' + (p.isMe ? ' is-me' : '');
+    card.innerHTML =
+      '<span class="v31-pc-ico">' + (p.isMe ? '🏌️' : '👤') + '</span>' +
+      '<span class="v31-pc-name">' + escapeHtml(fullName(p) || '(名前未設定)') + '</span>' +
+      (p.isMe ? '<span class="v31-pc-tag">自分</span>' : '<button class="v31-pc-edit" type="button" data-edit-pi="' + realIdx + '">編集</button>');
+    wrap.appendChild(card);
+  });
+  wrap.querySelectorAll('[data-edit-pi]').forEach(b => {
+    b.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const pi = parseInt(b.dataset.editPi, 10);
+      try { openEditPlayerModal(pi); } catch(e) {}
+    });
+  });
+}
+
+function v31UpdateModalBadges() {
+  const pm = document.getElementById('v31ModalPm');
+  if (pm) pm.textContent = (State.round && State.round.pmStart) ? State.round.pmStart : '— : —';
+  const mb = document.getElementById('v31ModalModeBadge');
+  if (mb) mb.textContent = v31IsBeginner() ? '🔰 初心者' : '🏌️ 一般';
+}
+
+function v31UpdateThumbLabels() {
+  const pPlus = document.getElementById('v31ShotPlusLbl');
+  const pMinus = document.getElementById('v31ShotMinusLbl');
+  if (v31IsBeginner()) {
+    if (pPlus) pPlus.textContent = '自分の打数';
+    if (pMinus) pMinus.textContent = '自分の打数';
+  } else {
+    if (pPlus) pPlus.textContent = 'ストローク';
+    if (pMinus) pMinus.textContent = 'ストローク';
+  }
+  /* 標準モード時、自分以外を編集中はパット±を無効化 */
+  const ppPlus = document.getElementById('v31PuttPlus');
+  const ppMinus = document.getElementById('v31PuttMinus');
+  const cur = State.players[modalPlayerIdx];
+  const allowPutt = v31IsStandard() && cur && cur.isMe;
+  if (ppPlus)  ppPlus.classList.toggle('v31-disabled', !allowPutt);
+  if (ppMinus) ppMinus.classList.toggle('v31-disabled', !allowPutt);
+  if (v31IsBeginner()) {
+    if (ppPlus)  ppPlus.classList.add('v31-disabled');
+    if (ppMinus) ppMinus.classList.add('v31-disabled');
+  }
+}
+
+function v31SyncSettingsUI() {
+  /* 設定モーダル開時に現在の値を反映 */
+  const inp = document.getElementById('v31PmStartInput');
+  if (inp) inp.value = (State.round && State.round.pmStart) ? State.round.pmStart : v31SmartPmDefault();
+
+  const disp = State.ui.displayMode || 'number';
+  document.querySelectorAll('#v31DispSegments button').forEach(b => {
+    b.classList.toggle('active', b.dataset.disp === disp);
+  });
+  const tee = State.ui.useLadiesTee ? 'ladies' : 'reg';
+  document.querySelectorAll('#v31TeeSegments button').forEach(b => {
+    b.classList.toggle('active', b.dataset.tee === tee);
+  });
+  /* PM未設定なら自動で「現在時刻+45分」を表示（保存はしない） */
+  if (inp && !State.round.pmStart) inp.value = v31SmartPmDefault();
+}
+
+/* ============================================================
+   v31: 直接編集（inline-edit）— セルをタップしてその場で数値入力
+   ============================================================ */
+let v31CurrentEdit = null;
+
+function v31CloseInlineEdit(commit) {
+  if (!v31CurrentEdit) return;
+  const { cell, input, quick, pi, hi } = v31CurrentEdit;
+  if (commit) {
+    const raw = (input.value || '').trim();
+    const n = parseInt(raw, 10);
+    const p = State.players[pi];
+    if (p) {
+      if (raw === '' || isNaN(n) || n <= 0) {
+        p.scores[hi] = null;
+      } else {
+        p.scores[hi] = Math.max(1, Math.min(20, n));
+        if (p.putts[hi] == null) p.putts[hi] = 0;
+      }
+      Storage.saveState();
+    }
+  }
+  try { cell.classList.remove('v31-editing'); } catch(e) {}
+  try { input.remove(); } catch(e) {}
+  try { if (quick && quick.parentNode) quick.remove(); } catch(e) {}
+  v31CurrentEdit = null;
+  renderTable();
+}
+
+function v31OpenInlineEdit(cell, pi, hi) {
+  if (v31CurrentEdit) v31CloseInlineEdit(true);
+  const p = State.players[pi];
+  if (!p) return;
+  const h = COURSE.holes[hi];
+
+  if (v31IsBeginner() && !p.isMe) {
+    showToast('🔰 初心者モードでは自分のスコアのみ編集できます');
+    return;
+  }
+
+  cell.classList.add('v31-editing');
+  const cur = (p.scores[hi] != null) ? p.scores[hi] : '';
+
+  const input = document.createElement('input');
+  input.type = 'number';
+  input.inputMode = 'numeric';
+  input.min = '1'; input.max = '20';
+  input.value = cur;
+  input.className = 'v31-inline-edit';
+  cell.appendChild(input);
+
+  const quick = document.createElement('div');
+  quick.className = 'v31-inline-quick';
+  quick.innerHTML =
+    '<button type="button" data-act="par">🎯 PAR' + h.par + '</button>' +
+    '<button type="button" data-act="clear">クリア</button>' +
+    '<button type="button" data-act="ok">✓ OK</button>';
+  document.body.appendChild(quick);
+
+  const place = () => {
+    const r = cell.getBoundingClientRect();
+    const qw = quick.offsetWidth || 200;
+    quick.style.top = (window.scrollY + r.bottom + 4) + 'px';
+    let left = window.scrollX + r.left;
+    if (left + qw > window.innerWidth - 8) left = window.innerWidth - qw - 8;
+    if (left < 8) left = 8;
+    quick.style.left = left + 'px';
+  };
+  place(); setTimeout(place, 0);
+
+  v31CurrentEdit = { cell, input, quick, pi, hi };
+
+  quick.addEventListener('mousedown', (e) => e.preventDefault());
+  quick.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-act]');
+    if (!b) return;
+    e.stopPropagation();
+    const act = b.dataset.act;
+    if (act === 'par')   { input.value = h.par; input.focus(); }
+    else if (act === 'clear') { input.value = ''; input.focus(); }
+    else if (act === 'ok')    { v31CloseInlineEdit(true); }
+  });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); v31CloseInlineEdit(true); }
+    else if (e.key === 'Escape') { e.preventDefault(); v31CloseInlineEdit(false); }
+  });
+  input.addEventListener('blur', () => {
+    setTimeout(() => {
+      if (v31CurrentEdit && document.activeElement !== v31CurrentEdit.input) {
+        v31CloseInlineEdit(true);
+      }
+    }, 200);
+  });
+
+  setTimeout(() => { input.focus(); input.select(); }, 50);
+}
+
+/* 外側クリックで直接編集を終了 */
+document.addEventListener('click', (e) => {
+  if (!v31CurrentEdit) return;
+  const { cell, quick, input } = v31CurrentEdit;
+  if (cell.contains(e.target)) return;
+  if (quick && quick.contains(e.target)) return;
+  if (e.target === input) return;
+  v31CloseInlineEdit(true);
+}, true);
+
 function bindEvents() {
   /* 表示モード切替（3モード） */
   $('#displayToggle').addEventListener('click', (e) => {
@@ -7289,18 +6989,11 @@ function bindEvents() {
   });
   $('#btnPuttMinus').addEventListener('click', () => {
     if (!State.settings.puttEnabled) return;
-    /* v30: 標準モード時は自分のみパット入力可、ビギナー時は無効 */
-    const p = State.players[modalPlayerIdx];
-    if (isStandardMode() && p && !p.isMe) { showToast('パットは自分(佐藤さん)のみ記録します'); return; }
-    if (isBeginnerMode()) { showToast('🔰 初心者モードではパットは記録しません'); return; }
     if (modalPutt > 0) modalPutt--;
     updateModalDisplay();
   });
   $('#btnPuttPlus').addEventListener('click', () => {
     if (!State.settings.puttEnabled) return;
-    const p = State.players[modalPlayerIdx];
-    if (isStandardMode() && p && !p.isMe) { showToast('パットは自分(佐藤さん)のみ記録します'); return; }
-    if (isBeginnerMode()) { showToast('🔰 初心者モードではパットは記録しません'); return; }
     if (modalPutt < 10) modalPutt++;
     updateModalDisplay();
   });
@@ -7373,260 +7066,6 @@ function bindEvents() {
     Storage.saveSettings();
     applyPuttSectionEnabled();
   });
-
-  /* ============================================================
-     v27: トップ画面（準備セクション）ハンドラ
-     ============================================================ */
-
-  /* ロッカー番号入力 */
-  (function bindTopLocker() {
-    const inp = document.getElementById('topLockerInput');
-    if (!inp) return;
-    if (State.round && State.round.lockerNum) inp.value = State.round.lockerNum;
-    const save = () => {
-      const v = (inp.value || '').trim();
-      State.round.lockerNum = v;
-      try { Storage.saveState(); } catch(e) {}
-      try { syncLockerPmDisplay(); } catch(e) {}
-    };
-    inp.addEventListener('input', save);
-    inp.addEventListener('change', save);
-    inp.addEventListener('blur', save);
-  })();
-
-  /* PMスタート ボタン → タイムピッカーモーダル */
-  (function bindPmStart() {
-    const open = () => {
-      const modal = document.getElementById('pmStartModal');
-      const inp = document.getElementById('pmStartTimeInput');
-      if (!modal || !inp) return;
-      /* v30: 既存値があればそれ、なければ「現在時刻+45分」を自動セット */
-      const existing = (State.round && State.round.pmStart) ? State.round.pmStart : '';
-      inp.value = existing || smartPmDefault();
-      modal.classList.add('show');
-    };
-    const topBtn = document.getElementById('topPmStartBtn');
-    if (topBtn) topBtn.addEventListener('click', open);
-    const modalBtn = document.getElementById('modalPmStartBtn');
-    if (modalBtn) modalBtn.addEventListener('click', open);
-
-    document.querySelectorAll('#pmStartModal button[data-pmtime]').forEach(b => {
-      b.addEventListener('click', () => {
-        const inp = document.getElementById('pmStartTimeInput');
-        if (inp) inp.value = b.dataset.pmtime;
-      });
-    });
-    const saveBtn = document.getElementById('btnPmStartSave');
-    if (saveBtn) saveBtn.addEventListener('click', () => {
-      const inp = document.getElementById('pmStartTimeInput');
-      const v = inp ? (inp.value || '').trim() : '';
-      State.round.pmStart = v;
-      try { Storage.saveState(); } catch(e) {}
-      try { syncLockerPmDisplay(); } catch(e) {}
-      try { closeAllModals(); } catch(e) {}
-      showToast(v ? '⛳ PMスタート: ' + v : '⛳ PMスタートをクリア');
-    });
-    const clrBtn = document.getElementById('btnPmStartClear');
-    if (clrBtn) clrBtn.addEventListener('click', () => {
-      const inp = document.getElementById('pmStartTimeInput');
-      if (inp) inp.value = '';
-      State.round.pmStart = '';
-      try { Storage.saveState(); } catch(e) {}
-      try { syncLockerPmDisplay(); } catch(e) {}
-      try { closeAllModals(); } catch(e) {}
-      showToast('⛳ PMスタートをクリア');
-    });
-  })();
-
-  /* 同伴者追加ボタン（既存 btnAddCompanion に委譲） */
-  (function bindV27AddCompanion() {
-    const b = document.getElementById('v27AddCompanion');
-    if (!b) return;
-    b.addEventListener('click', () => {
-      const orig = document.getElementById('btnAddCompanion');
-      if (orig) orig.click();
-    });
-  })();
-
-  /* 「ラウンド開始」ボタン → スコア入力モーダル起動（focusPlayerId にフォーカス） */
-  (function bindV27Start() {
-    const b = document.getElementById('v27StartRound');
-    if (!b) return;
-    b.addEventListener('click', () => {
-      if (!State.players || State.players.length === 0) {
-        showToast('⚠ 同伴者を先に登録してください', 'error');
-        return;
-      }
-      const fid = State.round.focusPlayerId;
-      let pi = 0;
-      if (fid) {
-        const idx = State.players.findIndex(p => p.id === fid);
-        if (idx >= 0) pi = idx;
-      }
-      const hi = Math.max(0, (State.round.currentHole || 1) - 1);
-      try { openScoreModal(pi, hi); } catch(e) {}
-    });
-  })();
-
-  /* コース詳細ボタン（トップ＋モーダル） */
-  (function bindV27CourseDetail() {
-    ['v27CourseDetailBtn', 'modalCourseDetailBtn'].forEach(id => {
-      const b = document.getElementById(id);
-      if (!b) return;
-      b.addEventListener('click', () => {
-        const orig = document.getElementById('btnCourseDetail');
-        if (orig) orig.click();
-      });
-    });
-  })();
-
-  /* モーダル内 設定ボタン */
-  (function bindV27Settings() {
-    const b = document.getElementById('modalSettingsBtn');
-    if (!b) return;
-    b.addEventListener('click', () => {
-      const orig = document.getElementById('btnSettings');
-      if (orig) orig.click();
-    });
-  })();
-
-  /* v30: ゲームモード切替トグル */
-  (function bindV30ModeToggle() {
-    const wrap = document.getElementById('v30ModeToggle');
-    if (!wrap) return;
-    const cur = (State.ui && State.ui.gameMode) ? State.ui.gameMode : 'standard';
-    wrap.querySelectorAll('button[data-gmode]').forEach(b => {
-      b.classList.toggle('active', b.dataset.gmode === cur);
-    });
-    wrap.addEventListener('click', (e) => {
-      const b = e.target.closest('button[data-gmode]');
-      if (!b) return;
-      const m = b.dataset.gmode;
-      if (m === State.ui.gameMode) return;
-      State.ui.gameMode = m;
-      try { Storage.saveState(); } catch(e) {}
-      wrap.querySelectorAll('button[data-gmode]').forEach(x => {
-        x.classList.toggle('active', x.dataset.gmode === m);
-      });
-      applyGameModeBodyClass();
-      updateV30ModalModeIndicator();
-      updateV30ThumbLabelsForBeginner();
-      const labels = {
-        standard: '🏌️ 標準モード（4人ストローク＋自分パット）',
-        beginner: '🔰 初心者モード（自分のストロークのみ）'
-      };
-      showToast(labels[m] || '');
-    });
-  })();
-
-  /* v30: ゲーム設定メニュー — 既存ハンドラに委譲 */
-  (function bindV30SettingsMenu() {
-    const map = [
-      ['v30BtnInviteQR',    'btnInviteQR'],
-      ['v30BtnSettings',    'btnSettings'],
-      ['v30BtnTeeToggle',   'btnTeeToggle']
-    ];
-    map.forEach(([newId, origId]) => {
-      const b = document.getElementById(newId);
-      if (!b) return;
-      b.addEventListener('click', () => {
-        const o = document.getElementById(origId);
-        if (o && typeof o.click === 'function') o.click();
-        setTimeout(updateV30DisplayLabels, 80);
-      });
-    });
-    /* 表示モード循環 */
-    const dmBtn = document.getElementById('v30BtnDisplayMode');
-    if (dmBtn) {
-      dmBtn.addEventListener('click', () => {
-        const cycle = ['number', 'diff', 'symbol'];
-        const cur = State.ui.displayMode || 'number';
-        const next = cycle[(cycle.indexOf(cur) + 1) % cycle.length];
-        State.ui.displayMode = next;
-        try { Storage.saveState(); } catch(e) {}
-        try { renderTable(); } catch(e) {}
-        updateV30DisplayLabels();
-        const labels = { number: '🔢 数字表示', diff: '± スコア差表示', symbol: '記号(★◎◯―△□)' };
-        showToast(labels[next] + 'に切替');
-      });
-    }
-  })();
-
-  /* モーダル内 ティ切替ボタン（既存 btnTeeToggle に委譲） */
-  (function bindV27ModalTee() {
-    const b = document.getElementById('modalTeeToggle');
-    if (!b) return;
-    b.addEventListener('click', () => {
-      const orig = document.getElementById('btnTeeToggle');
-      if (orig) orig.click();
-      /* ラベル同期 */
-      setTimeout(() => {
-        const lbl = document.getElementById('teeToggleLabel');
-        const mlbl = document.getElementById('modalTeeLabel');
-        if (lbl && mlbl) mlbl.textContent = lbl.textContent;
-      }, 30);
-    });
-  })();
-
-  /* ============================================================
-     v27: モーダル親指グリッド 6ボタン（既存btnに委譲）
-     ============================================================ */
-  (function bindV27ThumbGrid() {
-    const fwd = (id, target) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      el.addEventListener('click', (e) => {
-        e.preventDefault();
-        const t = document.getElementById(target);
-        if (t) t.click();
-      });
-    };
-    fwd('g6ShotPlus', 'btnStrokePlus');
-    fwd('g6ShotMinus', 'btnStrokeMinus');
-    fwd('g6PuttPlus', 'btnPuttPlus');
-    fwd('g6PuttMinus', 'btnPuttMinus');
-    fwd('g6Confirm', 'btnConfirm');
-
-    /* プレイヤー切替（独自処理） */
-    const pn = document.getElementById('g6PlayerNext');
-    if (pn) pn.addEventListener('click', () => {
-      if (!State.players || State.players.length === 0) return;
-      modalPlayerIdx = (modalPlayerIdx + 1) % State.players.length;
-      const p = State.players[modalPlayerIdx];
-      const hi = modalHole - 1;
-      if (p.scores[hi] != null) {
-        modalStroke = p.scores[hi];
-        modalPutt = p.putts[hi] || 0;
-      } else if (State.ui.inputMode === 'simple') {
-        const h = COURSE.holes[hi];
-        modalStroke = h.par;
-        modalPutt = 2;
-      } else {
-        modalStroke = 0;
-        modalPutt = 0;
-      }
-      renderModalPlayerTabs();
-      updateModalDisplay();
-      applyCrossHighlight();
-      showToast('👥 ' + fullName(p) + ' に切替');
-    });
-  })();
-
-  /* ============================================================
-     v27: 入力モードに応じてショット±ラベルを動的に切替
-     ============================================================ */
-  (function bindV27ShotLabel() {
-    const update = () => {
-      const isSimple = State.ui.inputMode === 'simple';
-      const p = document.getElementById('g6ShotPlusLabel');
-      const m = document.getElementById('g6ShotMinusLabel');
-      if (p) p.textContent = isSimple ? 'ストローク' : 'ショット';
-      if (m) m.textContent = isSimple ? 'ストローク' : 'ショット';
-    };
-    const tog = document.getElementById('inputModeMainToggle');
-    if (tog) tog.addEventListener('click', () => setTimeout(update, 50));
-    update();
-  })();
 
   /* モーダル閉じる */
   $$('.modal-backdrop').forEach(bd => {
@@ -7702,76 +7141,252 @@ function bindEvents() {
       }
     });
   }
+
+
+  /* ============================================================
+     v31: 司令塔 UI バインド
+     ============================================================ */
+  /* モード切替トグル */
+  (function v31BindMode() {
+    const wrap = document.getElementById('v31ModeToggle');
+    if (!wrap) return;
+    const cur = (State.ui && State.ui.gameMode) || 'standard';
+    wrap.querySelectorAll('button[data-gmode]').forEach(b => {
+      b.classList.toggle('active', b.dataset.gmode === cur);
+    });
+    wrap.addEventListener('click', (e) => {
+      const b = e.target.closest('button[data-gmode]');
+      if (!b) return;
+      const m = b.dataset.gmode;
+      if (m === State.ui.gameMode) return;
+      State.ui.gameMode = m;
+      Storage.saveState();
+      wrap.querySelectorAll('button[data-gmode]').forEach(x => {
+        x.classList.toggle('active', x.dataset.gmode === m);
+      });
+      v31ApplyBodyClass();
+      v31UpdateModalBadges();
+      v31UpdateThumbLabels();
+      const labels = {
+        standard: '🏌️ 一般モード（4人ストローク＋自分パット）',
+        beginner: '🔰 初心者モード（自分のストロークのみ）'
+      };
+      showToast(labels[m] || '');
+    });
+  })();
+
+  /* ロッカー入力 */
+  (function v31BindLocker() {
+    const inp = document.getElementById('v31LockerInput');
+    if (!inp) return;
+    inp.value = (State.round && State.round.lockerNum) || '';
+    const save = () => {
+      State.round.lockerNum = (inp.value || '').trim();
+      Storage.saveState();
+    };
+    inp.addEventListener('input', save);
+    inp.addEventListener('blur', save);
+  })();
+
+  /* 同伴者追加（既存 btnAddCompanion に委譲） */
+  (function v31BindAddCompanion() {
+    const b = document.getElementById('v31AddCompanion');
+    if (!b) return;
+    b.addEventListener('click', () => {
+      const o = document.getElementById('btnAddCompanion');
+      if (o) o.click();
+    });
+  })();
+
+  /* コース詳細（既存 btnCourseDetail に委譲） */
+  (function v31BindCourseDetail() {
+    const b = document.getElementById('v31CourseDetailBtn');
+    if (!b) return;
+    b.addEventListener('click', () => {
+      const o = document.getElementById('btnCourseDetail');
+      if (o) o.click();
+    });
+  })();
+
+  /* ラウンド開始（モーダル起動） */
+  (function v31BindStart() {
+    const b = document.getElementById('v31StartRound');
+    if (!b) return;
+    b.addEventListener('click', () => {
+      if (!State.players || State.players.length === 0) {
+        showToast('⚠ 同伴者を先に登録してください', 'error');
+        return;
+      }
+      let pi = State.players.findIndex(p => p.isMe);
+      if (pi < 0) pi = 0;
+      const hi = Math.max(0, (State.round.currentHole || 1) - 1);
+      try { openScoreModal(pi, hi); } catch(e) {}
+    });
+  })();
+
+  /* 設定モーダルを開く */
+  (function v31BindOpenSettings() {
+    const b = document.getElementById('v31OpenSettings');
+    if (!b) return;
+    b.addEventListener('click', () => {
+      try { openSettings(); } catch(e) {}
+      setTimeout(v31SyncSettingsUI, 50);
+    });
+  })();
+
+  /* 設定モーダル内: PMスタート */
+  (function v31BindPmStart() {
+    const inp = document.getElementById('v31PmStartInput');
+    const smart = document.getElementById('v31PmSmartFill');
+    const clr = document.getElementById('v31PmClear');
+    if (inp) {
+      const save = () => {
+        State.round.pmStart = (inp.value || '').trim();
+        Storage.saveState();
+        v31UpdateModalBadges();
+      };
+      inp.addEventListener('input', save);
+      inp.addEventListener('change', save);
+    }
+    if (smart) {
+      smart.addEventListener('click', () => {
+        const v = v31SmartPmDefault();
+        if (inp) inp.value = v;
+        State.round.pmStart = v;
+        Storage.saveState();
+        v31UpdateModalBadges();
+        showToast('⛳ PMスタート: ' + v);
+      });
+    }
+    if (clr) {
+      clr.addEventListener('click', () => {
+        if (inp) inp.value = '';
+        State.round.pmStart = '';
+        Storage.saveState();
+        v31UpdateModalBadges();
+      });
+    }
+  })();
+
+  /* 設定モーダル内: 表示モードセグメント */
+  (function v31BindDispSeg() {
+    const wrap = document.getElementById('v31DispSegments');
+    if (!wrap) return;
+    wrap.addEventListener('click', (e) => {
+      const b = e.target.closest('button[data-disp]');
+      if (!b) return;
+      const m = b.dataset.disp;
+      State.ui.displayMode = m;
+      Storage.saveState();
+      wrap.querySelectorAll('button').forEach(x => x.classList.toggle('active', x.dataset.disp === m));
+      renderTable();
+      const labels = { number: '数字', diff: 'スコア差(±)', symbol: '記号' };
+      showToast(labels[m] + '表示に切替');
+    });
+  })();
+
+  /* 設定モーダル内: ティ切替セグメント */
+  (function v31BindTeeSeg() {
+    const wrap = document.getElementById('v31TeeSegments');
+    if (!wrap) return;
+    wrap.addEventListener('click', (e) => {
+      const b = e.target.closest('button[data-tee]');
+      if (!b) return;
+      const tee = b.dataset.tee;
+      State.ui.useLadiesTee = (tee === 'ladies');
+      Storage.saveState();
+      wrap.querySelectorAll('button').forEach(x => x.classList.toggle('active', x.dataset.tee === tee));
+      renderTopAndHero();
+      renderTable();
+      showToast(tee === 'ladies' ? '🌸 LADIESティに切替' : '⛳ REGティに切替');
+    });
+  })();
+
+  /* 設定モーダル内: 招待QR */
+  (function v31BindInviteQR() {
+    const b = document.getElementById('v31OpenInviteQR');
+    if (!b) return;
+    b.addEventListener('click', () => {
+      const o = document.getElementById('btnInviteQR');
+      if (o) o.click();
+    });
+  })();
+
+  /* ============================================================
+     v31: モーダル内 親指グリッド（v16 既存ボタンへ委譲）
+     ============================================================ */
+  (function v31BindThumb() {
+    const fwd = (newId, origId) => {
+      const a = document.getElementById(newId);
+      const b = document.getElementById(origId);
+      if (!a || !b) return;
+      a.addEventListener('click', () => {
+        const p = State.players[modalPlayerIdx];
+        /* v31: ビギナー時の制限 */
+        if (v31IsBeginner() && (newId.includes('Putt') || newId === 'v31PlayerNext')) {
+          if (newId !== 'v31Confirm') {
+            showToast('🔰 初心者モードでは無効です');
+            return;
+          }
+        }
+        /* v31: 標準時のパットは自分のみ */
+        if (v31IsStandard() && newId.includes('Putt') && p && !p.isMe) {
+          showToast('パットは自分(佐藤さん)のみ記録します');
+          return;
+        }
+        b.click();
+      });
+    };
+    fwd('v31ShotPlus',  'btnStrokePlus');
+    fwd('v31ShotMinus', 'btnStrokeMinus');
+    fwd('v31PuttPlus',  'btnPuttPlus');
+    fwd('v31PuttMinus', 'btnPuttMinus');
+    fwd('v31Confirm',   'btnConfirm');
+
+    const pn = document.getElementById('v31PlayerNext');
+    if (pn) {
+      pn.addEventListener('click', () => {
+        if (v31IsBeginner()) { showToast('🔰 初心者モードでは自分のみ'); return; }
+        if (!State.players.length) return;
+        let next = modalPlayerIdx + 1;
+        if (next >= State.players.length) next = 0;
+        modalPlayerIdx = next;
+        const p = State.players[next];
+        const h = COURSE.holes[modalHole - 1];
+        if (p.scores[modalHole - 1] != null) {
+          modalStroke = p.scores[modalHole - 1];
+          modalPutt = p.putts[modalHole - 1] || 0;
+        } else if (State.ui.inputMode === 'simple') {
+          modalStroke = h.par; modalPutt = 2;
+        } else {
+          modalStroke = 0; modalPutt = 0;
+        }
+        renderModalPlayerTabs();
+        updateModalDisplay();
+        v31UpdateModalBadges();
+        v31UpdateThumbLabels();
+      });
+    }
+  })();
+
+  /* ============================================================
+     v31: 起動時の同期処理
+     ============================================================ */
+  v31ApplyBodyClass();
+  v31RenderPlayerList();
+  v31UpdateModalBadges();
+  v31UpdateThumbLabels();
 }
 
 /* =================================================================
    §23. アプリ起動
    ================================================================= */
-
-/* =================================================================
-   v30: モーダル内モード表示・サムグリッド調整・パット制限
-   ================================================================= */
-function updateV30ModalModeIndicator() {
-  const wrap = document.getElementById('v30ModalModeIndicator');
-  const nameEl = document.getElementById('v30ModalModeName');
-  if (!wrap || !nameEl) return;
-  if (isBeginnerMode()) {
-    wrap.classList.add('beginner');
-    nameEl.textContent = '🔰 初心者';
-  } else {
-    wrap.classList.remove('beginner');
-    nameEl.textContent = '🏌️ 標準';
-  }
-}
-
-function updateV30PuttButtonsForCurrentPlayer() {
-  const pPlus  = document.getElementById('g6PuttPlus');
-  const pMinus = document.getElementById('g6PuttMinus');
-  if (!pPlus || !pMinus) return;
-  const p = State.players[modalPlayerIdx];
-  const allowPutt = isStandardMode() && p && p.isMe;
-  pPlus.classList.toggle('v30-putt-disabled', !allowPutt);
-  pMinus.classList.toggle('v30-putt-disabled', !allowPutt);
-}
-
-function updateV30ThumbLabelsForBeginner() {
-  const plus  = document.getElementById('g6ShotPlusLabel');
-  const minus = document.getElementById('g6ShotMinusLabel');
-  if (isBeginnerMode()) {
-    if (plus)  plus.textContent  = '自分の打数';
-    if (minus) minus.textContent = '自分の打数';
-  } else {
-    if (plus)  plus.textContent  = 'ストローク';
-    if (minus) minus.textContent = 'ストローク';
-  }
-}
-
-function updateV30DisplayLabels() {
-  const dispLbl = document.getElementById('v30DispLabel');
-  if (dispLbl) {
-    const m = State.ui.displayMode || 'number';
-    dispLbl.textContent = (m === 'number') ? '数字表示' : (m === 'diff') ? '± 差表示' : '記号表示';
-  }
-  const teeLbl = document.getElementById('v30TeeLabel');
-  if (teeLbl) {
-    teeLbl.textContent = State.ui.useLadiesTee ? 'LADIESティ' : 'REGティ';
-  }
-}
-
 function boot() {
-  /* v30: ゲームモード body class & UI 同期 */
-  try { applyGameModeBodyClass(); } catch(e) {}
-  try { updateV30DisplayLabels(); } catch(e) {}
-  try { updateV30ModalModeIndicator(); } catch(e) {}
-
   initState();
   bindEvents();
   applyInputMode();  /* v14: 起動時に入力モードを適用（body class設定など） */
-  /* v27: 初回表示同期 */
-  try { syncLockerPmDisplay(); } catch(e) {}
-  try { renderV27PlayerList(); } catch(e) {}
   Router.handleInitial();
-  console.log('G-WORLD v30.0 (究極統合版・モード切替＋直接編集)', new Date().toISOString());
+  console.log('G-WORLD v31.0 (v16計算エンジン継承・司令塔UI最適化版)', new Date().toISOString());
 }
 
 if (document.readyState === 'loading') {
@@ -7783,7 +7398,6 @@ if (document.readyState === 'loading') {
 
 </script>
 
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
