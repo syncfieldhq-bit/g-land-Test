@@ -2744,7 +2744,15 @@ body.v32-holes-9 .v32-mh-holes {
   padding: 0;
 }
 .v33-scoretable-wrap {
-  flex: 1 1 auto;
+  /* 代わりに以下の指定で「最大高さ」を制限する */
+  max-height: 60vh; 
+  flex-shrink: 0;
+  
+  display: flex; flex-direction: column;
+  background: var(--v31-base);
+  padding: 0;
+}
+  /*flex: 1 1 auto;
   min-height: 0;
   overflow: hidden;
 }
