@@ -4511,108 +4511,210 @@ html, body {
   align-items: center;
 }
 
-
 /* ============================================================
-   v38.0 ティー選択(COT) + 全セクション緑枠統一
+   v41: 入力パネルレイアウト（添付画像忠実版）
+   ・対象: #v38InputPanel のみ
+   ・スコアカード一覧画面とラウンド開始フローには一切干渉しない
    ============================================================ */
+.v41-panel {
+  padding: 14px 12px calc(14px + env(safe-area-inset-bottom)) !important;
+  gap: 10px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: #fff !important;
+}
+.v41-panel .v38-panel-handle { margin-bottom: 4px; }
 
-/* 全 .v31-block に統一された緑実線枠 */
-.v31-cockpit .v31-block {
-  border: 2px solid var(--v31-accent, #2d9d5f) !important;
-  border-radius: 14px !important;
-  background: #ffffff !important;
-  box-shadow: 0 2px 8px rgba(45,157,95,0.08) !important;
-  padding: 14px 14px !important;
-  margin-bottom: 14px !important;
-}
-/* アクセント(プレイモード)はやや濃い枠＋背景グラデで差別化 */
-.v31-cockpit .v31-block.v31-block-accent {
-  border-color: var(--v31-accent-deep, #1f7a48) !important;
-  background: linear-gradient(180deg, #f7fdf9 0%, #ffffff 100%) !important;
-  box-shadow: 0 3px 12px rgba(31,122,72,0.14) !important;
-}
-/* 統一感のあるブロックタイトル */
-.v31-cockpit .v31-block-title {
-  color: var(--v31-accent-deep, #1f7a48) !important;
-  font-weight: 900 !important;
-  font-size: 14px !important;
-  margin-bottom: 10px !important;
-  padding-bottom: 6px !important;
-  border-bottom: 1.5px dashed rgba(45,157,95,0.28) !important;
-  letter-spacing: 0.02em;
-}
+.v41-sanctuary { position: absolute; left: -10000px; top: -10000px; width: 1px; height: 1px; overflow: hidden; }
 
-/* --- ティー選択 (COT) トグル --- */
-.v38-cot-toggle {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-.v38-cot-toggle button {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 10px;
-  padding: 14px 12px;
-  background: #ffffff;
-  border: 2px solid #d8e2dc;
-  border-radius: 12px;
-  font-family: inherit;
-  cursor: pointer;
-  touch-action: manipulation;
-  min-height: 70px;
-  transition: transform 0.08s, border-color 0.15s, background 0.15s, box-shadow 0.15s;
-  text-align: left;
-}
-.v38-cot-toggle button:active { transform: scale(0.96); }
-.v38-cot-toggle button.active {
-  background: linear-gradient(180deg, var(--v31-accent, #2d9d5f) 0%, var(--v31-accent-deep, #1f7a48) 100%);
-  border-color: var(--v31-accent-deep, #1f7a48);
-  color: #ffffff;
-  box-shadow: 0 4px 14px rgba(45,157,95,0.32);
-}
-.v38-cot-toggle button[data-tee="ladies"].active {
-  background: linear-gradient(180deg, #e85f80 0%, #c63d61 100%);
-  border-color: #a8284c;
-  box-shadow: 0 4px 14px rgba(200,60,100,0.32);
-}
-.v38-cot-ico {
-  font-size: 28px;
+/* === × 閉じる（右上）=== */
+.v41-close {
+  position: absolute;
+  top: 10px; right: 10px;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid #d6dde2;
+  background: #fff;
+  color: #1a3a25;
+  font-size: 22px; font-weight: 900;
   line-height: 1;
+  cursor: pointer;
+  z-index: 5;
+  -webkit-tap-highlight-color: rgba(45,157,95,.25);
+}
+.v41-close:active { background: #f0f7f3; }
+
+/* === ヘッダー：ホールナビ === */
+.v41-holebar {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 8px;
   flex: 0 0 auto;
+  margin-top: 6px;
+  padding-right: 44px; /* × ボタン退避 */
 }
-.v38-cot-lbl {
-  font-size: 14px;
-  font-weight: 900;
-  color: #1a2620;
-  line-height: 1.2;
-  display: flex;
+.v41-hb-nav {
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+  border: 1.5px solid #d6dde2;
+  border-radius: 14px;
+  background: #fff;
+  color: #1a3a25;
+  padding: 8px 4px;
+  min-height: 56px;
+  font-weight: 800;
+  cursor: pointer;
+  -webkit-tap-highlight-color: rgba(45,157,95,.20);
+}
+.v41-hb-nav:active   { background: #f0f7f3; }
+.v41-hb-nav:disabled { opacity: .35; cursor: not-allowed; }
+.v41-hb-op  { font-size: 16px; font-weight: 900; }
+.v41-hb-lbl { font-size: 12px; font-weight: 800; line-height: 1.05; }
+
+.v41-hb-center {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  justify-content: center;
+  gap: 2px 10px;
+  border: 1.5px solid #d6dde2;
+  border-radius: 999px;
+  background: #fff;
+  padding: 6px 14px;
+  min-height: 56px;
+}
+.v41-hb-restroom {
+  grid-row: 1 / span 2;
+  display: inline-flex; align-items: center;
+  font-size: 18px; font-weight: 900;
+  line-height: 1;
+}
+.v41-hb-rr-f { color: #d93a5a; }
+.v41-hb-rr-m { color: #2b6cd9; margin-left: -2px; }
+.v41-hb-hole { grid-row: 1; font-size: 22px; font-weight: 900; color: #14532d; line-height: 1; }
+.v41-hb-par  { grid-row: 2; font-size: 12px; font-weight: 700; color: #5a6a60; line-height: 1; }
+.v41-hb-yards-wrap {
+  grid-row: 1 / span 2;
+  display: flex; flex-direction: column; align-items: center; line-height: 1;
+}
+.v41-hb-yards      { font-size: 16px; font-weight: 900; color: #1a3a25; }
+.v41-hb-yards-unit { font-size: 10px; font-weight: 700; color: #5a6a60; letter-spacing: .04em; }
+
+/* === 4列2行 プレイヤーグリッド === */
+.v41-player-grid-wrap { flex: 0 0 auto; }
+.v41-player-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: auto auto;
+  border: 1.5px solid #d6dde2;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  position: relative;
+}
+.v41-pg-cell {
+  display: flex; align-items: center; justify-content: center;
   flex-direction: column;
+  text-align: center;
+  padding: 8px 6px;
   gap: 2px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: rgba(45,157,95,.25);
+  user-select: none;
+  background: #fff;
+  position: relative;
+  font-weight: 800;
+  line-height: 1.1;
 }
-.v38-cot-toggle button.active .v38-cot-lbl {
-  color: #ffffff;
+.v41-pg-name {
+  border-bottom: 1.5px solid #e6ece9;
+  font-size: 17px;
+  color: #1a3a25;
+  min-height: 54px;
 }
-.v38-cot-lbl small {
-  font-size: 10px;
+.v41-pg-name-sub {
+  font-size: 9px;
   font-weight: 700;
-  color: #6a7d72;
-  opacity: 0.9;
+  color: #6a7a72;
+  letter-spacing: .04em;
 }
-.v38-cot-toggle button.active .v38-cot-lbl small {
-  color: #ddf2e4;
+.v41-pg-name-meta {
+  font-size: 9px;
+  font-weight: 700;
+  color: rgba(255,255,255,.85);
+  line-height: 1.1;
 }
-.v38-cot-toggle button[data-tee="ladies"].active .v38-cot-lbl small {
-  color: #fde0ea;
+.v41-pg-score {
+  font-size: 26px; font-weight: 900; color: #14532d;
+  background: #ecf6f0;
+  min-height: 56px;
+}
+.v41-pg-score.is-empty { color: #b9c2bb; background: #fff; }
+
+/* 選択中 — 名前セルを緑塗り・スコアを濃めのグリーン */
+.v41-player-grid .v41-pg-col.is-active .v41-pg-name {
+  background: #2d9d5f;
+  color: #fff;
+}
+.v41-player-grid .v41-pg-col.is-active .v41-pg-name-sub { color: rgba(255,255,255,.9); }
+.v41-player-grid .v41-pg-col.is-active .v41-pg-score {
+  background: #d5ead8;
+}
+/* 区切りの薄い緑グラデーション矢印意匠 */
+.v41-player-grid .v41-pg-col + .v41-pg-col .v41-pg-name {
+  background-image: linear-gradient(to right, rgba(45,157,95,.15) 0%, rgba(45,157,95,0) 60%);
+}
+.v41-player-grid .v41-pg-col.is-active + .v41-pg-col .v41-pg-name {
+  background-image: none;
+}
+.v41-player-grid .v41-pg-col { display: contents; }
+.v41-player-grid .v41-pg-col.is-empty .v41-pg-name  { color: #b9c2bb; }
+.v41-player-grid .v41-pg-col.is-empty .v41-pg-score { color: #d0d6d2; }
+
+/* === モードタブ（オーバーライド） === */
+.v41-mode-tabs { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 8px !important; }
+.v41-mode-tabs .v38-pmt-btn {
+  padding: 10px 6px;
+  border-radius: 999px !important;
+  border: 1.5px solid #d6dde2 !important;
+  background: #fff !important;
+  color: #1a3a25 !important;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.v41-mode-tabs .v38-pmt-btn.is-active {
+  background: #2d9d5f !important;
+  color: #fff !important;
+  border-color: #2d9d5f !important;
 }
 
-/* 横画面でも準備画面のレイアウトを維持(モーダルとは別) */
-@media (orientation: landscape) and (max-height: 600px) {
-  /* 横画面の準備画面では緑枠を細く */
-  .v31-cockpit .v31-block {
-    padding: 8px 10px !important;
-    margin-bottom: 8px !important;
-  }
+/* === 数字パッド（内部は既存 v38RenderPanelBody 描画をそのまま使う） === */
+.v41-panel-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+
+/* === フッター（確定のみ） === */
+.v41-panel-foot { display: block !important; padding: 0 !important; }
+.v41-confirm {
+  width: 100%;
+  padding: 14px 10px;
+  border-radius: 14px;
+  border: 1.5px solid #2d9d5f;
+  background: #2d9d5f;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(45,157,95,.30);
+  -webkit-tap-highlight-color: rgba(45,157,95,.25);
+}
+.v41-confirm:active { background: #1f7a47; transform: translateY(1px); }
+
+@media (max-width: 360px) {
+  .v41-hb-hole  { font-size: 18px; }
+  .v41-hb-yards { font-size: 14px; }
+  .v41-pg-name  { font-size: 15px; min-height: 48px; }
+  .v41-pg-score { font-size: 22px; min-height: 50px; }
+  .v41-mode-tabs .v38-pmt-btn { font-size: 12px; }
 }
 
 </style>
@@ -6972,22 +7074,7 @@ var qrcode = function() {
       </div>
     </section>
 
-    <!-- ③ ティー選択 (COT) — レギュラー / レディース -->
-    <section class="v31-block v38-cot-block">
-      <div class="v31-block-title">⛳ ティー選択 (COT)</div>
-      <div class="v38-cot-toggle" id="v38CotToggle">
-        <button type="button" data-tee="reg" class="active">
-          <span class="v38-cot-ico">⛳</span>
-          <span class="v38-cot-lbl">レギュラーティー<small>REG / REGULAR (白・黄)</small></span>
-        </button>
-        <button type="button" data-tee="ladies">
-          <span class="v38-cot-ico">🌸</span>
-          <span class="v38-cot-lbl">レディースティー<small>LADIES (赤・緑)</small></span>
-        </button>
-      </div>
-    </section>
-
-    <!-- ④ プレイモード(一般 / 初心者カウンター) -->
+    <!-- ③ プレイモード(一般 / 初心者カウンター) -->
     <section class="v31-block v31-block-accent">
       <div class="v31-block-title">🎯 プレイモード</div>
       <div class="v31-mode-toggle" id="v31ModeToggle">
@@ -7470,34 +7557,64 @@ var qrcode = function() {
      v38: セルタップ → ボトムシート入力パネル
      入力モード(シンプル/カウンター/ストローク+パット)で内容を動的に切替
      ============================================================ -->
-<div class="v38-panel" id="v38InputPanel" aria-hidden="true">
+<div class="v38-panel v41-panel" id="v38InputPanel" aria-hidden="true">
   <div class="v38-panel-handle"></div>
-  <div class="v38-panel-head">
-    <div class="v38-panel-head-left">
-      <span class="v38-ph-hole" id="v38PanelHole">1H</span>
-      <span class="v38-ph-par" id="v38PanelPar">PAR 4</span>
-      <span class="v38-ph-player" id="v38PanelPlayer">—</span>
+
+  <!-- v41: 右上×閉じるボタン（絶対配置） -->
+  <button type="button" class="v41-close" id="v38PanelClose" aria-label="閉じる">×</button>
+
+  <!-- v41: ヘッダー（画像忠実）— [◀前ホール] [ピルセンター] [次ホール▶] -->
+  <div class="v41-holebar">
+    <button type="button" class="v41-hb-nav v41-hb-prev" id="v38PanelPrevHole">
+      <span class="v41-hb-op">◀</span><span class="v41-hb-lbl">前<br>ホール</span>
+    </button>
+    <div class="v41-hb-center" id="v41HoleCenter">
+      <span class="v41-hb-restroom" aria-hidden="true">
+        <span class="v41-hb-rr-f">♀</span><span class="v41-hb-rr-m">♂</span>
+      </span>
+      <span class="v41-hb-hole" id="v38PanelHole">1H</span>
+      <span class="v41-hb-par"  id="v38PanelPar">PAR 4</span>
+      <span class="v41-hb-yards-wrap">
+        <span class="v41-hb-yards" id="v41HoleYards">—</span>
+        <span class="v41-hb-yards-unit">YARDS</span>
+      </span>
     </div>
-    <div class="v38-panel-head-right">
-      <span class="v38-ph-score-lbl">現在</span>
-      <span class="v38-ph-score" id="v38PanelScore">—</span>
-      <button type="button" class="v38-panel-close" id="v38PanelClose" aria-label="閉じる">×</button>
+    <button type="button" class="v41-hb-nav v41-hb-next" id="v38PanelNextHole">
+      <span class="v41-hb-lbl">次<br>ホール</span><span class="v41-hb-op">▶</span>
+    </button>
+  </div>
+
+  <!-- v41: プレイヤーグリッド（4列2行 名前行+スコア行） -->
+  <div class="v41-player-grid-wrap">
+    <div class="v41-player-grid" id="v41PlayerGrid">
+      <!-- JS で動的描画（4プレイヤー × （名前 / スコア）） -->
     </div>
   </div>
-  <div class="v38-panel-mode-tabs" id="v38PanelModeTabs">
+
+  <!-- v38: モードタブ（天気予報式 / カウンター / 数字+パット）— 既存IDを保存 -->
+  <div class="v38-panel-mode-tabs v41-mode-tabs" id="v38PanelModeTabs">
     <button type="button" class="v38-pmt-btn" data-pmode="simple">天気予報式</button>
     <button type="button" class="v38-pmt-btn" data-pmode="counter">カウンター</button>
     <button type="button" class="v38-pmt-btn" data-pmode="stroke_putt">数字+パット</button>
   </div>
-  <div class="v38-panel-body" id="v38PanelBody">
+
+  <!-- v38: 数字パッド本体（既存 v38RenderPanelBody が描画） -->
+  <div class="v38-panel-body v41-panel-body" id="v38PanelBody">
     <!-- 動的にモード別UIを描画 -->
   </div>
-  <div class="v38-panel-foot">
-    <button type="button" class="v38-pf-btn v38-pf-prev" id="v38PanelPrevHole">◀ 前ホール</button>
-    <button type="button" class="v38-pf-btn v38-pf-player" id="v38PanelPrevPlayer">◀ 前の人</button>
-    <button type="button" class="v38-pf-btn v38-pf-player" id="v38PanelNextPlayer">次の人 ▶</button>
-    <button type="button" class="v38-pf-btn v38-pf-next" id="v38PanelNextHole">次ホール ▶</button>
+
+  <!-- v41: フッター（確定のみ） -->
+  <div class="v38-panel-foot v41-panel-foot">
+    <button type="button" class="v41-confirm" id="v41ConfirmBtn">✓ 確定</button>
   </div>
+
+  <!-- v41 聖域: 旧IDをそのまま維持（計算エンジン互換） -->
+  <span class="v41-sanctuary" aria-hidden="true">
+    <span id="v38PanelPlayer">—</span>
+    <span id="v38PanelScore">—</span>
+    <button type="button" id="v38PanelPrevPlayer"></button>
+    <button type="button" id="v38PanelNextPlayer"></button>
+  </span>
 </div>
 <div class="v38-panel-backdrop" id="v38PanelBackdrop" aria-hidden="true"></div>
 
@@ -7720,6 +7837,13 @@ var qrcode = function() {
         </div>
         <label class="switch"><input type="checkbox" id="setShowPutt"><span class="switch-slider"></span></label>
       </div>
+      <div class="switch-row">
+        <div>
+          <div class="switch-label">使用ティ</div>
+          <div class="switch-sub">REG / LADIES（ヤーデージ表示切替）</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="setLadiesTee"><span class="switch-slider"></span></label>
+      </div>
       <button class="primary-btn" id="btnSaveSettings">💾 設定を保存</button>
 
       <!-- v34: 後半スタート時間はメイン画面に統合（設定モーダルからは削除） -->
@@ -7729,18 +7853,26 @@ var qrcode = function() {
         <button id="v31PmClear"></button>
       </div>
 
-      <!-- v38.0: 設定モーダルからスコア表示モード・使用ティを削除
-           ※ ラウンド準備画面のトグルで操作。JS互換のため聖域に退避 -->
-      <div class="v31-sanctuary" aria-hidden="true">
-        <input type="checkbox" id="setLadiesTee">
-        <div id="v31DispSegments">
-          <button type="button" data-disp="number" class="active"></button>
-          <button type="button" data-disp="diff"></button>
-          <button type="button" data-disp="symbol"></button>
+      <!-- ============================================================
+           v31: 表示モード（数字 / ±差 / 記号）
+           ============================================================ -->
+      <div class="v31-settings-section">
+        <div class="v31-ss-title">🔢 スコア表示モード</div>
+        <div class="v31-ss-segments" id="v31DispSegments">
+          <button type="button" data-disp="number" class="active">数字</button>
+          <button type="button" data-disp="diff">スコア差(±)</button>
+          <button type="button" data-disp="symbol">記号</button>
         </div>
-        <div id="v31TeeSegments">
-          <button type="button" data-tee="reg" class="active"></button>
-          <button type="button" data-tee="ladies"></button>
+      </div>
+
+      <!-- ============================================================
+           v31: ティ切替（REG / LADIES）
+           ============================================================ -->
+      <div class="v31-settings-section">
+        <div class="v31-ss-title">⛳ 使用ティ</div>
+        <div class="v31-ss-segments" id="v31TeeSegments">
+          <button type="button" data-tee="reg" class="active">REG（白/黄）</button>
+          <button type="button" data-tee="ladies">LADIES（赤/緑）</button>
         </div>
       </div>
 
@@ -12038,85 +12170,286 @@ window.addEventListener('load', () => setTimeout(v38PrepBindDispToggle, 900));
 
 console.log('G-WORLD v38.0 ラウンド準備画面 配置整理版');
 
-
 /* ============================================================
-   v38.0 ティー選択 (COT) — ラウンド準備画面トグル結線
-   既存 v38ToggleTee と同じロジックを共有(State.ui.useLadiesTee)
+   v41: 入力パネル（#v38InputPanel）レイアウト結線
+   - 画像忠実のヘッダー / プレイヤーグリッド / モードタブ / テンキー / 確定
+   - イベント委譲 / try-catch / pointerdown・touchstart 両対応
+   - 既存 v38OpenInputPanel / v38PanelMoveHole / v36UpdateScore / v38AfterInputFeedback を利用
+   - セルタップでパネルが開く既存フローは一切改変しない
    ============================================================ */
-function v38CotRenderToggle() {
-  const wrap = document.getElementById('v38CotToggle');
-  if (!wrap) return;
-  const isLadies = !!(State && State.ui && State.ui.useLadiesTee);
-  wrap.querySelectorAll('button').forEach(b => {
-    const wantLadies = (b.dataset.tee === 'ladies');
-    if (wantLadies === isLadies) b.classList.add('active');
-    else b.classList.remove('active');
-  });
-}
+(function(){
+  if (window.__V41_BOUND__) return;
+  window.__V41_BOUND__ = true;
 
-function v38CotBindToggle() {
-  const wrap = document.getElementById('v38CotToggle');
-  if (!wrap) return;
-  wrap.querySelectorAll('button').forEach(b => {
-    b.onclick = (e) => {
-      e.preventDefault();
-      const wantLadies = (b.dataset.tee === 'ladies');
-      const cur = !!(State.ui.useLadiesTee);
-      if (wantLadies === cur) {
-        // 既に選択中 → no-op(視覚パルスのみ)
-        v38CotRenderToggle();
+  const $ = (id) => document.getElementById(id);
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+  function safeFullName(p) {
+    try { if (typeof fullName === 'function') return fullName(p); } catch(_) {}
+    return ((p && (p.lastName||'')) + (p && (p.firstName||''))) || 'ゲスト';
+  }
+  function curHole() {
+    try { return (typeof V38 !== 'undefined' && V38) ? V38.hi : ((modalHole || 1) - 1); } catch(_) { return 0; }
+  }
+  function curPi() {
+    try { return (typeof V38 !== 'undefined' && V38) ? V38.pi : (modalPlayerIdx || 0); } catch(_) { return 0; }
+  }
+  function holeObj() {
+    try { return COURSE.holes[curHole()] || {}; } catch(_) { return {}; }
+  }
+  function pickYards(h) {
+    if (!h) return null;
+    /* 使用ティーを推定 */
+    try {
+      const tee = (State && State.round && State.round.tee) || 'REG';
+      const candidates = [
+        h.yards && h.yards[tee],
+        h.yards && h.yards.REG,
+        h.yards && h.yards.WHT,
+        h.yardage, h.yard, h.distance,
+      ];
+      for (const v of candidates) {
+        if (typeof v === 'number' && v > 0) return v;
+        if (typeof v === 'string' && v.trim()) return v;
+      }
+      /* yards がオブジェクトだけどターケー未一致の場合は最初の値を採用 */
+      if (h.yards && typeof h.yards === 'object') {
+        const first = Object.values(h.yards).find(v => v);
+        if (first) return first;
+      }
+    } catch(_) {}
+    return null;
+  }
+
+  /* ----- ヘッダー（ホール・パー・ヤード）描画 ----- */
+  function renderHoleBar() {
+    const hi = curHole();
+    const h = holeObj();
+    const elH = $('v38PanelHole');  if (elH) elH.textContent = (hi + 1) + 'H';
+    const elP = $('v38PanelPar');   if (elP) elP.textContent = 'PAR ' + (h.par || '—');
+    const yards = pickYards(h);
+    const elY = $('v41HoleYards');  if (elY) elY.textContent = (yards != null ? yards : '—');
+    /* prev/next disabled 同期 */
+    try {
+      const maxH = (State && State.round && State.round.holesMode === '9') ? 9
+                 : (COURSE && COURSE.holes ? COURSE.holes.length : 18);
+      const prev = $('v38PanelPrevHole');
+      const next = $('v38PanelNextHole');
+      if (prev) prev.disabled = (hi <= 0);
+      if (next) next.disabled = (hi >= maxH - 1);
+    } catch(_) {}
+  }
+
+  /* ----- プレイヤーグリッド描画 ----- */
+  function renderPlayerGrid() {
+    const g = $('v41PlayerGrid'); if (!g) return;
+    const hi = curHole();
+    const activeIdx = curPi();
+    let players = [];
+    try { players = (State.players || []).slice(); } catch(_) {}
+    /* 「自分」を先頭に */
+    try { players.sort((a,b) => (a.isMe === b.isMe) ? 0 : (a.isMe ? -1 : 1)); } catch(_) {}
+
+    let html = '';
+    for (let col = 0; col < 4; col++) {
+      const p = players[col];
+      const realIdx = p ? State.players.indexOf(p) : -1;
+      const isActive = (realIdx === activeIdx);
+      const isEmpty  = !p;
+      const colCls = 'v41-pg-col'
+        + (isActive ? ' is-active' : '')
+        + (isEmpty  ? ' is-empty'  : '');
+      const name = isEmpty ? '名前未設定' : safeFullName(p);
+      const sub  = isEmpty ? '' : (p.isMe ? 'PLAYER ME' : 'PLAYER ' + (col + 1));
+      const score = (p && p.scores && p.scores[hi] != null) ? p.scores[hi] : null;
+
+      html += '<div class="' + colCls + '" data-pi="' + realIdx + '">';
+      html +=   '<div class="v41-pg-cell v41-pg-name" data-pi="' + realIdx + '" data-role="name">';
+      html +=     '<div>' + esc(name) + '</div>';
+      if (sub) html += '<div class="v41-pg-name-sub">' + sub + '</div>';
+      html +=   '</div>';
+      const emptyCls = (score == null) ? ' is-empty' : '';
+      html +=   '<div class="v41-pg-cell v41-pg-score' + emptyCls + '" data-pi="' + realIdx + '" data-role="score">';
+      html +=     (score == null ? '–' : esc(score));
+      html +=   '</div>';
+      html += '</div>';
+    }
+    g.innerHTML = html;
+  }
+
+  /* ----- タブのアクティブ同期（既存 v38RenderPanelModeTabs を補助） ----- */
+  function syncTabs() {
+    try {
+      const tabs = $('v38PanelModeTabs'); if (!tabs) return;
+      const mode = (State && State.ui && State.ui.inputMode) || 'simple';
+      tabs.querySelectorAll('.v38-pmt-btn').forEach(b => {
+        b.classList.toggle('is-active', b.dataset.pmode === mode);
+      });
+    } catch(_) {}
+  }
+
+  /* ----- パネル全体リフレッシュ ----- */
+  function v41Refresh() {
+    try { renderHoleBar(); }     catch(e) { console.warn('[v41] holebar', e); }
+    try { renderPlayerGrid(); }  catch(e) { console.warn('[v41] grid', e); }
+    try { syncTabs(); }          catch(e) {}
+  }
+  window.v41Refresh = v41Refresh;
+
+  /* ----- 自動進行（1人入力→次の人、全員→次ホール） ----- */
+  function autoAdvance() {
+    try {
+      const hi = curHole();
+      const players = State.players || [];
+      if (players.length === 0) return;
+      const allDone = players.every(p => p.scores[hi] != null && p.scores[hi] > 0);
+      if (allDone) {
+        /* 次ホールへ */
+        const maxH = (State.round.holesMode === '9') ? 9 : COURSE.holes.length;
+        if (hi + 1 < maxH) {
+          if (typeof v38PanelMoveHole === 'function') {
+            v38PanelMoveHole(+1);
+          } else if (typeof v38OpenInputPanel === 'function') {
+            v38OpenInputPanel(curPi(), hi + 1);
+          }
+        } else {
+          try { showToast('🏁 最終ホールまで入力完了'); } catch(_) {}
+        }
         return;
       }
-      State.ui.useLadiesTee = wantLadies;
-      try { Storage.saveState(); } catch(_) {}
-      try { renderTopAndHero && renderTopAndHero(); } catch(_) {}
-      try { renderTable && renderTable(); } catch(_) {}
-      try { v38UpdateDashboard && v38UpdateDashboard(); } catch(_) {}
-      // 聖域チェックボックスも同期(既存JSが参照する場合のため)
+      /* 次の未入力プレイヤーへ */
+      const pi = curPi();
+      for (let off = 1; off <= players.length; off++) {
+        const i = (pi + off) % players.length;
+        const pp = players[i];
+        if (!pp.scores[hi] || pp.scores[hi] <= 0) {
+          if (typeof v38OpenInputPanel === 'function') {
+            v38OpenInputPanel(i, hi);
+          }
+          return;
+        }
+      }
+    } catch(e) { console.warn('[v41] autoAdvance', e); }
+  }
+
+  /* ----- 既存 v38AfterInputFeedback フック: 描画更新 + 自動進行 ----- */
+  try {
+    const origFB = (typeof v38AfterInputFeedback === 'function') ? v38AfterInputFeedback : null;
+    window.v38AfterInputFeedback = function() {
+      try { if (origFB) origFB.apply(this, arguments); } catch(e) { console.warn('[v41] origFB', e); }
+      try { v41Refresh(); } catch(_) {}
+      /* スコアが実際に入力された場合だけ自動進行 */
       try {
-        const cb = document.getElementById('setLadiesTee');
-        if (cb) cb.checked = wantLadies;
-      } catch(_) {}
-      // 聖域ティセグメントも同期
-      try {
-        const seg = document.getElementById('v31TeeSegments');
-        if (seg) {
-          seg.querySelectorAll('button').forEach(sb => {
-            if (sb.dataset.tee === (wantLadies ? 'ladies' : 'reg')) sb.classList.add('active');
-            else sb.classList.remove('active');
-          });
+        const p = State.players[curPi()];
+        if (p && p.scores[curHole()] != null && p.scores[curHole()] > 0) {
+          /* カウンターモードは連打するため自動進行しない */
+          const mode = (State.ui && State.ui.inputMode) || 'simple';
+          if (mode !== 'counter') {
+            setTimeout(autoAdvance, 180);
+          }
         }
       } catch(_) {}
-      v38CotRenderToggle();
-      showToast(wantLadies ? '⛳ レディースティー(赤・緑)に切替' : '⛳ レギュラーティー(白・黄)に切替');
     };
-  });
-  v38CotRenderToggle();
-}
+  } catch(_) {}
 
-/* 既存 v38ToggleTee 呼び出し時の同期フック */
-(function v38CotHookSync() {
-  if (typeof window === 'undefined') return;
-  if (window.v38ToggleTee) {
-    const orig = window.v38ToggleTee;
-    window.v38ToggleTee = function() {
-      const r = orig.apply(this, arguments);
-      try { v38CotRenderToggle(); } catch(_) {}
-      return r;
-    };
+  /* ----- 既存 v38OpenInputPanel フック: 開くたびに v41 描画 ----- */
+  try {
+    const origOpen = (typeof v38OpenInputPanel === 'function') ? v38OpenInputPanel : null;
+    if (origOpen) {
+      window.v38OpenInputPanel = function(pi, hi) {
+        try { origOpen(pi, hi); } catch(e) { console.warn('[v41] origOpen', e); }
+        setTimeout(v41Refresh, 30);
+      };
+    }
+  } catch(_) {}
+
+  /* ----- イベントバインド ----- */
+  function bindAll() {
+    /* プレイヤーグリッドタップで選択切り替え */
+    const g = $('v41PlayerGrid');
+    if (g && !g.dataset.v41Bound) {
+      g.dataset.v41Bound = '1';
+      g.addEventListener('click', (e) => {
+        const cell = e.target.closest('[data-pi]');
+        if (!cell || !g.contains(cell)) return;
+        const pi = parseInt(cell.dataset.pi, 10);
+        if (isNaN(pi) || pi < 0) return;
+        e.preventDefault();
+        e.stopPropagation();
+        try {
+          if (typeof v38OpenInputPanel === 'function') {
+            v38OpenInputPanel(pi, curHole());
+          }
+        } catch(err) { console.warn('[v41] selectPlayer', err); }
+      });
+    }
+
+    /* 確定ボタン */
+    const cf = $('v41ConfirmBtn');
+    if (cf && !cf.dataset.v41Bound) {
+      cf.dataset.v41Bound = '1';
+      cf.addEventListener('click', (e) => {
+        e.preventDefault();
+        /* 連撒防止 */
+        if (cf.dataset.busy === '1') return;
+        cf.dataset.busy = '1';
+        setTimeout(() => { cf.dataset.busy = '0'; }, 200);
+        try {
+          const hi = curHole();
+          const players = State.players || [];
+          const allDone = players.length > 0 && players.every(p => p.scores[hi] != null && p.scores[hi] > 0);
+          if (allDone) {
+            /* 次ホールへ */
+            if (typeof v38PanelMoveHole === 'function') v38PanelMoveHole(+1);
+          } else {
+            autoAdvance();
+          }
+        } catch(err) { console.warn('[v41] confirm', err); }
+      });
+    }
+
+    /* タブクリックで同期描画（既存処理と並行） */
+    const tabs = $('v38PanelModeTabs');
+    if (tabs && !tabs.dataset.v41Bound) {
+      tabs.dataset.v41Bound = '1';
+      tabs.addEventListener('click', () => setTimeout(syncTabs, 10));
+    }
+
+    /* パネル表示検知→描画 */
+    try {
+      const panel = $('v38InputPanel');
+      if (panel) {
+        const mo = new MutationObserver((muts) => {
+          for (const m of muts) {
+            if (m.attributeName === 'class' && panel.classList.contains('is-open')) {
+              setTimeout(v41Refresh, 30);
+            }
+          }
+        });
+        mo.observe(panel, { attributes: true, attributeFilter: ['class'] });
+      }
+    } catch(_) {}
+
+    /* 初期描画 */
+    setTimeout(v41Refresh, 100);
   }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindAll);
+  } else {
+    bindAll();
+  }
+  window.addEventListener('load', () => setTimeout(v41Refresh, 300));
+
+  console.log('[v41] input panel layout bound');
 })();
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => setTimeout(v38CotBindToggle, 650));
-} else {
-  setTimeout(v38CotBindToggle, 650);
-}
-window.addEventListener('load', () => setTimeout(v38CotBindToggle, 950));
-
-console.log('G-WORLD v38.0 ティー選択(COT) + 緑枠統一 + 詳細設定整理');
 </script>
 
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
