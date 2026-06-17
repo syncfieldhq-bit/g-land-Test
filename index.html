@@ -5,7 +5,7 @@
 <!-- 監督指示 §3: ピンチイン・アウト完全許可 -->
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#0F5132">
-<title>G-WORLD v38.0 Final | 六甲国際パブリックコース</title>
+<title>G-WORLD v38.0 Final+ | 六甲国際パブリックコース</title>
 
 <!-- ============================================================
      v34: PWA設定 — ホーム画面追加時の名称 = "G-WORLD"
@@ -4208,6 +4208,238 @@ html, body {
   z-index: 11000 !important;
 }
 
+
+/* ============================================================
+   v38.0 最終調整: z-index強制 + 横画面フルスクリーン
+   ============================================================ */
+
+/* --- z-index: 10000 全モーダル統一強制(縦画面・横画面共通) --- */
+.modal-backdrop,
+.modal-backdrop.show,
+#scoreModal,
+#scoreModal.show,
+#addModal,
+#addModal.show,
+#editPlayerModal,
+#editPlayerModal.show,
+#settingsModal,
+#settingsModal.show,
+#qrModal,
+#qrModal.show,
+#joinModal,
+#joinModal.show,
+#manualNameModal,
+#manualNameModal.show,
+#courseDetailModal,
+#courseDetailModal.show,
+#pmPickerModal,
+#pmPickerModal.show {
+  z-index: 10000 !important;
+}
+/* 入力パネル(ボトムシート)はさらに上 */
+.v38-panel-backdrop {
+  z-index: 10005 !important;
+}
+.v38-panel {
+  z-index: 10010 !important;
+}
+/* toast は最上層 */
+.toast, #toastContainer {
+  z-index: 11000 !important;
+}
+/* v382 専用 PM スピナーモーダル */
+#v382PmPicker {
+  z-index: 10020 !important;
+}
+#v382PmPicker .v382-pm-card {
+  z-index: 10021 !important;
+}
+
+/* ============================================================
+   横画面(orientation: landscape) → フルスクリーン・スコアカード
+   ============================================================ */
+@media (orientation: landscape) and (max-height: 600px) {
+  /* 上部ダッシュボード非表示 */
+  .v38-dash,
+  .v38-dash-row,
+  .v38-dash-hint {
+    display: none !important;
+  }
+  /* 案内バー(編集ヒント) */
+  .v34-edit-hint,
+  .v36-edit-hint,
+  #v34EditHint,
+  .v38-dash-hint {
+    display: none !important;
+  }
+  /* フッタナビゲーション */
+  .footer-bar,
+  .footer-nav,
+  nav.footer-bar {
+    display: none !important;
+  }
+  /* スコアモーダル: 余白を最小化 */
+  .v31-modal,
+  #scoreModal .modal {
+    padding: 0 !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+  }
+  .v31-modal-top,
+  .v33-modal-top {
+    padding: 2px 4px !important;
+  }
+  .v31-modal .v38-dash {
+    padding-top: 0 !important;
+  }
+  /* スコアカードを画面全体に拡大 */
+  .scoretable {
+    width: 100% !important;
+    margin: 0 !important;
+    font-size: 14px !important;
+  }
+  .scoretable th, .scoretable td {
+    padding: 4px 3px !important;
+  }
+  /* メイン画面側のスコアカード(モーダル外)も拡大 */
+  #v32LiveTable,
+  .v32-livescore-block .scoretable {
+    font-size: 14px !important;
+  }
+  /* screen.active の上部 padding を解除(ノッチは無視・横では小さい) */
+  .screen.active {
+    padding-top: 4px !important;
+  }
+  /* ボトムシートが開いた時のみ最前面で表示は維持(z-indexは前述) */
+  .v38-panel {
+    max-height: 90vh !important;
+  }
+  /* ボディ自体のスクロール抑制 */
+  body {
+    overflow: hidden !important;
+  }
+}
+
+/* --- 横画面でモーダルが開いている場合の追加スタイル --- */
+@media (orientation: landscape) and (max-height: 600px) {
+  /* スコアモーダルが画面いっぱい = ダッシュボード/ヒントは隠れている */
+  /* v38InputPanel が開いた瞬間に重なるよう z-index は上の指定で確保済み */
+}
+
+/* ============================================================
+   v38.2 PMスピナーモーダル(iOS標準time入力呼び出し用)
+   ============================================================ */
+.v382-pm-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.42);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.v382-pm-backdrop.is-open {
+  display: flex;
+}
+.v382-pm-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 18px 18px 14px;
+  width: 100%;
+  max-width: 340px;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.v382-pm-title {
+  font-size: 16px;
+  font-weight: 900;
+  color: #1a2620;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.v382-pm-hint {
+  font-size: 12px;
+  color: #4a5a52;
+  line-height: 1.5;
+  background: #f7faf8;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border-left: 3px solid var(--v31-accent, #2d9d5f);
+}
+.v382-pm-input {
+  width: 100%;
+  font-size: 28px;
+  font-weight: 900;
+  text-align: center;
+  padding: 14px 10px;
+  border: 2px solid var(--v31-accent, #2d9d5f);
+  border-radius: 12px;
+  font-family: inherit;
+  background: #f7fdf9;
+  color: #1f7a48;
+  letter-spacing: 0.04em;
+  -webkit-appearance: none;
+  appearance: none;
+  min-height: 60px;
+}
+.v382-pm-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(45,157,95,0.22);
+}
+.v382-pm-quick {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.v382-pm-quick button {
+  background: #f0f6f3;
+  border: 1.5px solid #c8d6cd;
+  border-radius: 10px;
+  padding: 11px 8px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #2a4a36;
+  cursor: pointer;
+  touch-action: manipulation;
+  min-height: 44px;
+}
+.v382-pm-quick button:active { transform: scale(0.96); }
+.v382-pm-actions {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 8px;
+  margin-top: 4px;
+}
+.v382-pm-actions .v382-pm-cancel {
+  background: #f0f4f1;
+  border: 1.5px solid #c8d6cd;
+  border-radius: 10px;
+  padding: 13px 8px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #4a5a52;
+  cursor: pointer;
+  touch-action: manipulation;
+  min-height: 46px;
+}
+.v382-pm-actions .v382-pm-save {
+  background: var(--v31-accent, #2d9d5f);
+  color: #ffffff;
+  border: 1.5px solid var(--v31-accent-deep, #1f7a48);
+  border-radius: 10px;
+  padding: 13px 8px;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  touch-action: manipulation;
+  min-height: 46px;
+  box-shadow: 0 2px 8px rgba(45,157,95,0.25);
+}
+.v382-pm-actions button:active { transform: scale(0.96); }
+
 </style>
 
 <!-- QR Code Generator (Kazuhiko Arase, MIT) -->
@@ -7086,6 +7318,27 @@ var qrcode = function() {
   </div>
 </div>
 <div class="v38-panel-backdrop" id="v38PanelBackdrop" aria-hidden="true"></div>
+
+<!-- v38.2: PM スタート iOS標準時間スピナー用モーダル -->
+<div class="v382-pm-backdrop" id="v382PmPicker" aria-hidden="true">
+  <div class="v382-pm-card">
+    <div class="v382-pm-title">⏰ 後半スタート時間</div>
+    <div class="v382-pm-hint">
+      タップで iOS 標準の時間スピナーが開きます。<br>
+      初期値は「現在時刻 + 45分」です。
+    </div>
+    <input type="time" class="v382-pm-input" id="v382PmInput" step="60">
+    <div class="v382-pm-quick">
+      <button type="button" id="v382PmNow45">⚡ 今+45分</button>
+      <button type="button" id="v382PmClear">🗑 クリア</button>
+    </div>
+    <div class="v382-pm-actions">
+      <button type="button" class="v382-pm-cancel" id="v382PmCancel">キャンセル</button>
+      <button type="button" class="v382-pm-save" id="v382PmSave">✓ 保存</button>
+    </div>
+  </div>
+</div>
+
 
 <!-- モーダル: 招待QR -->
 <div class="modal-backdrop" id="qrModal">
@@ -11384,6 +11637,180 @@ if (document.readyState === 'loading') {
 })();
 
 console.log('G-WORLD v38.0 最終完全統合版 (レイヤー修正+ノッチ対策+操作ダッシュボード+一括登録)');
+
+
+
+/* ============================================================
+   v38.2 最終調整: PMスピナー + バインド保険
+   既存ロジック(計算/保存)は一切変更しない
+   ============================================================ */
+
+/* --- iOS 標準時間スピナーで PM スタートを設定 --- */
+function v382OpenPmPicker() {
+  const modal = document.getElementById('v382PmPicker');
+  const input = document.getElementById('v382PmInput');
+  if (!modal || !input) return;
+
+  // 初期値: 既存値があればそれ、なければ「現在時刻 + 45分」
+  let initVal = State.round.pmStart || '';
+  if (!initVal) {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + 45);
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    initVal = hh + ':' + mm;
+  }
+  input.value = initVal;
+  modal.classList.add('is-open');
+  modal.setAttribute('aria-hidden', 'false');
+
+  // iOS で即フォーカス → スピナー展開
+  setTimeout(() => {
+    try {
+      input.focus();
+      // iOS: click も併用するとスピナーが確実に開く
+      if (typeof input.showPicker === 'function') {
+        try { input.showPicker(); } catch(e) {}
+      } else {
+        input.click();
+      }
+    } catch(e) {}
+  }, 80);
+}
+
+function v382ClosePmPicker() {
+  const modal = document.getElementById('v382PmPicker');
+  if (!modal) return;
+  modal.classList.remove('is-open');
+  modal.setAttribute('aria-hidden', 'true');
+}
+
+function v382SavePmFromPicker(val) {
+  const v = (val == null) ? document.getElementById('v382PmInput').value : val;
+  const clean = (v || '').trim();
+  // 正規表現でHH:MM形式チェック
+  if (clean && !/^\d{1,2}:\d{2}$/.test(clean)) {
+    showToast('時間形式が不正です(HH:MM)', 'error');
+    return;
+  }
+  State.round.pmStart = clean;
+  try { Storage.saveState(); } catch(e) {}
+  try { syncLockerPmDisplay && syncLockerPmDisplay(); } catch(e) {}
+  // 既存UIすべて同期
+  const pm1 = document.getElementById('v34PmBigTime');
+  if (pm1) pm1.textContent = clean || '— : —';
+  const pm2 = document.getElementById('v31PmStartInput');
+  if (pm2) pm2.value = clean || '';
+  const pm3 = document.getElementById('v32MainPmStart');
+  if (pm3) pm3.value = clean || '';
+  try { v38UpdateDashboard(); } catch(e) {}
+  v382ClosePmPicker();
+  showToast(clean ? '⏰ 後半スタート ' + clean : '⏰ 後半スタートをクリア');
+}
+
+/* --- バインド保険: ダッシュボードカード再結線(複数回実行OK) --- */
+function v382RewireDashboard() {
+  // 既存の onclick を保ちつつ、PMだけ v382OpenPmPicker に上書き
+  const pmCard = document.querySelector('.v38-dc-pm');
+  if (pmCard) {
+    pmCard.style.cursor = 'pointer';
+    pmCard.setAttribute('role', 'button');
+    pmCard.onclick = (e) => { e.preventDefault(); v382OpenPmPicker(); };
+  }
+  // ティー/表示モードのバインド保険
+  const teeBtn = document.getElementById('v38DashTee');
+  if (teeBtn && typeof v38ToggleTee === 'function') {
+    teeBtn.onclick = (e) => {
+      e.preventDefault();
+      try { v381PulseCard && v381PulseCard('v38DashTee'); } catch(_) {}
+      v38ToggleTee();
+    };
+  }
+  const dispBtn = document.getElementById('v38DashDisp');
+  if (dispBtn && typeof v38CycleDisplayMode === 'function') {
+    dispBtn.onclick = (e) => {
+      e.preventDefault();
+      try { v381PulseCard && v381PulseCard('v38DashDisp'); } catch(_) {}
+      v38CycleDisplayMode();
+    };
+  }
+  // ロッカー
+  const lkCard = document.querySelector('.v38-dc-locker');
+  if (lkCard && typeof v381EditLocker === 'function') {
+    lkCard.style.cursor = 'pointer';
+    lkCard.setAttribute('role', 'button');
+    lkCard.onclick = (e) => { e.preventDefault(); v381EditLocker(); };
+  }
+  // モード
+  const mdCard = document.querySelector('.v38-dc-mode');
+  if (mdCard && typeof v381CycleMode === 'function') {
+    mdCard.style.cursor = 'pointer';
+    mdCard.setAttribute('role', 'button');
+    mdCard.onclick = (e) => { e.preventDefault(); v381CycleMode(); };
+  }
+}
+
+/* --- PMスピナーモーダルのイベント結線 --- */
+function v382BindPmPicker() {
+  const cancel = document.getElementById('v382PmCancel');
+  if (cancel) cancel.onclick = v382ClosePmPicker;
+  const save = document.getElementById('v382PmSave');
+  if (save) save.onclick = () => v382SavePmFromPicker();
+  const now45 = document.getElementById('v382PmNow45');
+  if (now45) now45.onclick = () => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + 45);
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    const inp = document.getElementById('v382PmInput');
+    if (inp) inp.value = hh + ':' + mm;
+  };
+  const clr = document.getElementById('v382PmClear');
+  if (clr) clr.onclick = () => {
+    const inp = document.getElementById('v382PmInput');
+    if (inp) inp.value = '';
+  };
+  // 背景タップで閉じる(カード内部は無効化)
+  const bd = document.getElementById('v382PmPicker');
+  if (bd) {
+    bd.onclick = (e) => {
+      if (e.target === bd) v382ClosePmPicker();
+    };
+  }
+}
+
+/* --- 横画面切替時の保険(必要に応じてダッシュボードのインライン display を解除) --- */
+function v382HandleOrientation() {
+  // CSSメディアクエリで制御するので JS は基本不要。
+  // ただし、ボトムシートが横画面で開いている時に画面が変わった際の再配置のみ実行。
+  if (V38 && V38.panelOpen) {
+    try { v38RenderPanelHead && v38RenderPanelHead(); } catch(e) {}
+  }
+}
+
+/* --- v38.2 ブート --- */
+function v382Boot() {
+  v382RewireDashboard();
+  v382BindPmPicker();
+  // 画面回転検知
+  window.addEventListener('orientationchange', () => setTimeout(v382HandleOrientation, 200));
+  window.addEventListener('resize', () => {
+    // 連打抑制
+    if (window._v382ResizeT) clearTimeout(window._v382ResizeT);
+    window._v382ResizeT = setTimeout(v382HandleOrientation, 200);
+  });
+}
+
+/* DOMContentLoaded 後 + boot 完了タイミング後の二重保険 */
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => setTimeout(v382Boot, 500));
+} else {
+  setTimeout(v382Boot, 500);
+}
+/* さらに、ページ完全読み込み後にも再結線(SafariのFOUT対策) */
+window.addEventListener('load', () => setTimeout(v382RewireDashboard, 800));
+
+console.log('G-WORLD v38.0 最終調整 (z-index10000 + 横画面FS + iOS時間スピナー)');
 
 </script>
 
