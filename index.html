@@ -4511,6 +4511,110 @@ html, body {
   align-items: center;
 }
 
+
+/* ============================================================
+   v38.0 ティー選択(COT) + 全セクション緑枠統一
+   ============================================================ */
+
+/* 全 .v31-block に統一された緑実線枠 */
+.v31-cockpit .v31-block {
+  border: 2px solid var(--v31-accent, #2d9d5f) !important;
+  border-radius: 14px !important;
+  background: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(45,157,95,0.08) !important;
+  padding: 14px 14px !important;
+  margin-bottom: 14px !important;
+}
+/* アクセント(プレイモード)はやや濃い枠＋背景グラデで差別化 */
+.v31-cockpit .v31-block.v31-block-accent {
+  border-color: var(--v31-accent-deep, #1f7a48) !important;
+  background: linear-gradient(180deg, #f7fdf9 0%, #ffffff 100%) !important;
+  box-shadow: 0 3px 12px rgba(31,122,72,0.14) !important;
+}
+/* 統一感のあるブロックタイトル */
+.v31-cockpit .v31-block-title {
+  color: var(--v31-accent-deep, #1f7a48) !important;
+  font-weight: 900 !important;
+  font-size: 14px !important;
+  margin-bottom: 10px !important;
+  padding-bottom: 6px !important;
+  border-bottom: 1.5px dashed rgba(45,157,95,0.28) !important;
+  letter-spacing: 0.02em;
+}
+
+/* --- ティー選択 (COT) トグル --- */
+.v38-cot-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.v38-cot-toggle button {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 14px 12px;
+  background: #ffffff;
+  border: 2px solid #d8e2dc;
+  border-radius: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  min-height: 70px;
+  transition: transform 0.08s, border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  text-align: left;
+}
+.v38-cot-toggle button:active { transform: scale(0.96); }
+.v38-cot-toggle button.active {
+  background: linear-gradient(180deg, var(--v31-accent, #2d9d5f) 0%, var(--v31-accent-deep, #1f7a48) 100%);
+  border-color: var(--v31-accent-deep, #1f7a48);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(45,157,95,0.32);
+}
+.v38-cot-toggle button[data-tee="ladies"].active {
+  background: linear-gradient(180deg, #e85f80 0%, #c63d61 100%);
+  border-color: #a8284c;
+  box-shadow: 0 4px 14px rgba(200,60,100,0.32);
+}
+.v38-cot-ico {
+  font-size: 28px;
+  line-height: 1;
+  flex: 0 0 auto;
+}
+.v38-cot-lbl {
+  font-size: 14px;
+  font-weight: 900;
+  color: #1a2620;
+  line-height: 1.2;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.v38-cot-toggle button.active .v38-cot-lbl {
+  color: #ffffff;
+}
+.v38-cot-lbl small {
+  font-size: 10px;
+  font-weight: 700;
+  color: #6a7d72;
+  opacity: 0.9;
+}
+.v38-cot-toggle button.active .v38-cot-lbl small {
+  color: #ddf2e4;
+}
+.v38-cot-toggle button[data-tee="ladies"].active .v38-cot-lbl small {
+  color: #fde0ea;
+}
+
+/* 横画面でも準備画面のレイアウトを維持(モーダルとは別) */
+@media (orientation: landscape) and (max-height: 600px) {
+  /* 横画面の準備画面では緑枠を細く */
+  .v31-cockpit .v31-block {
+    padding: 8px 10px !important;
+    margin-bottom: 8px !important;
+  }
+}
+
 </style>
 
 <!-- QR Code Generator (Kazuhiko Arase, MIT) -->
@@ -6868,7 +6972,22 @@ var qrcode = function() {
       </div>
     </section>
 
-    <!-- ③ プレイモード(一般 / 初心者カウンター) -->
+    <!-- ③ ティー選択 (COT) — レギュラー / レディース -->
+    <section class="v31-block v38-cot-block">
+      <div class="v31-block-title">⛳ ティー選択 (COT)</div>
+      <div class="v38-cot-toggle" id="v38CotToggle">
+        <button type="button" data-tee="reg" class="active">
+          <span class="v38-cot-ico">⛳</span>
+          <span class="v38-cot-lbl">レギュラーティー<small>REG / REGULAR (白・黄)</small></span>
+        </button>
+        <button type="button" data-tee="ladies">
+          <span class="v38-cot-ico">🌸</span>
+          <span class="v38-cot-lbl">レディースティー<small>LADIES (赤・緑)</small></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ④ プレイモード(一般 / 初心者カウンター) -->
     <section class="v31-block v31-block-accent">
       <div class="v31-block-title">🎯 プレイモード</div>
       <div class="v31-mode-toggle" id="v31ModeToggle">
@@ -7601,13 +7720,6 @@ var qrcode = function() {
         </div>
         <label class="switch"><input type="checkbox" id="setShowPutt"><span class="switch-slider"></span></label>
       </div>
-      <div class="switch-row">
-        <div>
-          <div class="switch-label">使用ティ</div>
-          <div class="switch-sub">REG / LADIES（ヤーデージ表示切替）</div>
-        </div>
-        <label class="switch"><input type="checkbox" id="setLadiesTee"><span class="switch-slider"></span></label>
-      </div>
       <button class="primary-btn" id="btnSaveSettings">💾 設定を保存</button>
 
       <!-- v34: 後半スタート時間はメイン画面に統合（設定モーダルからは削除） -->
@@ -7617,26 +7729,18 @@ var qrcode = function() {
         <button id="v31PmClear"></button>
       </div>
 
-      <!-- ============================================================
-           v31: 表示モード（数字 / ±差 / 記号）
-           ============================================================ -->
-      <div class="v31-settings-section">
-        <div class="v31-ss-title">🔢 スコア表示モード</div>
-        <div class="v31-ss-segments" id="v31DispSegments">
-          <button type="button" data-disp="number" class="active">数字</button>
-          <button type="button" data-disp="diff">スコア差(±)</button>
-          <button type="button" data-disp="symbol">記号</button>
+      <!-- v38.0: 設定モーダルからスコア表示モード・使用ティを削除
+           ※ ラウンド準備画面のトグルで操作。JS互換のため聖域に退避 -->
+      <div class="v31-sanctuary" aria-hidden="true">
+        <input type="checkbox" id="setLadiesTee">
+        <div id="v31DispSegments">
+          <button type="button" data-disp="number" class="active"></button>
+          <button type="button" data-disp="diff"></button>
+          <button type="button" data-disp="symbol"></button>
         </div>
-      </div>
-
-      <!-- ============================================================
-           v31: ティ切替（REG / LADIES）
-           ============================================================ -->
-      <div class="v31-settings-section">
-        <div class="v31-ss-title">⛳ 使用ティ</div>
-        <div class="v31-ss-segments" id="v31TeeSegments">
-          <button type="button" data-tee="reg" class="active">REG（白/黄）</button>
-          <button type="button" data-tee="ladies">LADIES（赤/緑）</button>
+        <div id="v31TeeSegments">
+          <button type="button" data-tee="reg" class="active"></button>
+          <button type="button" data-tee="ladies"></button>
         </div>
       </div>
 
@@ -11933,6 +12037,84 @@ if (document.readyState === 'loading') {
 window.addEventListener('load', () => setTimeout(v38PrepBindDispToggle, 900));
 
 console.log('G-WORLD v38.0 ラウンド準備画面 配置整理版');
+
+
+/* ============================================================
+   v38.0 ティー選択 (COT) — ラウンド準備画面トグル結線
+   既存 v38ToggleTee と同じロジックを共有(State.ui.useLadiesTee)
+   ============================================================ */
+function v38CotRenderToggle() {
+  const wrap = document.getElementById('v38CotToggle');
+  if (!wrap) return;
+  const isLadies = !!(State && State.ui && State.ui.useLadiesTee);
+  wrap.querySelectorAll('button').forEach(b => {
+    const wantLadies = (b.dataset.tee === 'ladies');
+    if (wantLadies === isLadies) b.classList.add('active');
+    else b.classList.remove('active');
+  });
+}
+
+function v38CotBindToggle() {
+  const wrap = document.getElementById('v38CotToggle');
+  if (!wrap) return;
+  wrap.querySelectorAll('button').forEach(b => {
+    b.onclick = (e) => {
+      e.preventDefault();
+      const wantLadies = (b.dataset.tee === 'ladies');
+      const cur = !!(State.ui.useLadiesTee);
+      if (wantLadies === cur) {
+        // 既に選択中 → no-op(視覚パルスのみ)
+        v38CotRenderToggle();
+        return;
+      }
+      State.ui.useLadiesTee = wantLadies;
+      try { Storage.saveState(); } catch(_) {}
+      try { renderTopAndHero && renderTopAndHero(); } catch(_) {}
+      try { renderTable && renderTable(); } catch(_) {}
+      try { v38UpdateDashboard && v38UpdateDashboard(); } catch(_) {}
+      // 聖域チェックボックスも同期(既存JSが参照する場合のため)
+      try {
+        const cb = document.getElementById('setLadiesTee');
+        if (cb) cb.checked = wantLadies;
+      } catch(_) {}
+      // 聖域ティセグメントも同期
+      try {
+        const seg = document.getElementById('v31TeeSegments');
+        if (seg) {
+          seg.querySelectorAll('button').forEach(sb => {
+            if (sb.dataset.tee === (wantLadies ? 'ladies' : 'reg')) sb.classList.add('active');
+            else sb.classList.remove('active');
+          });
+        }
+      } catch(_) {}
+      v38CotRenderToggle();
+      showToast(wantLadies ? '⛳ レディースティー(赤・緑)に切替' : '⛳ レギュラーティー(白・黄)に切替');
+    };
+  });
+  v38CotRenderToggle();
+}
+
+/* 既存 v38ToggleTee 呼び出し時の同期フック */
+(function v38CotHookSync() {
+  if (typeof window === 'undefined') return;
+  if (window.v38ToggleTee) {
+    const orig = window.v38ToggleTee;
+    window.v38ToggleTee = function() {
+      const r = orig.apply(this, arguments);
+      try { v38CotRenderToggle(); } catch(_) {}
+      return r;
+    };
+  }
+})();
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => setTimeout(v38CotBindToggle, 650));
+} else {
+  setTimeout(v38CotBindToggle, 650);
+}
+window.addEventListener('load', () => setTimeout(v38CotBindToggle, 950));
+
+console.log('G-WORLD v38.0 ティー選択(COT) + 緑枠統一 + 詳細設定整理');
 </script>
 
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
