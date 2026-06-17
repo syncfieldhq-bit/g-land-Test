@@ -4757,6 +4757,148 @@ html, body {
   border-color: #e8a93d !important;
 }
 
+
+/* ============================================================
+   v38.0 入力モーダル内 4列×2行 プレイヤーグリッド
+   ============================================================ */
+.v38-pgrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  padding: 8px 10px;
+  background: linear-gradient(180deg, #ffffff 0%, #f7fdf9 100%);
+  border-bottom: 2px solid var(--v31-accent, #2d9d5f);
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 2;
+}
+.v38-pgrid:empty {
+  display: none;
+}
+.v38-pg-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 8px 4px 10px;
+  background: #ffffff;
+  border: 2px solid #d8e2dc;
+  border-radius: 12px;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  font-family: inherit;
+  min-height: 88px;
+  transition: transform 0.08s, border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.v38-pg-card:active { transform: scale(0.95); }
+.v38-pg-card.is-active {
+  border-color: var(--v31-accent-deep, #1f7a48);
+  background: linear-gradient(180deg, #f1fbf5 0%, #d8f0e1 100%);
+  box-shadow: 0 4px 14px rgba(45,157,95,0.30);
+}
+.v38-pg-card.is-active::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: var(--v31-accent, #2d9d5f);
+}
+.v38-pg-card.is-me {
+  background: linear-gradient(180deg, #fffbe8 0%, #fff6cf 100%);
+  border-color: #d8a020;
+}
+.v38-pg-card.is-me.is-active {
+  background: linear-gradient(180deg, #fff4b8 0%, #ffd96b 100%);
+  border-color: #b87a00;
+  box-shadow: 0 4px 14px rgba(184,122,0,0.32);
+}
+.v38-pg-card.is-me.is-active::before {
+  background: #b87a00;
+}
+.v38-pg-name {
+  font-size: 12px;
+  font-weight: 900;
+  color: #1a2620;
+  text-align: center;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 2px;
+}
+.v38-pg-card.is-active .v38-pg-name {
+  color: var(--v31-accent-deep, #1f7a48);
+}
+.v38-pg-card.is-me .v38-pg-name {
+  color: #6a4a00;
+}
+.v38-pg-score {
+  font-size: 32px;
+  font-weight: 900;
+  line-height: 1;
+  color: #1a2620;
+  letter-spacing: -0.04em;
+  font-feature-settings: "tnum";
+}
+.v38-pg-card.is-active .v38-pg-score {
+  color: var(--v31-accent-deep, #1f7a48);
+}
+.v38-pg-card.is-me .v38-pg-score {
+  color: #6a4a00;
+}
+.v38-pg-score.is-empty {
+  color: #c0d0c6;
+  font-size: 26px;
+}
+.v38-pg-diff {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: #f0f4f1;
+  color: #4a5a52;
+  margin-top: -2px;
+}
+.v38-pg-diff.is-under { background: #ffeaea; color: #b03030; }
+.v38-pg-diff.is-over  { background: #e8f1ff; color: #2050a0; }
+.v38-pg-diff.is-par   { background: #e0f5e8; color: #1f7a48; }
+
+/* プレイヤー数 < 4 の時のレイアウト調整 */
+.v38-pgrid[data-count="1"] { grid-template-columns: 1fr; }
+.v38-pgrid[data-count="2"] { grid-template-columns: 1fr 1fr; }
+.v38-pgrid[data-count="3"] { grid-template-columns: 1fr 1fr 1fr; }
+.v38-pgrid[data-count="4"] { grid-template-columns: repeat(4, 1fr); }
+/* 5人以上は4列固定で複数行 */
+
+/* 横画面コンパクト化 */
+@media (orientation: landscape) and (max-height: 600px) {
+  .v38-pgrid {
+    padding: 4px 6px;
+    gap: 4px;
+  }
+  .v38-pg-card {
+    min-height: 56px;
+    padding: 4px 2px 6px;
+    gap: 2px;
+  }
+  .v38-pg-name { font-size: 11px; }
+  .v38-pg-score { font-size: 22px; }
+  .v38-pg-score.is-empty { font-size: 18px; }
+  .v38-pg-diff { font-size: 9px; padding: 0 5px; }
+}
+
+/* メイン画面(#screen-gworld)には絶対に出現しない保険(念のため) */
+#screen-gworld .v38-pgrid,
+#screen-gworld .v38-mhn {
+  display: none !important;
+}
+
 </style>
 
 <!-- QR Code Generator (Kazuhiko Arase, MIT) -->
@@ -7574,6 +7716,15 @@ var qrcode = function() {
     </div>
 
     <!-- ============================================================
+         v38.0 入力モーダル内 4列×2行 プレイヤーグリッド
+         上段: プレイヤー名(タップで縦ハイライト切替)
+         下段: そのプレイヤーの現在ホールスコア(特大)
+         ============================================================ -->
+    <div class="v38-pgrid" id="v38PlayerGrid">
+      <!-- JSが renderTable後 / 開閉時 / プレイヤー切替時に再描画 -->
+    </div>
+
+    <!-- ============================================================
          v33: モーダル本体 = スコアカード最大化
          ============================================================ -->
     <div class="v31-modal-top v33-modal-top">
@@ -7658,12 +7809,13 @@ var qrcode = function() {
   <div class="v38-panel-body" id="v38PanelBody">
     <!-- 動的にモード別UIを描画 -->
   </div>
-  <div class="v38-panel-foot">
-    <button type="button" class="v38-pf-btn v38-pf-prev" id="v38PanelPrevHole">◀ 前ホール</button>
-    <button type="button" class="v38-pf-btn v38-pf-player" id="v38PanelPrevPlayer">◀ 前の人</button>
-    <button type="button" class="v38-pf-btn v38-pf-player" id="v38PanelNextPlayer">次の人 ▶</button>
-    <button type="button" class="v38-pf-btn v38-pf-next" id="v38PanelNextHole">次ホール ▶</button>
-  </div>
+  <!-- v38.0: ボトムシートのフッタナビ削除(scoreModal内 v38-mhn に集約) -->
+  <span class="v31-sanctuary" aria-hidden="true">
+    <button id="v38PanelPrevHole" type="button"></button>
+    <button id="v38PanelPrevPlayer" type="button"></button>
+    <button id="v38PanelNextPlayer" type="button"></button>
+    <button id="v38PanelNextHole" type="button"></button>
+  </span>
 </div>
 <div class="v38-panel-backdrop" id="v38PanelBackdrop" aria-hidden="true"></div>
 
@@ -12495,6 +12647,188 @@ if (document.readyState === 'loading') {
 window.addEventListener('load', () => setTimeout(v38MhnBind, 1000));
 
 console.log('G-WORLD v38.0 モーダル内ホール遷移ナビ起動');
+
+
+/* ============================================================
+   v38.0 入力モーダル内 4列2行プレイヤーグリッド
+   - 上段: プレイヤー名(タップで縦ハイライト切替)
+   - 下段: 現在ホールのスコア(特大)
+   - 名前タップ → modalPlayerIdx 更新 → v32SetActiveCell で縦ハイライト連動
+   ============================================================ */
+function v38PgGetCurrentHole() {
+  // V38MHN 優先、次に V38.hi、次に modalHole-1
+  try {
+    if (typeof V38MHN !== 'undefined' && typeof V38MHN.currentHole === 'number') return V38MHN.currentHole;
+  } catch(e) {}
+  try {
+    if (typeof V38 !== 'undefined' && typeof V38.hi === 'number') return V38.hi;
+  } catch(e) {}
+  try {
+    if (typeof modalHole === 'number') return modalHole - 1;
+  } catch(e) {}
+  return 0;
+}
+
+function v38PgGetActivePi() {
+  try {
+    if (typeof modalPlayerIdx === 'number' && State.players[modalPlayerIdx]) return modalPlayerIdx;
+  } catch(e) {}
+  const me = State.players.findIndex(p => p.isMe);
+  return me >= 0 ? me : 0;
+}
+
+function v38PgRender() {
+  const wrap = document.getElementById('v38PlayerGrid');
+  if (!wrap) return;
+  const players = State.players || [];
+  const hi = v38PgGetCurrentHole();
+  const activePi = v38PgGetActivePi();
+  const h = (COURSE && COURSE.holes && COURSE.holes[hi]) || null;
+  const par = h ? h.par : 4;
+
+  wrap.setAttribute('data-count', Math.min(4, players.length));
+
+  if (players.length === 0) {
+    wrap.innerHTML = '';
+    return;
+  }
+
+  let html = '';
+  players.forEach((p, pi) => {
+    const score = (p.scores && p.scores[hi] != null) ? p.scores[hi] : null;
+    const diff = (score != null) ? (score - par) : null;
+    const diffLbl = (diff == null) ? '' :
+                    (diff === 0 ? 'PAR' : (diff > 0 ? '+' + diff : String(diff)));
+    const diffCls = (diff == null) ? '' :
+                    (diff === 0 ? 'is-par' : (diff < 0 ? 'is-under' : 'is-over'));
+    let name;
+    try { name = fullName(p); } catch(_) { name = (p.lastname || '') + (p.firstname ? ' ' + p.firstname : ''); }
+    if (!name) name = 'P' + (pi + 1);
+
+    const isActive = (pi === activePi);
+    const isMe = !!p.isMe;
+    const clsArr = ['v38-pg-card'];
+    if (isActive) clsArr.push('is-active');
+    if (isMe) clsArr.push('is-me');
+
+    html += '<button type="button" class="' + clsArr.join(' ') + '" data-pi="' + pi + '" aria-label="' + name + 'を選択">';
+    html += '  <span class="v38-pg-name">' + (isMe ? '👤 ' : '') + name + '</span>';
+    if (score != null) {
+      html += '  <span class="v38-pg-score">' + score + '</span>';
+      if (diffLbl) {
+        html += '  <span class="v38-pg-diff ' + diffCls + '">' + diffLbl + '</span>';
+      }
+    } else {
+      html += '  <span class="v38-pg-score is-empty">—</span>';
+    }
+    html += '</button>';
+  });
+  wrap.innerHTML = html;
+
+  // タップ結線
+  wrap.querySelectorAll('.v38-pg-card').forEach(card => {
+    card.onclick = (e) => {
+      e.preventDefault();
+      const pi = parseInt(card.getAttribute('data-pi'), 10);
+      if (isNaN(pi)) return;
+      v38PgSelectPlayer(pi);
+    };
+  });
+}
+
+function v38PgSelectPlayer(pi) {
+  const players = State.players || [];
+  if (pi < 0 || pi >= players.length) return;
+  const p = players[pi];
+  if (!p) return;
+
+  // 既存変数同期(計算ロジック互換)
+  try { modalPlayerIdx = pi; } catch(e) {}
+  try { if (typeof V38 !== 'undefined') V38.pi = pi; } catch(e) {}
+  try { if (typeof v35ActivePi !== 'undefined') v35ActivePi = pi; } catch(e) {}
+
+  // 現在ホールを取得し、縦ハイライト連動
+  const hi = v38PgGetCurrentHole();
+  try { v32SetActiveCell && v32SetActiveCell(pi, hi); } catch(e) {}
+  try { v32ApplyCrossHighlight && v32ApplyCrossHighlight(); } catch(e) {}
+
+  // modalStroke/Putt をリロード
+  try {
+    modalStroke = (p.scores && p.scores[hi] != null) ? p.scores[hi] : 0;
+    modalPutt = (p.putts && p.putts[hi] != null) ? p.putts[hi] : 0;
+  } catch(e) {}
+
+  // 既存表示更新
+  try { updateModalDisplay && updateModalDisplay(); } catch(e) {}
+  try { v38MhnRender && v38MhnRender(); } catch(e) {}
+
+  v38PgRender();
+
+  // ボトムシートが開いていればプレイヤー切替を反映
+  try {
+    if (typeof V38 !== 'undefined' && V38.panelOpen) {
+      v38RenderPanelHead && v38RenderPanelHead();
+      v38RenderPanelBody && v38RenderPanelBody();
+    }
+  } catch(e) {}
+
+  try { showToast && showToast('👤 ' + ((p.lastname || '') + (p.firstname ? ' ' + p.firstname : '') || ('P' + (pi+1)))); } catch(e) {}
+}
+
+/* === 各種フックでグリッドを自動再描画 === */
+(function v38PgInstallHooks() {
+  if (typeof window === 'undefined') return;
+
+  // openScoreModal: モーダル開時に描画
+  if (window.openScoreModal) {
+    const orig = window.openScoreModal;
+    window.openScoreModal = function() {
+      const r = orig.apply(this, arguments);
+      try { v38PgRender(); } catch(e) {}
+      return r;
+    };
+  }
+
+  // v36UpdateScore: スコア更新後に再描画
+  if (window.v36UpdateScore) {
+    const orig = window.v36UpdateScore;
+    window.v36UpdateScore = function() {
+      const r = orig.apply(this, arguments);
+      try { v38PgRender(); } catch(e) {}
+      return r;
+    };
+  }
+
+  // v38MhnSetHole: ホール移動後に再描画(MHNとセットで動く)
+  if (window.v38MhnSetHole) {
+    const orig = window.v38MhnSetHole;
+    window.v38MhnSetHole = function() {
+      const r = orig.apply(this, arguments);
+      try { v38PgRender(); } catch(e) {}
+      return r;
+    };
+  }
+
+  // renderTable: テーブル再描画時に同期
+  if (window.renderTable) {
+    const orig = window.renderTable;
+    window.renderTable = function() {
+      const r = orig.apply(this, arguments);
+      try { v38PgRender(); } catch(e) {}
+      return r;
+    };
+  }
+})();
+
+/* DOM準備後に初期描画 */
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => setTimeout(v38PgRender, 750));
+} else {
+  setTimeout(v38PgRender, 750);
+}
+window.addEventListener('load', () => setTimeout(v38PgRender, 1050));
+
+console.log('G-WORLD v38.0 入力モーダル 4列2行プレイヤーグリッド起動');
 </script>
 
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
