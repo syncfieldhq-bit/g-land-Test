@@ -5,7 +5,7 @@
 <!-- 監督指示 §3: ピンチイン・アウト完全許可 -->
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#0F5132">
-<title>G-WORLD v38.0 Final+ | 六甲国際パブリックコース</title>
+<title>G-WORLD v38.0 Final | 六甲国際パブリックコース</title>
 
 <!-- ============================================================
      v34: PWA設定 — ホーム画面追加時の名称 = "G-WORLD"
@@ -4440,6 +4440,77 @@ html, body {
 }
 .v382-pm-actions button:active { transform: scale(0.96); }
 
+
+/* ============================================================
+   v38.0 ラウンド準備画面: スコア表示モードトグル
+   ============================================================ */
+.v38-disp-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+.v38-disp-toggle button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 12px 6px;
+  background: #ffffff;
+  border: 2px solid #d8e2dc;
+  border-radius: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  min-height: 80px;
+  transition: transform 0.08s, border-color 0.15s, background 0.15s;
+}
+.v38-disp-toggle button:active { transform: scale(0.96); }
+.v38-disp-toggle button.active {
+  background: linear-gradient(180deg, var(--v31-accent, #2d9d5f) 0%, var(--v31-accent-deep, #1f7a48) 100%);
+  border-color: var(--v31-accent-deep, #1f7a48);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(45,157,95,0.28);
+}
+.v38-dt-ico {
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+.v38-disp-toggle button.active .v38-dt-ico {
+  color: #fff;
+}
+.v38-dt-lbl {
+  font-size: 12px;
+  font-weight: 800;
+  color: #2a4a36;
+  text-align: center;
+  line-height: 1.2;
+}
+.v38-disp-toggle button.active .v38-dt-lbl {
+  color: #ffffff;
+}
+.v38-dt-lbl small {
+  display: block;
+  margin-top: 2px;
+  font-size: 9px;
+  font-weight: 700;
+  color: #6a7d72;
+  opacity: 0.85;
+}
+.v38-disp-toggle button.active .v38-dt-lbl small {
+  color: #e0f5e9;
+}
+
+/* 設定ボタンの小文字注釈削除版スタイル(text 中央寄せ) */
+.v38-settings-btn-clean .v31-set-text {
+  font-size: 15px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+}
+
 </style>
 
 <!-- QR Code Generator (Kazuhiko Arase, MIT) -->
@@ -6754,22 +6825,35 @@ var qrcode = function() {
        v31: 司令塔（トップ画面）— モード切替 / ロッカー / 同伴者 / アクション
        ============================================================ -->
   <div class="v31-cockpit">
+    <!-- ============================================================
+         v38.0 配置整理版 — ラウンド準備画面
+         上から: ① ロッカー → ② ラウンド構成 → ③ プレイモード → ④ スコア表示モード
+              → ⑤ 設定 → ⑥ 同伴者 → ⑦ ラウンド開始 → ⑧ ナビゲーション & 連絡
+         ※ COT(後半スタート時間)はスコアカード画面のダッシュボードに集約済み
+         ============================================================ -->
 
-    <!-- ヘッダー -->
+    <!-- ヘッダー(維持) -->
     <div class="v31-header v32-header">
       <div class="v31-h-ico">⛳</div>
       <div class="v31-h-text">
         <div class="v31-h-sub">六甲国際パブリック</div>
         <div class="v31-h-main">ラウンド準備</div>
       </div>
-      <!-- v32: 9H/18H ステータスバッジ（常時表示） -->
+      <!-- v32: 9H/18H ステータスバッジ(常時表示) -->
       <div class="v32-status-badge" id="v32StatusBadge">
         <span class="v32-sb-num" id="v32SbNum">18</span>
         <span class="v32-sb-lbl">H</span>
       </div>
     </div>
 
-    <!-- v32: 9H / 18H ラウンド構成 -->
+    <!-- ① 貴重品ロッカー番号 -->
+    <section class="v31-block">
+      <div class="v31-block-title">🔐 貴重品ロッカー番号</div>
+      <input type="text" class="v31-input" id="v31LockerInput"
+             maxlength="6" inputmode="numeric" placeholder="例: 123">
+    </section>
+
+    <!-- ② ラウンド構成(9H / 18H) -->
     <section class="v31-block v32-holes-block">
       <div class="v31-block-title">🏁 ラウンド構成</div>
       <div class="v32-holes-toggle" id="v32HolesToggle">
@@ -6784,74 +6868,51 @@ var qrcode = function() {
       </div>
     </section>
 
-    <!-- ① プレイモード切替（一般 / 初心者カウンター） -->
+    <!-- ③ プレイモード(一般 / 初心者カウンター) -->
     <section class="v31-block v31-block-accent">
       <div class="v31-block-title">🎯 プレイモード</div>
       <div class="v31-mode-toggle" id="v31ModeToggle">
         <button type="button" data-gmode="standard" class="active">
           <span class="v31-mode-ico">🏌️</span>
-          <span class="v31-mode-name">一般（4人用）<small>4人ストローク＋自分パット</small></span>
+          <span class="v31-mode-name">一般(4人用)<small>4人ストローク＋自分パット</small></span>
         </button>
         <button type="button" data-gmode="beginner">
           <span class="v31-mode-ico">🔰</span>
-          <span class="v31-mode-name">初心者（カウンター）<small>自分のストロークのみ</small></span>
+          <span class="v31-mode-name">初心者(カウンター)<small>自分のストロークのみ</small></span>
         </button>
       </div>
     </section>
 
-    <!-- ② ロッカー番号 -->
+    <!-- ④ スコア表示モード(v38.0新規・既存 v38CycleDisplayMode に結線) -->
     <section class="v31-block">
-      <div class="v31-block-title">🔐 貴重品ロッカー番号</div>
-      <input type="text" class="v31-input" id="v31LockerInput"
-             maxlength="6" inputmode="numeric" placeholder="例: 123">
-    </section>
-
-    <!-- v34: ⛳ 後半スタート時間（メイン画面の専用ブロック） -->
-    <section class="v31-block v34-pmstart-block">
-      <div class="v31-block-title">⛳ 後半スタート時間</div>
-
-      <!-- 一目で予定時刻がわかる大型表示 -->
-      <div class="v34-pm-bigdisplay">
-        <div class="v34-pm-bd-label">後半スタート予定</div>
-        <div class="v34-pm-bd-time" id="v34PmBigTime">— : —</div>
-        <div class="v34-pm-bd-sub" id="v34PmBigSub">タップして時刻を調整</div>
-      </div>
-
-      <!-- 編集行 -->
-      <div class="v34-pm-edit-row">
-        <input type="time" class="v31-input v34-pm-input" id="v32MainPmStart" step="300">
-        <button type="button" class="v34-pm-action v34-pm-action-smart" id="v32MainPmSmart">
-          <span class="v34-pm-act-ico">📍</span>
-          <span class="v34-pm-act-lbl">+45分</span>
+      <div class="v31-block-title">🔢 スコア表示モード</div>
+      <div class="v38-disp-toggle" id="v38PrepDispToggle">
+        <button type="button" data-disp="number">
+          <span class="v38-dt-ico">123</span>
+          <span class="v38-dt-lbl">数字<small>5, 4, 6 …</small></span>
         </button>
-        <button type="button" class="v34-pm-action v34-pm-action-clear" id="v34PmClear">
-          <span class="v34-pm-act-ico">✕</span>
-          <span class="v34-pm-act-lbl">クリア</span>
+        <button type="button" data-disp="diff">
+          <span class="v38-dt-ico">±</span>
+          <span class="v38-dt-lbl">スコア差<small>+1, E, −1 …</small></span>
+        </button>
+        <button type="button" data-disp="symbol">
+          <span class="v38-dt-ico">◎</span>
+          <span class="v38-dt-lbl">記号<small>イーグル/バーディ等</small></span>
         </button>
       </div>
-      <div class="v34-pm-hint">起動時に「現在時刻 ＋ 45 分」を自動セットします</div>
-
-      <!-- 休憩時間（サブ） -->
-      <details class="v34-rest-details">
-        <summary>☕ 休憩時間（任意・タップで開く）</summary>
-        <div class="v32-time-grid v34-rest-grid">
-          <div class="v32-time-field">
-            <label>☕ 休憩開始</label>
-            <input type="time" class="v31-input v31-pmtime" id="v32RestStart" step="300">
-          </div>
-          <div class="v32-time-field">
-            <label>🏁 休憩終了</label>
-            <input type="time" class="v31-input v31-pmtime" id="v32RestEnd" step="300">
-          </div>
-          <div class="v32-time-field v32-time-rest">
-            <label>⏱ 休憩時間</label>
-            <div class="v32-rest-display" id="v32RestDisplay">— 分</div>
-          </div>
-        </div>
-      </details>
     </section>
 
-    <!-- ③ 同伴者リスト ＋ 招待QR（同伴者追加直下に配置） -->
+    <!-- ⑤ 設定(詳細設定ボタンのみ・小文字注釈は削除) -->
+    <section class="v31-block">
+      <div class="v31-block-title">⚙️ 設定</div>
+      <button type="button" class="v31-settings-btn v38-settings-btn-clean" id="v31OpenSettings">
+        <span class="v31-set-ico">⚙️</span>
+        <span class="v31-set-text">詳細設定を開く</span>
+        <span class="v31-set-arrow">▶</span>
+      </button>
+    </section>
+
+    <!-- ⑥ 同伴者(招待QR + 追加 + リスト・維持) -->
     <section class="v31-block">
       <div class="v31-block-title">👥 同伴者</div>
       <div class="v31-player-list" id="v31PlayerList"></div>
@@ -6868,26 +6929,18 @@ var qrcode = function() {
       </button>
     </section>
 
-    <!-- ④ ラウンド開始（巨大ボタン） -->
+    <!-- ⑦ ラウンド開始(巨大ボタン) -->
     <button type="button" class="v31-start-btn" id="v31StartRound">
       <span class="v31-start-ico">🏁</span>
       <span class="v31-start-text">ラウンド開始<small>スコア入力モーダルを起動</small></span>
     </button>
 
-    <!-- v32: 9H完了バナー（9Hモード全入力時のみ表示） -->
+    <!-- v32: 9H完了バナー(9Hモード全入力時のみ表示) -->
     <div class="v32-9h-complete-banner" id="v329hCompleteBanner">
       🏁 ハーフラウンド完了！タップで集計を確認
     </div>
 
-    <!-- v33: ライブスコアカード削除 — 編集はモーダルへ集約。v32内部参照は聖域へ -->
-    <div class="v31-sanctuary" aria-hidden="true">
-      <span id="v32LiveMode">18H</span>
-      <span id="v32LiveHole">1H</span>
-      <div id="v32LiveScroll"><table id="v32LiveTable"></table></div>
-      <div id="v32LiveSummary"></div>
-    </div>
-
-    <!-- ⑤ ナビ・コース詳細・予約・電話 -->
+    <!-- ⑧ ナビゲーション & 連絡(維持) -->
     <section class="v31-block">
       <div class="v31-block-title">🧭 ナビゲーション & 連絡</div>
       <a class="v31-nav-main" href="https://www.google.com/maps/dir/?api=1&destination=六甲国際パブリックコース" target="_blank" rel="noopener">
@@ -6907,18 +6960,28 @@ var qrcode = function() {
       </div>
     </section>
 
-    <!-- ⑥ 設定（PMスタート時刻 / 招待QR / 入力設定 / ティ / 表示モード） -->
-    <section class="v31-block">
-      <div class="v31-block-title">⚙️ 設定</div>
-      <button type="button" class="v31-settings-btn" id="v31OpenSettings">
-        <span class="v31-set-ico">⚙️</span>
-        <span class="v31-set-text">
-          すべての設定を開く
-          <small>PMスタート / 招待QR / 入力設定 / ティ / 表示モード</small>
-        </span>
-        <span class="v31-set-arrow">▶</span>
-      </button>
-    </section>
+    <!-- v38.0 サンクチュアリ: COT(後半スタート時間)関連の旧ID退避
+         ※ スコアカード画面のダッシュボードで管理。JS互換のため非表示でDOM保持 -->
+    <div class="v31-sanctuary" aria-hidden="true">
+      <!-- v34: 後半スタート時間 旧UI(JSが値を書き込むためのID退避) -->
+      <input type="time" id="v32MainPmStart" step="300">
+      <input type="time" id="v31PmStartInput" step="300">
+      <span id="v34PmBigTime">— : —</span>
+      <span id="v34PmBigSub"></span>
+      <button id="v32MainPmSmart" type="button"></button>
+      <button id="v34PmClear" type="button"></button>
+      <button id="v34PmAdd45" type="button"></button>
+      <!-- v32: 休憩時間 旧UI -->
+      <input type="time" id="v32RestStart" step="300">
+      <input type="time" id="v32RestEnd" step="300">
+      <span id="v32RestDisplay">— 分</span>
+      <!-- v32: ライブスコアカード旧ID -->
+      <span id="v32LiveMode">18H</span>
+      <span id="v32LiveHole">1H</span>
+      <div id="v32LiveScroll"><table id="v32LiveTable"></table></div>
+      <div id="v32LiveSummary"></div>
+    </div>
+
 
   </div>
 
@@ -11812,6 +11875,64 @@ window.addEventListener('load', () => setTimeout(v382RewireDashboard, 800));
 
 console.log('G-WORLD v38.0 最終調整 (z-index10000 + 横画面FS + iOS時間スピナー)');
 
+
+
+/* ============================================================
+   v38.0 ラウンド準備画面: スコア表示モードトグル結線
+   既存の v38CycleDisplayMode と同じロジックを共有
+   ============================================================ */
+function v38PrepRenderDispToggle() {
+  const cur = (State && State.ui && State.ui.displayMode) || 'number';
+  const wrap = document.getElementById('v38PrepDispToggle');
+  if (!wrap) return;
+  wrap.querySelectorAll('button').forEach(b => {
+    if (b.dataset.disp === cur) b.classList.add('active');
+    else b.classList.remove('active');
+  });
+}
+
+function v38PrepBindDispToggle() {
+  const wrap = document.getElementById('v38PrepDispToggle');
+  if (!wrap) return;
+  wrap.querySelectorAll('button').forEach(b => {
+    b.onclick = (e) => {
+      e.preventDefault();
+      const m = b.dataset.disp;
+      if (!m) return;
+      State.ui.displayMode = m;
+      try { Storage.saveState(); } catch(_) {}
+      try { renderTable(); } catch(_) {}
+      try { v38UpdateDashboard && v38UpdateDashboard(); } catch(_) {}
+      v38PrepRenderDispToggle();
+      const labels = { number: '数字', diff: 'スコア差', symbol: '記号' };
+      showToast('🔢 ' + labels[m] + 'に切替');
+    };
+  });
+  v38PrepRenderDispToggle();
+}
+
+/* renderTable / v38CycleDisplayMode の後に同期するためのフック */
+(function v38PrepHookDispSync() {
+  if (typeof window === 'undefined') return;
+  if (window.v38CycleDisplayMode) {
+    const orig = window.v38CycleDisplayMode;
+    window.v38CycleDisplayMode = function() {
+      const r = orig.apply(this, arguments);
+      try { v38PrepRenderDispToggle(); } catch(_) {}
+      return r;
+    };
+  }
+})();
+
+/* DOM 準備後に結線 */
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => setTimeout(v38PrepBindDispToggle, 600));
+} else {
+  setTimeout(v38PrepBindDispToggle, 600);
+}
+window.addEventListener('load', () => setTimeout(v38PrepBindDispToggle, 900));
+
+console.log('G-WORLD v38.0 ラウンド準備画面 配置整理版');
 </script>
 
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
