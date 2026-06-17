@@ -2401,14 +2401,39 @@ body.v31-mode-beginner .v31-modal .player-tabs > *:not(.is-me) {
 .v32-livescore-summary.show { display: block; }
 
 /* ============================================================
-   v39: メイン画面の「行ハイライト + 縦ハイライト（クロス）」を物理削除。
-   モーダル内 #v31ModalScoreTable のハイライトのみ維持。
+   行ハイライト + 縦ハイライト（クロス）
+   モーダル/ライブテーブル共通
    ============================================================ */
-#v31ModalScoreTable.v33-modal-scoretable tr.is-input-row td:not(.col-fixed) {
+.scoretable .col-row-hl,
+.v32-livescore .col-row-hl {
+  background: rgba(45,157,95,.10) !important;
+}
+.scoretable .col-row-hl.col-fixed,
+.v32-livescore .col-row-hl.col-fixed {
+  background: rgba(45,157,95,.20) !important;
+  color: var(--v31-accent-deep) !important;
+}
+.scoretable .col-col-hl,
+.v32-livescore .col-col-hl {
+  background: rgba(45,157,95,.10) !important;
+}
+.scoretable td.col-row-hl.col-col-hl,
+.scoretable th.col-row-hl.col-col-hl,
+.v32-livescore td.col-row-hl.col-col-hl {
+  background: var(--v31-accent) !important;
+  color: #fff !important;
+  outline: 2px solid var(--v31-accent-deep);
+  outline-offset: -2px;
+  font-weight: 900;
+}
+/* 入力中プレイヤー行は太枠で明示 */
+.v32-livescore tr.is-input-row td:not(.col-fixed),
+#v31ModalScoreTable tr.is-input-row td:not(.col-fixed) {
   border-top: 2px solid var(--v31-accent) !important;
   border-bottom: 2px solid var(--v31-accent) !important;
 }
-#v31ModalScoreTable.v33-modal-scoretable tr.is-input-row td.col-fixed {
+.v32-livescore tr.is-input-row td.col-fixed,
+#v31ModalScoreTable tr.is-input-row td.col-fixed {
   background: var(--v31-accent) !important;
   color: #fff !important;
   font-weight: 900;
@@ -4486,326 +4511,108 @@ html, body {
   align-items: center;
 }
 
+
 /* ============================================================
-   v40: モーダルレイアウト（添付画像忠実版）
+   v38.0 ティー選択(COT) + 全セクション緑枠統一
    ============================================================ */
-.v40-modal {
-  width: 100% !important;
-  max-width: 100vw !important;
-  height: calc(100vh - env(safe-area-inset-bottom)) !important;
-  max-height: 100vh !important;
-  border-radius: 16px 16px 0 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  padding: 12px 12px calc(12px + env(safe-area-inset-bottom)) !important;
-  gap: 10px !important;
-  background: #fff !important;
-  overflow-y: auto !important;
+
+/* 全 .v31-block に統一された緑実線枠 */
+.v31-cockpit .v31-block {
+  border: 2px solid var(--v31-accent, #2d9d5f) !important;
+  border-radius: 14px !important;
+  background: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(45,157,95,0.08) !important;
+  padding: 14px 14px !important;
+  margin-bottom: 14px !important;
+}
+/* アクセント(プレイモード)はやや濃い枠＋背景グラデで差別化 */
+.v31-cockpit .v31-block.v31-block-accent {
+  border-color: var(--v31-accent-deep, #1f7a48) !important;
+  background: linear-gradient(180deg, #f7fdf9 0%, #ffffff 100%) !important;
+  box-shadow: 0 3px 12px rgba(31,122,72,0.14) !important;
+}
+/* 統一感のあるブロックタイトル */
+.v31-cockpit .v31-block-title {
+  color: var(--v31-accent-deep, #1f7a48) !important;
+  font-weight: 900 !important;
+  font-size: 14px !important;
+  margin-bottom: 10px !important;
+  padding-bottom: 6px !important;
+  border-bottom: 1.5px dashed rgba(45,157,95,0.28) !important;
+  letter-spacing: 0.02em;
 }
 
-.v40-sanctuary { position: absolute; left: -10000px; top: -10000px; width: 1px; height: 1px; overflow: hidden; }
-
-/* === ホールナビ === */
-.v40-holebar {
+/* --- ティー選択 (COT) トグル --- */
+.v38-cot-toggle {
   display: grid;
-  grid-template-columns: 1fr 1.4fr 1fr;
-  gap: 8px;
-  flex: 0 0 auto;
-}
-.v40-hb-nav, .v40-hb-center {
-  border: 1.5px solid #d6dde2;
-  border-radius: 14px;
-  background: #fff;
-  padding: 10px 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  font-weight: 800;
-  color: #1a3a25;
-  min-height: 64px;
-  cursor: pointer;
-  -webkit-tap-highlight-color: rgba(45,157,95,.20);
-}
-.v40-hb-nav { font-size: 13px; line-height: 1.1; }
-.v40-hb-nav .v40-hb-op  { font-size: 16px; font-weight: 900; }
-.v40-hb-nav .v40-hb-lbl { font-size: 12px; font-weight: 800; }
-.v40-hb-nav:active { background: #f0f7f3; }
-.v40-hb-nav:disabled { opacity: .35; cursor: not-allowed; }
-.v40-hb-center { flex-direction: column; gap: 0; cursor: default; }
-.v40-hb-hole { font-size: 26px; font-weight: 900; color: #14532d; line-height: 1; }
-.v40-hb-par  { font-size: 13px; font-weight: 700; color: #5a6a60; margin-top: 4px; }
-
-/* === 4列2行 プレイヤーグリッド === */
-.v40-player-grid-wrap { flex: 0 0 auto; }
-.v40-player-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: auto auto;
-  gap: 0;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 1.5px solid #d6dde2;
-  background: #fff;
-}
-.v40-pg-name, .v40-pg-score {
-  display: flex; align-items: center; justify-content: center;
-  text-align: center;
-  padding: 10px 6px;
-  font-weight: 800;
-  cursor: pointer;
-  -webkit-tap-highlight-color: rgba(45,157,95,.25);
-  background: #fff;
-  position: relative;
-  user-select: none;
-  flex-direction: column;
-  gap: 2px;
-  line-height: 1.1;
-}
-.v40-pg-name {
-  border-bottom: 1.5px solid #e6ece9;
-  font-size: 18px;
-  color: #1a3a25;
-}
-.v40-pg-name-sub {
-  font-size: 9px; font-weight: 700; color: #6a7a72;
-  letter-spacing: .04em;
-}
-.v40-pg-score {
-  font-size: 26px; font-weight: 900; color: #14532d;
-  background: #ecf6f0;
-  min-height: 52px;
-}
-.v40-pg-score.is-empty { color: #b9c2bb; background: #fff; }
-
-/* 選択中プレイヤーのハイライト */
-.v40-player-grid .v40-pg-col.is-active .v40-pg-name {
-  background: #2d9d5f;
-  color: #fff;
-}
-.v40-player-grid .v40-pg-col.is-active .v40-pg-name-sub {
-  color: rgba(255,255,255,.85);
-}
-.v40-player-grid .v40-pg-col.is-active .v40-pg-score {
-  background: #d5ead8;
-}
-/* 区切りグラデーション矢印意匠（名前セル間） */
-.v40-player-grid .v40-pg-col + .v40-pg-col .v40-pg-name {
-  background-image: linear-gradient(to right, rgba(45,157,95,.15) 0%, rgba(45,157,95,0) 60%);
-}
-.v40-player-grid .v40-pg-col.is-active + .v40-pg-col .v40-pg-name {
-  background-image: none;
-}
-.v40-player-grid .v40-pg-col {
-  display: contents;
-}
-.v40-player-grid .v40-pg-col.is-empty .v40-pg-name { color: #b9c2bb; }
-.v40-player-grid .v40-pg-col.is-empty .v40-pg-score { color: #d0d6d2; }
-
-/* === タブ === */
-.v40-mode-tabs {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  flex: 0 0 auto;
-}
-.v40-mt-btn {
-  padding: 10px 6px;
-  border-radius: 999px;
-  border: 1.5px solid #d6dde2;
-  background: #fff;
-  color: #1a3a25;
-  font-size: 13px;
-  font-weight: 800;
-  cursor: pointer;
-  -webkit-tap-highlight-color: rgba(45,157,95,.20);
-}
-.v40-mt-btn:active { background: #f0f7f3; }
-.v40-mt-btn.is-active {
-  background: #2d9d5f;
-  color: #fff;
-  border-color: #2d9d5f;
-}
-
-/* === 数字パッド === */
-.v40-pad { flex: 1 1 auto; min-height: 0; }
-.v40-pad-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 8px;
-}
-.v40-pad-grid.row2 {
-  grid-template-columns: repeat(4, 1fr);
-  margin-top: 8px;
-}
-.v40-pk {
-  border-radius: 14px;
-  border: 1.5px solid #d6dde2;
-  background: #fff;
-  padding: 10px 4px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  cursor: pointer;
-  -webkit-tap-highlight-color: rgba(45,157,95,.25);
-  min-height: 64px;
-  font-weight: 900;
-}
-.v40-pk:active { transform: translateY(1px); }
-.v40-pk-val { font-size: 22px; font-weight: 900; line-height: 1; color: #1a3a25; }
-.v40-pk-lbl { font-size: 10px; font-weight: 800; color: #5a6a60; line-height: 1.1; }
-
-/* スコア色分け（画像忠実） */
-.v40-pk.v40-pk-eagle  { background: #fbe2ec; border-color: #f6c4d8; }
-.v40-pk.v40-pk-birdie { background: #fde0c8; border-color: #f7b585; }
-.v40-pk.v40-pk-par    { background: #d8f1de; border-color: #8ad0a3; }
-.v40-pk.v40-pk-bogey  { background: #dfe6fb; border-color: #a8b5ef; }
-.v40-pk.v40-pk-dbogey { background: #ead9fa; border-color: #b896ec; }
-.v40-pk.v40-pk-eagle  .v40-pk-lbl { color: #8e335f; }
-.v40-pk.v40-pk-birdie .v40-pk-lbl { color: #8a4517; }
-.v40-pk.v40-pk-par    .v40-pk-lbl { color: #1f6b3a; }
-.v40-pk.v40-pk-bogey  .v40-pk-lbl { color: #2c3a91; }
-.v40-pk.v40-pk-dbogey .v40-pk-lbl { color: #563088; }
-
-/* === アクション === */
-.v40-actions {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
-  flex: 0 0 auto;
 }
-.v40-act {
-  padding: 14px 10px;
-  border-radius: 14px;
-  font-size: 16px;
-  font-weight: 900;
+.v38-cot-toggle button {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 14px 12px;
+  background: #ffffff;
+  border: 2px solid #d8e2dc;
+  border-radius: 12px;
+  font-family: inherit;
   cursor: pointer;
-  -webkit-tap-highlight-color: rgba(45,157,95,.25);
-  border: 1.5px solid #d6dde2;
-  background: #fff;
-  color: #1a3a25;
+  touch-action: manipulation;
+  min-height: 70px;
+  transition: transform 0.08s, border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  text-align: left;
 }
-.v40-act:active { transform: translateY(1px); }
-.v40-act-confirm {
-  background: #2d9d5f;
-  color: #fff;
-  border-color: #2d9d5f;
-  box-shadow: 0 3px 8px rgba(45,157,95,.30);
+.v38-cot-toggle button:active { transform: scale(0.96); }
+.v38-cot-toggle button.active {
+  background: linear-gradient(180deg, var(--v31-accent, #2d9d5f) 0%, var(--v31-accent-deep, #1f7a48) 100%);
+  border-color: var(--v31-accent-deep, #1f7a48);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(45,157,95,0.32);
 }
-.v40-act-confirm:active { background: #1f7a47; }
-
-@media (max-width: 360px) {
-  .v40-pg-name  { font-size: 16px; }
-  .v40-pg-score { font-size: 22px; }
-  .v40-pk-val   { font-size: 18px; }
-  .v40-pk-lbl   { font-size: 9px; }
-  .v40-mt-btn   { font-size: 12px; }
+.v38-cot-toggle button[data-tee="ladies"].active {
+  background: linear-gradient(180deg, #e85f80 0%, #c63d61 100%);
+  border-color: #a8284c;
+  box-shadow: 0 4px 14px rgba(200,60,100,0.32);
 }
-
-/* ============================================================
-   v39: モーダル内 4列2行 入力グリッド（使用しない — 聖域扱い）
-   ============================================================ */
-.v39-modal-grid-wrap {
+.v38-cot-ico {
+  font-size: 28px;
+  line-height: 1;
   flex: 0 0 auto;
-  padding: 10px 12px calc(16px + env(safe-area-inset-bottom));
-  background: linear-gradient(to bottom, var(--v31-base) 0%, var(--v31-base-soft) 100%);
-  border-top: 2px solid var(--v31-accent-soft);
 }
-.v39-modal-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(2, minmax(56px, 1fr));
-  gap: 8px;
-  width: 100%;
-}
-.v39-mg-btn {
+.v38-cot-lbl {
+  font-size: 14px;
+  font-weight: 900;
+  color: #1a2620;
+  line-height: 1.2;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   gap: 2px;
-  min-height: 56px;
-  padding: 8px 4px;
-  border-radius: 12px;
-  border: 2px solid var(--v31-base-line2);
-  background: var(--v31-base);
-  color: var(--v31-ink);
-  font-weight: 900;
-  cursor: pointer;
-  -webkit-tap-highlight-color: rgba(45,157,95,.25);
-  touch-action: manipulation;
-  user-select: none;
 }
-.v39-mg-btn:active { transform: translateY(1px); }
-.v39-mg-btn:disabled { opacity: .35; cursor: not-allowed; }
-.v39-mg-op  { font-size: 22px; font-weight: 900; line-height: 1; }
-.v39-mg-lbl { font-size: 11px; font-weight: 800; line-height: 1.1; }
-
-.v39-mg-shot-plus, .v39-mg-shot-minus {
-  background: var(--v31-accent-soft);
-  border-color: var(--v31-accent);
-  color: var(--v31-accent-deep);
+.v38-cot-toggle button.active .v38-cot-lbl {
+  color: #ffffff;
 }
-.v39-mg-shot-plus:active, .v39-mg-shot-minus:active {
-  background: var(--v31-accent); color: #fff;
+.v38-cot-lbl small {
+  font-size: 10px;
+  font-weight: 700;
+  color: #6a7d72;
+  opacity: 0.9;
 }
-.v39-mg-putt-plus, .v39-mg-putt-minus {
-  background: var(--v31-base-soft);
-  border-color: var(--v31-base-line2);
-  color: var(--v31-ink);
+.v38-cot-toggle button.active .v38-cot-lbl small {
+  color: #ddf2e4;
 }
-.v39-mg-putt-plus:active, .v39-mg-putt-minus:active {
-  background: var(--v31-base-line2);
-}
-.v39-mg-hole-prev, .v39-mg-hole-next {
-  background: var(--v31-base);
-  border-color: var(--v31-accent);
-  color: var(--v31-accent-deep);
-}
-.v39-mg-hole-prev:active, .v39-mg-hole-next:active {
-  background: var(--v31-accent-soft);
-}
-.v39-mg-player-next {
-  background: var(--v31-base);
-  border-color: var(--v31-accent);
-  color: var(--v31-accent-deep);
-}
-.v39-mg-player-next:active {
-  background: var(--v31-accent-soft);
-}
-.v39-mg-confirm {
-  background: var(--v31-accent);
-  border-color: var(--v31-accent-deep);
-  color: #fff;
-  box-shadow: 0 4px 10px rgba(45,157,95,.30);
-}
-.v39-mg-confirm:active {
-  background: var(--v31-accent-deep);
-  transform: translateY(1px);
+.v38-cot-toggle button[data-tee="ladies"].active .v38-cot-lbl small {
+  color: #fde0ea;
 }
 
-@media (max-width: 360px) {
-  .v39-mg-op  { font-size: 18px; }
-  .v39-mg-lbl { font-size: 10px; }
-  .v39-mg-btn { min-height: 50px; padding: 6px 3px; }
-}
-
-/* ============================================================
-   v39: モーダル内のみハイライトを適用（メイン画面は上部で物理削除済）
-   ============================================================ */
-#v31ModalScoreTable.v33-modal-scoretable .col-row-hl,
-#v31ModalScoreTable.v33-modal-scoretable .col-col-hl {
-  background: rgba(45,157,95,.10) !important;
-}
-#v31ModalScoreTable.v33-modal-scoretable td.col-row-hl.col-col-hl,
-#v31ModalScoreTable.v33-modal-scoretable th.col-row-hl.col-col-hl {
-  background: var(--v31-accent) !important;
-  color: #fff !important;
-  outline: 2px solid var(--v31-accent-deep);
-  outline-offset: -2px;
-  font-weight: 900;
+/* 横画面でも準備画面のレイアウトを維持(モーダルとは別) */
+@media (orientation: landscape) and (max-height: 600px) {
+  /* 横画面の準備画面では緑枠を細く */
+  .v31-cockpit .v31-block {
+    padding: 8px 10px !important;
+    margin-bottom: 8px !important;
+  }
 }
 
 </style>
@@ -7165,7 +6972,22 @@ var qrcode = function() {
       </div>
     </section>
 
-    <!-- ③ プレイモード(一般 / 初心者カウンター) -->
+    <!-- ③ ティー選択 (COT) — レギュラー / レディース -->
+    <section class="v31-block v38-cot-block">
+      <div class="v31-block-title">⛳ ティー選択 (COT)</div>
+      <div class="v38-cot-toggle" id="v38CotToggle">
+        <button type="button" data-tee="reg" class="active">
+          <span class="v38-cot-ico">⛳</span>
+          <span class="v38-cot-lbl">レギュラーティー<small>REG / REGULAR (白・黄)</small></span>
+        </button>
+        <button type="button" data-tee="ladies">
+          <span class="v38-cot-ico">🌸</span>
+          <span class="v38-cot-lbl">レディースティー<small>LADIES (赤・緑)</small></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ④ プレイモード(一般 / 初心者カウンター) -->
     <section class="v31-block v31-block-accent">
       <div class="v31-block-title">🎯 プレイモード</div>
       <div class="v31-mode-toggle" id="v31ModeToggle">
@@ -7525,75 +7347,75 @@ var qrcode = function() {
 
 <!-- モーダル: スコア入力 -->
 <div class="modal-backdrop" id="scoreModal">
-  <div class="modal v31-modal v40-modal">
+  <div class="modal v31-modal">
+
+    <!-- v38: ラウンド設定ダッシュボード(モーダル上部・最優先表示) -->
+    <div class="v38-dash">
+      <div class="v38-dash-row">
+        <button class="v38-dash-card v38-dc-tee" id="v38DashTee" type="button">
+          <span class="v38-dc-ico">⛳</span>
+          <span class="v38-dc-body">
+            <span class="v38-dc-label">使用ティー</span>
+            <span class="v38-dc-value" id="v38DashTeeVal">REG</span>
+          </span>
+        </button>
+        <button class="v38-dash-card v38-dc-disp" id="v38DashDisp" type="button">
+          <span class="v38-dc-ico">🔢</span>
+          <span class="v38-dc-body">
+            <span class="v38-dc-label">スコア表示</span>
+            <span class="v38-dc-value" id="v38DashDispVal">数字</span>
+          </span>
+        </button>
+        <div class="v38-dash-card v38-dc-pm v38-dc-highlight">
+          <span class="v38-dc-ico">⏰</span>
+          <span class="v38-dc-body">
+            <span class="v38-dc-label">後半スタート</span>
+            <span class="v38-dc-value" id="v38DashPm">— : —</span>
+          </span>
+        </div>
+        <div class="v38-dash-card v38-dc-locker">
+          <span class="v38-dc-ico">🔐</span>
+          <span class="v38-dc-body">
+            <span class="v38-dc-label">ロッカー</span>
+            <span class="v38-dc-value" id="v38DashLocker">—</span>
+          </span>
+        </div>
+        <div class="v38-dash-card v38-dc-mode">
+          <span class="v38-dc-ico">🏌️</span>
+          <span class="v38-dc-body">
+            <span class="v38-dc-label">モード</span>
+            <span class="v38-dc-value">
+              <span id="v38DashGame">一般</span>
+              <span class="v38-dc-sep">·</span>
+              <span id="v38DashHoles">18H</span>
+              <span class="v38-dc-sep">·</span>
+              <span id="v38DashInput">シンプル</span>
+            </span>
+          </span>
+        </div>
+        <button class="v38-dash-close" data-close type="button" aria-label="閉じる">×</button>
+      </div>
+      <div class="v38-dash-hint">
+        <span>💡 セルをタップ → 下から入力パネルが現れます（自動保存）</span>
+      </div>
+      <!-- v38 聖域: 旧IDをここに退避(JS互換のため) -->
+      <span class="v38-sanctuary-hidden" aria-hidden="true">
+        <span id="scoreModalTitle">スコア入力</span>
+        <span id="v31ModalPm">— : —</span>
+        <span id="v31ModalModeBadge">🏌️ 一般</span>
+        <span id="v32ModalHolesBadge">🏁 18H</span>
+      </span>
+    </div>
 
     <!-- ============================================================
-         v40: 添付画像に忠実なモーダルレイアウト
-         ・最上部: [◀前ホール] [1H / PAR 4] [次ホール▶]
-         ・中間:   4×2 プレイヤーグリッド（名前行 + スコア行）
-         ・タブセクション: 天気予報式 / カウンター / 数字+パット
-         ・数字パッド: 2-6 / 7-10
-         ・最下部: [✓確定] [閉じる]
+         v33: モーダル本体 = スコアカード最大化
          ============================================================ -->
-
-    <!-- 最上部：ホールナビ -->
-    <div class="v40-holebar">
-      <button type="button" class="v40-hb-nav v40-hb-prev" id="v40HoleBarPrev">
-        <span class="v40-hb-op">◀</span><span class="v40-hb-lbl">前<br>ホール</span>
-      </button>
-      <div class="v40-hb-center" id="v40HoleBarCenter">
-        <div class="v40-hb-hole" id="v40HoleBarHole">1H</div>
-        <div class="v40-hb-par"  id="v40HoleBarPar">PAR 4</div>
+    <div class="v31-modal-top v33-modal-top">
+      <div class="v31-scoretable-wrap v33-scoretable-wrap">
+        <div class="scoretable-scroll v31-st-scroll v33-st-scroll" id="v31ModalTableScroll">
+          <table class="scoretable v33-modal-scoretable" id="v31ModalScoreTable"></table>
+        </div>
       </div>
-      <button type="button" class="v40-hb-nav v40-hb-next" id="v40HoleBarNext">
-        <span class="v40-hb-lbl">次ホール</span><span class="v40-hb-op">▶</span>
-      </button>
-    </div>
-
-    <!-- 中間：4列2行 プレイヤーグリッド -->
-    <div class="v40-player-grid-wrap">
-      <div class="v40-player-grid" id="v40PlayerGrid">
-        <!-- JS で動的描画（8セル = 4プレイヤー × （名前行 + スコア行）） -->
-      </div>
-    </div>
-
-    <!-- 下部：タブ -->
-    <div class="v40-mode-tabs" id="v40ModeTabs">
-      <button type="button" class="v40-mt-btn" data-pmode="simple">天気予報式</button>
-      <button type="button" class="v40-mt-btn" data-pmode="counter">カウンター</button>
-      <button type="button" class="v40-mt-btn" data-pmode="stroke_putt">数字+パット</button>
-    </div>
-
-    <!-- 下部：数字パッド（モード別に動的描画） -->
-    <div class="v40-pad" id="v40Pad">
-      <!-- JS で動的描画 -->
-    </div>
-
-    <!-- 最下部：アクション -->
-    <div class="v40-actions">
-      <button type="button" class="v40-act v40-act-confirm" id="v40ActConfirm">✓ 確定</button>
-      <button type="button" class="v40-act v40-act-close" data-close>閉じる</button>
-    </div>
-
-    <!-- ============================================================
-         v38 聖域（ダッシュボード — JS互換のため ID だけ退避）
-         ============================================================ -->
-    <div class="v40-sanctuary" aria-hidden="true">
-      <span id="scoreModalTitle">スコア入力</span>
-      <span id="v31ModalPm">— : —</span>
-      <span id="v31ModalModeBadge">🏌️ 一般</span>
-      <span id="v32ModalHolesBadge">🏁 18H</span>
-      <button id="v38DashTee" type="button"></button>
-      <button id="v38DashDisp" type="button"></button>
-      <span id="v38DashTeeVal">REG</span>
-      <span id="v38DashDispVal">数字</span>
-      <span id="v38DashPm">— : —</span>
-      <span id="v38DashLocker">—</span>
-      <span id="v38DashGame">一般</span>
-      <span id="v38DashHoles">18H</span>
-      <span id="v38DashInput">シンプル</span>
-      <!-- 旧 v31ModalScoreTableも JS が描画参照するため保持 -->
-      <table id="v31ModalScoreTable"></table>
     </div>
 
     <!-- v33+v38: 聖域 — 計算ロジック・旧ボタンIDをすべて退避 -->
@@ -7898,13 +7720,6 @@ var qrcode = function() {
         </div>
         <label class="switch"><input type="checkbox" id="setShowPutt"><span class="switch-slider"></span></label>
       </div>
-      <div class="switch-row">
-        <div>
-          <div class="switch-label">使用ティ</div>
-          <div class="switch-sub">REG / LADIES（ヤーデージ表示切替）</div>
-        </div>
-        <label class="switch"><input type="checkbox" id="setLadiesTee"><span class="switch-slider"></span></label>
-      </div>
       <button class="primary-btn" id="btnSaveSettings">💾 設定を保存</button>
 
       <!-- v34: 後半スタート時間はメイン画面に統合（設定モーダルからは削除） -->
@@ -7914,26 +7729,18 @@ var qrcode = function() {
         <button id="v31PmClear"></button>
       </div>
 
-      <!-- ============================================================
-           v31: 表示モード（数字 / ±差 / 記号）
-           ============================================================ -->
-      <div class="v31-settings-section">
-        <div class="v31-ss-title">🔢 スコア表示モード</div>
-        <div class="v31-ss-segments" id="v31DispSegments">
-          <button type="button" data-disp="number" class="active">数字</button>
-          <button type="button" data-disp="diff">スコア差(±)</button>
-          <button type="button" data-disp="symbol">記号</button>
+      <!-- v38.0: 設定モーダルからスコア表示モード・使用ティを削除
+           ※ ラウンド準備画面のトグルで操作。JS互換のため聖域に退避 -->
+      <div class="v31-sanctuary" aria-hidden="true">
+        <input type="checkbox" id="setLadiesTee">
+        <div id="v31DispSegments">
+          <button type="button" data-disp="number" class="active"></button>
+          <button type="button" data-disp="diff"></button>
+          <button type="button" data-disp="symbol"></button>
         </div>
-      </div>
-
-      <!-- ============================================================
-           v31: ティ切替（REG / LADIES）
-           ============================================================ -->
-      <div class="v31-settings-section">
-        <div class="v31-ss-title">⛳ 使用ティ</div>
-        <div class="v31-ss-segments" id="v31TeeSegments">
-          <button type="button" data-tee="reg" class="active">REG（白/黄）</button>
-          <button type="button" data-tee="ladies">LADIES（赤/緑）</button>
+        <div id="v31TeeSegments">
+          <button type="button" data-tee="reg" class="active"></button>
+          <button type="button" data-tee="ladies"></button>
         </div>
       </div>
 
@@ -9830,30 +9637,25 @@ function v32SetActiveCell(pi, hi) {
    #v32LiveTable / #v31ModalScoreTable / #scoreTable 全てに適用
    ================================================================= */
 function v32ApplyCrossHighlight() {
-  /* v39: メイン画面の縦・横ハイライトを削除。モーダル内のみを対象とする。
-     #v32LiveTable / #scoreTable は適用外、#v31ModalScoreTable のみ適用。 */
-  /* 常にメイン画面のハイライトクラスをリセット（残存防止） */
-  ['#v32LiveTable', '#scoreTable'].forEach(sel => {
+  const tables = ['#v32LiveTable', '#v31ModalScoreTable', '#scoreTable'];
+  tables.forEach(sel => {
     const t = document.querySelector(sel);
     if (!t) return;
+    /* クリア */
     t.querySelectorAll('.col-row-hl, .col-col-hl, .is-input-row').forEach(el => {
       el.classList.remove('col-row-hl', 'col-col-hl', 'is-input-row');
     });
+    if (v32ActivePi < 0 || v32ActiveHi < 0) return;
+    /* 行（プレイヤー）ハイライト */
+    const row = t.querySelector('tr.player-row[data-pi="' + v32ActivePi + '"]');
+    if (row) {
+      row.classList.add('is-input-row');
+      row.querySelectorAll('td').forEach(td => td.classList.add('col-row-hl'));
+    }
+    /* 縦（ホール）ハイライト */
+    const cells = t.querySelectorAll('td[data-hi="' + v32ActiveHi + '"], th[data-hole="' + (v32ActiveHi + 1) + '"]');
+    cells.forEach(c => c.classList.add('col-col-hl'));
   });
-  /* モーダル内のみハイライト適用 */
-  const t = document.querySelector('#v31ModalScoreTable');
-  if (!t) return;
-  t.querySelectorAll('.col-row-hl, .col-col-hl, .is-input-row').forEach(el => {
-    el.classList.remove('col-row-hl', 'col-col-hl', 'is-input-row');
-  });
-  if (v32ActivePi < 0 || v32ActiveHi < 0) return;
-  const row = t.querySelector('tr.player-row[data-pi="' + v32ActivePi + '"]');
-  if (row) {
-    row.classList.add('is-input-row');
-    row.querySelectorAll('td').forEach(td => td.classList.add('col-row-hl'));
-  }
-  const cells = t.querySelectorAll('td[data-hi="' + v32ActiveHi + '"], th[data-hole="' + (v32ActiveHi + 1) + '"]');
-  cells.forEach(c => c.classList.add('col-col-hl'));
 }
 
 /* =================================================================
@@ -12236,464 +12038,85 @@ window.addEventListener('load', () => setTimeout(v38PrepBindDispToggle, 900));
 
 console.log('G-WORLD v38.0 ラウンド準備画面 配置整理版');
 
+
 /* ============================================================
-   v40: モーダルレイアウト結線（添付画像忠実版）
-   - ホールナビ、プレイヤーグリッド、タブ、テンキー、アクションをバインド
-   - 既存エンジン（State / modalHole / modalPlayerIdx / v33SwitchToPlayer /
-     confirmAndNext / v33ConfirmAndAdvance / saveCurrentModalScore）をそのまま利用
-   - イベント委譲 + try-catch + pointerdown/touchstart 両対応
+   v38.0 ティー選択 (COT) — ラウンド準備画面トグル結線
+   既存 v38ToggleTee と同じロジックを共有(State.ui.useLadiesTee)
    ============================================================ */
-(function(){
-  if (window.__V40_BOUND__) return;
-  window.__V40_BOUND__ = true;
+function v38CotRenderToggle() {
+  const wrap = document.getElementById('v38CotToggle');
+  if (!wrap) return;
+  const isLadies = !!(State && State.ui && State.ui.useLadiesTee);
+  wrap.querySelectorAll('button').forEach(b => {
+    const wantLadies = (b.dataset.tee === 'ladies');
+    if (wantLadies === isLadies) b.classList.add('active');
+    else b.classList.remove('active');
+  });
+}
 
-  const $grid    = () => document.getElementById('v40PlayerGrid');
-  const $tabs    = () => document.getElementById('v40ModeTabs');
-  const $pad     = () => document.getElementById('v40Pad');
-  const $hbHole  = () => document.getElementById('v40HoleBarHole');
-  const $hbPar   = () => document.getElementById('v40HoleBarPar');
-  const $hbPrev  = () => document.getElementById('v40HoleBarPrev');
-  const $hbNext  = () => document.getElementById('v40HoleBarNext');
-  const $actCfm  = () => document.getElementById('v40ActConfirm');
-
-  function esc(s) {
-    return String(s == null ? '' : s)
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-  }
-  function safeFullName(p) {
-    try { if (typeof fullName === 'function') return fullName(p); } catch(_) {}
-    return ((p && (p.lastName||'')) + (p && (p.firstName||''))) || 'ゲスト';
-  }
-  function curHi()  { try { return (modalHole || 1) - 1; } catch(_) { return 0; } }
-  function curPar() {
-    try { return (COURSE.holes[curHi()] || {}).par || 4; } catch(_) { return 4; }
-  }
-  function curMode() {
-    try {
-      if (State && State.ui && State.ui.inputMode) return State.ui.inputMode;
-    } catch(_) {}
-    return 'simple';
-  }
-  function setInputMode(m) {
-    try {
-      if (!State.ui) State.ui = {};
-      State.ui.inputMode = m;
-      try { Storage && Storage.saveState && Storage.saveState(); } catch(_) {}
-    } catch(_) {}
-  }
-
-  /* ----- ホールナビ描画 ----- */
-  function renderHoleBar() {
-    try {
-      const h = $hbHole(); if (h) h.textContent = (modalHole || 1) + 'H';
-      const p = $hbPar();  if (p) p.textContent = 'PAR ' + curPar();
-    } catch(_) {}
-    /* prev/next disabled ミラー */
-    try {
-      const total = (typeof v32IsHalfMode === 'function' && v32IsHalfMode()) ? 9 : 18;
-      const pb = $hbPrev(); if (pb) pb.disabled = (modalHole <= 1);
-      const nb = $hbNext(); if (nb) nb.disabled = (modalHole >= total);
-    } catch(_) {}
-  }
-
-  /* ----- プレイヤーグリッド描画（8セル = 4プレイヤー ×（名前/スコア）） ----- */
-  function renderPlayerGrid() {
-    const g = $grid(); if (!g) return;
-    const hi = curHi();
-    let players = [];
-    try { players = (State.players || []).slice(); } catch(_) {}
-    /* 「自分」を先頭にし、他はそのまま */
-    try {
-      players.sort((a,b) => (a.isMe === b.isMe) ? 0 : (a.isMe ? -1 : 1));
-    } catch(_) {}
-    /* 4プレイヤー分のスロットを作る */
-    let html = '';
-    for (let col = 0; col < 4; col++) {
-      const p = players[col];
-      const realIdx = p ? (State.players.indexOf(p)) : -1;
-      const isActive = (realIdx === modalPlayerIdx);
-      const score = (p && p.scores && p.scores[hi] != null) ? p.scores[hi] : null;
-      const name  = p ? safeFullName(p) : '—';
-      const sub   = p ? (p.isMe ? 'PLAYER ME' : 'PLAYER') : '';
-      const colCls = 'v40-pg-col'
-        + (isActive ? ' is-active' : '')
-        + (p ? '' : ' is-empty');
-      html += '<div class="' + colCls + '" data-pi="' + realIdx + '">';
-      html +=   '<div class="v40-pg-name" data-pi="' + realIdx + '">';
-      html +=     '<div>' + esc(name) + '</div>';
-      if (sub) html += '<div class="v40-pg-name-sub">' + sub + '</div>';
-      html +=   '</div>';
-      const emptyCls = (score == null) ? ' is-empty' : '';
-      html +=   '<div class="v40-pg-score' + emptyCls + '" data-pi="' + realIdx + '">';
-      html +=     (score == null ? '–' : esc(score));
-      html +=   '</div>';
-      html += '</div>';
-    }
-    g.innerHTML = html;
-  }
-
-  /* ----- タブ描画 ----- */
-  function renderTabs() {
-    const t = $tabs(); if (!t) return;
-    const mode = curMode();
-    t.querySelectorAll('.v40-mt-btn').forEach(btn => {
-      btn.classList.toggle('is-active', btn.dataset.pmode === mode);
-    });
-  }
-
-  /* ----- テンキー描画（モード別） ----- */
-  function renderPad() {
-    const pad = $pad(); if (!pad) return;
-    const mode = curMode();
-    const par = curPar();
-    if (mode === 'counter') {
-      /* カウンターモード: ± + 現在値 */
-      let cur = 0;
-      try {
-        const p = State.players[modalPlayerIdx];
-        if (p && p.scores[curHi()] != null) cur = p.scores[curHi()];
-      } catch(_) {}
-      pad.innerHTML =
-        '<div class="v40-pad-grid" style="grid-template-columns: 1fr 1.4fr 1fr;">' +
-          '<button type="button" class="v40-pk" data-v40-act="minus"><span class="v40-pk-val">−</span><span class="v40-pk-lbl">1つ減</span></button>' +
-          '<div class="v40-pk" style="background:#ecf6f0;border-color:#8ad0a3;cursor:default;"><span class="v40-pk-val">' + cur + '</span><span class="v40-pk-lbl">現在</span></div>' +
-          '<button type="button" class="v40-pk" data-v40-act="plus"><span class="v40-pk-val">＋</span><span class="v40-pk-lbl">1つ足す</span></button>' +
-        '</div>';
-      return;
-    }
-    /* simple / stroke_putt 共通: 画像忠実のテンキー */
-    const top = [
-      { v: Math.max(1, par - 2), lbl: 'イーグル',  cls: 'v40-pk-eagle'  },
-      { v: Math.max(1, par - 1), lbl: 'バーディ', cls: 'v40-pk-birdie' },
-      { v: par,                  lbl: 'パー',         cls: 'v40-pk-par'    },
-      { v: par + 1,              lbl: 'ボギー',     cls: 'v40-pk-bogey'  },
-      { v: par + 2,              lbl: 'Dボギー',   cls: 'v40-pk-dbogey' },
-    ];
-    const bot = [
-      { v: par + 3, lbl: '+3' },
-      { v: par + 4, lbl: '+4' },
-      { v: par + 5, lbl: '+5' },
-      { v: par + 6, lbl: '+6' },
-    ];
-    let html = '<div class="v40-pad-grid">';
-    top.forEach(it => {
-      html += '<button type="button" class="v40-pk ' + it.cls + '" data-v40-sv="' + it.v + '">'
-            +   '<span class="v40-pk-val">' + it.v + '</span>'
-            +   '<span class="v40-pk-lbl">' + it.lbl + '</span>'
-            + '</button>';
-    });
-    html += '</div><div class="v40-pad-grid row2">';
-    bot.forEach(it => {
-      html += '<button type="button" class="v40-pk" data-v40-sv="' + it.v + '">'
-            +   '<span class="v40-pk-val">' + it.v + '</span>'
-            +   '<span class="v40-pk-lbl">' + it.lbl + '</span>'
-            + '</button>';
-    });
-    html += '</div>';
-    pad.innerHTML = html;
-  }
-
-  /* ----- 状態同期（モーダル内描画を一括で） ----- */
-  function v40Refresh() {
-    try { renderHoleBar(); } catch(e) { console.warn('[v40] holebar', e); }
-    try { renderPlayerGrid(); } catch(e) { console.warn('[v40] grid', e); }
-    try { renderTabs(); } catch(e) { console.warn('[v40] tabs', e); }
-    try { renderPad(); } catch(e) { console.warn('[v40] pad', e); }
-  }
-  window.v40Refresh = v40Refresh;
-
-  /* ----- スコア適用処理 ----- */
-  function applyScore(value) {
-    const hi = curHi();
-    let pi = modalPlayerIdx;
-    if (pi < 0 || pi >= State.players.length) return;
-    const p = State.players[pi];
-    if (!p) return;
-    const v = Math.max(1, Math.min(20, value|0));
-    try { p.scores[hi] = v; } catch(_) {}
-    try { Storage && Storage.saveState && Storage.saveState(); } catch(_) {}
-    try { renderTable && renderTable(); } catch(_) {}
-    try { if (typeof v32RenderLiveScore === 'function') v32RenderLiveScore(); } catch(_) {}
-    /* 自動進行 */
-    autoAdvance();
-    v40Refresh();
-  }
-
-  function applyCounter(delta) {
-    const hi = curHi();
-    let pi = modalPlayerIdx;
-    if (pi < 0 || pi >= State.players.length) return;
-    const p = State.players[pi]; if (!p) return;
-    const cur = (p.scores[hi] != null ? p.scores[hi] : 0);
-    const nv = Math.max(0, Math.min(20, cur + delta));
-    try { p.scores[hi] = (nv > 0 ? nv : null); } catch(_) {}
-    try { Storage && Storage.saveState && Storage.saveState(); } catch(_) {}
-    try { renderTable && renderTable(); } catch(_) {}
-    v40Refresh();
-  }
-
-  /* ----- 自動進行（1人入力→次の人、全員→次ホール） ----- */
-  function autoAdvance() {
-    const hi = curHi();
-    const players = State.players || [];
-    if (players.length === 0) return;
-    /* 全員入力済みか？ */
-    const allDone = players.every(p => p.scores[hi] != null && p.scores[hi] > 0);
-    if (allDone) {
-      /* 次ホールへ */
-      try {
-        if (typeof v33ConfirmAndAdvance === 'function') {
-          v33ConfirmAndAdvance();
-        } else if (typeof confirmAndNext === 'function') {
-          confirmAndNext();
-        }
-      } catch(e) { console.warn('[v40] advance hole', e); }
-      return;
-    }
-    /* 次の未入力プレイヤーを探す */
-    for (let off = 1; off <= players.length; off++) {
-      const i = (modalPlayerIdx + off) % players.length;
-      const pp = players[i];
-      if (!pp.scores[hi] || pp.scores[hi] <= 0) {
-        try {
-          if (typeof v33SwitchToPlayer === 'function') {
-            v33SwitchToPlayer(i);
-          } else {
-            modalPlayerIdx = i;
-          }
-        } catch(_) { modalPlayerIdx = i; }
+function v38CotBindToggle() {
+  const wrap = document.getElementById('v38CotToggle');
+  if (!wrap) return;
+  wrap.querySelectorAll('button').forEach(b => {
+    b.onclick = (e) => {
+      e.preventDefault();
+      const wantLadies = (b.dataset.tee === 'ladies');
+      const cur = !!(State.ui.useLadiesTee);
+      if (wantLadies === cur) {
+        // 既に選択中 → no-op(視覚パルスのみ)
+        v38CotRenderToggle();
         return;
       }
-    }
-  }
-
-  /* ----- プレイヤーをタップして選択 ----- */
-  function selectPlayer(pi) {
-    if (pi < 0 || pi >= (State.players||[]).length) return;
-    try {
-      if (typeof v33SwitchToPlayer === 'function') {
-        v33SwitchToPlayer(pi);
-      } else {
-        modalPlayerIdx = pi;
-      }
-    } catch(_) { modalPlayerIdx = pi; }
-    v40Refresh();
-  }
-
-  /* ----- ホール遷移 ----- */
-  function gotoHole(delta) {
-    const total = (typeof v32IsHalfMode === 'function' && v32IsHalfMode()) ? 9 : 18;
-    const next = (modalHole || 1) + delta;
-    if (next < 1 || next > total) return;
-    /* 既存聖域ボタンへ委譲（計算エンジン保存・ハイライト同期を仵う） */
-    try {
-      const proxy = document.getElementById(delta > 0 ? 'modalHoleNext' : 'modalHolePrev');
-      if (proxy && typeof proxy.click === 'function') {
-        proxy.click();
-      } else {
-        modalHole = next;
-      }
-    } catch(_) { modalHole = next; }
-    v40Refresh();
-  }
-
-  /* ----- イベントバインド（委譲） ----- */
-  function bindAll() {
-    /* ホールナビ */
-    const pb = $hbPrev(); if (pb) pb.addEventListener('click', (e) => { e.preventDefault(); gotoHole(-1); });
-    const nb = $hbNext(); if (nb) nb.addEventListener('click', (e) => { e.preventDefault(); gotoHole(+1); });
-
-    /* プレイヤーグリッド（タップで選択） — 委譲 */
-    const g = $grid();
-    if (g) {
-      g.addEventListener('click', (e) => {
-        const cell = e.target.closest('[data-pi]');
-        if (!cell || !g.contains(cell)) return;
-        const pi = parseInt(cell.dataset.pi, 10);
-        if (isNaN(pi) || pi < 0) return;
-        e.preventDefault();
-        e.stopPropagation();
-        selectPlayer(pi);
-      });
-    }
-
-    /* タブ委譲 */
-    const t = $tabs();
-    if (t) {
-      t.addEventListener('click', (e) => {
-        const btn = e.target.closest('.v40-mt-btn');
-        if (!btn || !t.contains(btn)) return;
-        e.preventDefault();
-        const m = btn.dataset.pmode;
-        if (!m) return;
-        setInputMode(m);
-        renderTabs(); renderPad();
-      });
-    }
-
-    /* パッド委譲 */
-    const pad = $pad();
-    if (pad) {
-      pad.addEventListener('click', (e) => {
-        const sv = e.target.closest('[data-v40-sv]');
-        if (sv && pad.contains(sv)) {
-          e.preventDefault();
-          const v = parseInt(sv.dataset.v40Sv, 10);
-          if (!isNaN(v)) applyScore(v);
-          return;
+      State.ui.useLadiesTee = wantLadies;
+      try { Storage.saveState(); } catch(_) {}
+      try { renderTopAndHero && renderTopAndHero(); } catch(_) {}
+      try { renderTable && renderTable(); } catch(_) {}
+      try { v38UpdateDashboard && v38UpdateDashboard(); } catch(_) {}
+      // 聖域チェックボックスも同期(既存JSが参照する場合のため)
+      try {
+        const cb = document.getElementById('setLadiesTee');
+        if (cb) cb.checked = wantLadies;
+      } catch(_) {}
+      // 聖域ティセグメントも同期
+      try {
+        const seg = document.getElementById('v31TeeSegments');
+        if (seg) {
+          seg.querySelectorAll('button').forEach(sb => {
+            if (sb.dataset.tee === (wantLadies ? 'ladies' : 'reg')) sb.classList.add('active');
+            else sb.classList.remove('active');
+          });
         }
-        const ac = e.target.closest('[data-v40-act]');
-        if (ac && pad.contains(ac)) {
-          e.preventDefault();
-          const act = ac.dataset.v40Act;
-          if (act === 'plus')  applyCounter(+1);
-          if (act === 'minus') applyCounter(-1);
-        }
-      });
-    }
+      } catch(_) {}
+      v38CotRenderToggle();
+      showToast(wantLadies ? '⛳ レディースティー(赤・緑)に切替' : '⛳ レギュラーティー(白・黄)に切替');
+    };
+  });
+  v38CotRenderToggle();
+}
 
-    /* アクション: 確定 */
-    const cf = $actCfm();
-    if (cf) {
-      cf.addEventListener('click', (e) => {
-        e.preventDefault();
-        try {
-          if (typeof v33ConfirmAndAdvance === 'function') {
-            v33ConfirmAndAdvance();
-          } else {
-            const proxy = document.getElementById('v31Confirm');
-            if (proxy && typeof proxy.click === 'function') proxy.click();
-          }
-        } catch(err) { console.warn('[v40] confirm', err); }
-        v40Refresh();
-      });
-    }
-
-    /* モーダル表示検知→描画リフレッシュ */
-    try {
-      const modal = document.getElementById('scoreModal');
-      if (modal) {
-        const mo = new MutationObserver(() => {
-          if (modal.classList.contains('show')) {
-            setTimeout(v40Refresh, 30);
-          }
-        });
-        mo.observe(modal, { attributes: true, attributeFilter: ['class'] });
-      }
-    } catch(_) {}
-
-    /* 初期描画 */
-    setTimeout(v40Refresh, 100);
-    window.addEventListener('load', () => setTimeout(v40Refresh, 300));
+/* 既存 v38ToggleTee 呼び出し時の同期フック */
+(function v38CotHookSync() {
+  if (typeof window === 'undefined') return;
+  if (window.v38ToggleTee) {
+    const orig = window.v38ToggleTee;
+    window.v38ToggleTee = function() {
+      const r = orig.apply(this, arguments);
+      try { v38CotRenderToggle(); } catch(_) {}
+      return r;
+    };
   }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', bindAll);
-  } else {
-    bindAll();
-  }
-
-  console.log('[v40] modal layout bound');
 })();
 
-/* ============================================================
-   v39: モーダル内 4列2行 入力グリッド（v40 で置換されたため実質未使用）
-   ・イベント委譲で #v39ModalGrid を2重バインド防止
-   ・pointerdown / touchstart / click を委譲で捕捉（モバイル互換）
-   ・try-catch で聖域ボタンへの委譲エラーを独立包含
-   ・ダブル起動防止のため、clickのみを委譲トリガーにし、
-     pointerdown/touchstart は保险用に引階して連打を抹死
-   ============================================================ */
-(function(){
-  const grid = document.getElementById('v39ModalGrid');
-  if (!grid) return;
-  if (grid.dataset.v39Bound === '1') return;
-  grid.dataset.v39Bound = '1';
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => setTimeout(v38CotBindToggle, 650));
+} else {
+  setTimeout(v38CotBindToggle, 650);
+}
+window.addEventListener('load', () => setTimeout(v38CotBindToggle, 950));
 
-  let lastFire = 0;
-  function delegateProxy(btn) {
-    if (!btn) return;
-    if (btn.disabled) return;
-    const proxyId = btn.getAttribute('data-v39-proxy');
-    if (!proxyId) return;
-    /* 連打拒否（同一ボタンへの pointerdown+click 重複取り上げ防止） */
-    const now = Date.now();
-    if (now - lastFire < 80) return;
-    lastFire = now;
-    try {
-      const target = document.getElementById(proxyId);
-      if (target && typeof target.click === 'function') {
-        target.click();
-      }
-    } catch (e) {
-      try { console.warn('[v39] proxy click failed:', proxyId, e); } catch(_) {}
-    }
-  }
-
-  /* click イベント委譲（メインパス） */
-  grid.addEventListener('click', function(ev){
-    const btn = ev.target.closest('.v39-mg-btn');
-    if (!btn || !grid.contains(btn)) return;
-    ev.preventDefault();
-    ev.stopPropagation();
-    delegateProxy(btn);
-  }, false);
-
-  /* モバイルタッチのダブルタップ・300msディレイ不要化（touchstart）
-     ⚠ ここで click を起こさず、ブラウザの click 伝播を妨げない
-     記録のみ（保险としてポインタ・タッチの両方をケア） */
-  function markActive(btn) {
-    if (!btn) return;
-    btn.classList.add('v39-mg-active');
-    setTimeout(() => btn.classList.remove('v39-mg-active'), 120);
-  }
-  grid.addEventListener('pointerdown', function(ev){
-    const btn = ev.target.closest('.v39-mg-btn');
-    if (!btn || !grid.contains(btn)) return;
-    markActive(btn);
-  }, { passive: true });
-  grid.addEventListener('touchstart', function(ev){
-    const btn = ev.target.closest('.v39-mg-btn');
-    if (!btn || !grid.contains(btn)) return;
-    markActive(btn);
-  }, { passive: true });
-
-  /* ホール遷移ボタンの disabled 同期（聖域の modalHolePrev/Next の disabled をミラー） */
-  function syncHoleNavDisabled() {
-    try {
-      const prevSan = document.getElementById('modalHolePrev');
-      const nextSan = document.getElementById('modalHoleNext');
-      const prevBtn = grid.querySelector('.v39-mg-hole-prev');
-      const nextBtn = grid.querySelector('.v39-mg-hole-next');
-      if (prevBtn && prevSan) prevBtn.disabled = !!prevSan.disabled;
-      if (nextBtn && nextSan) nextBtn.disabled = !!nextSan.disabled;
-    } catch (e) { /* noop */ }
-  }
-  /* 初期同期 + ポーリング（聖域の disabled 変更は MutationObserver で検知） */
-  syncHoleNavDisabled();
-  try {
-    const sanc = document.getElementById('modalHolePrev');
-    const sanc2 = document.getElementById('modalHoleNext');
-    const mo = new MutationObserver(syncHoleNavDisabled);
-    if (sanc)  mo.observe(sanc,  { attributes: true, attributeFilter: ['disabled'] });
-    if (sanc2) mo.observe(sanc2, { attributes: true, attributeFilter: ['disabled'] });
-  } catch (e) { /* observer 未対応は無視 */ }
-
-  /* モーダル表示時にも同期 */
-  try {
-    const modal = document.getElementById('scoreModal');
-    if (modal) {
-      const mo2 = new MutationObserver(syncHoleNavDisabled);
-      mo2.observe(modal, { attributes: true, attributeFilter: ['class'] });
-    }
-  } catch (e) {}
-
-  console.log('[v39] modal 4x2 grid bound');
-})();
+console.log('G-WORLD v38.0 ティー選択(COT) + 緑枠統一 + 詳細設定整理');
 </script>
 
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
