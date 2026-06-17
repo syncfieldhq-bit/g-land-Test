@@ -4899,6 +4899,66 @@ html, body {
   display: none !important;
 }
 
+
+/* ============================================================
+   v38.0 役割完全分離: メイン画面には入力UI絶対に出さない保険
+   ============================================================ */
+#screen-gworld .v38-mhn,
+#screen-gworld .v38-pgrid,
+#screen-gworld #v38PlayerGrid,
+#screen-gworld #v38ModalHoleNav,
+#screen-gworld #v38ModalPrevHole,
+#screen-gworld #v38ModalNextHole,
+#screen-gworld #v38ModalHoleBig {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* 入力モーダル内ダッシュボードに「詳細設定」カード(7列目) */
+.v38-dash-row {
+  /* 6列(5カード+閉じる) → 7列(6カード+閉じる) に拡張 */
+}
+.v38-dc-settings {
+  background: linear-gradient(135deg, #f0f4f1 0%, #d8e2dc 100%) !important;
+  border-color: #8aa399 !important;
+}
+.v38-dc-settings .v38-dc-label {
+  color: #4a5a52;
+}
+.v38-dc-settings .v38-dc-value {
+  color: #1a2620;
+  font-size: 13px;
+}
+.v38-dc-settings:active {
+  background: linear-gradient(135deg, var(--v31-accent, #2d9d5f) 0%, var(--v31-accent-deep, #1f7a48) 100%) !important;
+  color: #fff;
+}
+
+/* 設定モーダルを入力モーダル上に重ねる際の z-index 整理 */
+#settingsModal.show,
+#settingsModal.v38-on-top.show {
+  z-index: 10050 !important; /* scoreModal(10000)より上、v38-panel(10010)よりも上 */
+}
+#settingsModal.v38-on-top {
+  /* 入力モーダル上に重なる時は背景を半透明にして scoreModal が透けて見える */
+  background: rgba(0,0,0,0.4) !important;
+}
+
+/* タブレット(480px未満)では7カードを2行に */
+@media (max-width: 480px) {
+  .v38-dash-row {
+    grid-template-columns: repeat(3, 1fr) 32px;
+    grid-template-rows: auto auto auto;
+  }
+  .v38-dash-card.v38-dc-mode {
+    grid-column: 1 / span 3;
+  }
+  .v38-dash-card.v38-dc-settings {
+    grid-column: 1 / span 3;
+  }
+}
+
 </style>
 
 <!-- QR Code Generator (Kazuhiko Arase, MIT) -->
@@ -7677,6 +7737,13 @@ var qrcode = function() {
             </span>
           </span>
         </div>
+        <button class="v38-dash-card v38-dc-settings" id="v38DashSettings" type="button" aria-label="詳細設定を開く">
+          <span class="v38-dc-ico">⚙️</span>
+          <span class="v38-dc-body">
+            <span class="v38-dc-label">詳細設定</span>
+            <span class="v38-dc-value">タップで開く</span>
+          </span>
+        </button>
         <button class="v38-dash-close" data-close type="button" aria-label="閉じる">×</button>
       </div>
       <div class="v38-dash-hint">
@@ -12829,6 +12896,105 @@ if (document.readyState === 'loading') {
 window.addEventListener('load', () => setTimeout(v38PgRender, 1050));
 
 console.log('G-WORLD v38.0 入力モーダル 4列2行プレイヤーグリッド起動');
+
+
+/* ============================================================
+   v38.0 入力モーダルを開いたまま詳細設定を上に重ねる
+   ============================================================ */
+
+/* 詳細設定モーダルを scoreModal の上に重ねる */
+function v38OpenSettingsOnTop() {
+  // 1) 既存値を設定モーダルに反映(openSettings の挙動を再現)
+  try {
+    const a = document.getElementById('setPuttEnabled');
+    if (a) a.checked = State.settings.puttEnabled;
+    const b = document.getElementById('setAutoNext');
+    if (b) b.checked = State.settings.autoNext;
+    const c = document.getElementById('setShowPutt');
+    if (c) c.checked = State.ui.showPuttInTable;
+    const d = document.getElementById('setLadiesTee');
+    if (d) d.checked = State.ui.useLadiesTee;
+  } catch(e) {}
+  // 2) z-index を引き上げ + 開く
+  const sm = document.getElementById('settingsModal');
+  if (sm) {
+    sm.classList.add('v38-on-top');
+    sm.classList.add('show');
+  }
+}
+
+function v38CloseSettingsOnTop() {
+  const sm = document.getElementById('settingsModal');
+  if (sm) {
+    sm.classList.remove('show');
+    sm.classList.remove('v38-on-top');
+  }
+}
+
+/* 設定保存時に scoreModal を維持(closeAllModals が呼ばれても scoreModal だけ復活) */
+(function v38PatchSaveSettings() {
+  if (typeof window === 'undefined') return;
+  if (!window.saveSettings) return;
+  const orig = window.saveSettings;
+  window.saveSettings = function() {
+    // scoreModal が表示中か事前判定
+    const sc = document.getElementById('scoreModal');
+    const wasOpen = !!(sc && sc.classList.contains('show'));
+    // 元の保存処理を実行(内部で closeAllModals が呼ばれる)
+    const r = orig.apply(this, arguments);
+    // scoreModal が開いていた場合は復活
+    if (wasOpen) {
+      setTimeout(() => {
+        try {
+          const s = document.getElementById('scoreModal');
+          if (s) s.classList.add('show');
+          // 設定モーダルだけ確実に閉じる
+          v38CloseSettingsOnTop();
+        } catch(e) {}
+      }, 30);
+    }
+    return r;
+  };
+})();
+
+/* settingsModal の閉じるボタン押下時も on-top を解除 */
+(function v38PatchSettingsClose() {
+  if (typeof document === 'undefined') return;
+  document.addEventListener('click', (e) => {
+    if (!e.target) return;
+    // 閉じるボタンまたはバックドロップ
+    const closeBtn = e.target.closest && e.target.closest('#settingsModal .modal-close, #settingsModal [data-close]');
+    if (closeBtn) {
+      // 入力モーダルが開いていれば、入力モーダルだけ閉じないようにフォロー
+      setTimeout(() => {
+        try {
+          const sm = document.getElementById('settingsModal');
+          if (sm) sm.classList.remove('v38-on-top');
+        } catch(e2) {}
+      }, 20);
+    }
+  }, true);
+})();
+
+/* ダッシュボードの詳細設定カードを結線 */
+function v38BindDashSettings() {
+  const btn = document.getElementById('v38DashSettings');
+  if (!btn) return;
+  btn.onclick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    v38OpenSettingsOnTop();
+  };
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => setTimeout(v38BindDashSettings, 500));
+} else {
+  setTimeout(v38BindDashSettings, 500);
+}
+window.addEventListener('load', () => setTimeout(v38BindDashSettings, 900));
+
+console.log('G-WORLD v38.0 入力モーダル統合: 設定アクセス搭載・メイン画面とのレイヤー完全分離');
 </script>
 
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
