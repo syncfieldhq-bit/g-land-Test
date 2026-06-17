@@ -4959,6 +4959,63 @@ html, body {
   }
 }
 
+
+/* ============================================================
+   v38.0 最終: scoreModal を完全不透明にしてメイン画面を物理的に隠す
+   原因: 半透明背景でメイン画面のホールナビが透けて見えていた
+   ============================================================ */
+
+/* z-index 不整合の最終是正(#scoreModal だけ 9990 になっていた) */
+#scoreModal,
+#scoreModal.show {
+  z-index: 10000 !important;
+}
+
+/* scoreModal の背景を完全不透明にしてメイン画面を覆い隠す */
+#scoreModal.modal-backdrop {
+  background: #ffffff !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+#scoreModal.modal-backdrop.show {
+  background: #ffffff !important;
+}
+
+/* モーダル内側の .modal も白で確実に塞ぐ */
+#scoreModal .modal,
+#scoreModal .v31-modal {
+  background: #ffffff !important;
+}
+
+/* モーダルが開いている時、メイン画面を物理的に隠す(透けても見えない) */
+body:has(#scoreModal.show) #screen-gworld,
+body.v38-modal-open #screen-gworld {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* メイン画面に v38 入力UIが入り込まないよう最終保険(再宣言で優先度確保) */
+#screen-gworld .v38-mhn,
+#screen-gworld .v38-pgrid,
+#screen-gworld #v38PlayerGrid,
+#screen-gworld #v38ModalHoleNav,
+#screen-gworld #v38ModalPrevHole,
+#screen-gworld #v38ModalNextHole,
+#screen-gworld #v38ModalHoleBig,
+#screen-gworld .v38-mhn-prev,
+#screen-gworld .v38-mhn-next,
+#screen-gworld [id^="v38Modal"],
+#screen-gworld [id^="v38Mhn"] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  left: -99999px !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
 </style>
 
 <!-- QR Code Generator (Kazuhiko Arase, MIT) -->
@@ -12995,6 +13052,33 @@ if (document.readyState === 'loading') {
 window.addEventListener('load', () => setTimeout(v38BindDashSettings, 900));
 
 console.log('G-WORLD v38.0 入力モーダル統合: 設定アクセス搭載・メイン画面とのレイヤー完全分離');
+
+
+/* ============================================================
+   v38.0 最終: scoreModal 開閉時に body へクラス付与(メイン画面強制非表示)
+   :has() セレクタ未対応ブラウザ(古いSafariなど)向けの保険
+   ============================================================ */
+(function v38InstallModalOpenObserver() {
+  if (typeof document === 'undefined' || typeof MutationObserver === 'undefined') return;
+  const sm = document.getElementById('scoreModal');
+  if (!sm) {
+    // 後から生成された場合に備えてもう一度試す
+    setTimeout(v38InstallModalOpenObserver, 500);
+    return;
+  }
+  const apply = () => {
+    if (sm.classList.contains('show')) {
+      document.body.classList.add('v38-modal-open');
+    } else {
+      document.body.classList.remove('v38-modal-open');
+    }
+  };
+  apply();
+  const obs = new MutationObserver(apply);
+  obs.observe(sm, { attributes: true, attributeFilter: ['class'] });
+})();
+
+console.log('G-WORLD v38.0 メイン画面 vs モーダル レイヤー完全分離 完了');
 </script>
 
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
