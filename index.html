@@ -2401,39 +2401,14 @@ body.v31-mode-beginner .v31-modal .player-tabs > *:not(.is-me) {
 .v32-livescore-summary.show { display: block; }
 
 /* ============================================================
-   行ハイライト + 縦ハイライト（クロス）
-   モーダル/ライブテーブル共通
+   v39: メイン画面の「行ハイライト + 縦ハイライト（クロス）」を物理削除。
+   モーダル内 #v31ModalScoreTable のハイライトのみ維持。
    ============================================================ */
-.scoretable .col-row-hl,
-.v32-livescore .col-row-hl {
-  background: rgba(45,157,95,.10) !important;
-}
-.scoretable .col-row-hl.col-fixed,
-.v32-livescore .col-row-hl.col-fixed {
-  background: rgba(45,157,95,.20) !important;
-  color: var(--v31-accent-deep) !important;
-}
-.scoretable .col-col-hl,
-.v32-livescore .col-col-hl {
-  background: rgba(45,157,95,.10) !important;
-}
-.scoretable td.col-row-hl.col-col-hl,
-.scoretable th.col-row-hl.col-col-hl,
-.v32-livescore td.col-row-hl.col-col-hl {
-  background: var(--v31-accent) !important;
-  color: #fff !important;
-  outline: 2px solid var(--v31-accent-deep);
-  outline-offset: -2px;
-  font-weight: 900;
-}
-/* 入力中プレイヤー行は太枠で明示 */
-.v32-livescore tr.is-input-row td:not(.col-fixed),
-#v31ModalScoreTable tr.is-input-row td:not(.col-fixed) {
+#v31ModalScoreTable.v33-modal-scoretable tr.is-input-row td:not(.col-fixed) {
   border-top: 2px solid var(--v31-accent) !important;
   border-bottom: 2px solid var(--v31-accent) !important;
 }
-.v32-livescore tr.is-input-row td.col-fixed,
-#v31ModalScoreTable tr.is-input-row td.col-fixed {
+#v31ModalScoreTable.v33-modal-scoretable tr.is-input-row td.col-fixed {
   background: var(--v31-accent) !important;
   color: #fff !important;
   font-weight: 900;
@@ -4509,6 +4484,110 @@ html, body {
   font-weight: 800;
   display: flex;
   align-items: center;
+}
+
+/* ============================================================
+   v39: モーダル内 4列2行 入力グリッド
+   ============================================================ */
+.v39-modal-grid-wrap {
+  flex: 0 0 auto;
+  padding: 10px 12px calc(16px + env(safe-area-inset-bottom));
+  background: linear-gradient(to bottom, var(--v31-base) 0%, var(--v31-base-soft) 100%);
+  border-top: 2px solid var(--v31-accent-soft);
+}
+.v39-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, minmax(56px, 1fr));
+  gap: 8px;
+  width: 100%;
+}
+.v39-mg-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 56px;
+  padding: 8px 4px;
+  border-radius: 12px;
+  border: 2px solid var(--v31-base-line2);
+  background: var(--v31-base);
+  color: var(--v31-ink);
+  font-weight: 900;
+  cursor: pointer;
+  -webkit-tap-highlight-color: rgba(45,157,95,.25);
+  touch-action: manipulation;
+  user-select: none;
+}
+.v39-mg-btn:active { transform: translateY(1px); }
+.v39-mg-btn:disabled { opacity: .35; cursor: not-allowed; }
+.v39-mg-op  { font-size: 22px; font-weight: 900; line-height: 1; }
+.v39-mg-lbl { font-size: 11px; font-weight: 800; line-height: 1.1; }
+
+.v39-mg-shot-plus, .v39-mg-shot-minus {
+  background: var(--v31-accent-soft);
+  border-color: var(--v31-accent);
+  color: var(--v31-accent-deep);
+}
+.v39-mg-shot-plus:active, .v39-mg-shot-minus:active {
+  background: var(--v31-accent); color: #fff;
+}
+.v39-mg-putt-plus, .v39-mg-putt-minus {
+  background: var(--v31-base-soft);
+  border-color: var(--v31-base-line2);
+  color: var(--v31-ink);
+}
+.v39-mg-putt-plus:active, .v39-mg-putt-minus:active {
+  background: var(--v31-base-line2);
+}
+.v39-mg-hole-prev, .v39-mg-hole-next {
+  background: var(--v31-base);
+  border-color: var(--v31-accent);
+  color: var(--v31-accent-deep);
+}
+.v39-mg-hole-prev:active, .v39-mg-hole-next:active {
+  background: var(--v31-accent-soft);
+}
+.v39-mg-player-next {
+  background: var(--v31-base);
+  border-color: var(--v31-accent);
+  color: var(--v31-accent-deep);
+}
+.v39-mg-player-next:active {
+  background: var(--v31-accent-soft);
+}
+.v39-mg-confirm {
+  background: var(--v31-accent);
+  border-color: var(--v31-accent-deep);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(45,157,95,.30);
+}
+.v39-mg-confirm:active {
+  background: var(--v31-accent-deep);
+  transform: translateY(1px);
+}
+
+@media (max-width: 360px) {
+  .v39-mg-op  { font-size: 18px; }
+  .v39-mg-lbl { font-size: 10px; }
+  .v39-mg-btn { min-height: 50px; padding: 6px 3px; }
+}
+
+/* ============================================================
+   v39: モーダル内のみハイライトを適用（メイン画面は上部で物理削除済）
+   ============================================================ */
+#v31ModalScoreTable.v33-modal-scoretable .col-row-hl,
+#v31ModalScoreTable.v33-modal-scoretable .col-col-hl {
+  background: rgba(45,157,95,.10) !important;
+}
+#v31ModalScoreTable.v33-modal-scoretable td.col-row-hl.col-col-hl,
+#v31ModalScoreTable.v33-modal-scoretable th.col-row-hl.col-col-hl {
+  background: var(--v31-accent) !important;
+  color: #fff !important;
+  outline: 2px solid var(--v31-accent-deep);
+  outline-offset: -2px;
+  font-weight: 900;
 }
 
 </style>
@@ -7299,6 +7378,41 @@ var qrcode = function() {
       </div>
     </div>
 
+    <!-- ============================================================
+         v39: モーダル内 4列2行 入力グリッド（物理配置 / 既存サンクチュアリ・ボタンへ委譲）
+         ・上段: ストローク± / パット±
+         ・下段: 前ホール / 次ホール / 次の人 / 確定
+         ============================================================ -->
+    <div class="v39-modal-grid-wrap" id="v39ModalGridWrap">
+      <div class="v39-modal-grid" id="v39ModalGrid">
+        <button type="button" class="v39-mg-btn v39-mg-shot-plus"  data-v39-proxy="v31ShotPlus">
+          <span class="v39-mg-op">＋</span><span class="v39-mg-lbl">打数</span>
+        </button>
+        <button type="button" class="v39-mg-btn v39-mg-shot-minus" data-v39-proxy="v31ShotMinus">
+          <span class="v39-mg-op">−</span><span class="v39-mg-lbl">打数</span>
+        </button>
+        <button type="button" class="v39-mg-btn v39-mg-putt-plus"  data-v39-proxy="v31PuttPlus">
+          <span class="v39-mg-op">＋</span><span class="v39-mg-lbl">パット</span>
+        </button>
+        <button type="button" class="v39-mg-btn v39-mg-putt-minus" data-v39-proxy="v31PuttMinus">
+          <span class="v39-mg-op">−</span><span class="v39-mg-lbl">パット</span>
+        </button>
+
+        <button type="button" class="v39-mg-btn v39-mg-hole-prev" data-v39-proxy="modalHolePrev">
+          <span class="v39-mg-op">◀</span><span class="v39-mg-lbl">前ホール</span>
+        </button>
+        <button type="button" class="v39-mg-btn v39-mg-hole-next" data-v39-proxy="modalHoleNext">
+          <span class="v39-mg-op">▶</span><span class="v39-mg-lbl">次ホール</span>
+        </button>
+        <button type="button" class="v39-mg-btn v39-mg-player-next" data-v39-proxy="v31PlayerNext">
+          <span class="v39-mg-op">⇄</span><span class="v39-mg-lbl">次の人</span>
+        </button>
+        <button type="button" class="v39-mg-btn v39-mg-confirm" data-v39-proxy="v31Confirm">
+          <span class="v39-mg-op">✓</span><span class="v39-mg-lbl">確定</span>
+        </button>
+      </div>
+    </div>
+
     <!-- v33+v38: 聖域 — 計算ロジック・旧ボタンIDをすべて退避 -->
     <div class="v31-sanctuary" aria-hidden="true">
       <span id="modalHoleNum">1H</span>
@@ -9533,25 +9647,30 @@ function v32SetActiveCell(pi, hi) {
    #v32LiveTable / #v31ModalScoreTable / #scoreTable 全てに適用
    ================================================================= */
 function v32ApplyCrossHighlight() {
-  const tables = ['#v32LiveTable', '#v31ModalScoreTable', '#scoreTable'];
-  tables.forEach(sel => {
+  /* v39: メイン画面の縦・横ハイライトを削除。モーダル内のみを対象とする。
+     #v32LiveTable / #scoreTable は適用外、#v31ModalScoreTable のみ適用。 */
+  /* 常にメイン画面のハイライトクラスをリセット（残存防止） */
+  ['#v32LiveTable', '#scoreTable'].forEach(sel => {
     const t = document.querySelector(sel);
     if (!t) return;
-    /* クリア */
     t.querySelectorAll('.col-row-hl, .col-col-hl, .is-input-row').forEach(el => {
       el.classList.remove('col-row-hl', 'col-col-hl', 'is-input-row');
     });
-    if (v32ActivePi < 0 || v32ActiveHi < 0) return;
-    /* 行（プレイヤー）ハイライト */
-    const row = t.querySelector('tr.player-row[data-pi="' + v32ActivePi + '"]');
-    if (row) {
-      row.classList.add('is-input-row');
-      row.querySelectorAll('td').forEach(td => td.classList.add('col-row-hl'));
-    }
-    /* 縦（ホール）ハイライト */
-    const cells = t.querySelectorAll('td[data-hi="' + v32ActiveHi + '"], th[data-hole="' + (v32ActiveHi + 1) + '"]');
-    cells.forEach(c => c.classList.add('col-col-hl'));
   });
+  /* モーダル内のみハイライト適用 */
+  const t = document.querySelector('#v31ModalScoreTable');
+  if (!t) return;
+  t.querySelectorAll('.col-row-hl, .col-col-hl, .is-input-row').forEach(el => {
+    el.classList.remove('col-row-hl', 'col-col-hl', 'is-input-row');
+  });
+  if (v32ActivePi < 0 || v32ActiveHi < 0) return;
+  const row = t.querySelector('tr.player-row[data-pi="' + v32ActivePi + '"]');
+  if (row) {
+    row.classList.add('is-input-row');
+    row.querySelectorAll('td').forEach(td => td.classList.add('col-row-hl'));
+  }
+  const cells = t.querySelectorAll('td[data-hi="' + v32ActiveHi + '"], th[data-hole="' + (v32ActiveHi + 1) + '"]');
+  cells.forEach(c => c.classList.add('col-col-hl'));
 }
 
 /* =================================================================
@@ -11933,8 +12052,104 @@ if (document.readyState === 'loading') {
 window.addEventListener('load', () => setTimeout(v38PrepBindDispToggle, 900));
 
 console.log('G-WORLD v38.0 ラウンド準備画面 配置整理版');
+
+/* ============================================================
+   v39: モーダル内 4列2行 入力グリッド
+   ・イベント委譲で #v39ModalGrid を2重バインド防止
+   ・pointerdown / touchstart / click を委譲で捕捉（モバイル互換）
+   ・try-catch で聖域ボタンへの委譲エラーを独立包含
+   ・ダブル起動防止のため、clickのみを委譲トリガーにし、
+     pointerdown/touchstart は保险用に引階して連打を抹死
+   ============================================================ */
+(function(){
+  const grid = document.getElementById('v39ModalGrid');
+  if (!grid) return;
+  if (grid.dataset.v39Bound === '1') return;
+  grid.dataset.v39Bound = '1';
+
+  let lastFire = 0;
+  function delegateProxy(btn) {
+    if (!btn) return;
+    if (btn.disabled) return;
+    const proxyId = btn.getAttribute('data-v39-proxy');
+    if (!proxyId) return;
+    /* 連打拒否（同一ボタンへの pointerdown+click 重複取り上げ防止） */
+    const now = Date.now();
+    if (now - lastFire < 80) return;
+    lastFire = now;
+    try {
+      const target = document.getElementById(proxyId);
+      if (target && typeof target.click === 'function') {
+        target.click();
+      }
+    } catch (e) {
+      try { console.warn('[v39] proxy click failed:', proxyId, e); } catch(_) {}
+    }
+  }
+
+  /* click イベント委譲（メインパス） */
+  grid.addEventListener('click', function(ev){
+    const btn = ev.target.closest('.v39-mg-btn');
+    if (!btn || !grid.contains(btn)) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    delegateProxy(btn);
+  }, false);
+
+  /* モバイルタッチのダブルタップ・300msディレイ不要化（touchstart）
+     ⚠ ここで click を起こさず、ブラウザの click 伝播を妨げない
+     記録のみ（保险としてポインタ・タッチの両方をケア） */
+  function markActive(btn) {
+    if (!btn) return;
+    btn.classList.add('v39-mg-active');
+    setTimeout(() => btn.classList.remove('v39-mg-active'), 120);
+  }
+  grid.addEventListener('pointerdown', function(ev){
+    const btn = ev.target.closest('.v39-mg-btn');
+    if (!btn || !grid.contains(btn)) return;
+    markActive(btn);
+  }, { passive: true });
+  grid.addEventListener('touchstart', function(ev){
+    const btn = ev.target.closest('.v39-mg-btn');
+    if (!btn || !grid.contains(btn)) return;
+    markActive(btn);
+  }, { passive: true });
+
+  /* ホール遷移ボタンの disabled 同期（聖域の modalHolePrev/Next の disabled をミラー） */
+  function syncHoleNavDisabled() {
+    try {
+      const prevSan = document.getElementById('modalHolePrev');
+      const nextSan = document.getElementById('modalHoleNext');
+      const prevBtn = grid.querySelector('.v39-mg-hole-prev');
+      const nextBtn = grid.querySelector('.v39-mg-hole-next');
+      if (prevBtn && prevSan) prevBtn.disabled = !!prevSan.disabled;
+      if (nextBtn && nextSan) nextBtn.disabled = !!nextSan.disabled;
+    } catch (e) { /* noop */ }
+  }
+  /* 初期同期 + ポーリング（聖域の disabled 変更は MutationObserver で検知） */
+  syncHoleNavDisabled();
+  try {
+    const sanc = document.getElementById('modalHolePrev');
+    const sanc2 = document.getElementById('modalHoleNext');
+    const mo = new MutationObserver(syncHoleNavDisabled);
+    if (sanc)  mo.observe(sanc,  { attributes: true, attributeFilter: ['disabled'] });
+    if (sanc2) mo.observe(sanc2, { attributes: true, attributeFilter: ['disabled'] });
+  } catch (e) { /* observer 未対応は無視 */ }
+
+  /* モーダル表示時にも同期 */
+  try {
+    const modal = document.getElementById('scoreModal');
+    if (modal) {
+      const mo2 = new MutationObserver(syncHoleNavDisabled);
+      mo2.observe(modal, { attributes: true, attributeFilter: ['class'] });
+    }
+  } catch (e) {}
+
+  console.log('[v39] modal 4x2 grid bound');
+})();
 </script>
 
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
