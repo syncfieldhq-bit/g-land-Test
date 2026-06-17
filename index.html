@@ -4615,6 +4615,148 @@ html, body {
   }
 }
 
+
+/* ============================================================
+   v38.0 スコアモーダル内 ホール遷移ナビゲーション
+   ============================================================ */
+.v38-mhn {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  align-items: stretch;
+  padding: 8px 10px;
+  background: linear-gradient(180deg, #f7fdf9 0%, #ffffff 100%);
+  border-top: 2px solid var(--v31-accent, #2d9d5f);
+  border-bottom: 2px solid var(--v31-accent, #2d9d5f);
+  box-shadow: 0 2px 6px rgba(45,157,95,0.10);
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 3;
+}
+.v38-mhn-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: #ffffff;
+  border: 2px solid var(--v31-accent, #2d9d5f);
+  border-radius: 12px;
+  padding: 8px 14px;
+  min-width: 78px;
+  min-height: 64px;
+  font-family: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.08s, background 0.15s, color 0.15s;
+}
+.v38-mhn-btn:active {
+  transform: scale(0.94);
+  background: var(--v31-accent, #2d9d5f);
+  color: #ffffff;
+}
+.v38-mhn-btn:active .v38-mhn-arrow,
+.v38-mhn-btn:active .v38-mhn-lbl {
+  color: #ffffff;
+}
+.v38-mhn-btn:disabled,
+.v38-mhn-btn.is-disabled {
+  background: #f0f4f1;
+  border-color: #c8d6cd;
+  color: #aab8b0;
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.v38-mhn-btn:disabled:active,
+.v38-mhn-btn.is-disabled:active {
+  transform: none;
+  background: #f0f4f1;
+  color: #aab8b0;
+}
+.v38-mhn-arrow {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--v31-accent-deep, #1f7a48);
+  line-height: 1;
+}
+.v38-mhn-lbl {
+  font-size: 11px;
+  font-weight: 800;
+  color: #2a4a36;
+  letter-spacing: 0.02em;
+}
+.v38-mhn-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: 2px solid var(--v31-accent, #2d9d5f);
+  border-radius: 14px;
+  padding: 4px 8px 6px;
+  min-height: 64px;
+  box-shadow: inset 0 0 0 2px rgba(45,157,95,0.08);
+}
+.v38-mhn-hole-big {
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--v31-accent-deep, #1f7a48);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+}
+.v38-mhn-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.v38-mhn-par,
+.v38-mhn-yard,
+.v38-mhn-player {
+  font-size: 11px;
+  font-weight: 800;
+  color: #2a4a36;
+  background: #f1f8f4;
+  padding: 2px 7px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.v38-mhn-player {
+  background: #fff7e0;
+  color: #6a4a00;
+}
+
+/* 横画面: コンパクト化 */
+@media (orientation: landscape) and (max-height: 600px) {
+  .v38-mhn {
+    padding: 4px 6px;
+  }
+  .v38-mhn-btn {
+    min-width: 62px;
+    min-height: 44px;
+    padding: 4px 8px;
+  }
+  .v38-mhn-arrow { font-size: 16px; }
+  .v38-mhn-lbl { font-size: 10px; }
+  .v38-mhn-center {
+    min-height: 44px;
+    padding: 2px 6px 3px;
+  }
+  .v38-mhn-hole-big { font-size: 24px; }
+  .v38-mhn-meta { gap: 4px; margin-top: 2px; }
+  .v38-mhn-par, .v38-mhn-yard, .v38-mhn-player { font-size: 10px; padding: 1px 5px; }
+}
+
+/* 9Hロック表示(10H以降に進めない) */
+.v38-mhn.is-half-locked .v38-mhn-next {
+  background: #fff4e0 !important;
+  border-color: #e8a93d !important;
+}
+
 </style>
 
 <!-- QR Code Generator (Kazuhiko Arase, MIT) -->
@@ -7405,6 +7547,30 @@ var qrcode = function() {
         <span id="v31ModalModeBadge">🏌️ 一般</span>
         <span id="v32ModalHolesBadge">🏁 18H</span>
       </span>
+    </div>
+
+    <!-- ============================================================
+         v38.0 スコアモーダル内 ホール遷移ナビ
+         < 前ホール | 巨大ホール表示 | 次ホール >
+         モーダルを閉じずに連続入力可能(プレイヤー縦ハイライト維持)
+         ============================================================ -->
+    <div class="v38-mhn" id="v38ModalHoleNav">
+      <button type="button" class="v38-mhn-btn v38-mhn-prev" id="v38ModalPrevHole" aria-label="前のホール">
+        <span class="v38-mhn-arrow">◀</span>
+        <span class="v38-mhn-lbl">前ホール</span>
+      </button>
+      <div class="v38-mhn-center">
+        <div class="v38-mhn-hole-big" id="v38ModalHoleBig">1H</div>
+        <div class="v38-mhn-meta">
+          <span class="v38-mhn-par" id="v38ModalHolePar">PAR 4</span>
+          <span class="v38-mhn-yard" id="v38ModalHoleYard">— Y</span>
+          <span class="v38-mhn-player" id="v38ModalHolePlayer">—</span>
+        </div>
+      </div>
+      <button type="button" class="v38-mhn-btn v38-mhn-next" id="v38ModalNextHole" aria-label="次のホール">
+        <span class="v38-mhn-lbl">次ホール</span>
+        <span class="v38-mhn-arrow">▶</span>
+      </button>
     </div>
 
     <!-- ============================================================
@@ -12115,6 +12281,220 @@ if (document.readyState === 'loading') {
 window.addEventListener('load', () => setTimeout(v38CotBindToggle, 950));
 
 console.log('G-WORLD v38.0 ティー選択(COT) + 緑枠統一 + 詳細設定整理');
+
+
+/* ============================================================
+   v38.0 スコアモーダル内 ホール遷移ナビ
+   - 既存 v38OpenInputPanel / v32SetActiveCell / v32ApplyCrossHighlight を再利用
+   - プレイヤー縦ハイライト維持(modalPlayerIdx を変えない)
+   - 9Hモード時は 10H 以降ロック
+   ============================================================ */
+const V38MHN = {
+  // 現在モーダルが見ているホール(0-index)。openScoreModal/v38OpenInputPanel と同期。
+  currentHole: 0,
+};
+
+function v38MhnGetMaxHoles() {
+  try {
+    if (State.round && State.round.holesMode === '9') return 9;
+  } catch(e) {}
+  return (COURSE && COURSE.holes) ? COURSE.holes.length : 18;
+}
+
+function v38MhnCurrentPlayerIdx() {
+  // モーダルでアクティブなプレイヤー: modalPlayerIdx を優先、なければ自分、それも無ければ 0
+  try {
+    if (typeof modalPlayerIdx === 'number' && State.players[modalPlayerIdx]) return modalPlayerIdx;
+  } catch(e) {}
+  const me = State.players.findIndex(p => p.isMe);
+  return me >= 0 ? me : 0;
+}
+
+function v38MhnSetHole(hi) {
+  const maxH = v38MhnGetMaxHoles();
+  if (hi < 0) hi = 0;
+  if (hi >= maxH) hi = maxH - 1;
+  V38MHN.currentHole = hi;
+  // 既存変数 modalHole を同期(1-index)
+  try { modalHole = hi + 1; } catch(e) {}
+  // v35 アクティブセル
+  try {
+    if (typeof v35ActiveHi !== 'undefined') v35ActiveHi = hi;
+  } catch(e) {}
+  // V38 オブジェクトも同期(ボトムシートと整合)
+  try {
+    if (typeof V38 !== 'undefined') V38.hi = hi;
+  } catch(e) {}
+  // 縦ハイライト維持: プレイヤーは触らずホールだけ更新
+  const pi = v38MhnCurrentPlayerIdx();
+  try { v32SetActiveCell && v32SetActiveCell(pi, hi); } catch(e) {}
+  try { v32ApplyCrossHighlight && v32ApplyCrossHighlight(); } catch(e) {}
+  v38MhnRender();
+  // スコアテーブルの該当ホール列が見えるようスクロール
+  v38MhnScrollToHole(hi);
+  // モーダル変数 modalStroke/modalPutt を現在値で再ロード(既存変数あれば)
+  try {
+    const p = State.players[pi];
+    if (p) {
+      modalStroke = (p.scores[hi] != null) ? p.scores[hi] : 0;
+      modalPutt   = (p.putts  && p.putts[hi] != null)  ? p.putts[hi]  : 0;
+    }
+  } catch(e) {}
+  // 既存表示更新(あれば呼ぶ・なければ無視)
+  try { updateModalDisplay && updateModalDisplay(); } catch(e) {}
+}
+
+function v38MhnRender() {
+  const hi = V38MHN.currentHole;
+  const maxH = v38MhnGetMaxHoles();
+  const h = (COURSE && COURSE.holes && COURSE.holes[hi]) || null;
+  const pi = v38MhnCurrentPlayerIdx();
+  const p = State.players[pi];
+
+  const big = document.getElementById('v38ModalHoleBig');
+  if (big) big.textContent = (hi + 1) + 'H';
+
+  const par = document.getElementById('v38ModalHolePar');
+  if (par) par.textContent = h ? ('PAR ' + h.par) : 'PAR —';
+
+  const yardEl = document.getElementById('v38ModalHoleYard');
+  if (yardEl && h) {
+    const y = (State.ui && State.ui.useLadiesTee) ? h.ladiesYard : h.regYard;
+    yardEl.textContent = (y != null ? y : '—') + ' Y';
+  }
+
+  const playerEl = document.getElementById('v38ModalHolePlayer');
+  if (playerEl && p) {
+    let name;
+    try { name = fullName(p); } catch(_) { name = p.lastname || 'プレイヤー'; }
+    playerEl.textContent = '👤 ' + name;
+  }
+
+  const prev = document.getElementById('v38ModalPrevHole');
+  if (prev) {
+    if (hi <= 0) prev.classList.add('is-disabled');
+    else prev.classList.remove('is-disabled');
+  }
+  const next = document.getElementById('v38ModalNextHole');
+  if (next) {
+    if (hi >= maxH - 1) next.classList.add('is-disabled');
+    else next.classList.remove('is-disabled');
+  }
+  // 9Hロック視覚化
+  const bar = document.getElementById('v38ModalHoleNav');
+  if (bar) {
+    if (State.round && State.round.holesMode === '9') bar.classList.add('is-half-locked');
+    else bar.classList.remove('is-half-locked');
+  }
+}
+
+function v38MhnScrollToHole(hi) {
+  try {
+    const scroller = document.getElementById('v31ModalTableScroll');
+    if (!scroller) return;
+    // 該当ホールセル(任意のプレイヤー行で)を探してスクロール
+    const cell = scroller.querySelector('td[data-hi="' + hi + '"], th[data-hi="' + hi + '"]');
+    if (cell && typeof cell.scrollIntoView === 'function') {
+      cell.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+  } catch(e) {}
+}
+
+function v38MhnNext() {
+  const maxH = v38MhnGetMaxHoles();
+  if (V38MHN.currentHole >= maxH - 1) {
+    try { showToast && showToast('🏁 最終ホールです'); } catch(e) {}
+    return;
+  }
+  v38MhnSetHole(V38MHN.currentHole + 1);
+  try { showToast && showToast('▶ ' + (V38MHN.currentHole + 1) + 'H へ移動'); } catch(e) {}
+}
+
+function v38MhnPrev() {
+  if (V38MHN.currentHole <= 0) {
+    try { showToast && showToast('🏁 最初のホールです'); } catch(e) {}
+    return;
+  }
+  v38MhnSetHole(V38MHN.currentHole - 1);
+  try { showToast && showToast('◀ ' + (V38MHN.currentHole + 1) + 'H へ移動'); } catch(e) {}
+}
+
+function v38MhnBind() {
+  const prev = document.getElementById('v38ModalPrevHole');
+  if (prev) prev.onclick = (e) => { e.preventDefault(); v38MhnPrev(); };
+  const next = document.getElementById('v38ModalNextHole');
+  if (next) next.onclick = (e) => { e.preventDefault(); v38MhnNext(); };
+  v38MhnRender();
+}
+
+/* --- 既存 openScoreModal にフック: モーダル開く時にナビを同期 --- */
+(function v38MhnHookOpenScoreModal() {
+  if (typeof window === 'undefined') return;
+  if (window.openScoreModal) {
+    const orig = window.openScoreModal;
+    window.openScoreModal = function(pi, hi) {
+      const r = orig.apply(this, arguments);
+      try {
+        if (typeof hi === 'number') V38MHN.currentHole = hi;
+        v38MhnRender();
+      } catch(e) {}
+      return r;
+    };
+  }
+})();
+
+/* --- 既存 v38OpenInputPanel にもフック(ボトムシート開閉でも同期) --- */
+(function v38MhnHookPanelOpen() {
+  if (typeof window === 'undefined') return;
+  if (window.v38OpenInputPanel) {
+    const orig = window.v38OpenInputPanel;
+    window.v38OpenInputPanel = function(pi, hi) {
+      const r = orig.apply(this, arguments);
+      try {
+        if (typeof hi === 'number') V38MHN.currentHole = hi;
+        v38MhnRender();
+      } catch(e) {}
+      return r;
+    };
+  }
+})();
+
+/* --- v36UpdateScore 後に表示更新(GAS連携・保存は既存ロジックが担う) --- */
+(function v38MhnHookUpdateScore() {
+  if (typeof window === 'undefined') return;
+  if (window.v36UpdateScore) {
+    const orig = window.v36UpdateScore;
+    window.v36UpdateScore = function() {
+      const r = orig.apply(this, arguments);
+      try { v38MhnRender(); } catch(e) {}
+      return r;
+    };
+  }
+})();
+
+/* --- モーダル内テーブルのセルタップでも同期 --- */
+(function v38MhnHookTableTap() {
+  if (typeof document === 'undefined') return;
+  document.addEventListener('click', (e) => {
+    const td = e.target && e.target.closest && e.target.closest('td[data-action="cell-tap"][data-hi]');
+    if (!td) return;
+    const hi = parseInt(td.getAttribute('data-hi'), 10);
+    if (!isNaN(hi)) {
+      V38MHN.currentHole = hi;
+      try { v38MhnRender(); } catch(_) {}
+    }
+  }, true);
+})();
+
+/* --- ブート --- */
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => setTimeout(v38MhnBind, 700));
+} else {
+  setTimeout(v38MhnBind, 700);
+}
+window.addEventListener('load', () => setTimeout(v38MhnBind, 1000));
+
+console.log('G-WORLD v38.0 モーダル内ホール遷移ナビ起動');
 </script>
 
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
