@@ -4558,42 +4558,7 @@ html, body {
   box-shadow: 0 3px 8px rgba(45,157,95,.30);
 }
 
-/* ⑩ 最下部ナビゲーションバー */
-.v31-cockpit .v31-block.v42-block-bottomnav {
-  padding: 10px 10px 12px;
-}
-.v42-bottomnav {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-}
-.v42-bn-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 10px 4px;
-  background: var(--v31-base-soft);
-  border: 2px solid var(--v31-base-line);
-  border-radius: 12px;
-  cursor: pointer;
-  color: var(--v31-ink);
-  font-weight: 800;
-  -webkit-tap-highlight-color: rgba(45,157,95,.25);
-  user-select: none;
-}
-.v42-bn-btn:active {
-  background: var(--v31-accent-soft);
-  transform: translateY(1px);
-}
-.v42-bn-ico { font-size: 22px; line-height: 1; }
-.v42-bn-lbl { font-size: 11px; font-weight: 800; color: var(--v31-ink-soft); letter-spacing: .04em; }
-
-@media (max-width: 360px) {
-  .v42-bn-ico { font-size: 18px; }
-  .v42-bn-lbl { font-size: 10px; }
-}
+/* v43: ⑩ 最下部ナビゲーションバーは物理削除済み */
 
 /* ============================================================
    v41 / v41.1: 入力パネルレイアウト
@@ -7233,28 +7198,7 @@ var qrcode = function() {
       </div>
     </section>
 
-    <!-- ⑩ 最下部ナビゲーションバー (v42 新規 — 既存ボタンIDへの委譲のみ) -->
-    <section class="v31-block v42-block-bottomnav">
-      <div class="v31-block-title">📥 最下部ナビゲーションバー</div>
-      <div class="v42-bottomnav" id="v42BottomNav">
-        <button type="button" class="v42-bn-btn" data-v42nav="top">
-          <span class="v42-bn-ico">🏠</span>
-          <span class="v42-bn-lbl">ホーム</span>
-        </button>
-        <button type="button" class="v42-bn-btn" data-v42nav="start">
-          <span class="v42-bn-ico">🏁</span>
-          <span class="v42-bn-lbl">ラウンド</span>
-        </button>
-        <button type="button" class="v42-bn-btn" data-v42nav="qr">
-          <span class="v42-bn-ico">📱</span>
-          <span class="v42-bn-lbl">招待QR</span>
-        </button>
-        <button type="button" class="v42-bn-btn" data-v42nav="settings">
-          <span class="v42-bn-ico">⚙️</span>
-          <span class="v42-bn-lbl">設定</span>
-        </button>
-      </div>
-    </section>
+    <!-- v43: 最下部ナビゲーションバーは物理削除済み -->
 
     <!-- v38.0 サンクチュアリ: COT(後半スタート時間)関連の旧ID退避
          ※ スコアカード画面のダッシュボードで管理。JS互換のため非表示でDOM保持 -->
@@ -7909,13 +7853,8 @@ var qrcode = function() {
         </div>
         <label class="switch"><input type="checkbox" id="setShowPutt"><span class="switch-slider"></span></label>
       </div>
-      <div class="switch-row">
-        <div>
-          <div class="switch-label">使用ティ</div>
-          <div class="switch-sub">REG / LADIES（ヤーデージ表示切替）</div>
-        </div>
-        <label class="switch"><input type="checkbox" id="setLadiesTee"><span class="switch-slider"></span></label>
-      </div>
+      <!-- v43: 使用ティ（COT）はスコア入力モーダルのダッシュボードボタンと、
+           ラウンド準備画面のティー選択トグルに集約したため、ココからは物理削除済み -->
       <button class="primary-btn" id="btnSaveSettings">💾 設定を保存</button>
 
       <!-- v34: 後半スタート時間はメイン画面に統合（設定モーダルからは削除） -->
@@ -9593,18 +9532,21 @@ function renderRulesList() {
    §21. 設定モーダル
    ================================================================= */
 function openSettings() {
-  $('#setPuttEnabled').checked = State.settings.puttEnabled;
-  $('#setAutoNext').checked = State.settings.autoNext;
-  $('#setShowPutt').checked = State.ui.showPuttInTable;
-  $('#setLadiesTee').checked = State.ui.useLadiesTee;
+  /* v43: 使用ティはココから削除したため setLadiesTee はガード */
+  try { const el = document.getElementById('setPuttEnabled'); if (el) el.checked = State.settings.puttEnabled; } catch(_) {}
+  try { const el = document.getElementById('setAutoNext');    if (el) el.checked = State.settings.autoNext; } catch(_) {}
+  try { const el = document.getElementById('setShowPutt');    if (el) el.checked = State.ui.showPuttInTable; } catch(_) {}
+  try { const el = document.getElementById('setLadiesTee');   if (el) el.checked = State.ui.useLadiesTee; } catch(_) {}
   $('#settingsModal').classList.add('show');
 }
 
 function saveSettings() {
-  State.settings.puttEnabled = $('#setPuttEnabled').checked;
-  State.settings.autoNext = $('#setAutoNext').checked;
-  State.ui.showPuttInTable = $('#setShowPutt').checked;
-  State.ui.useLadiesTee = $('#setLadiesTee').checked;
+  /* v43: 使用ティはココから削除したため setLadiesTee はガード、
+     タッチしたときに State.ui.useLadiesTee を上書きしない */
+  try { const el = document.getElementById('setPuttEnabled'); if (el) State.settings.puttEnabled = el.checked; } catch(_) {}
+  try { const el = document.getElementById('setAutoNext');    if (el) State.settings.autoNext = el.checked; } catch(_) {}
+  try { const el = document.getElementById('setShowPutt');    if (el) State.ui.showPuttInTable = el.checked; } catch(_) {}
+  /* setLadiesTee は削除済み — ティー状態は #v38DashTee / #v31TeeSegments で管理 */
   Storage.saveSettings();
   Storage.saveState();
   applyPuttSectionEnabled();
@@ -12464,58 +12406,139 @@ console.log('G-WORLD v38.0 ラウンド準備画面 配置整理版');
   console.log('[v41.1] input panel bound');
 })();
 
+/* v43: 最下部ナビゲーションバー IIFE は物理削除済み */
+
 /* ============================================================
-   v42: ラウンド準備画面 最下部ナビゲーションバー結線
-   - ホーム: スクロール top
-   - ラウンド: 既存 #v31StartRound を click 委譲
-   - 招待QR:  既存 #v33InviteQR / #v31OpenInviteQR / #btnInviteQR を最初に見つかったものに委譲
-   - 設定:    既存 #v31OpenSettings を click 委譲
-   既存ダイレクトバインドに一切触れない — 聖域ボタンへの click 委譲のみ
+   v43: スコア入力モーダル COT ボタン (#v38DashTee) の単独トグル修理
+   - 「入力設定」の使用ティ項目と連動しない
+   - タップでダイレクトに REG ⇄ LADIES を切替
+   - 既存 .onclick バインドを全て置換し、他スクリプトによる上書きを防ぐ
+   - 委譲型 保険ボタンも document レベルで付与し、ID 不在でもクラス一致で拾う
+   - スコア保存・GAS連携等他のロジックには一切触れない
    ============================================================ */
 (function(){
-  if (window.__V42_BN_BOUND__) return;
-  window.__V42_BN_BOUND__ = true;
-  function bind() {
-    const nav = document.getElementById('v42BottomNav');
-    if (!nav || nav.dataset.v42Bound === '1') return;
-    nav.dataset.v42Bound = '1';
-    nav.addEventListener('click', (e) => {
-      const btn = e.target.closest('.v42-bn-btn');
-      if (!btn || !nav.contains(btn)) return;
-      e.preventDefault();
-      const act = btn.dataset.v42nav;
+  if (window.__V43_TEE_BOUND__) return;
+  window.__V43_TEE_BOUND__ = true;
+
+  /* ダイレクトトグル — 安全に State.ui.useLadiesTee を反転し、UIを全面同期 */
+  function v43DirectToggleTee() {
+    try {
+      /* 連打拒否（同一フレーム内の2重発火防止）*/
+      const now = Date.now();
+      if (window.__V43_TEE_LAST__ && now - window.__V43_TEE_LAST__ < 250) return;
+      window.__V43_TEE_LAST__ = now;
+
+      if (!State || !State.ui) {
+        try { showToast('⚠ ティー状態未初期化'); } catch(_) {}
+        return;
+      }
+      State.ui.useLadiesTee = !State.ui.useLadiesTee;
+
+      /* 永続化 */
+      try { if (Storage && Storage.saveState) Storage.saveState(); } catch(_) {}
+      try { if (Storage && Storage.saveSettings) Storage.saveSettings(); } catch(_) {}
+
+      /* 表示同期 — 現存する関数のみ安全に呼ぶ */
+      try { if (typeof renderTopAndHero === 'function')   renderTopAndHero(); } catch(_) {}
+      try { if (typeof renderTable === 'function')        renderTable(); } catch(_) {}
+      try { if (typeof v32RenderLiveScore === 'function') v32RenderLiveScore(); } catch(_) {}
+      try { if (typeof v38UpdateDashboard === 'function') v38UpdateDashboard(); } catch(_) {}
+      try { if (typeof v41Refresh === 'function')         v41Refresh(); } catch(_) {}
+
+      /* ラウンド準備画面のティーグリッド (#v31TeeSegments) を同期 */
       try {
-        if (act === 'top') {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-          return;
+        const segs = document.getElementById('v31TeeSegments');
+        if (segs) {
+          const target = State.ui.useLadiesTee ? 'ladies' : 'reg';
+          segs.querySelectorAll('button[data-tee]').forEach(b => {
+            b.classList.toggle('active', b.dataset.tee === target);
+          });
         }
-        if (act === 'start') {
-          const t = document.getElementById('v31StartRound');
-          if (t && typeof t.click === 'function') t.click();
-          return;
-        }
-        if (act === 'qr') {
-          const ids = ['v33InviteQR', 'v31OpenInviteQR', 'btnInviteQR'];
-          for (const id of ids) {
-            const t = document.getElementById(id);
-            if (t && typeof t.click === 'function') { t.click(); return; }
-          }
-          return;
-        }
-        if (act === 'settings') {
-          const t = document.getElementById('v31OpenSettings');
-          if (t && typeof t.click === 'function') { t.click(); return; }
-          const m = document.getElementById('settingsModal');
-          if (m) m.classList.add('show');
-          return;
-        }
-      } catch(err) { console.warn('[v42] bottomnav', err); }
-    });
+      } catch(_) {}
+
+      /* 聖域の旧ラベルも同期 */
+      try {
+        const lbl = document.getElementById('teeToggleLabel');
+        if (lbl) lbl.textContent = State.ui.useLadiesTee ? 'LADIES' : 'REGティ';
+      } catch(_) {}
+
+      /* トースト */
+      try {
+        showToast(State.ui.useLadiesTee ? '⛳ LADIES TEE に切替' : '⛳ REG TEE に切替');
+      } catch(_) {}
+
+      /* パルスエフェクト */
+      try { if (typeof v381PulseCard === 'function') v381PulseCard('v38DashTee'); } catch(_) {}
+    } catch(err) {
+      console.warn('[v43] toggleTee failed', err);
+    }
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind);
-  else bind();
-  window.addEventListener('load', () => setTimeout(bind, 300));
-  console.log('[v42] bottom-nav bar bound');
+  window.v43DirectToggleTee = v43DirectToggleTee;
+
+  /* 既存の v38ToggleTee も v43 ロジックを利用するようレットラップ（追従処理を豊富化） */
+  try {
+    const orig = (typeof v38ToggleTee === 'function') ? v38ToggleTee : null;
+    if (orig) {
+      window.v38ToggleTee = function() {
+        /* orig を使わず v43 だけを使う（連動ダブルトグルを防ぐ） */
+        return v43DirectToggleTee();
+      };
+    } else {
+      window.v38ToggleTee = v43DirectToggleTee;
+    }
+  } catch(_) {}
+
+  /* ボタンへのバインド — 複数メソッドで保険 */
+  function bindTeeButton() {
+    try {
+      const teeBtn = document.getElementById('v38DashTee');
+      if (teeBtn && teeBtn.dataset.v43Bound !== '1') {
+        teeBtn.dataset.v43Bound = '1';
+        /* 既存 .onclick を v43 で上書き（他スクリプトによるリバインドより後で走る） */
+        teeBtn.onclick = (e) => {
+          try { e.preventDefault(); } catch(_) {}
+          try { e.stopPropagation(); } catch(_) {}
+          v43DirectToggleTee();
+          return false;
+        };
+      }
+    } catch(_) {}
+  }
+
+  /* document レベルの保険委譲（capture） — ID/クラス一致の両方で拾う */
+  document.addEventListener('click', (e) => {
+    try {
+      const target = e.target.closest('#v38DashTee, .v38-dc-tee');
+      if (!target) return;
+      /* onclick で処理済みの場合は実行しない（v43Bound 設定後は onclick が走る） */
+      if (target.dataset && target.dataset.v43Bound === '1') return;
+      e.preventDefault();
+      e.stopPropagation();
+      v43DirectToggleTee();
+    } catch(_) {}
+  }, true);
+
+  /* DOM 準備タイミングに関わらず何度もバインド試行 */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindTeeButton);
+  } else {
+    bindTeeButton();
+  }
+  window.addEventListener('load', () => setTimeout(bindTeeButton, 100));
+  setTimeout(bindTeeButton, 300);
+  setTimeout(bindTeeButton, 800);
+  setTimeout(bindTeeButton, 1500);
+
+  /* モーダル表示検知でもバインド（モーダルが遅延挑入の場合に備え） */
+  try {
+    const sm = document.getElementById('scoreModal');
+    if (sm) {
+      const mo = new MutationObserver(() => bindTeeButton());
+      mo.observe(sm, { attributes: true, attributeFilter: ['class'] });
+    }
+  } catch(_) {}
+
+  console.log('[v43] COT direct-toggle bound (#v38DashTee)');
 })();
 </script>
 
