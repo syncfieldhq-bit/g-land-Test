@@ -12210,6 +12210,14 @@ console.log('G-WORLD v38.0 ラウンド準備画面 配置整理版');
     } catch(_) {}
     return null;
   }
+  
+  /* ----- v41.1: トイレ（W.C）設置ホール（1-based） ----- */
+  /* スコアカード「King's Field print plants」より特定:
+    GOING OUT: 3, 5, 8 / COMING IN: 12, 14, 17 */
+  const V41_RESTROOM_HOLES = [3, 5, 8, 12, 14, 17];
+  function hasRestroom(holeNum1based) {
+   return V41_RESTROOM_HOLES.indexOf(holeNum1based) >= 0;
+}
 
   /* ----- ヘッダー（ホール・パー・ヤード）描画 ----- */
   function renderHoleBar() {
@@ -12219,6 +12227,15 @@ console.log('G-WORLD v38.0 ラウンド準備画面 配置整理版');
     const elP = $('v38PanelPar');   if (elP) elP.textContent = 'PAR ' + (h.par || '—');
     const yards = pickYards(h);
     const elY = $('v41HoleYards');  if (elY) elY.textContent = (yards != null ? yards : '—');
+
+  /* v41.1: トイレマークの条件表示 */
+    try {
+    const elRR = $('v41HoleRestroom');
+    if (elRR) {
+      elRR.style.display = hasRestroom(hi + 1) ? '' : 'none';
+    }
+   } catch(_) {}
+
     /* prev/next disabled 同期 */
     try {
       const maxH = (State && State.round && State.round.holesMode === '9') ? 9
