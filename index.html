@@ -4512,8 +4512,91 @@ html, body {
 }
 
 /* ============================================================
-   v41: 入力パネルレイアウト（添付画像忠実版）
-   - 対象: #v38InputPanel のみ
+   v42: ラウンド準備画面 — 緑実線枠統一 + ティートグル + 最下部ナビバー
+   - スコープ: .v31-cockpit 内の .v31-block のみ（他画面への影響ゼロ）
+   ============================================================ */
+.v31-cockpit .v31-block {
+  border: 2px solid var(--v31-accent) !important;
+  background: var(--v31-base);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+
+/* ラウンド開始ボタンを物理セクションで包んだ類（ボタン自身のスタイルは未改変） */
+.v31-cockpit .v31-block.v42-block-start {
+  padding: 10px;
+  background: var(--v31-base);
+}
+.v31-cockpit .v31-block.v42-block-start > .v31-start-btn {
+  margin: 0;
+  width: 100%;
+}
+
+/* ③ ティー選択トグル（ステップ②ラウンド構成と同トーン） */
+.v42-tee-segments {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.v42-tee-segments button {
+  padding: 14px 10px;
+  background: var(--v31-base-soft);
+  border: 2px solid var(--v31-base-line);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--v31-ink);
+  cursor: pointer;
+  -webkit-tap-highlight-color: rgba(45,157,95,.20);
+}
+.v42-tee-segments button:active { background: var(--v31-accent-soft); }
+.v42-tee-segments button.active {
+  background: var(--v31-accent);
+  border-color: var(--v31-accent-deep);
+  color: #fff;
+  box-shadow: 0 3px 8px rgba(45,157,95,.30);
+}
+
+/* ⑩ 最下部ナビゲーションバー */
+.v31-cockpit .v31-block.v42-block-bottomnav {
+  padding: 10px 10px 12px;
+}
+.v42-bottomnav {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.v42-bn-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 4px;
+  background: var(--v31-base-soft);
+  border: 2px solid var(--v31-base-line);
+  border-radius: 12px;
+  cursor: pointer;
+  color: var(--v31-ink);
+  font-weight: 800;
+  -webkit-tap-highlight-color: rgba(45,157,95,.25);
+  user-select: none;
+}
+.v42-bn-btn:active {
+  background: var(--v31-accent-soft);
+  transform: translateY(1px);
+}
+.v42-bn-ico { font-size: 22px; line-height: 1; }
+.v42-bn-lbl { font-size: 11px; font-weight: 800; color: var(--v31-ink-soft); letter-spacing: .04em; }
+
+@media (max-width: 360px) {
+  .v42-bn-ico { font-size: 18px; }
+  .v42-bn-lbl { font-size: 10px; }
+}
+
+/* ============================================================
+   v41 / v41.1: 入力パネルレイアウト
    ============================================================ */
 .v41-panel {
   padding: 14px 12px calc(14px + env(safe-area-inset-bottom)) !important;
@@ -4525,7 +4608,6 @@ html, body {
 .v41-panel .v38-panel-handle { margin-bottom: 4px; }
 .v41-sanctuary { position: absolute; left: -10000px; top: -10000px; width: 1px; height: 1px; overflow: hidden; }
 
-/* × 閉じる（右上） */
 .v41-close {
   position: absolute;
   top: 10px; right: 10px;
@@ -4542,7 +4624,6 @@ html, body {
 }
 .v41-close:active { background: #f0f7f3; }
 
-/* ヘッダー：ホールナビ */
 .v41-holebar {
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
@@ -4587,10 +4668,7 @@ html, body {
   font-size: 18px; font-weight: 900;
   line-height: 1;
 }
-/* v41.1: トイレマーク非表示制御（同特異度クラスで !important 不要） */
-.v41-hb-restroom.is-hidden {
-  display: none;
-}
+.v41-hb-restroom.is-hidden { display: none; }
 .v41-hb-rr-f { color: #d93a5a; }
 .v41-hb-rr-m { color: #2b6cd9; margin-left: -2px; }
 .v41-hb-hole { grid-row: 1; font-size: 22px; font-weight: 900; color: #14532d; line-height: 1; }
@@ -4602,7 +4680,6 @@ html, body {
 .v41-hb-yards      { font-size: 16px; font-weight: 900; color: #1a3a25; }
 .v41-hb-yards-unit { font-size: 10px; font-weight: 700; color: #5a6a60; letter-spacing: .04em; }
 
-/* 4列2行 プレイヤーグリッド */
 .v41-player-grid-wrap { flex: 0 0 auto; }
 .v41-player-grid {
   display: grid;
@@ -4634,32 +4711,24 @@ html, body {
   color: #1a3a25;
   min-height: 54px;
 }
-.v41-pg-name-sub {
-  font-size: 9px; font-weight: 700; color: #6a7a72; letter-spacing: .04em;
-}
+.v41-pg-name-sub { font-size: 9px; font-weight: 700; color: #6a7a72; letter-spacing: .04em; }
 .v41-pg-score {
   font-size: 26px; font-weight: 900; color: #14532d;
   background: #ecf6f0;
   min-height: 56px;
 }
 .v41-pg-score.is-empty { color: #b9c2bb; background: #fff; }
-
-.v41-player-grid .v41-pg-col.is-active .v41-pg-name {
-  background: #2d9d5f; color: #fff;
-}
+.v41-player-grid .v41-pg-col.is-active .v41-pg-name { background: #2d9d5f; color: #fff; }
 .v41-player-grid .v41-pg-col.is-active .v41-pg-name-sub { color: rgba(255,255,255,.9); }
 .v41-player-grid .v41-pg-col.is-active .v41-pg-score { background: #d5ead8; }
 .v41-player-grid .v41-pg-col + .v41-pg-col .v41-pg-name {
   background-image: linear-gradient(to right, rgba(45,157,95,.15) 0%, rgba(45,157,95,0) 60%);
 }
-.v41-player-grid .v41-pg-col.is-active + .v41-pg-col .v41-pg-name {
-  background-image: none;
-}
+.v41-player-grid .v41-pg-col.is-active + .v41-pg-col .v41-pg-name { background-image: none; }
 .v41-player-grid .v41-pg-col { display: contents; }
 .v41-player-grid .v41-pg-col.is-empty .v41-pg-name  { color: #b9c2bb; }
 .v41-player-grid .v41-pg-col.is-empty .v41-pg-score { color: #d0d6d2; }
 
-/* モードタブ（オーバーライド） */
 .v41-mode-tabs { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 8px !important; }
 .v41-mode-tabs .v38-pmt-btn {
   padding: 10px 6px;
@@ -4677,7 +4746,6 @@ html, body {
 
 .v41-panel-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
 
-/* フッター（確定のみ） */
 .v41-panel-foot { display: block !important; padding: 0 !important; }
 .v41-confirm {
   width: 100%;
@@ -7036,6 +7104,10 @@ var qrcode = function() {
       </div>
     </div>
 
+    <!-- v42: ラウンド準備画面 — 指定順序で再構成
+         ①ロッカー → ②ラウンド構成 → ③ティー → ④プレイモード → ⑤スコア表示
+         → ⑥設定 → ⑦同伴者 → ⑧ラウンド開始 → ⑨ナビゲーション及び連絡 → ⑩最下部ナビゲーションバー -->
+
     <!-- ① 貴重品ロッカー番号 -->
     <section class="v31-block">
       <div class="v31-block-title">🔐 貴重品ロッカー番号</div>
@@ -7058,7 +7130,16 @@ var qrcode = function() {
       </div>
     </section>
 
-    <!-- ③ プレイモード(一般 / 初心者カウンター) -->
+    <!-- ③ ティー選択 (COT) — トグル式 REG / LADIES (v42: settingsModal から移管) -->
+    <section class="v31-block">
+      <div class="v31-block-title">⛳ ティー選択 (COT)</div>
+      <div class="v31-ss-segments v42-tee-segments" id="v31TeeSegments">
+        <button type="button" data-tee="reg" class="active">REG（レギュラー）</button>
+        <button type="button" data-tee="ladies">LADIES（レディース）</button>
+      </div>
+    </section>
+
+    <!-- ④ プレイモード(一般 / 初心者カウンター) -->
     <section class="v31-block v31-block-accent">
       <div class="v31-block-title">🎯 プレイモード</div>
       <div class="v31-mode-toggle" id="v31ModeToggle">
@@ -7073,7 +7154,7 @@ var qrcode = function() {
       </div>
     </section>
 
-    <!-- ④ スコア表示モード(v38.0新規・既存 v38CycleDisplayMode に結線) -->
+    <!-- ⑤ スコア表示モード(v38.0・既存 v38CycleDisplayMode に結線) -->
     <section class="v31-block">
       <div class="v31-block-title">🔢 スコア表示モード</div>
       <div class="v38-disp-toggle" id="v38PrepDispToggle">
@@ -7092,7 +7173,7 @@ var qrcode = function() {
       </div>
     </section>
 
-    <!-- ⑤ 設定(詳細設定ボタンのみ・小文字注釈は削除) -->
+    <!-- ⑥ 設定(詳細設定ボタンのみ) -->
     <section class="v31-block">
       <div class="v31-block-title">⚙️ 設定</div>
       <button type="button" class="v31-settings-btn v38-settings-btn-clean" id="v31OpenSettings">
@@ -7102,7 +7183,7 @@ var qrcode = function() {
       </button>
     </section>
 
-    <!-- ⑥ 同伴者(招待QR + 追加 + リスト・維持) -->
+    <!-- ⑦ 同伴者(招待QR + 追加 + リスト・維持) -->
     <section class="v31-block">
       <div class="v31-block-title">👥 同伴者</div>
       <div class="v31-player-list" id="v31PlayerList"></div>
@@ -7119,18 +7200,20 @@ var qrcode = function() {
       </button>
     </section>
 
-    <!-- ⑦ ラウンド開始(巨大ボタン) -->
-    <button type="button" class="v31-start-btn" id="v31StartRound">
-      <span class="v31-start-ico">🏁</span>
-      <span class="v31-start-text">ラウンド開始<small>スコア入力モーダルを起動</small></span>
-    </button>
+    <!-- ⑧ ラウンド開始(巨大ボタン — セクションラッパー) -->
+    <section class="v31-block v42-block-start">
+      <button type="button" class="v31-start-btn" id="v31StartRound">
+        <span class="v31-start-ico">🏁</span>
+        <span class="v31-start-text">ラウンド開始<small>スコア入力モーダルを起動</small></span>
+      </button>
+    </section>
 
     <!-- v32: 9H完了バナー(9Hモード全入力時のみ表示) -->
     <div class="v32-9h-complete-banner" id="v329hCompleteBanner">
       🏁 ハーフラウンド完了！タップで集計を確認
     </div>
 
-    <!-- ⑧ ナビゲーション & 連絡(維持) -->
+    <!-- ⑨ ナビゲーション & 連絡(維持) -->
     <section class="v31-block">
       <div class="v31-block-title">🧭 ナビゲーション & 連絡</div>
       <a class="v31-nav-main" href="https://www.google.com/maps/dir/?api=1&destination=六甲国際パブリックコース" target="_blank" rel="noopener">
@@ -7146,6 +7229,29 @@ var qrcode = function() {
         </a>
         <button type="button" class="v31-sub-btn" id="v31CourseDetailBtn">
           <span>📖</span><span>コース詳細</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ⑩ 最下部ナビゲーションバー (v42 新規 — 既存ボタンIDへの委譲のみ) -->
+    <section class="v31-block v42-block-bottomnav">
+      <div class="v31-block-title">📥 最下部ナビゲーションバー</div>
+      <div class="v42-bottomnav" id="v42BottomNav">
+        <button type="button" class="v42-bn-btn" data-v42nav="top">
+          <span class="v42-bn-ico">🏠</span>
+          <span class="v42-bn-lbl">ホーム</span>
+        </button>
+        <button type="button" class="v42-bn-btn" data-v42nav="start">
+          <span class="v42-bn-ico">🏁</span>
+          <span class="v42-bn-lbl">ラウンド</span>
+        </button>
+        <button type="button" class="v42-bn-btn" data-v42nav="qr">
+          <span class="v42-bn-ico">📱</span>
+          <span class="v42-bn-lbl">招待QR</span>
+        </button>
+        <button type="button" class="v42-bn-btn" data-v42nav="settings">
+          <span class="v42-bn-ico">⚙️</span>
+          <span class="v42-bn-lbl">設定</span>
         </button>
       </div>
     </section>
@@ -7543,11 +7649,7 @@ var qrcode = function() {
      ============================================================ -->
 <div class="v38-panel v41-panel" id="v38InputPanel" aria-hidden="true">
   <div class="v38-panel-handle"></div>
-
-  <!-- v41: 右上×閉じる（絶対配置） -->
   <button type="button" class="v41-close" id="v38PanelClose" aria-label="閉じる">×</button>
-
-  <!-- v41: ホールナビ -->
   <div class="v41-holebar">
     <button type="button" class="v41-hb-nav v41-hb-prev" id="v38PanelPrevHole">
       <span class="v41-hb-op">◀</span><span class="v41-hb-lbl">前<br>ホール</span>
@@ -7567,28 +7669,18 @@ var qrcode = function() {
       <span class="v41-hb-lbl">次<br>ホール</span><span class="v41-hb-op">▶</span>
     </button>
   </div>
-
-  <!-- v41: プレイヤーグリッド（4列2行） -->
   <div class="v41-player-grid-wrap">
     <div class="v41-player-grid" id="v41PlayerGrid"></div>
   </div>
-
-  <!-- モードタブ（既存ID保存） -->
   <div class="v38-panel-mode-tabs v41-mode-tabs" id="v38PanelModeTabs">
     <button type="button" class="v38-pmt-btn" data-pmode="simple">天気予報式</button>
     <button type="button" class="v38-pmt-btn" data-pmode="counter">カウンター</button>
     <button type="button" class="v38-pmt-btn" data-pmode="stroke_putt">数字+パット</button>
   </div>
-
-  <!-- 数字パッド本体（既存 v38RenderPanelBody が描画） -->
   <div class="v38-panel-body v41-panel-body" id="v38PanelBody"></div>
-
-  <!-- v41: フッター（確定のみ） -->
   <div class="v38-panel-foot v41-panel-foot">
     <button type="button" class="v41-confirm" id="v41ConfirmBtn">✓ 確定</button>
   </div>
-
-  <!-- v41 聖域: 旧IDをそのまま維持（計算エンジン互換） -->
   <span class="v41-sanctuary" aria-hidden="true">
     <span id="v38PanelPlayer">—</span>
     <span id="v38PanelScore">—</span>
@@ -7834,27 +7926,9 @@ var qrcode = function() {
       </div>
 
       <!-- ============================================================
-           v31: 表示モード（数字 / ±差 / 記号）
+           v42: 「スコア表示モード」「使用ティ」はラウンド準備画面へ移管
+           — 設定モーダルからは物理削除した。JSビンディングはサーチ先IDが他箰所にあるため継続動作。
            ============================================================ -->
-      <div class="v31-settings-section">
-        <div class="v31-ss-title">🔢 スコア表示モード</div>
-        <div class="v31-ss-segments" id="v31DispSegments">
-          <button type="button" data-disp="number" class="active">数字</button>
-          <button type="button" data-disp="diff">スコア差(±)</button>
-          <button type="button" data-disp="symbol">記号</button>
-        </div>
-      </div>
-
-      <!-- ============================================================
-           v31: ティ切替（REG / LADIES）
-           ============================================================ -->
-      <div class="v31-settings-section">
-        <div class="v31-ss-title">⛳ 使用ティ</div>
-        <div class="v31-ss-segments" id="v31TeeSegments">
-          <button type="button" data-tee="reg" class="active">REG（白/黄）</button>
-          <button type="button" data-tee="ladies">LADIES（赤/緑）</button>
-        </div>
-      </div>
 
       <!-- v33: 招待QRは「同伴者追加」直下へ移管 -->
 
@@ -11322,7 +11396,7 @@ function v38BuildSimpleHtml() {
     h1 += '</button>';
   });
   h1 += '</div>';
-  /* v41.1: クイック行（クリア・確定して閉じる）を物理削除 */
+  /* v41.1: クイック行を物理削除 */
   return h1;
 }
 
@@ -11371,7 +11445,6 @@ function v38BuildKeypadHtml() {
     html += '  </div>';
     html += '</div>';
   }
-
   /* v41.1: クイック行を物理削除 */
   return html;
 }
@@ -12141,17 +12214,12 @@ window.addEventListener('load', () => setTimeout(v38PrepBindDispToggle, 900));
 console.log('G-WORLD v38.0 ラウンド準備画面 配置整理版');
 
 /* ============================================================
-   v41 / v41.1: 入力パネル #v38InputPanel レイアウト結線·同期
-   — 既存 v38OpenInputPanel / v38RenderPanelModeTabs / v38PanelMoveHole /
-      v36UpdateScore / v38AfterInputFeedback は無改変
-   — v41 侧で 後勝ち同期 / ハイライト固定 / トイレ・ヤード表示を結線
+   v41 / v41.1: 入力パネル #v38InputPanel レイアウト結線
    ============================================================ */
 (function(){
   if (window.__V41_BOUND__) return;
   window.__V41_BOUND__ = true;
-
   const $ = (id) => document.getElementById(id);
-
   function esc(s) {
     return String(s == null ? '' : s)
       .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
@@ -12161,23 +12229,15 @@ console.log('G-WORLD v38.0 ラウンド準備画面 配置整理版');
     try { if (typeof fullName === 'function') return fullName(p); } catch(_) {}
     return ((p && (p.lastName||'')) + (p && (p.firstName||''))) || 'ゲスト';
   }
-  function curHole() {
-    try { return (typeof V38 !== 'undefined' && V38) ? V38.hi : ((modalHole || 1) - 1); } catch(_) { return 0; }
-  }
-  function curPi() {
-    try { return (typeof V38 !== 'undefined' && V38) ? V38.pi : (modalPlayerIdx || 0); } catch(_) { return 0; }
-  }
-  function holeObj() {
-    try { return COURSE.holes[curHole()] || {}; } catch(_) { return {}; }
-  }
+  function curHole() { try { return (typeof V38 !== 'undefined' && V38) ? V38.hi : ((modalHole || 1) - 1); } catch(_) { return 0; } }
+  function curPi()   { try { return (typeof V38 !== 'undefined' && V38) ? V38.pi : (modalPlayerIdx || 0); } catch(_) { return 0; } }
+  function holeObj() { try { return COURSE.holes[curHole()] || {}; } catch(_) { return {}; } }
 
-  /* ----- ヤード取得（tee キー候補拡張 + 文字列数値両対応） ----- */
   function pickYards(h) {
     if (!h) return null;
     try {
-      const tee = (State && State.round && State.round.tee) || 'REG';
-      const teeKeys = [tee, 'REG', 'WHT', 'WHITE', 'BLU', 'BLUE', 'BLK', 'BLACK',
-                       'LADIES', 'RED', 'YEL', 'YELLOW', 'GRN', 'GREEN'];
+      const tee = (State && State.round && State.round.tee) || ((State && State.ui && State.ui.useLadiesTee) ? 'LADIES' : 'REG');
+      const teeKeys = [tee, 'REG', 'WHT', 'WHITE', 'BLU', 'BLUE', 'BLK', 'BLACK', 'LADIES', 'RED', 'YEL', 'YELLOW', 'GRN', 'GREEN'];
       if (h.yards && typeof h.yards === 'object') {
         for (const k of teeKeys) {
           const v = h.yards[k];
@@ -12190,7 +12250,7 @@ console.log('G-WORLD v38.0 ラウンド準備画面 配置整理版');
           if (typeof v === 'string' && v.trim() && !isNaN(parseInt(v, 10))) return parseInt(v, 10);
         }
       }
-      const flat = [h.yardage, h.yard, h.distance, h.yards];
+      const flat = [h.yardage, h.yard, h.distance, h.regYard, h.ladiesYard];
       for (const v of flat) {
         if (typeof v === 'number' && v > 0) return v;
         if (typeof v === 'string' && v.trim() && !isNaN(parseInt(v, 10))) return parseInt(v, 10);
@@ -12199,63 +12259,31 @@ console.log('G-WORLD v38.0 ラウンド準備画面 配置整理版');
     return null;
   }
 
-  /* ----- v41.1: トイレ（W.C）設置ホール（1-based）----- */
-  /* スコアカード 「King's Field print plants」より特定 */
   const V41_RESTROOM_HOLES = [3, 5, 8, 12, 14, 17];
-  function hasRestroom(holeNum1based) {
-    return V41_RESTROOM_HOLES.indexOf(holeNum1based) >= 0;
-  }
+  function hasRestroom(n) { return V41_RESTROOM_HOLES.indexOf(n) >= 0; }
 
-  /* ----- ヘッダー（ホール・PAR・ヤード・トイレ）描画 ----- */
   function renderHoleBar() {
     const hi = curHole();
     const h  = holeObj();
-
-    /* ホール番号 */
+    try { const e = $('v38PanelHole'); if (e) e.textContent = (hi + 1) + 'H'; } catch(_) {}
+    try { const e = $('v38PanelPar');  if (e) e.textContent = 'PAR ' + (h && h.par != null ? h.par : '—'); } catch(_) {}
     try {
-      const elH = $('v38PanelHole');
-      if (elH) elH.textContent = (hi + 1) + 'H';
+      const y = pickYards(h);
+      const e = $('v41HoleYards');
+      if (e) e.textContent = (y != null && y !== '' && !isNaN(parseInt(y, 10))) ? String(y) : '—';
     } catch(_) {}
-
-    /* PAR */
     try {
-      const elP = $('v38PanelPar');
-      if (elP) elP.textContent = 'PAR ' + (h && h.par != null ? h.par : '—');
+      const e = $('v41HoleRestroom');
+      if (e) e.classList.toggle('is-hidden', !hasRestroom(hi + 1));
     } catch(_) {}
-
-    /* ヤーデージ — pickYards() 結果を確実に文字列化して描画 */
-    try {
-      const yards = pickYards(h);
-      const elY = $('v41HoleYards');
-      if (elY) {
-        if (yards != null && yards !== '' && !isNaN(parseInt(yards, 10))) {
-          elY.textContent = String(yards);
-        } else {
-          elY.textContent = '—';
-        }
-      }
-    } catch(_) {}
-
-    /* トイレマーク条件表示 — クラス切替で確実に */
-    try {
-      const elRR = $('v41HoleRestroom');
-      if (elRR) {
-        elRR.classList.toggle('is-hidden', !hasRestroom(hi + 1));
-      }
-    } catch(_) {}
-
-    /* prev/next disabled 同期 */
     try {
       const maxH = (State && State.round && State.round.holesMode === '9') ? 9
                  : (COURSE && COURSE.holes ? COURSE.holes.length : 18);
-      const prev = $('v38PanelPrevHole');
-      const next = $('v38PanelNextHole');
-      if (prev) prev.disabled = (hi <= 0);
-      if (next) next.disabled = (hi >= maxH - 1);
+      const p = $('v38PanelPrevHole'); if (p) p.disabled = (hi <= 0);
+      const n = $('v38PanelNextHole'); if (n) n.disabled = (hi >= maxH - 1);
     } catch(_) {}
   }
 
-  /* ----- プレイヤーグリッド描画 ----- */
   function renderPlayerGrid() {
     const g = $('v41PlayerGrid'); if (!g) return;
     const hi = curHole();
@@ -12263,27 +12291,23 @@ console.log('G-WORLD v38.0 ラウンド準備画面 配置整理版');
     let players = [];
     try { players = (State.players || []).slice(); } catch(_) {}
     try { players.sort((a,b) => (a.isMe === b.isMe) ? 0 : (a.isMe ? -1 : 1)); } catch(_) {}
-
     let html = '';
     for (let col = 0; col < 4; col++) {
       const p = players[col];
       const realIdx = p ? State.players.indexOf(p) : -1;
       const isActive = (realIdx === activeIdx);
       const isEmpty  = !p;
-      const colCls = 'v41-pg-col'
-        + (isActive ? ' is-active' : '')
-        + (isEmpty  ? ' is-empty'  : '');
+      const colCls = 'v41-pg-col' + (isActive ? ' is-active' : '') + (isEmpty ? ' is-empty' : '');
       const name = isEmpty ? '名前未設定' : safeFullName(p);
       const sub  = isEmpty ? '' : (p.isMe ? 'PLAYER ME' : 'PLAYER ' + (col + 1));
       const score = (p && p.scores && p.scores[hi] != null) ? p.scores[hi] : null;
-
       html += '<div class="' + colCls + '" data-pi="' + realIdx + '">';
-      html +=   '<div class="v41-pg-cell v41-pg-name" data-pi="' + realIdx + '" data-role="name">';
+      html +=   '<div class="v41-pg-cell v41-pg-name" data-pi="' + realIdx + '">';
       html +=     '<div>' + esc(name) + '</div>';
       if (sub) html += '<div class="v41-pg-name-sub">' + sub + '</div>';
       html +=   '</div>';
-      const emptyCls = (score == null) ? ' is-empty' : '';
-      html +=   '<div class="v41-pg-cell v41-pg-score' + emptyCls + '" data-pi="' + realIdx + '" data-role="score">';
+      const ec = (score == null) ? ' is-empty' : '';
+      html +=   '<div class="v41-pg-cell v41-pg-score' + ec + '" data-pi="' + realIdx + '">';
       html +=     (score == null ? '–' : esc(score));
       html +=   '</div>';
       html += '</div>';
@@ -12291,32 +12315,24 @@ console.log('G-WORLD v38.0 ラウンド準備画面 配置整理版');
     g.innerHTML = html;
   }
 
-  /* ----- v41.1: モードタブ is-active 同期（方針 X：後勝ちでクラス上書き）----- */
   function syncTabs() {
     try {
-      const tabs = $('v38PanelModeTabs');
-      if (!tabs) return;
+      const tabs = $('v38PanelModeTabs'); if (!tabs) return;
       let mode = 'simple';
-      try {
-        if (State && State.ui && State.ui.inputMode) mode = State.ui.inputMode;
-      } catch(_) {}
-      const btns = tabs.querySelectorAll('.v38-pmt-btn');
-      btns.forEach((b) => {
-        const isMine = (b.dataset && b.dataset.pmode === mode);
-        b.classList.toggle('is-active', !!isMine);
+      try { if (State && State.ui && State.ui.inputMode) mode = State.ui.inputMode; } catch(_) {}
+      tabs.querySelectorAll('.v38-pmt-btn').forEach((b) => {
+        b.classList.toggle('is-active', (b.dataset && b.dataset.pmode === mode));
       });
     } catch(_) {}
   }
 
-  /* ----- パネル全体リフレッシュ ----- */
   function v41Refresh() {
-    try { renderHoleBar(); }     catch(e) { console.warn('[v41] holebar', e); }
-    try { renderPlayerGrid(); }  catch(e) { console.warn('[v41] grid', e); }
-    try { syncTabs(); }          catch(_) {}
+    try { renderHoleBar(); }    catch(e) { console.warn('[v41] hb', e); }
+    try { renderPlayerGrid(); } catch(e) { console.warn('[v41] pg', e); }
+    try { syncTabs(); }         catch(_) {}
   }
   window.v41Refresh = v41Refresh;
 
-  /* ----- 自動進行 ----- */
   function autoAdvance() {
     try {
       const hi = curHole();
@@ -12326,14 +12342,9 @@ console.log('G-WORLD v38.0 ラウンド準備画面 配置整理版');
       if (allDone) {
         const maxH = (State.round.holesMode === '9') ? 9 : COURSE.holes.length;
         if (hi + 1 < maxH) {
-          if (typeof v38PanelMoveHole === 'function') {
-            v38PanelMoveHole(+1);
-          } else if (typeof v38OpenInputPanel === 'function') {
-            v38OpenInputPanel(curPi(), hi + 1);
-          }
-        } else {
-          try { showToast('🏁 最終ホールまで入力完了'); } catch(_) {}
-        }
+          if (typeof v38PanelMoveHole === 'function') v38PanelMoveHole(+1);
+          else if (typeof v38OpenInputPanel === 'function') v38OpenInputPanel(curPi(), hi + 1);
+        } else { try { showToast('🏁 最終ホールまで入力完了'); } catch(_) {} }
         return;
       }
       const pi = curPi();
@@ -12341,36 +12352,29 @@ console.log('G-WORLD v38.0 ラウンド準備画面 配置整理版');
         const i = (pi + off) % players.length;
         const pp = players[i];
         if (!pp.scores[hi] || pp.scores[hi] <= 0) {
-          if (typeof v38OpenInputPanel === 'function') {
-            v38OpenInputPanel(i, hi);
-          }
+          if (typeof v38OpenInputPanel === 'function') v38OpenInputPanel(i, hi);
           return;
         }
       }
     } catch(e) { console.warn('[v41] autoAdvance', e); }
   }
 
-  /* ----- 既存 v38AfterInputFeedback ラップ：描画更新 + 自動進行（ハイライト固定ガード付き）----- */
   try {
     const origFB = (typeof v38AfterInputFeedback === 'function') ? v38AfterInputFeedback : null;
     window.v38AfterInputFeedback = function() {
       try { if (origFB) origFB.apply(this, arguments); } catch(e) { console.warn('[v41] origFB', e); }
       try { v41Refresh(); } catch(_) {}
-      /* タブ操作中は自動進行しない */
       if (window.__V41_HL_LOCK__) return;
       try {
         const p = State.players[curPi()];
         if (p && p.scores[curHole()] != null && p.scores[curHole()] > 0) {
           const mode = (State.ui && State.ui.inputMode) || 'simple';
-          if (mode !== 'counter') {
-            setTimeout(autoAdvance, 180);
-          }
+          if (mode !== 'counter') setTimeout(autoAdvance, 180);
         }
       } catch(_) {}
     };
   } catch(_) {}
 
-  /* ----- 既存 v38OpenInputPanel ラップ：開くたびに v41 描画 ----- */
   try {
     const origOpen = (typeof v38OpenInputPanel === 'function') ? v38OpenInputPanel : null;
     if (origOpen) {
@@ -12381,11 +12385,7 @@ console.log('G-WORLD v38.0 ラウンド準備画面 配置整理版');
     }
   } catch(_) {}
 
-  /* ============================================================
-     v41.1: イベントバインド統合
-     ============================================================ */
   function bindAll() {
-    /* ===== プレイヤーグリッドタップで選択切替 ===== */
     const g = $('v41PlayerGrid');
     if (g && !g.dataset.v41Bound) {
       g.dataset.v41Bound = '1';
@@ -12394,17 +12394,11 @@ console.log('G-WORLD v38.0 ラウンド準備画面 配置整理版');
         if (!cell || !g.contains(cell)) return;
         const pi = parseInt(cell.dataset.pi, 10);
         if (isNaN(pi) || pi < 0) return;
-        e.preventDefault();
-        e.stopPropagation();
-        try {
-          if (typeof v38OpenInputPanel === 'function') {
-            v38OpenInputPanel(pi, curHole());
-          }
-        } catch(err) { console.warn('[v41] selectPlayer', err); }
+        e.preventDefault(); e.stopPropagation();
+        try { if (typeof v38OpenInputPanel === 'function') v38OpenInputPanel(pi, curHole()); }
+        catch(err) { console.warn('[v41] selPlayer', err); }
       });
     }
-
-    /* ===== 確定ボタン ===== */
     const cf = $('v41ConfirmBtn');
     if (cf && !cf.dataset.v41Bound) {
       cf.dataset.v41Bound = '1';
@@ -12416,37 +12410,25 @@ console.log('G-WORLD v38.0 ラウンド準備画面 配置整理版');
         try {
           const hi = curHole();
           const players = (State && State.players) || [];
-          const allDone = players.length > 0 &&
-                          players.every(p => p.scores[hi] != null && p.scores[hi] > 0);
-          if (allDone) {
-            if (typeof v38PanelMoveHole === 'function') v38PanelMoveHole(+1);
-          } else {
-            autoAdvance();
-          }
-        } catch(err) { console.warn('[v41] confirm', err); }
+          const allDone = players.length > 0 && players.every(p => p.scores[hi] != null && p.scores[hi] > 0);
+          if (allDone) { if (typeof v38PanelMoveHole === 'function') v38PanelMoveHole(+1); }
+          else { autoAdvance(); }
+        } catch(err) { console.warn('[v41] cf', err); }
       });
     }
-
-    /* ===== モードタブ — ハイライト固定 + 後勝ち同期 ===== */
     const tabs = $('v38PanelModeTabs');
     if (tabs && !tabs.dataset.v41Bound) {
       tabs.dataset.v41Bound = '1';
-
       tabs.addEventListener('click', (e) => {
         const btn = e.target.closest('.v38-pmt-btn');
         if (!btn || !tabs.contains(btn)) return;
-
         let lockedPi = 0, lockedHi = 0;
         try { lockedPi = curPi();  } catch(_) {}
         try { lockedHi = curHole(); } catch(_) {}
         window.__V41_HL_LOCK__ = true;
-
         setTimeout(() => {
           try {
-            if (typeof V38 !== 'undefined' && V38) {
-              V38.pi = lockedPi;
-              V38.hi = lockedHi;
-            }
+            if (typeof V38 !== 'undefined' && V38) { V38.pi = lockedPi; V38.hi = lockedHi; }
             try { modalPlayerIdx = lockedPi; modalHole = lockedHi + 1; } catch(_) {}
             try { if (typeof v32SetActiveCell === 'function')      v32SetActiveCell(lockedPi, lockedHi); } catch(_) {}
             try { if (typeof v32ApplyCrossHighlight === 'function') v32ApplyCrossHighlight(); } catch(_) {}
@@ -12455,14 +12437,10 @@ console.log('G-WORLD v38.0 ラウンド準備画面 配置整理版');
           try { v41Refresh(); } catch(_) {}
           window.__V41_HL_LOCK__ = false;
         }, 20);
-
-        /* 保険：60ms / 150ms 後にも syncTabs を呼んで遅延上書きに勝つ */
         setTimeout(() => { try { syncTabs(); } catch(_) {} },  60);
         setTimeout(() => { try { syncTabs(); } catch(_) {} }, 150);
-      }, true); /* capture=true */
+      }, true);
     }
-
-    /* ===== パネル is-open 検知 → 再描画 ===== */
     try {
       const panel = $('v38InputPanel');
       if (panel && !panel.dataset.v41ObsBound) {
@@ -12478,19 +12456,66 @@ console.log('G-WORLD v38.0 ラウンド準備画面 配置整理版');
         mo.observe(panel, { attributes: true, attributeFilter: ['class'] });
       }
     } catch(_) {}
-
-    /* ===== 初期描画 ===== */
     setTimeout(() => { try { v41Refresh(); } catch(_) {} }, 100);
   }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', bindAll);
-  } else {
-    bindAll();
-  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindAll);
+  else bindAll();
   window.addEventListener('load', () => setTimeout(() => { try { v41Refresh(); } catch(_) {} }, 300));
+  console.log('[v41.1] input panel bound');
+})();
 
-  console.log('[v41.1] input panel bound (tab sync + yards + restroom)');
+/* ============================================================
+   v42: ラウンド準備画面 最下部ナビゲーションバー結線
+   - ホーム: スクロール top
+   - ラウンド: 既存 #v31StartRound を click 委譲
+   - 招待QR:  既存 #v33InviteQR / #v31OpenInviteQR / #btnInviteQR を最初に見つかったものに委譲
+   - 設定:    既存 #v31OpenSettings を click 委譲
+   既存ダイレクトバインドに一切触れない — 聖域ボタンへの click 委譲のみ
+   ============================================================ */
+(function(){
+  if (window.__V42_BN_BOUND__) return;
+  window.__V42_BN_BOUND__ = true;
+  function bind() {
+    const nav = document.getElementById('v42BottomNav');
+    if (!nav || nav.dataset.v42Bound === '1') return;
+    nav.dataset.v42Bound = '1';
+    nav.addEventListener('click', (e) => {
+      const btn = e.target.closest('.v42-bn-btn');
+      if (!btn || !nav.contains(btn)) return;
+      e.preventDefault();
+      const act = btn.dataset.v42nav;
+      try {
+        if (act === 'top') {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          return;
+        }
+        if (act === 'start') {
+          const t = document.getElementById('v31StartRound');
+          if (t && typeof t.click === 'function') t.click();
+          return;
+        }
+        if (act === 'qr') {
+          const ids = ['v33InviteQR', 'v31OpenInviteQR', 'btnInviteQR'];
+          for (const id of ids) {
+            const t = document.getElementById(id);
+            if (t && typeof t.click === 'function') { t.click(); return; }
+          }
+          return;
+        }
+        if (act === 'settings') {
+          const t = document.getElementById('v31OpenSettings');
+          if (t && typeof t.click === 'function') { t.click(); return; }
+          const m = document.getElementById('settingsModal');
+          if (m) m.classList.add('show');
+          return;
+        }
+      } catch(err) { console.warn('[v42] bottomnav', err); }
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind);
+  else bind();
+  window.addEventListener('load', () => setTimeout(bind, 300));
+  console.log('[v42] bottom-nav bar bound');
 })();
 </script>
 
