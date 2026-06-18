@@ -4586,6 +4586,10 @@ html, body {
 .v41-hb-restroom {
   grid-row: 1 / span 2;
   display: inline-flex; align-items: center;
+  /* v41.1: 非表示用ユーティリティクラス */
+.v41-hb-restroom.is-hidden {
+  display: none;
+}
   font-size: 18px; font-weight: 900;
   line-height: 1;
 }
@@ -12210,7 +12214,7 @@ console.log('G-WORLD v38.0 ラウンド準備画面 配置整理版');
     } catch(_) {}
     return null;
   }
-  
+
   /* ----- v41.1: トイレ（W.C）設置ホール（1-based） ----- */
   /* スコアカード「King's Field print plants」より特定:
     GOING OUT: 3, 5, 8 / COMING IN: 12, 14, 17 */
@@ -12230,12 +12234,11 @@ console.log('G-WORLD v38.0 ラウンド準備画面 配置整理版');
 
   /* v41.1: トイレマークの条件表示 */
     try {
-    const elRR = $('v41HoleRestroom');
-    if (elRR) {
-      elRR.style.display = hasRestroom(hi + 1) ? '' : 'none';
-    }
-   } catch(_) {}
-
+  const elRR = $('v41HoleRestroom');
+  if (elRR) {
+    elRR.classList.toggle('is-hidden', !hasRestroom(hi + 1));
+  }
+} catch(_) {}
     /* prev/next disabled 同期 */
     try {
       const maxH = (State && State.round && State.round.holesMode === '9') ? 9
