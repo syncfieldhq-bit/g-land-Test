@@ -4262,9 +4262,17 @@ html, body {
   /* 上部ダッシュボード非表示 */
   .v38-dash,
   .v38-dash-row,
-  .v38-dash-hint {
+  .v38-dash-hint 
+  .v31-modal-top, /* ★これが今回のボタンエリアのクラス名です！ */
+  .v33-modal-top  /* ★これも追加しておきましょう */
+  {
     display: none !important;
   }
+ /* 広告・QRエリアを非表示にする設定 */
+    .v47-modal-foot,
+    .v46-market {
+        display: none !important;
+    }
   /* 案内バー(編集ヒント) */
   .v34-edit-hint,
   .v36-edit-hint,
