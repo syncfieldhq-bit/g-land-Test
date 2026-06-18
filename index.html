@@ -4512,6 +4512,131 @@ html, body {
 }
 
 /* ============================================================
+   v47: スコア入力モーダル 3層レイアウトと横スクロール完全復旧
+   - 上段: .v46-dash（6ボタングリッド） — flex: 0 0 auto
+   - 中段: .v47-modal-mid（スコアカード） — flex: 1 1 auto + overflow-x: auto で横スクロール
+   - 下段: .v47-modal-foot（BOSS + QR） — flex: 0 0 auto
+   - v46.1 で付与していた table-layout: fixed / width: 100% を
+     #v31ModalScoreTable / #scoreTable については明示的に逆转させる
+   ============================================================ */
+
+/* モーダル本体を flex column で 3層高さ制御 */
+#scoreModal .v31-modal {
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+/* 上段（操作層） */
+#scoreModal .v46-dash {
+  flex: 0 0 auto !important;
+  width: 100%;
+}
+
+/* 中段（メイン層）: スコアカードの入れ物 */
+#scoreModal .v47-modal-mid {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: #FFFFFF !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+#scoreModal .v47-scoretable-wrap {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  overflow: hidden !important;
+}
+/* 横スクロールを担う div：-webkit-overflow-scrolling とともに指スライド可 */
+#scoreModal .v47-st-scroll {
+  height: 100% !important;
+  width: 100% !important;
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  scroll-behavior: smooth;
+}
+
+/* テーブル：固定レイアウトを解除して記述順サイズに戻す
+   v46.1 の fixed ・ width:100% !important を明示的に上書き */
+#v31ModalScoreTable.v33-modal-scoretable,
+#scoreModal #v31ModalScoreTable {
+  table-layout: auto !important;
+  width: auto !important;
+  min-width: 100% !important;
+  border-collapse: collapse;
+}
+#v31ModalScoreTable th,
+#v31ModalScoreTable td,
+#scoreModal #v31ModalScoreTable th,
+#scoreModal #v31ModalScoreTable td {
+  width: auto !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+/* プレイヤー名列は肩付け肩・最低幅保証、他は内容に合わせる */
+#v31ModalScoreTable th.col-fixed,
+#v31ModalScoreTable td.col-fixed,
+#scoreModal #v31ModalScoreTable th.col-fixed,
+#scoreModal #v31ModalScoreTable td.col-fixed {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  background: #F5F5F0 !important;
+  min-width: 92px !important;
+}
+
+/* メインスコアカード (#scoreTable) も同様に横スクロール復旧 */
+#scoreTable {
+  table-layout: auto !important;
+  width: auto !important;
+  min-width: 100% !important;
+  border-collapse: collapse;
+}
+#scoreTable th,
+#scoreTable td {
+  width: auto !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+#scoreTable th.col-fixed,
+#scoreTable td.col-fixed {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  background: #F5F5F0 !important;
+  min-width: 92px !important;
+}
+/* メインスコアカードのスクロールコンテナーも明示 */
+#tableScroll,
+.scoretable-scroll {
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  -webkit-overflow-scrolling: touch !important;
+  width: 100%;
+}
+
+/* 下段（拡散層） BOSS + QR */
+#scoreModal .v47-modal-foot {
+  flex: 0 0 auto !important;
+  margin: 0 !important;
+  padding: 10px 12px calc(10px + env(safe-area-inset-bottom)) !important;
+  background: #FFFFFF !important;
+  border-top: 2px solid #E5E7EB !important;
+}
+
+/* スクロールバー装飾（iOS Safari に見えるヒント） */
+#scoreModal .v47-st-scroll::-webkit-scrollbar { height: 8px; }
+#scoreModal .v47-st-scroll::-webkit-scrollbar-thumb {
+  background: rgba(45,157,95,.40);
+  border-radius: 4px;
+}
+
+/* ============================================================
    v46: スコア入力モーダル ダッシュボード（3列2行 + マーケティング）
    ============================================================ */
 .v46-dash {
@@ -7954,18 +8079,7 @@ var qrcode = function() {
         </button>
       </div>
 
-      <!-- マーケティングスペース -->
-      <div class="v46-market">
-        <div class="v46-market-boss" aria-label="サントリーBOSS広告">
-          <span class="v46-boss-logo">BOSS</span>
-          <span class="v46-boss-tag">SUNTORY</span>
-          <span class="v46-boss-copy">今、ひと休みしませんか。</span>
-        </div>
-        <div class="v46-market-qr">
-          <img class="v46-qr-img" alt="QR" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=0&data=https%3A%2F%2Fq-bit.github.io%2F">
-          <div class="v46-qr-text">本アプリは<br><b>完全無料・自由配布</b><br>ご自由にお使いください。</div>
-        </div>
-      </div>
+      <!-- v47: マーケティングスペースはモーダル最下部（下段拡散層）へ物理移動済み -->
 
       <!-- v38 聖域: 旧IDをそのまま維持（計算エンジン互換） -->
       <span class="v46-sanctuary" aria-hidden="true">
@@ -7986,13 +8100,29 @@ var qrcode = function() {
     </div>
 
     <!-- ============================================================
-         v33: モーダル本体 = スコアカード最大化
+         v47: 中段（メイン層） — スコアカード本体、横スクロール復旧
          ============================================================ -->
-    <div class="v31-modal-top v33-modal-top">
-      <div class="v31-scoretable-wrap v33-scoretable-wrap">
-        <div class="scoretable-scroll v31-st-scroll v33-st-scroll" id="v31ModalTableScroll">
+    <div class="v31-modal-top v33-modal-top v47-modal-mid">
+      <div class="v31-scoretable-wrap v33-scoretable-wrap v47-scoretable-wrap">
+        <div class="scoretable-scroll v31-st-scroll v33-st-scroll v47-st-scroll" id="v31ModalTableScroll">
           <table class="scoretable v33-modal-scoretable" id="v31ModalScoreTable"></table>
         </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         v47: 下段（拡散層） — BOSS広告 + 無料配布QR
+         モーダル最下部に自然配置（flex: 0 0 auto）
+         ============================================================ -->
+    <div class="v47-modal-foot v46-market">
+      <div class="v46-market-boss" aria-label="サントリーBOSS広告">
+        <span class="v46-boss-logo">BOSS</span>
+        <span class="v46-boss-tag">SUNTORY</span>
+        <span class="v46-boss-copy">今、ひと休みしませんか。</span>
+      </div>
+      <div class="v46-market-qr">
+        <img class="v46-qr-img" alt="QR" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=0&data=https%3A%2F%2Fq-bit.github.io%2F">
+        <div class="v46-qr-text">本アプリは<br><b>完全無料・自由配布</b><br>50人でもご自由に<br>お使いください。</div>
       </div>
     </div>
 
