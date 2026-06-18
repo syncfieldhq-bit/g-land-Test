@@ -4512,6 +4512,85 @@ html, body {
 }
 
 /* ============================================================
+   v44.1: トイレマークを赤色太字「WC」テキスト表示に変更
+   ============================================================ */
+.v41-hb-restroom {
+  grid-row: 1 / span 2 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  padding: 0 4px !important;
+}
+.v41-hb-restroom.is-hidden { display: none !important; }
+.v41-hb-wc {
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 900;
+  color: #d93a5a;
+  letter-spacing: 0.5px;
+  line-height: 1;
+}
+
+/* ============================================================
+   v44.2: スコア入力モーダル・スコアカード画面のハイライト全廃
+   - 縦・横ハイライト (.col-row-hl / .col-col-hl)
+   - 入力中行枠線 (.is-input-row)
+   - 選択セルハイライト (.v35-selected-cell)
+   ・クラス付与ロジックや v35ActiveP/Hi 計算はそのまま（入力セル特定に不可欠）、
+     見た目の強調だけを中和する
+   ============================================================ */
+.scoretable .col-row-hl,
+.scoretable .col-row-hl.col-fixed,
+.scoretable .col-col-hl,
+.scoretable td.col-row-hl.col-col-hl,
+.scoretable th.col-row-hl.col-col-hl,
+.scoretable tr.is-input-row td,
+.scoretable tr.is-input-row td:not(.col-fixed),
+.scoretable tr.is-input-row td.col-fixed,
+.v32-livescore .col-row-hl,
+.v32-livescore .col-row-hl.col-fixed,
+.v32-livescore .col-col-hl,
+.v32-livescore td.col-row-hl.col-col-hl,
+.v32-livescore th.col-row-hl.col-col-hl,
+.v32-livescore tr.is-input-row td,
+.v32-livescore tr.is-input-row td:not(.col-fixed),
+.v32-livescore tr.is-input-row td.col-fixed,
+#v31ModalScoreTable .col-row-hl,
+#v31ModalScoreTable .col-col-hl,
+#v31ModalScoreTable td.col-row-hl.col-col-hl,
+#v31ModalScoreTable th.col-row-hl.col-col-hl,
+#v31ModalScoreTable tr.is-input-row td,
+#v31ModalScoreTable tr.is-input-row td:not(.col-fixed),
+#v31ModalScoreTable tr.is-input-row td.col-fixed,
+.v33-modal-scoretable .col-row-hl,
+.v33-modal-scoretable .col-col-hl,
+.v33-modal-scoretable td.col-row-hl.col-col-hl,
+.v33-modal-scoretable th.col-row-hl.col-col-hl,
+.v33-modal-scoretable tr.is-input-row td.col-fixed,
+.v35-selected-cell,
+#scoreTable .v35-selected-cell,
+#v31ModalScoreTable .v35-selected-cell,
+#v32LiveTable .v35-selected-cell {
+  background: inherit !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  color: inherit !important;
+  outline: none !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  border-top: inherit !important;
+  border-bottom: inherit !important;
+  font-weight: inherit !important;
+  z-index: auto !important;
+}
+/* セルタップしたときの一瞬の :active 強調もフラット化 */
+.scoretable td[data-action="cell-tap"]:active,
+.v32-livescore td[data-action="cell-tap"]:active {
+  background: inherit !important;
+}
+
+/* ============================================================
    v42: ラウンド準備画面 — 緑実線枠統一 + ティートグル + 最下部ナビバー
    - スコープ: .v31-cockpit 内の .v31-block のみ（他画面への影響ゼロ）
    ============================================================ */
@@ -7599,8 +7678,8 @@ var qrcode = function() {
       <span class="v41-hb-op">◀</span><span class="v41-hb-lbl">前<br>ホール</span>
     </button>
     <div class="v41-hb-center" id="v41HoleCenter">
-      <span class="v41-hb-restroom" id="v41HoleRestroom" aria-hidden="true">
-        <span class="v41-hb-rr-f">♀</span><span class="v41-hb-rr-m">♂</span>
+      <span class="v41-hb-restroom" id="v41HoleRestroom" aria-label="WC">
+        <span class="v41-hb-wc">WC</span>
       </span>
       <span class="v41-hb-hole" id="v38PanelHole">1H</span>
       <span class="v41-hb-par"  id="v38PanelPar">PAR 4</span>
@@ -12407,6 +12486,84 @@ console.log('G-WORLD v38.0 ラウンド準備画面 配置整理版');
 })();
 
 /* v43: 最下部ナビゲーションバー IIFE は物理削除済み */
+
+/* ============================================================
+   v44: 数字パッドモードタブクリック時のアクティブセル同期修正
+   - タブを押した瞬間、v35ActivePi/Hi を現在の V38.pi/V38.hi に値を上書きして
+     「直前ボタン位置でフリーズ」を防ぐ
+   - スコア保存・パネル描画ロジックとも無干渉、document capture レベルのリスナーのみ
+   - v35HighlightActiveCell はほぼノーオプになる（v44.2 ハイライト無効化で見た目未変化）
+   ============================================================ */
+(function(){
+  if (window.__V44_TAB_SYNC_BOUND__) return;
+  window.__V44_TAB_SYNC_BOUND__ = true;
+
+  function syncActiveCellToCurrent() {
+    try {
+      let pi = -1, hi = -1;
+      if (typeof V38 !== 'undefined' && V38) {
+        if (typeof V38.pi === 'number') pi = V38.pi;
+        if (typeof V38.hi === 'number') hi = V38.hi;
+      }
+      if (pi < 0) {
+        try { if (typeof modalPlayerIdx === 'number') pi = modalPlayerIdx; } catch(_) {}
+      }
+      if (hi < 0) {
+        try { if (typeof modalHole === 'number') hi = modalHole - 1; } catch(_) {}
+      }
+      if (pi < 0 || hi < 0) return;
+      try { v35ActivePi = pi; v35ActiveHi = hi; } catch(_) {}
+      try { if (typeof v32SetActiveCell === 'function') v32SetActiveCell(pi, hi); } catch(_) {}
+      try { if (typeof v35HighlightActiveCell === 'function') v35HighlightActiveCell(); } catch(_) {}
+    } catch(_) {}
+  }
+
+  /* document capture でモードタブクリックを上位で捕捉 */
+  document.addEventListener('click', (e) => {
+    try {
+      const tabs = document.getElementById('v38PanelModeTabs');
+      if (!tabs) return;
+      const btn = e.target.closest('.v38-pmt-btn');
+      if (!btn || !tabs.contains(btn)) return;
+      /* 既存ハンドラが走ったあと、複数タイミングで同期 */
+      syncActiveCellToCurrent();
+      setTimeout(syncActiveCellToCurrent,  30);
+      setTimeout(syncActiveCellToCurrent,  80);
+      setTimeout(syncActiveCellToCurrent, 180);
+    } catch(_) {}
+  }, true);
+
+  /* パネルが開いたときも同期（初期タイミング保険）*/
+  try {
+    const panel = document.getElementById('v38InputPanel');
+    if (panel) {
+      const mo = new MutationObserver((muts) => {
+        for (const m of muts) {
+          if (m.attributeName === 'class' && panel.classList.contains('is-open')) {
+            setTimeout(syncActiveCellToCurrent, 40);
+            setTimeout(syncActiveCellToCurrent, 120);
+          }
+        }
+      });
+      mo.observe(panel, { attributes: true, attributeFilter: ['class'] });
+    }
+  } catch(_) {}
+
+  /* 既存 v38RenderPanelBody を安全にラップして描画後も同期 */
+  try {
+    const orig = (typeof v38RenderPanelBody === 'function') ? v38RenderPanelBody : null;
+    if (orig) {
+      window.v38RenderPanelBody = function() {
+        let r;
+        try { r = orig.apply(this, arguments); } catch(e) { console.warn('[v44] orig RenderPanelBody', e); }
+        try { setTimeout(syncActiveCellToCurrent, 10); } catch(_) {}
+        return r;
+      };
+    }
+  } catch(_) {}
+
+  console.log('[v44] active-cell sync on mode tab click bound');
+})();
 
 /* ============================================================
    v43: スコア入力モーダル COT ボタン (#v38DashTee) の単独トグル修理
