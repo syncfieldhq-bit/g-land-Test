@@ -4512,6 +4512,232 @@ html, body {
 }
 
 /* ============================================================
+   v46: スコア入力モーダル ダッシュボード（3列2行 + マーケティング）
+   ============================================================ */
+.v46-dash {
+  position: relative;
+  background: #FFFFFF;
+  border-bottom: 2px solid #E5E7EB;
+  padding: 12px 12px 14px;
+}
+.v46-sanctuary { position: absolute; left: -10000px; top: -10000px; width: 1px; height: 1px; overflow: hidden; }
+.v46-dash-close {
+  position: absolute;
+  top: 10px; right: 10px;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid #d6dde2;
+  background: #fff;
+  color: #1a3a25;
+  font-size: 22px; font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 5;
+  -webkit-tap-highlight-color: rgba(45,157,95,.25);
+}
+.v46-dash-close:active { background: #f0f7f3; }
+
+.v46-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, auto);
+  gap: 8px;
+  margin-top: 4px;
+  margin-right: 44px; /* ×ボタン退避 */
+}
+.v46-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 4px;
+  border: 1.5px solid #d6dde2;
+  border-radius: 12px;
+  background: #FFFFFF;
+  color: #1a3a25;
+  font-weight: 800;
+  cursor: pointer;
+  -webkit-tap-highlight-color: rgba(45,157,95,.25);
+  min-height: 64px;
+  text-align: center;
+}
+.v46-btn:active { transform: translateY(1px); background: #f0f7f3; }
+.v46-btn-ico { font-size: 18px; line-height: 1; }
+.v46-btn-lbl { font-size: 10px; font-weight: 700; color: #5a6a60; letter-spacing: .04em; line-height: 1.1; }
+.v46-btn-val { font-size: 15px; font-weight: 900; color: #1f7a47; line-height: 1.1; margin-top: 2px; }
+
+/* PMボタンは強調（同伴者にスタート時間を見せる用途） */
+.v46-btn-pm {
+  background: linear-gradient(180deg, #FFF7DD 0%, #FFEFB8 100%);
+  border-color: #E0B43A;
+}
+.v46-btn-pm .v46-btn-val { color: #8a5b00; }
+
+@media (max-width: 360px) {
+  .v46-btn-ico { font-size: 16px; }
+  .v46-btn-lbl { font-size: 9px; }
+  .v46-btn-val { font-size: 13px; }
+  .v46-btn { min-height: 56px; }
+}
+
+/* マーケティングスペース */
+.v46-market {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+  align-items: stretch;
+}
+.v46-market-boss {
+  background: linear-gradient(135deg, #14213D 0%, #1B263B 100%);
+  color: #fff;
+  border-radius: 12px;
+  padding: 14px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,.10);
+}
+.v46-market-boss::before {
+  content: "";
+  position: absolute;
+  top: 0; right: -20px;
+  width: 70px; height: 70px;
+  background: radial-gradient(circle, rgba(214, 158, 46, .35) 0%, transparent 70%);
+  pointer-events: none;
+}
+.v46-boss-logo {
+  font-family: 'Impact', 'Arial Black', sans-serif;
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  line-height: 1;
+  color: #FFD56B;
+  text-shadow: 0 2px 4px rgba(0,0,0,.40);
+}
+.v46-boss-tag {
+  font-size: 10px;
+  font-weight: 700;
+  color: #C9D6E2;
+  letter-spacing: 3px;
+  line-height: 1;
+}
+.v46-boss-copy {
+  font-size: 12px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-top: 4px;
+  line-height: 1.3;
+}
+.v46-market-qr {
+  background: #FFFFFF;
+  border: 1.5px solid #d6dde2;
+  border-radius: 12px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.v46-qr-img {
+  width: 80px; height: 80px;
+  display: block;
+  background: #fff;
+}
+.v46-qr-text {
+  font-size: 9px;
+  font-weight: 700;
+  color: #1a3a25;
+  text-align: center;
+  line-height: 1.25;
+}
+.v46-qr-text b { color: #1f7a47; font-size: 10px; }
+
+@media (max-width: 360px) {
+  .v46-boss-logo { font-size: 26px; }
+  .v46-qr-img    { width: 70px; height: 70px; }
+}
+
+/* 旧 .v38-dash CSS との衰退互換: 旧セレクタが 聖域 span に当たっても表示不要 */
+.v46-sanctuary .v38-dash-card,
+.v46-sanctuary button { display: none !important; }
+
+/* ============================================================
+   v46.1: ハイライト系クラスの完全無効化 + テーブルレイアウト固定化
+   - ユーザー指定をスコアテーブルスコープに適用して他コンポーネントへの影響を防ぐ
+   ============================================================ */
+.scoretable .col-row-hl,
+.scoretable .col-hl,
+.scoretable .row-hl,
+.scoretable .is-input-row,
+.scoretable .col-fixed,
+.v32-livescore .col-row-hl,
+.v32-livescore .col-hl,
+.v32-livescore .row-hl,
+.v32-livescore .is-input-row,
+.v32-livescore .col-fixed,
+#v31ModalScoreTable .col-row-hl,
+#v31ModalScoreTable .col-hl,
+#v31ModalScoreTable .row-hl,
+#v31ModalScoreTable .is-input-row,
+#v31ModalScoreTable .col-fixed,
+.v33-modal-scoretable .col-row-hl,
+.v33-modal-scoretable .col-hl,
+.v33-modal-scoretable .row-hl,
+.v33-modal-scoretable .is-input-row,
+.v33-modal-scoretable .col-fixed {
+  background-color: #ffffff !important;
+  background-image: none !important;
+  opacity: 1 !important;
+  color: #000000 !important;
+}
+
+/* セル幅再計算: width:auto + table-layout:fixed をスコアテーブルに適用 */
+.scoretable,
+.v32-livescore,
+#v31ModalScoreTable,
+.v33-modal-scoretable {
+  table-layout: fixed !important;
+  width: 100% !important;
+  border-collapse: collapse;
+}
+.scoretable th,
+.scoretable td,
+.v32-livescore th,
+.v32-livescore td,
+#v31ModalScoreTable th,
+#v31ModalScoreTable td,
+.v33-modal-scoretable th,
+.v33-modal-scoretable td {
+  width: auto !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* プレイヤー名列だけ明示的に幅を使う */
+.scoretable th.col-fixed,
+.scoretable td.col-fixed,
+#v31ModalScoreTable th.col-fixed,
+#v31ModalScoreTable td.col-fixed {
+  min-width: 78px;
+}
+/* OUT/IN/TOTAL列は出しり起こさないよう適切に */
+.scoretable th.col-total,
+.scoretable td.col-total,
+.scoretable th.col-out,
+.scoretable td.col-out,
+.scoretable th.col-in,
+.scoretable td.col-in,
+.scoretable th.col-grand,
+.scoretable td.col-grand {
+  min-width: 56px;
+}
+
+/* ============================================================
    v45: スコアカード背景・ハイライトの完全クリーンアップ
    - 現在ホール黄色ハイライト / OUT/IN 区切り二重線 / ストライプ / is-me 背景 / col-total グラデーション / スコア色分け背景を全て中和
    - ただし OUT/IN/TOTAL 集計列だけは薄グレーで区別（読みやすさ確保）
@@ -7688,61 +7914,74 @@ var qrcode = function() {
 <div class="modal-backdrop" id="scoreModal">
   <div class="modal v31-modal">
 
-    <!-- v38: ラウンド設定ダッシュボード(モーダル上部・最優先表示) -->
-    <div class="v38-dash">
-      <div class="v38-dash-row">
-        <button class="v38-dash-card v38-dc-tee" id="v38DashTee" type="button">
-          <span class="v38-dc-ico">⛳</span>
-          <span class="v38-dc-body">
-            <span class="v38-dc-label">使用ティー</span>
-            <span class="v38-dc-value" id="v38DashTeeVal">REG</span>
-          </span>
+    <!-- v46: スコア入力モーダル ダッシュボード（3列2行）+ マーケティングスペース -->
+    <div class="v46-dash">
+      <button class="v46-dash-close" data-close type="button" aria-label="閉じる">×</button>
+
+      <div class="v46-grid">
+        <!-- 上段 -->
+        <button class="v46-btn v46-btn-tee" id="v46BtnTee" type="button">
+          <span class="v46-btn-ico">⛳</span>
+          <span class="v46-btn-lbl">使用T</span>
+          <span class="v46-btn-val" id="v46TeeVal">REG</span>
         </button>
-        <button class="v38-dash-card v38-dc-disp" id="v38DashDisp" type="button">
-          <span class="v38-dc-ico">🔢</span>
-          <span class="v38-dc-body">
-            <span class="v38-dc-label">スコア表示</span>
-            <span class="v38-dc-value" id="v38DashDispVal">数字</span>
-          </span>
+        <button class="v46-btn v46-btn-disp" id="v46BtnDisp" type="button">
+          <span class="v46-btn-ico">🔢</span>
+          <span class="v46-btn-lbl">スコア表示</span>
+          <span class="v46-btn-val" id="v46DispVal">数字</span>
         </button>
-        <div class="v38-dash-card v38-dc-pm v38-dc-highlight">
-          <span class="v38-dc-ico">⏰</span>
-          <span class="v38-dc-body">
-            <span class="v38-dc-label">後半スタート</span>
-            <span class="v38-dc-value" id="v38DashPm">— : —</span>
-          </span>
-        </div>
-        <div class="v38-dash-card v38-dc-locker">
-          <span class="v38-dc-ico">🔐</span>
-          <span class="v38-dc-body">
-            <span class="v38-dc-label">ロッカー</span>
-            <span class="v38-dc-value" id="v38DashLocker">—</span>
-          </span>
-        </div>
-        <div class="v38-dash-card v38-dc-mode">
-          <span class="v38-dc-ico">🏌️</span>
-          <span class="v38-dc-body">
-            <span class="v38-dc-label">モード</span>
-            <span class="v38-dc-value">
-              <span id="v38DashGame">一般</span>
-              <span class="v38-dc-sep">·</span>
-              <span id="v38DashHoles">18H</span>
-              <span class="v38-dc-sep">·</span>
-              <span id="v38DashInput">シンプル</span>
-            </span>
-          </span>
-        </div>
-        <button class="v38-dash-close" data-close type="button" aria-label="閉じる">×</button>
+        <button class="v46-btn v46-btn-holes" id="v46BtnHoles" type="button">
+          <span class="v46-btn-ico">🏁</span>
+          <span class="v46-btn-lbl">ホール数</span>
+          <span class="v46-btn-val" id="v46HolesVal">18H</span>
+        </button>
+
+        <!-- 下段 -->
+        <button class="v46-btn v46-btn-locker" id="v46BtnLocker" type="button">
+          <span class="v46-btn-ico">🔐</span>
+          <span class="v46-btn-lbl">ロッカー</span>
+          <span class="v46-btn-val" id="v46LockerVal">—</span>
+        </button>
+        <button class="v46-btn v46-btn-game" id="v46BtnGame" type="button">
+          <span class="v46-btn-ico">🏌️</span>
+          <span class="v46-btn-lbl">入力人数</span>
+          <span class="v46-btn-val" id="v46GameVal">4人</span>
+        </button>
+        <button class="v46-btn v46-btn-pm" id="v46BtnPm" type="button">
+          <span class="v46-btn-ico">⏰</span>
+          <span class="v46-btn-lbl">後半スタート</span>
+          <span class="v46-btn-val" id="v46PmVal">— : —</span>
+        </button>
       </div>
-      <div class="v38-dash-hint">
-        <span>💡 セルをタップ → 下から入力パネルが現れます（自動保存）</span>
+
+      <!-- マーケティングスペース -->
+      <div class="v46-market">
+        <div class="v46-market-boss" aria-label="サントリーBOSS広告">
+          <span class="v46-boss-logo">BOSS</span>
+          <span class="v46-boss-tag">SUNTORY</span>
+          <span class="v46-boss-copy">今、ひと休みしませんか。</span>
+        </div>
+        <div class="v46-market-qr">
+          <img class="v46-qr-img" alt="QR" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=0&data=https%3A%2F%2Fq-bit.github.io%2F">
+          <div class="v46-qr-text">本アプリは<br><b>完全無料・自由配布</b><br>ご自由にお使いください。</div>
+        </div>
       </div>
-      <!-- v38 聖域: 旧IDをここに退避(JS互換のため) -->
-      <span class="v38-sanctuary-hidden" aria-hidden="true">
-        <span id="scoreModalTitle">スコア入力</span>
-        <span id="v31ModalPm">— : —</span>
-        <span id="v31ModalModeBadge">🏌️ 一般</span>
-        <span id="v32ModalHolesBadge">🏁 18H</span>
+
+      <!-- v38 聖域: 旧IDをそのまま維持（計算エンジン互換） -->
+      <span class="v46-sanctuary" aria-hidden="true">
+        <button id="v38DashTee"   type="button"></button>
+        <button id="v38DashDisp"  type="button"></button>
+        <span   id="v38DashTeeVal">REG</span>
+        <span   id="v38DashDispVal">数字</span>
+        <span   id="v38DashPm">— : —</span>
+        <span   id="v38DashLocker">—</span>
+        <span   id="v38DashGame">一般</span>
+        <span   id="v38DashHoles">18H</span>
+        <span   id="v38DashInput">シンプル</span>
+        <span   id="scoreModalTitle">スコア入力</span>
+        <span   id="v31ModalPm">— : —</span>
+        <span   id="v31ModalModeBadge">🏌️ 一般</span>
+        <span   id="v32ModalHolesBadge">🏁 18H</span>
       </span>
     </div>
 
@@ -12707,6 +12946,247 @@ console.log('G-WORLD v38.0 ラウンド準備画面 配置整理版');
 })();
 
 /* v43: 最下部ナビゲーションバー IIFE は物理削除済み */
+
+/* ============================================================
+   v46: スコア入力モーダル ダッシュボード 6ボタン結線
+   - 使用T  : v43DirectToggleTee（REG/LADIES ダイレクトトグル）
+   - スコア表示: v38CycleDisplayMode（number/diff/symbol）
+   - ホール数: State.round.holesMode を 18⇄9 トグル、ラウンド準備画面と同期
+   - ロッカー: prompt で編集、準備画面の #v31LockerInput と双方同期
+   - 入力人数: State.ui.gameMode を standard⇄beginner トグル
+   - 後半スタート: 既存 v382OpenPmPicker を起動
+   スコア保存/GAS連携には一切触れず、State 更新と UI 同期のみ
+   ============================================================ */
+(function(){
+  if (window.__V46_DASH_BOUND__) return;
+  window.__V46_DASH_BOUND__ = true;
+
+  const $ = (id) => document.getElementById(id);
+
+  function safePersist() {
+    try { if (typeof Storage !== 'undefined' && Storage && Storage.saveState) Storage.saveState(); } catch(_) {}
+    try { if (typeof Storage !== 'undefined' && Storage && Storage.saveSettings) Storage.saveSettings(); } catch(_) {}
+  }
+  function safeRender() {
+    try { if (typeof renderTopAndHero === 'function') renderTopAndHero(); } catch(_) {}
+    try { if (typeof renderTable === 'function') renderTable(); } catch(_) {}
+    try { if (typeof v38UpdateDashboard === 'function') v38UpdateDashboard(); } catch(_) {}
+    try { if (typeof v41Refresh === 'function') v41Refresh(); } catch(_) {}
+    try { v46Refresh(); } catch(_) {}
+  }
+  function safeToast(msg) { try { if (typeof showToast === 'function') showToast(msg); } catch(_) {} }
+
+  /* ===== v46 ボタンの表示値を State と同期 ===== */
+  function v46Refresh() {
+    try {
+      const tee = (State && State.ui && State.ui.useLadiesTee) ? 'LADIES' : 'REG';
+      const e = $('v46TeeVal'); if (e) e.textContent = tee;
+    } catch(_) {}
+    try {
+      const disp = (State && State.ui && State.ui.displayMode) || 'number';
+      const lbl = disp === 'symbol' ? '記号' : (disp === 'diff' ? '±差分' : '数字');
+      const e = $('v46DispVal'); if (e) e.textContent = lbl;
+    } catch(_) {}
+    try {
+      const h = (State && State.round && State.round.holesMode === '9') ? '9H' : '18H';
+      const e = $('v46HolesVal'); if (e) e.textContent = h;
+    } catch(_) {}
+    try {
+      const lk = (State && State.round && State.round.lockerNum != null) ? String(State.round.lockerNum).trim() : '';
+      const e = $('v46LockerVal'); if (e) e.textContent = lk || '—';
+    } catch(_) {}
+    try {
+      const isBeg = (State && State.ui && State.ui.gameMode === 'beginner');
+      const e = $('v46GameVal'); if (e) e.textContent = isBeg ? '1人' : '4人';
+    } catch(_) {}
+    try {
+      const pm = (State && State.round && State.round.pmStart) ? State.round.pmStart : '— : —';
+      const e = $('v46PmVal'); if (e) e.textContent = pm;
+    } catch(_) {}
+  }
+  window.v46Refresh = v46Refresh;
+
+  /* 既存 v38UpdateDashboard ラップ: 呼ばれるたび v46 も同期 */
+  try {
+    const origUD = (typeof v38UpdateDashboard === 'function') ? v38UpdateDashboard : null;
+    if (origUD) {
+      window.v38UpdateDashboard = function() {
+        let r;
+        try { r = origUD.apply(this, arguments); } catch(e) { console.warn('[v46] orig UD', e); }
+        try { v46Refresh(); } catch(_) {}
+        return r;
+      };
+    }
+  } catch(_) {}
+
+  /* ===== 使用T （REG/LADIESトグル） ===== */
+  function bindTee() {
+    const b = $('v46BtnTee'); if (!b || b.dataset.v46Bound === '1') return;
+    b.dataset.v46Bound = '1';
+    b.addEventListener('click', (e) => {
+      e.preventDefault();
+      try {
+        if (typeof v43DirectToggleTee === 'function') v43DirectToggleTee();
+        else if (typeof v38ToggleTee === 'function') v38ToggleTee();
+      } catch(err) { console.warn('[v46] tee', err); }
+      v46Refresh();
+    });
+  }
+
+  /* ===== スコア表示（3段階サイクル） ===== */
+  function bindDisp() {
+    const b = $('v46BtnDisp'); if (!b || b.dataset.v46Bound === '1') return;
+    b.dataset.v46Bound = '1';
+    b.addEventListener('click', (e) => {
+      e.preventDefault();
+      try {
+        if (typeof v38CycleDisplayMode === 'function') v38CycleDisplayMode();
+      } catch(err) { console.warn('[v46] disp', err); }
+      v46Refresh();
+    });
+  }
+
+  /* ===== ホール数 18H⇄9H ===== */
+  function bindHoles() {
+    const b = $('v46BtnHoles'); if (!b || b.dataset.v46Bound === '1') return;
+    b.dataset.v46Bound = '1';
+    b.addEventListener('click', (e) => {
+      e.preventDefault();
+      try {
+        if (!State.round) State.round = {};
+        const cur = (State.round.holesMode === '9') ? '9' : '18';
+        const next = (cur === '9') ? '18' : '9';
+        State.round.holesMode = next;
+        /* 準備画面の #v32HolesToggle とも同期 */
+        try {
+          document.querySelectorAll('#v32HolesToggle button').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.holes === next);
+          });
+        } catch(_) {}
+        /* body class も同期（既存 9Hロック UI トリガー） */
+        try { document.body.classList.toggle('v32-holes-9', next === '9'); } catch(_) {}
+        safePersist();
+        safeRender();
+        safeToast(next === '9' ? '🏁 9H ハーフラウンド' : '🏁 18H フルラウンド');
+      } catch(err) { console.warn('[v46] holes', err); }
+    });
+  }
+
+  /* ===== ロッカー番号 prompt 編集 ===== */
+  function bindLocker() {
+    const b = $('v46BtnLocker'); if (!b || b.dataset.v46Bound === '1') return;
+    b.dataset.v46Bound = '1';
+    b.addEventListener('click', (e) => {
+      e.preventDefault();
+      try {
+        if (!State.round) State.round = {};
+        const cur = State.round.lockerNum != null ? String(State.round.lockerNum) : '';
+        const input = window.prompt('🔐 ロッカー番号を入力（6桁以内）', cur);
+        if (input == null) return;
+        const v = String(input).replace(/[^0-9A-Za-z\-]/g, '').slice(0, 6);
+        State.round.lockerNum = v;
+        /* 準備画面の #v31LockerInput と同期 */
+        try {
+          const lk = $('v31LockerInput');
+          if (lk) {
+            lk.value = v;
+            lk.dispatchEvent(new Event('input', { bubbles: true }));
+            lk.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        } catch(_) {}
+        safePersist();
+        safeRender();
+        safeToast(v ? ('🔐 ロッカー ' + v) : '🔐 ロッカークリア');
+      } catch(err) { console.warn('[v46] locker', err); }
+    });
+  }
+
+  /* ===== 入力人数 4人⇄1人（standard ⇄ beginner） ===== */
+  function bindGame() {
+    const b = $('v46BtnGame'); if (!b || b.dataset.v46Bound === '1') return;
+    b.dataset.v46Bound = '1';
+    b.addEventListener('click', (e) => {
+      e.preventDefault();
+      try {
+        if (!State.ui) State.ui = {};
+        const next = (State.ui.gameMode === 'beginner') ? 'standard' : 'beginner';
+        State.ui.gameMode = next;
+        try { document.body.classList.toggle('v31-mode-beginner', next === 'beginner'); } catch(_) {}
+        /* 準備画面の #v31ModeToggle と同期 */
+        try {
+          document.querySelectorAll('#v31ModeToggle button').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.gmode === next);
+          });
+        } catch(_) {}
+        safePersist();
+        safeRender();
+        safeToast(next === 'beginner' ? '🔰 1人入力モード' : '🏌️ 4人入力モード');
+      } catch(err) { console.warn('[v46] game', err); }
+    });
+  }
+
+  /* ===== 後半スタート時間 — 既存 v382OpenPmPicker ===== */
+  function bindPm() {
+    const b = $('v46BtnPm'); if (!b || b.dataset.v46Bound === '1') return;
+    b.dataset.v46Bound = '1';
+    b.addEventListener('click', (e) => {
+      e.preventDefault();
+      try {
+        if (typeof v382OpenPmPicker === 'function') {
+          v382OpenPmPicker();
+        } else {
+          /* フォールバック: ネイティブ prompt */
+          const cur = (State.round && State.round.pmStart) ? State.round.pmStart : '';
+          const input = window.prompt('⏰ 後半スタート時間（HH:MM）', cur);
+          if (input == null) return;
+          State.round.pmStart = String(input).slice(0, 5);
+          safePersist();
+        }
+      } catch(err) { console.warn('[v46] pm', err); }
+      setTimeout(safeRender, 50);
+    });
+  }
+
+  function bindAll() {
+    bindTee();
+    bindDisp();
+    bindHoles();
+    bindLocker();
+    bindGame();
+    bindPm();
+    v46Refresh();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindAll);
+  } else {
+    bindAll();
+  }
+  window.addEventListener('load', () => setTimeout(bindAll, 200));
+  setTimeout(bindAll, 500);
+  setTimeout(bindAll, 1200);
+
+  /* モーダル表示検知でもバインド・描画 */
+  try {
+    const sm = document.getElementById('scoreModal');
+    if (sm) {
+      const mo = new MutationObserver(() => { bindAll(); });
+      mo.observe(sm, { attributes: true, attributeFilter: ['class'] });
+    }
+  } catch(_) {}
+
+  /* 準備画面のロッカー入力を v46 ボタンへ同期させる */
+  try {
+    const lk = document.getElementById('v31LockerInput');
+    if (lk) {
+      ['input', 'change', 'blur'].forEach(ev => {
+        lk.addEventListener(ev, () => v46Refresh());
+      });
+    }
+  } catch(_) {}
+
+  console.log('[v46] score-modal dashboard 3x2 bound');
+})();
 
 /* ============================================================
    v44: 数字パッドモードタブクリック時のアクティブセル同期修正
