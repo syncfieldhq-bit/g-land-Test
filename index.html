@@ -4512,6 +4512,145 @@ html, body {
 }
 
 /* ============================================================
+   v45: スコアカード背景・ハイライトの完全クリーンアップ
+   - 現在ホール黄色ハイライト / OUT/IN 区切り二重線 / ストライプ / is-me 背景 / col-total グラデーション / スコア色分け背景を全て中和
+   - ただし OUT/IN/TOTAL 集計列だけは薄グレーで区別（読みやすさ確保）
+   - テキスト色は保持（スコア差の赤・青色字は残す）
+   ============================================================ */
+.scoretable,
+.scoretable thead,
+.scoretable tbody,
+.scoretable tr,
+.scoretable th,
+.scoretable td {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  opacity: 1 !important;
+}
+/* ヘッダーと col-fixed は薄グレーで表記 */
+.scoretable thead th,
+.scoretable th.col-fixed,
+.scoretable td.col-fixed,
+.scoretable .par-row,
+.scoretable th.par-row,
+.scoretable td.par-row {
+  background: #F5F5F0 !important;
+  background-color: #F5F5F0 !important;
+  background-image: none !important;
+}
+/* 集計列（OUT/IN/TOTAL）はもう少し濃めのグレー */
+.scoretable th.col-total,
+.scoretable td.col-total,
+.scoretable th.col-out,
+.scoretable td.col-out,
+.scoretable th.col-in,
+.scoretable td.col-in,
+.scoretable th.col-grand,
+.scoretable td.col-grand {
+  background: #EEECE3 !important;
+  background-color: #EEECE3 !important;
+  background-image: none !important;
+}
+.scoretable thead th.col-total,
+.scoretable thead th.col-out,
+.scoretable thead th.col-in,
+.scoretable thead th.col-grand {
+  background: #E4E0CD !important;
+  background-color: #E4E0CD !important;
+  color: #4A4A2E !important;
+  font-weight: 900 !important;
+}
+/* 現在ホールハイライトを無効化 */
+.scoretable th.current-hole,
+.scoretable td.current-hole,
+.scoretable th.par-row.current-hole,
+tr.is-me td.current-hole {
+  background: #FFFFFF !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+.scoretable th.par-row.current-hole,
+.scoretable th.col-fixed.current-hole,
+.scoretable td.col-fixed.current-hole {
+  background: #F5F5F0 !important;
+}
+.scoretable th.current-hole::after { content: none !important; }
+/* OUT 区切り二重線を中和（集計列で区切るため不要） */
+.scoretable th.out-end,
+.scoretable td.out-end {
+  border-right: 1px solid #E5E7EB !important;
+}
+/* 交互ストライプを完全無効化 */
+.scoretable tbody tr:nth-child(even):not(.is-me) td:not(.col-fixed):not(.col-total):not(.col-out):not(.col-in):not(.col-grand) {
+  background: #FFFFFF !important;
+}
+/* is-me 行背景も一律白 */
+tr.is-me td,
+tr.is-me td.col-fixed,
+tr.is-me td.col-total,
+tr.is-me td.current-hole {
+  background: #FFFFFF !important;
+  background-image: none !important;
+}
+tr.is-me td.col-fixed {
+  background: #F5F5F0 !important;
+  border-left: 3px solid var(--green-2) !important;
+}
+tr.is-me td.col-total,
+tr.is-me td.col-out,
+tr.is-me td.col-in,
+tr.is-me td.col-grand {
+  background: #EEECE3 !important;
+}
+/* スコア色分け背景を中和（テキスト色はそのまま） */
+.scoretable .score-cell,
+.scoretable .score-cell.under-3,
+.scoretable .score-cell.under-2,
+.scoretable .score-cell.under-1,
+.scoretable .score-cell.par,
+.scoretable .score-cell.over-1,
+.scoretable .score-cell.over-2,
+.scoretable .score-cell.empty {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  background-image: none !important;
+}
+
+/* OUT/IN/TOTAL セルの表記スタイル */
+.scoretable td.col-out,
+.scoretable td.col-in,
+.scoretable td.col-grand {
+  text-align: center;
+  font-weight: 900;
+  vertical-align: middle;
+}
+.scoretable td.col-out .total-score,
+.scoretable td.col-in .total-score,
+.scoretable td.col-grand .total-score {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--green-deep, #1f7a47);
+  line-height: 1.1;
+}
+.scoretable td.col-grand .total-score { font-size: 22px; }
+.scoretable td.col-out .diff,
+.scoretable td.col-in .diff,
+.scoretable td.col-grand .diff {
+  font-size: 11px; font-weight: 800; margin-top: 1px;
+}
+.scoretable td.col-out .diff.minus,
+.scoretable td.col-in .diff.minus,
+.scoretable td.col-grand .diff.minus { color: var(--red, #d93a5a); }
+.scoretable td.col-out .diff.plus,
+.scoretable td.col-in .diff.plus,
+.scoretable td.col-grand .diff.plus { color: var(--blue, #2b6cd9); }
+.scoretable td.col-out .diff.even,
+.scoretable td.col-in .diff.even,
+.scoretable td.col-grand .diff.even { color: #888; }
+
+/* ============================================================
    v44.1: トイレマークを赤色太字「WC」テキスト表示に変更
    ============================================================ */
 .v41-hb-restroom {
@@ -8420,7 +8559,10 @@ function renderTopAndHero() {
 }
 
 /* =================================================================
-   §9. レンダリング - スコアテーブル
+   §9. レンダリング - スコアテーブル（v45: OUT/IN/TOTAL 集計列を追加）
+   - スコア保存・GAS連携ロジックは一切触れず、表示（innerHTML 構築）のみ拡張
+   - 18Hモード: 1-9H | OUT | 10-18H | IN | TOTAL
+   - 9Hモード : 1-9H | OUT（TOTAL判定）
    ================================================================= */
 function renderTable() {
   const t = $('#scoreTable');
@@ -8436,9 +8578,39 @@ function renderTable() {
   }
   const idxMap = orderedPlayers.map(p => State.players.indexOf(p));
 
+  /* v45: 9H モード判定と OUT/IN PAR 計算をローカルヘルパーで処理
+     — 既存 totalScore/totalDiff はそのまま使う */
+  const v45Is9H = (function(){
+    try { return (State && State.round && State.round.holesMode === '9'); } catch(_) { return false; }
+  })();
+  const v45HasIn = !v45Is9H && holes.length > 9;
+  function v45SumScores(p, from, to) {
+    /* from/to は 0-based, to 是 exclusive */
+    let sum = 0;
+    let any = false;
+    for (let i = from; i < to && i < p.scores.length; i++) {
+      const v = p.scores[i];
+      if (v != null && v > 0) { sum += v; any = true; }
+    }
+    return any ? sum : null;
+  }
+  function v45SumPar(from, to) {
+    let s = 0;
+    for (let i = from; i < to && i < holes.length; i++) s += (holes[i].par || 0);
+    return s;
+  }
+  function v45DiffHtml(score, par) {
+    if (score == null) return '<div class="diff even">—</div>';
+    const d = score - par;
+    let cls = 'even';
+    if (d < 0) cls = 'minus';
+    else if (d > 0) cls = 'plus';
+    return '<div class="diff ' + cls + '">' + diffText(d) + '</div>';
+  }
+
   let html = '';
 
-  /* ヘッダー：ホール番号 */
+  /* ヘッダー：ホール番号（+ OUT / IN / TOTAL） */
   html += '<thead><tr>';
   html += '<th class="col-fixed">プレイヤー</th>';
   holes.forEach((h) => {
@@ -8450,8 +8622,18 @@ function renderTable() {
             '<span class="yard-label">' + getYard(h) + 'y</span>' +
             wcMark +
             '</th>';
+    /* 9Hの直後に OUT 列 */
+    if (h.no === 9 && v45HasIn) {
+      html += '<th class="col-total col-out">OUT</th>';
+    }
   });
-  html += '<th class="col-total">合計</th>';
+  if (v45HasIn) {
+    html += '<th class="col-total col-in">IN</th>';
+    html += '<th class="col-total col-grand">TOTAL</th>';
+  } else {
+    /* 9H モード: 単一合計を OUT 名引きで表示 */
+    html += '<th class="col-total col-out">OUT</th>';
+  }
   html += '</tr>';
 
   /* PAR行 */
@@ -8461,8 +8643,16 @@ function renderTable() {
     const cur = h.no === State.round.currentHole ? ' current-hole' : '';
     const outEnd = (h.no === 9) ? ' out-end' : '';
     html += '<th class="par-row ' + (cur + outEnd).trim() + '">' + h.par + '</th>';
+    if (h.no === 9 && v45HasIn) {
+      html += '<th class="par-row col-total col-out">' + v45SumPar(0, 9) + '</th>';
+    }
   });
-  html += '<th class="par-row col-total">' + COURSE.par + '</th>';
+  if (v45HasIn) {
+    html += '<th class="par-row col-total col-in">' + v45SumPar(9, 18) + '</th>';
+    html += '<th class="par-row col-total col-grand">' + COURSE.par + '</th>';
+  } else {
+    html += '<th class="par-row col-total col-out">' + COURSE.par + '</th>';
+  }
   html += '</tr></thead>';
 
   /* tbody */
@@ -8508,18 +8698,49 @@ function renderTable() {
       /* v35: 一意ID をtdに必ず付与 — タップ伝搬を確実化 */
       const cellId = 'cell-p' + realIdx + '-h' + hi;
       html += '<td class="' + (cls + cur + outEnd).trim() + '" id="' + cellId + '" data-pi="' + realIdx + '" data-hi="' + hi + '" data-action="cell-tap">' + txt + puttMini + '</td>';
+
+      /* v45: 9Hセルの直後に OUT 合計セル */
+      if ((hi + 1) === 9 && v45HasIn) {
+        const outSum = v45SumScores(p, 0, 9);
+        const outPar = v45SumPar(0, 9);
+        html += '<td class="col-total col-out">' +
+                '<div class="total-score">' + (outSum != null ? outSum : '—') + '</div>' +
+                v45DiffHtml(outSum, outPar) +
+                '</td>';
+      }
     });
 
-    const total = totalScore(p);
-    const diff = totalDiff(p);
-    let diffCls = 'even';
-    if (diff != null && diff < 0) diffCls = 'minus';
-    else if (diff != null && diff > 0) diffCls = 'plus';
-    const diffTxt = diff == null ? '—' : diffText(diff);
-    html += '<td class="col-total">' +
-            '<div class="total-score">' + (total || '—') + '</div>' +
-            '<div class="diff ' + diffCls + '">' + diffTxt + '</div>' +
-            '</td>';
+    /* v45: IN / TOTAL セル（18H時） / 9H時は OUT を 集計として表示 */
+    if (v45HasIn) {
+      const inSum  = v45SumScores(p, 9, holes.length);
+      const inPar  = v45SumPar(9, holes.length);
+      const grand  = totalScore(p) || null;
+      const grandDiff = totalDiff(p);
+      let gCls = 'even';
+      if (grandDiff != null && grandDiff < 0) gCls = 'minus';
+      else if (grandDiff != null && grandDiff > 0) gCls = 'plus';
+      const gTxt = grandDiff == null ? '—' : diffText(grandDiff);
+      html += '<td class="col-total col-in">' +
+              '<div class="total-score">' + (inSum != null ? inSum : '—') + '</div>' +
+              v45DiffHtml(inSum, inPar) +
+              '</td>';
+      html += '<td class="col-total col-grand">' +
+              '<div class="total-score">' + (grand != null && grand > 0 ? grand : '—') + '</div>' +
+              '<div class="diff ' + gCls + '">' + gTxt + '</div>' +
+              '</td>';
+    } else {
+      /* 9H モード: 単一合計を OUT として表示 */
+      const total = totalScore(p);
+      const diff = totalDiff(p);
+      let diffCls = 'even';
+      if (diff != null && diff < 0) diffCls = 'minus';
+      else if (diff != null && diff > 0) diffCls = 'plus';
+      const diffTxt = diff == null ? '—' : diffText(diff);
+      html += '<td class="col-total col-out">' +
+              '<div class="total-score">' + (total || '—') + '</div>' +
+              '<div class="diff ' + diffCls + '">' + diffTxt + '</div>' +
+              '</td>';
+    }
     html += '</tr>';
   });
   html += '</tbody>';
