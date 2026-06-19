@@ -4627,7 +4627,8 @@ html, body {
 .v46-sanctuary { position: absolute; left: -10000px; top: -10000px; width: 1px; height: 1px; overflow: hidden; }
 .v46-dash-close {
   position: absolute;
-  top: 10px; right: 10px;
+  top: calc(env(safe-area-inset-top) + 10px); /* ←これに変更！ */
+  right: 10px;
   width: 36px; height: 36px;
   border-radius: 50%;
   border: 1.5px solid #d6dde2;
