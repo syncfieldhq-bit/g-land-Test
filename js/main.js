@@ -4913,4 +4913,3 @@ console.log('G-WORLD v38.0 ラウンド準備画面 配置整理版');
 
   console.log('[v43] COT direct-toggle bound (#v38DashTee)');
 })();
-</script>
