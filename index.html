@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <!-- 監督指示 §3: ピンチイン・アウト完全許可 -->
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#0F5132">
 <title>G-WORLD v38.0 Final | 六甲国際パブリックコース</title>
 
 <!-- ============================================================
@@ -12,7 +11,6 @@
      ============================================================ -->
 <!-- 1. マニフェスト（外部 manifest.json があれば優先、無ければインライン data:URL を使用） -->
 <link rel="manifest" href="./manifest.json">
-<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiRy1XT1JMRCIsInNob3J0X25hbWUiOiJHLVdPUkxEIiwiZGVzY3JpcHRpb24iOiLjgrTjg6vjg5XjgrnjgrPjgqLlhaXlipvjgqLjg5fjg6oiLCJzdGFydF91cmwiOiIuLyIsInNjb3BlIjoiLi8iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsIm9yaWVudGF0aW9uIjoicG9ydHJhaXQiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI2ZmZmZmZiIsInRoZW1lX2NvbG9yIjoiIzJkOWQ1ZiIsImljb25zIjpbeyJzcmMiOiIuL2ljb24ucG5nIiwic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3BuZyIsInB1cnBvc2UiOiJhbnkgbWFza2FibGUifSx7InNyYyI6Ii4vaWNvbi5wbmciLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2UvcG5nIiwicHVycG9zZSI6ImFueSBtYXNrYWJsZSJ9XX0=">
 
 <!-- 2. アイコン -->
 <link rel="apple-touch-icon" href="./icon.png">
@@ -922,12 +920,14 @@
      ============================================================ -->
 
 
-<!-- 以下を 6208行目あたりにそのまま書きます -->
+<!-- ===== Scripts ===== -->
+<!-- 外部ライブラリ: QRコード生成 (by Kazuhiko Arase) -->
+<script src="./js/vendor/qrcode.js" defer></script>
+
+<!-- アプリ本体: data.js → main.js の順で実行される（deferは記述順を保証） -->
 <script src="./js/data.js" defer></script>
 <script src="./js/main.js" defer></script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76d912497671716301648386"></script>
 
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
