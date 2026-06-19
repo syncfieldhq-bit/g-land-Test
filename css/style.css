@@ -5444,3 +5444,173 @@ tr.is-me td.col-grand {
     -4px 0 6px -4px rgba(0,0,0,0.10)
     !important;
 }
+
+
+/* ============================================================
+   v48: 実DOM直撃パッチ — DevTools証跡に基づく
+   - 親クラス `.scoretable` への依存をやめ、ID と td/th 直撃に変更
+   - 実装テーブル ID: #scoreTable, #v32LiveTable, #v31ModalScoreTable
+   - 実装クラス: col-fixed, col-total, col-out/in/grand, current-hole,
+                 col-col-hl, col-row-hl, v35-selected-cell, score-cell
+   ============================================================ */
+
+/* [1] 固定列 td.col-fixed: 背景 #EEECE3 を絶対維持 */
+#scoreTable td.col-fixed,
+#v32LiveTable td.col-fixed,
+#v31ModalScoreTable td.col-fixed,
+td.col-fixed,
+td.col-fixed.col-row-hl,
+td.col-fixed.col-col-hl,
+td.col-fixed.v35-selected-cell,
+tr.is-me td.col-fixed,
+tr.is-input-row td.col-fixed,
+tr.player-row td.col-fixed {
+  background: #EEECE3 !important;
+  background-color: #EEECE3 !important;
+  background-image: none !important;
+  opacity: 1 !important;
+  color: #1a1a1a !important;
+}
+
+/* [2] 合計列 td.col-total: 背景 #EEECE3 を絶対維持 */
+#scoreTable td.col-total,
+#v32LiveTable td.col-total,
+#v31ModalScoreTable td.col-total,
+td.col-total,
+td.col-total.col-out,
+td.col-total.col-in,
+td.col-total.col-grand,
+td.col-total.col-row-hl,
+td.col-total.col-col-hl,
+td.col-total.v35-selected-cell,
+tr.is-me td.col-total,
+tr.is-input-row td.col-total,
+tr.player-row td.col-total {
+  background: #EEECE3 !important;
+  background-color: #EEECE3 !important;
+  background-image: none !important;
+  opacity: 1 !important;
+}
+
+/* [3] sticky と z-index を最強層に */
+td.col-fixed {
+  position: sticky !important;
+  left: 0 !important;
+  z-index: 50 !important;
+}
+td.col-total,
+td.col-total.col-grand {
+  position: sticky !important;
+  right: 0 !important;
+  z-index: 50 !important;
+}
+th.col-fixed {
+  position: sticky !important;
+  left: 0 !important;
+  z-index: 60 !important;
+}
+th.col-total,
+th.col-total.col-grand {
+  position: sticky !important;
+  right: 0 !important;
+  z-index: 60 !important;
+}
+td.score-cell {
+  position: relative;
+  z-index: 1;
+}
+td.score-cell.col-col-hl,
+td.score-cell.col-row-hl {
+  z-index: 2;
+}
+td.score-cell.v35-selected-cell {
+  z-index: 3;
+}
+
+/* [4] ヘッダー th: 白浮き解消、現在ホールでも灰色 #F5F5F0 維持 */
+th,
+th.current-hole,
+th.col-col-hl,
+th.col-row-hl,
+th.current-hole.col-col-hl,
+th.current-hole.col-row-hl,
+#scoreTable th,
+#scoreTable th.current-hole,
+#scoreTable th.col-col-hl,
+#scoreTable th.current-hole.col-col-hl,
+#v32LiveTable th.current-hole.col-col-hl,
+#v31ModalScoreTable th.current-hole.col-col-hl {
+  background: #F5F5F0 !important;
+  background-color: #F5F5F0 !important;
+  background-image: none !important;
+}
+th.col-fixed,
+th.col-fixed.current-hole,
+th.col-fixed.col-col-hl,
+th.col-total,
+th.col-total.col-grand,
+th.col-total.current-hole,
+#scoreTable th.col-fixed,
+#scoreTable th.col-total {
+  background: #EEECE3 !important;
+  background-color: #EEECE3 !important;
+  background-image: none !important;
+}
+
+/* [5] アクティブ列・行のマス目復活 (box-shadow inset) */
+td.col-col-hl,
+th.col-col-hl,
+td.score-cell.col-col-hl {
+  box-shadow:
+    inset -1px 0 0 0 #C5D6CA,
+    inset  0 -1px 0 0 #C5D6CA
+    !important;
+}
+td.col-row-hl,
+td.score-cell.col-row-hl {
+  box-shadow: inset 0 -1px 0 0 #C5D6CA !important;
+}
+td.v35-selected-cell,
+td.score-cell.v35-selected-cell {
+  box-shadow:
+    inset 0 0 0 3px #1B7A4B,
+    inset 0 0 0 5px rgba(45,157,95,0.30)
+    !important;
+}
+td.col-col-hl.v35-selected-cell,
+td.score-cell.col-col-hl.v35-selected-cell {
+  box-shadow:
+    inset 0 0 0 3px #1B7A4B,
+    inset 0 0 0 5px rgba(45,157,95,0.30)
+    !important;
+}
+
+/* [6] 固定列の境界線・影を box-shadow で復活 */
+td.col-fixed,
+th.col-fixed {
+  box-shadow:
+     2px 0 0 0 #C5D6CA,
+     4px 0 6px -4px rgba(0,0,0,0.10)
+     !important;
+}
+td.col-total,
+th.col-total {
+  box-shadow:
+    -2px 0 0 0 #C5D6CA,
+    -4px 0 6px -4px rgba(0,0,0,0.10)
+    !important;
+}
+td.col-fixed.current-hole,
+th.col-fixed.current-hole {
+  box-shadow:
+     2px 0 0 0 #C5D6CA,
+     4px 0 6px -4px rgba(0,0,0,0.10)
+     !important;
+}
+td.col-total.current-hole,
+th.col-total.current-hole {
+  box-shadow:
+    -2px 0 0 0 #C5D6CA,
+    -4px 0 6px -4px rgba(0,0,0,0.10)
+    !important;
+}
