@@ -5282,3 +5282,16 @@ tr.is-me td.col-grand {
   .v41-pg-score { font-size: 22px; min-height: 50px; }
   .v41-mode-tabs .v38-pmt-btn { font-size: 12px; }
 }
+
+/* 山田さんの名前と合計マスが隠れるバグの修正 */
+.col-fixed,
+.col-total {
+  z-index: 100 !important;
+  background-color: #EEECE3 !important;
+}
+
+/* 現在のホール（緑色の列）のマス目・横線を復活させる修正 */
+td.col-col-hl {
+  border-bottom: 1px solid #E5E7EB !important;
+  border-right: 1px solid #E5E7EB !important;
+}
