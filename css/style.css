@@ -4622,6 +4622,7 @@ html, body {
   background: #FFFFFF;
   border-bottom: 2px solid #E5E7EB;
   padding: 12px 12px 14px;
+  padding-top: calc(env(safe-area-inset-top) + 20px); /* ←この1行を新しく追加！ */
 }
 .v46-sanctuary { position: absolute; left: -10000px; top: -10000px; width: 1px; height: 1px; overflow: hidden; }
 .v46-dash-close {
