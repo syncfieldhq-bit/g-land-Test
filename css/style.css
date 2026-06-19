@@ -5283,15 +5283,164 @@ tr.is-me td.col-grand {
   .v41-mode-tabs .v38-pmt-btn { font-size: 12px; }
 }
 
-/* 山田さんの名前と合計マスが隠れるバグの修正 */
-.col-fixed,
-.col-total {
-  z-index: 100 !important;
-  background-color: #EEECE3 !important;
+
+/* ============================================================
+   v47: 最終整合パッチ — 固定列の堅牢化 + ハイライトの非破壊化
+   - 過去パッチ (v44.2/v45/v46.1) による副作用を一括解消
+   - (1) 固定列の背景透過, (2) アクティブ列border消失,
+     (3) アクティブヘッダーの白浮き を全て解決
+   - 設計原則: 後勝ち + 詳細度確保 + z-index階層厳密化
+   ============================================================ */
+
+/* ---- [A] z-index 階層 -----------------------------------
+   通常セル auto / ハイライト 1 / 選択セル 2 /
+   固定列td 10 / 固定列th 11
+   ---------------------------------------------------------- */
+.scoretable td.col-row-hl,
+.scoretable td.col-col-hl,
+.v32-livescore td.col-row-hl,
+.v32-livescore td.col-col-hl,
+#v31ModalScoreTable td.col-row-hl,
+#v31ModalScoreTable td.col-col-hl {
+  position: relative;
+  z-index: 1;
+}
+.scoretable td.v35-selected-cell,
+.v32-livescore td.v35-selected-cell,
+#v31ModalScoreTable td.v35-selected-cell {
+  position: relative;
+  z-index: 2;
+}
+.scoretable td.col-fixed,
+.scoretable td.col-total,
+.v32-livescore td.col-fixed,
+.v32-livescore td.col-total,
+#v31ModalScoreTable td.col-fixed,
+#v31ModalScoreTable td.col-total {
+  position: sticky;
+  z-index: 10 !important;
+}
+.scoretable thead th.col-fixed,
+.scoretable thead th.col-total,
+.v32-livescore thead th.col-fixed,
+.v32-livescore thead th.col-total,
+#v31ModalScoreTable thead th.col-fixed,
+#v31ModalScoreTable thead th.col-total {
+  position: sticky;
+  z-index: 11 !important;
 }
 
-/* 現在のホール（緑色の列）のマス目・横線を復活させる修正 */
-td.col-col-hl {
-  border-bottom: 1px solid #E5E7EB !important;
-  border-right: 1px solid #E5E7EB !important;
+/* ---- [B] 固定列 td の背景を絶対に透けさせない ------------ */
+.scoretable td.col-fixed,
+.scoretable tbody tr td.col-fixed,
+.scoretable tbody tr.is-me td.col-fixed,
+.scoretable tbody tr.is-input-row td.col-fixed,
+.scoretable tbody tr td.col-fixed.col-row-hl,
+.scoretable tbody tr td.col-fixed.col-col-hl,
+.scoretable tbody tr td.col-fixed.v35-selected-cell,
+.v32-livescore td.col-fixed,
+.v32-livescore tbody tr td.col-fixed,
+.v32-livescore tbody tr.is-me td.col-fixed,
+.v32-livescore tbody tr.is-input-row td.col-fixed,
+#v31ModalScoreTable td.col-fixed,
+#v31ModalScoreTable tbody tr td.col-fixed {
+  background-color: #EEECE3 !important;
+  background-image: none !important;
+  opacity: 1 !important;
+}
+
+.scoretable td.col-total,
+.scoretable tbody tr td.col-total,
+.scoretable tbody tr.is-me td.col-total,
+.scoretable tbody tr.is-input-row td.col-total,
+.scoretable tbody tr td.col-total.col-row-hl,
+.v32-livescore td.col-total,
+.v32-livescore tbody tr td.col-total,
+.v32-livescore tbody tr.is-me td.col-total,
+#v31ModalScoreTable td.col-total,
+#v31ModalScoreTable tbody tr td.col-total {
+  background-color: #EEECE3 !important;
+  background-image: none !important;
+  opacity: 1 !important;
+}
+
+/* ---- [C] 固定列ヘッダー (th) の背景維持 ------------------ */
+.scoretable thead th.col-fixed,
+.scoretable thead th.col-fixed.current-hole,
+.scoretable thead th.col-fixed.par-row,
+.scoretable thead th.col-fixed.col-col-hl,
+.scoretable thead th.col-fixed.col-row-hl,
+.v32-livescore thead th.col-fixed,
+#v31ModalScoreTable thead th.col-fixed {
+  background-color: #E4E0CD !important;
+  background-image: none !important;
+}
+
+.scoretable thead th.col-total,
+.scoretable thead th.col-total.current-hole,
+.scoretable thead th.col-total.par-row,
+.v32-livescore thead th.col-total,
+#v31ModalScoreTable thead th.col-total {
+  background-color: #E4E0CD !important;
+  background-image: none !important;
+}
+
+/* ---- [D] current-hole アクティブヘッダーの白浮き解消 ---- */
+.scoretable thead th.current-hole,
+.scoretable thead th.current-hole.par-row {
+  background-color: #F5F5F0 !important;
+  background-image: none !important;
+}
+.scoretable thead th.col-fixed.current-hole,
+.scoretable thead th.col-total.current-hole {
+  background-color: #E4E0CD !important;
+}
+
+/* ---- [E] アクティブ列・選択セルの罫線を box-shadow で復活 - */
+.scoretable td.col-col-hl,
+.scoretable th.col-col-hl,
+.v32-livescore td.col-col-hl,
+.v32-livescore th.col-col-hl,
+#v31ModalScoreTable td.col-col-hl,
+#v31ModalScoreTable th.col-col-hl {
+  box-shadow:
+    inset -1px 0 0 #C5D6CA,
+    inset  0 -1px 0 #C5D6CA
+    !important;
+}
+
+.scoretable td.col-row-hl,
+.v32-livescore td.col-row-hl,
+#v31ModalScoreTable td.col-row-hl {
+  box-shadow: inset 0 -1px 0 #C5D6CA !important;
+}
+
+.scoretable td.v35-selected-cell,
+.v32-livescore td.v35-selected-cell,
+#v31ModalScoreTable td.v35-selected-cell {
+  box-shadow:
+    inset 0 0 0 3px #1B7A4B,
+    inset 0 0 0 5px rgba(45,157,95,0.30)
+    !important;
+}
+
+/* ---- [F] 固定列の境界線・影を復活 ------------------------ */
+.scoretable td.col-fixed,
+.scoretable thead th.col-fixed,
+.v32-livescore td.col-fixed,
+.v32-livescore thead th.col-fixed {
+  box-shadow:
+    2px 0 0 0 #C5D6CA,
+    4px 0 6px -4px rgba(0,0,0,0.10)
+    !important;
+}
+
+.scoretable td.col-total,
+.scoretable thead th.col-total,
+.v32-livescore td.col-total,
+.v32-livescore thead th.col-total {
+  box-shadow:
+    -2px 0 0 0 #C5D6CA,
+    -4px 0 6px -4px rgba(0,0,0,0.10)
+    !important;
 }
