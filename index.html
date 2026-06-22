@@ -1,933 +1,474 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<!-- 監督指示 §3: ピンチイン・アウト完全許可 -->
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>G-WORLD v38.0 Final | 六甲国際パブリックコース</title>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#2d9d5f">
+  <title><?= appMeta.title ?> <?= appMeta.version ?></title>
 
-<!-- ============================================================
-     v34: PWA設定 — ホーム画面追加時の名称 = "G-WORLD"
-     ============================================================ -->
-<!-- 1. マニフェスト（外部 manifest.json があれば優先、無ければインライン data:URL を使用） -->
-<link rel="manifest" href="./manifest.json">
+  <!-- ★ v70 : 描画ボトルネックの先読み (QR/Camera リソース) -->
+  <link rel="dns-prefetch" href="//api.qrserver.com">
+  <link rel="preconnect"  href="https://api.qrserver.com" crossorigin>
+  <link rel="preconnect"  href="https://cdn.jsdelivr.net" crossorigin>
 
-<!-- 2. アイコン -->
-<link rel="apple-touch-icon" href="./icon.png">
-<link rel="apple-touch-icon" sizes="180x180" href="./icon.png">
-<link rel="apple-touch-icon" sizes="152x152" href="./icon.png">
-<link rel="icon" type="image/png" href="./icon.png">
-
-<!-- 3. iOS / Android PWA 表示最適化 -->
-<meta name="apple-mobile-web-app-title" content="G-WORLD">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="application-name" content="G-WORLD">
-<meta name="theme-color" content="#2d9d5f">
-
-<link rel="stylesheet" href="./css/style.css">
+  <?!= include('style') ?>
 </head>
-<body>
 
-<!-- ============================================================
-     画面: G-WORLD（スコアカード）
-     ============================================================ -->
-<div class="screen active" id="screen-gworld">
-  <!-- ============================================================
-       v31: 司令塔（トップ画面）— モード切替 / ロッカー / 同伴者 / アクション
-       ============================================================ -->
-  <div class="v31-cockpit">
-    <!-- ============================================================
-         v38.0 配置整理版 — ラウンド準備画面
-         上から: ① ロッカー → ② ラウンド構成 → ③ プレイモード → ④ スコア表示モード
-              → ⑤ 設定 → ⑥ 同伴者 → ⑦ ラウンド開始 → ⑧ ナビゲーション & 連絡
-         ※ COT(後半スタート時間)はスコアカード画面のダッシュボードに集約済み
-         ============================================================ -->
+<body class="boot">
 
-    <!-- ヘッダー(維持) -->
-    <div class="v31-header v32-header">
-      <div class="v31-h-ico">⛳</div>
-      <div class="v31-h-text">
-        <div class="v31-h-sub">六甲国際パブリック</div>
-        <div class="v31-h-main">ラウンド準備</div>
+  <!-- ========= 1. 初回登録 ========= -->
+  <section class="screen" id="screen-register">
+    <div class="reg-wrap"><div class="reg-card">
+      <div class="reg-hero">
+        <div class="reg-hero-emoji">⛳️</div>
+        <div class="reg-hero-title">G-WORLD へようこそ</div>
+        <div class="reg-hero-sub">六甲国際パブリックコース</div>
       </div>
-      <!-- v32: 9H/18H ステータスバッジ(常時表示) -->
-      <div class="v32-status-badge" id="v32StatusBadge">
-        <span class="v32-sb-num" id="v32SbNum">18</span>
-        <span class="v32-sb-lbl">H</span>
+      <div class="reg-form">
+        <label class="reg-field"><span class="reg-lbl">ニックネーム <em>必須</em></span>
+          <input id="regNick" class="reg-input" maxlength="16" placeholder="例: ゴルフ侍"></label>
+        <label class="reg-field"><span class="reg-lbl">姓 (ファミリーネーム) <em>必須</em></span>
+          <input id="regFamily" class="reg-input" maxlength="16" placeholder="例: 松山"></label>
+        <label class="reg-field"><span class="reg-lbl">ファミリーネーム (ふりがな) <em>必須</em></span>
+          <input id="regKana" class="reg-input" maxlength="24" placeholder="例: まつやま" autocomplete="off"></label>
+        <label class="reg-field"><span class="reg-lbl">名 (ファーストネーム) <em>必須</em></span>
+          <input id="regFirst" class="reg-input" maxlength="16" placeholder="例: 茂樹"></label>
+        <button id="regSubmit" class="reg-submit">プロフィールを登録して開始</button>
       </div>
-    </div>
+    </div></div>
+  </section>
 
-    <!-- v42: ラウンド準備画面 — 指定順序で再構成
-         ①ロッカー → ②ラウンド構成 → ③ティー → ④プレイモード → ⑤スコア表示
-         → ⑥設定 → ⑦同伴者 → ⑧ラウンド開始 → ⑨ナビゲーション及び連絡 → ⑩最下部ナビゲーションバー -->
-
-    <!-- ① 貴重品ロッカー番号 -->
-    <section class="v31-block">
-      <div class="v31-block-title">🔐 貴重品ロッカー番号</div>
-      <input type="text" class="v31-input" id="v31LockerInput"
-             maxlength="6" inputmode="numeric" placeholder="例: 123">
-    </section>
-
-    <!-- ② ラウンド構成(9H / 18H) -->
-    <section class="v31-block v32-holes-block">
-      <div class="v31-block-title">🏁 ラウンド構成</div>
-      <div class="v32-holes-toggle" id="v32HolesToggle">
-        <button type="button" data-holes="18" class="active">
-          <span class="v32-ht-num">18</span>
-          <span class="v32-ht-lbl">フルラウンド<small>1H〜18H全て入力</small></span>
-        </button>
-        <button type="button" data-holes="9">
-          <span class="v32-ht-num">9</span>
-          <span class="v32-ht-lbl">ハーフ<small>1H〜9Hで完結</small></span>
-        </button>
+  <!-- ========= 2. ホーム ========= -->
+  <section class="screen" id="screen-home">
+    <header class="page-head">
+      <div class="ph-greet">こんにちは 👋</div>
+      <div class="ph-name"><span id="homeUserName">ゲスト</span> さん</div>
+      <div class="ph-sub">六甲国際パブリックコース 配布版 v70.0</div>
+    </header>
+    <main class="page-body">
+      <h3 class="sect-ttl">● 利用可能な機能</h3>
+      <div class="home-grid">
+        <button class="home-card" data-nav="gworld"><span class="hc-badge">READY</span>
+          <span class="hc-ico">⛳</span><span class="hc-ttl">G-LAND</span><span class="hc-sub">スコア管理</span></button>
+        <button class="home-card" data-nav="compete"><span class="hc-badge">READY</span>
+          <span class="hc-ico">🏆</span><span class="hc-ttl">G-COMPETE</span><span class="hc-sub">招待QR配布</span></button>
+        <button class="home-card" data-nav="mypage"><span class="hc-badge">READY</span>
+          <span class="hc-ico">👤</span><span class="hc-ttl">マイページ</span><span class="hc-sub">プロフィール・履歴</span></button>
       </div>
-    </section>
-
-    <!-- ③ ティー選択 (COT) — トグル式 REG / LADIES (v42: settingsModal から移管) -->
-    <section class="v31-block">
-      <div class="v31-block-title">⛳ ティー選択 (COT)</div>
-      <div class="v31-ss-segments v42-tee-segments" id="v31TeeSegments">
-        <button type="button" data-tee="reg" class="active">REG（レギュラー）</button>
-        <button type="button" data-tee="ladies">LADIES（レディース）</button>
+      <h3 class="sect-ttl">○ 開発中・近日公開</h3>
+      <div class="home-grid">
+        <div class="home-card disabled"><span class="hc-badge soon">SOON</span><span class="hc-ico">🏘️</span><span class="hc-ttl">Gタウン</span><span class="hc-sub">コミュニティ</span></div>
+        <div class="home-card disabled"><span class="hc-badge soon">SOON</span><span class="hc-ico">🏌️</span><span class="hc-ttl">Gプロアマ</span><span class="hc-sub">公式コンペ</span></div>
+        <div class="home-card disabled"><span class="hc-badge soon">SOON</span><span class="hc-ico">📊</span><span class="hc-ttl">統計分析</span><span class="hc-sub">傾向グラフ</span></div>
+        <div class="home-card disabled"><span class="hc-badge soon">SOON</span><span class="hc-ico">🎯</span><span class="hc-ttl">ハンデ管理</span><span class="hc-sub">自動計算</span></div>
       </div>
-    </section>
+    </main>
+  </section>
 
-    <!-- ④ プレイモード(一般 / 初心者カウンター) -->
-    <section class="v31-block v31-block-accent">
-      <div class="v31-block-title">🎯 プレイモード</div>
-      <div class="v31-mode-toggle" id="v31ModeToggle">
-        <button type="button" data-gmode="standard" class="active">
-          <span class="v31-mode-ico">🏌️</span>
-          <span class="v31-mode-name">一般(4人用)<small>4人ストローク＋自分パット</small></span>
-        </button>
-        <button type="button" data-gmode="beginner">
-          <span class="v31-mode-ico">🔰</span>
-          <span class="v31-mode-name">初心者(カウンター)<small>自分のストロークのみ</small></span>
-        </button>
+  <!-- ========= 3. 準備画面 ========= -->
+  <section class="screen" id="screen-prep">
+    <header class="prep-header">
+      <div class="prep-h-ico">⛳</div>
+      <div class="prep-h-text">
+        <div class="prep-h-sub">六甲国際パブリック</div>
+        <div class="prep-h-main">ラウンド準備</div>
       </div>
-    </section>
-
-    <!-- ⑤ スコア表示モード(v38.0・既存 v38CycleDisplayMode に結線) -->
-    <section class="v31-block">
-      <div class="v31-block-title">🔢 スコア表示モード</div>
-      <div class="v38-disp-toggle" id="v38PrepDispToggle">
-        <button type="button" data-disp="number">
-          <span class="v38-dt-ico">123</span>
-          <span class="v38-dt-lbl">数字<small>5, 4, 6 …</small></span>
+      <div class="prep-h-badge"><span id="prepHolesNum">18</span><small>H</small></div>
+    </header>
+    <main class="page-body">
+      <section class="prep-block">
+        <div class="prep-block-ttl">🔐 貴重品ロッカー番号</div>
+        <input id="prepLocker" class="prep-input" maxlength="6" inputmode="numeric" placeholder="例: 72">
+      </section>
+      <section class="prep-block">
+        <div class="prep-block-ttl">🏁 ラウンド構成</div>
+        <div class="prep-seg" data-bind="holeMode">
+          <button type="button" data-val="18" class="active">
+            <span class="seg-num">18</span><span class="seg-lbl">フルラウンド<small>1H〜18H 全て入力</small></span>
+          </button>
+          <button type="button" data-val="9">
+            <span class="seg-num">9</span><span class="seg-lbl">ハーフ<small>1H〜9Hで完結</small></span>
+          </button>
+        </div>
+      </section>
+      <section class="prep-block">
+        <div class="prep-block-ttl">⛳ ティー選択 (COT)</div>
+        <div class="prep-seg" data-bind="tee">
+          <button type="button" data-val="reg" class="active">REG（レギュラー）</button>
+          <button type="button" data-val="ladies">LADIES（レディース）</button>
+        </div>
+      </section>
+      <section class="prep-block">
+        <div class="prep-block-ttl">🕹 入力モード</div>
+        <div class="prep-seg prep-seg-input" data-bind="inputMode">
+          <button type="button" data-val="simple" class="active">
+            <span class="seg-emoji">⛳</span><span class="seg-lbl">シンプル<small>PAR基準ボタン</small></span>
+          </button>
+          <button type="button" data-val="counter">
+            <span class="seg-emoji">➕</span><span class="seg-lbl">カウンター<small>+/-で計数</small></span>
+          </button>
+        </div>
+      </section>
+      <section class="prep-block">
+        <div class="prep-block-ttl">📊 スコア表示モード</div>
+        <div class="prep-seg" data-bind="scoreMode">
+          <button type="button" data-val="number" class="active"><span class="seg-lbl">ストローク</span></button>
+          <button type="button" data-val="diff"><span class="seg-lbl">+/－</span></button>
+          <button type="button" data-val="symbol"><span class="seg-lbl">○ー△</span></button>
+        </div>
+      </section>
+      <section class="prep-block">
+        <div class="prep-block-ttl">👥 同伴者</div>
+        <div id="prepPlayers" class="prepPlayers" style="font-size: 1.5rem; font-weight: bold; padding: 10px;"></div>
+        <div class="prep-qr-camera">
+          <button class="prep-qr-cta prep-qr-cta-half" id="btnShowInviteQR">
+            <span class="qr-ico">📱</span>
+            <span class="qr-txt">招待QRコード<small>同伴者にQRを表示</small></span>
+          </button>
+          <button class="prep-cam-cta" id="btnOpenCamera">
+            <span class="cam-ico">📷</span>
+            <span class="cam-txt">カメラで読取<small>同伴者のQRをスキャン</small></span>
+          </button>
+        </div>
+      </section>
+      <section class="prep-block">
+        <button class="prep-start" id="btnStartRound">
+          <span class="start-ico">🏁</span>
+          <span class="start-txt">ラウンド開始<small>スコア入力モーダルを起動</small></span>
         </button>
-        <button type="button" data-disp="diff">
-          <span class="v38-dt-ico">±</span>
-          <span class="v38-dt-lbl">スコア差<small>+1, E, −1 …</small></span>
-        </button>
-        <button type="button" data-disp="symbol">
-          <span class="v38-dt-ico">◎</span>
-          <span class="v38-dt-lbl">記号<small>イーグル/バーディ等</small></span>
-        </button>
-      </div>
-    </section>
-
-    <!-- ⑥ 設定(詳細設定ボタンのみ) -->
-    <section class="v31-block">
-      <div class="v31-block-title">⚙️ 設定</div>
-      <button type="button" class="v31-settings-btn v38-settings-btn-clean" id="v31OpenSettings">
-        <span class="v31-set-ico">⚙️</span>
-        <span class="v31-set-text">詳細設定を開く</span>
-        <span class="v31-set-arrow">▶</span>
-      </button>
-    </section>
-
-    <!-- ⑦ 同伴者(招待QR + 追加 + リスト・維持) -->
-    <section class="v31-block">
-      <div class="v31-block-title">👥 同伴者</div>
-      <div class="v31-player-list" id="v31PlayerList"></div>
-      <button type="button" class="v33-add-companion-btn" id="v31AddCompanion">
-        <span class="v33-acb-ico">＋</span>
-        <span class="v33-acb-text">同伴者を追加<small>姓または名で簡単追加</small></span>
-      </button>
-      <button type="button" class="v33-invite-qr-btn" id="v33InviteQR">
-        <span class="v33-iqr-ico">📱</span>
-        <span class="v33-iqr-text">
-          招待QRコードを表示
-          <small>同伴者にスコア入力画面を共有</small>
-        </span>
-      </button>
-    </section>
-
-    <!-- ⑧ ラウンド開始(巨大ボタン — セクションラッパー) -->
-    <section class="v31-block v42-block-start">
-      <button type="button" class="v31-start-btn" id="v31StartRound">
-        <span class="v31-start-ico">🏁</span>
-        <span class="v31-start-text">ラウンド開始<small>スコア入力モーダルを起動</small></span>
-      </button>
-    </section>
-
-    <!-- v32: 9H完了バナー(9Hモード全入力時のみ表示) -->
-    <div class="v32-9h-complete-banner" id="v329hCompleteBanner">
-      🏁 ハーフラウンド完了！タップで集計を確認
-    </div>
-
-    <!-- ⑨ ナビゲーション & 連絡(維持) -->
-    <section class="v31-block">
-      <div class="v31-block-title">🧭 ナビゲーション & 連絡</div>
-      <a class="v31-nav-main" href="https://www.google.com/maps/dir/?api=1&destination=六甲国際パブリックコース" target="_blank" rel="noopener">
-        <span class="v31-nav-ico">🧭</span>
-        <span>Googleナビで<br><b>六甲国際パブリック</b>へ</span>
-      </a>
-      <div class="v31-sub-grid">
-        <a class="v31-sub-btn" href="https://firstee.jp/rok-pc/rok-pc" target="_blank" rel="noopener">
-          <span>📅</span><span>予約サイト</span>
+      </section>
+      <section class="prep-block">
+        <div class="prep-block-ttl">🗺 ナビゲーション & 連絡</div>
+        <a class="prep-nav-main" target="_blank" rel="noopener"
+           href="https://www.google.com/maps/dir/?api=1&destination=%E5%85%AD%E7%94%B2%E5%9B%BD%E9%9A%9B%E3%83%91%E3%83%96%E3%83%AA%E3%83%83%E3%82%AF%E3%82%B3%E3%83%BC%E3%82%B9">
+          <span class="nav-ico">🧭</span>
+          <span class="nav-txt">Googleナビで<br>六甲国際パブリックへ</span>
         </a>
-        <a class="v31-sub-btn" href="tel:0785830351">
-          <span>📞</span><span>緊急電話</span>
-        </a>
-        <button type="button" class="v31-sub-btn" id="v31CourseDetailBtn">
-          <span>📖</span><span>コース詳細</span>
+        <div class="prep-nav-grid">
+          <a class="prep-nav-cell" target="_blank" rel="noopener" href="https://firstee.jp/rok-pc/rok-pc"><span>📅</span>予約サイト</a>
+          <a class="prep-nav-cell" href="tel:0785830351"><span>📞</span>緊急電話</a>
+          <button class="prep-nav-cell" id="btnOpenCourseInfo"><span>📖</span>コース詳細</button>
+        </div>
+      </section>
+      <footer class="ad-zone">
+        <div class="ad-box ad-boss"><div class="ad-fallback-text">BOSS<small>SUNTORY</small></div><div class="ad-tag">今、ひと休みしませんか。</div></div>
+        <div class="ad-qr">
+          <div class="ad-qr-canvas" id="freeQR"></div>
+          <div class="ad-qr-cap">本アプリは<br>完全無料・自由配布<br>ご自由にお使いください。</div>
+        </div>
+      </footer>
+    </main>
+  </section>
+
+  <!-- ========= 4. スコアカード ========= -->
+  <section class="screen" id="screen-card">
+    <div class="card-dash">
+      <div class="card-dash-grid">
+        <button class="dash-cell dash-tap" id="dashTeeBtn">
+          <span class="dc-ico">⛳</span><span class="dc-lbl">使用T</span><span class="dc-val" id="dashTee">REG</span>
         </button>
-      </div>
-    </section>
-
-    <!-- v43: 最下部ナビゲーションバーは物理削除済み -->
-
-    <!-- v38.0 サンクチュアリ: COT(後半スタート時間)関連の旧ID退避
-         ※ スコアカード画面のダッシュボードで管理。JS互換のため非表示でDOM保持 -->
-    <div class="v31-sanctuary" aria-hidden="true">
-      <!-- v34: 後半スタート時間 旧UI(JSが値を書き込むためのID退避) -->
-      <input type="time" id="v32MainPmStart" step="300">
-      <input type="time" id="v31PmStartInput" step="300">
-      <span id="v34PmBigTime">— : —</span>
-      <span id="v34PmBigSub"></span>
-      <button id="v32MainPmSmart" type="button"></button>
-      <button id="v34PmClear" type="button"></button>
-      <button id="v34PmAdd45" type="button"></button>
-      <!-- v32: 休憩時間 旧UI -->
-      <input type="time" id="v32RestStart" step="300">
-      <input type="time" id="v32RestEnd" step="300">
-      <span id="v32RestDisplay">— 分</span>
-      <!-- v32: ライブスコアカード旧ID -->
-      <span id="v32LiveMode">18H</span>
-      <span id="v32LiveHole">1H</span>
-      <div id="v32LiveScroll"><table id="v32LiveTable"></table></div>
-      <div id="v32LiveSummary"></div>
-    </div>
-
-
-  </div>
-
-  <!-- ============================================================
-       v31: 聖域 — v16 計算エンジンが参照する DOM 要素群（非表示）
-       これらは内部処理用に保持。視覚的には完全に隠す。
-       ============================================================ -->
-  <div class="v31-sanctuary" aria-hidden="true">
-    <span id="topCourse">六甲国際パブリックコース</span>
-    <span id="topMeta"></span>
-    <button id="btnTopDetail"></button>
-    <span id="heroHoleNum">1</span>
-    <span id="heroPar">4</span>
-    <span id="heroYard"></span>
-    <span id="heroYardReg"></span>
-    <span id="heroYardLadies"></span>
-    <span id="heroHdcp"></span>
-    <button id="btnHolePrev"></button>
-    <button id="btnHoleNext"></button>
-    <div id="settingsAccordion"><button id="accordionToggle"></button><span id="accordionArrow"></span><div id="accordionBody"></div></div>
-    <div id="displayToggle"><button data-mode="number" class="active"></button><button data-mode="diff"></button><button data-mode="symbol"></button></div>
-    <div id="inputModeMainToggle"><button data-mode="simple" class="active"></button><button data-mode="counter"></button></div>
-    <span id="currentHoleBadge"></span>
-    <div id="tableScroll"><table id="scoreTable"></table></div>
-    <button id="btnSaveRound"></button>
-    <button id="btnInviteQR"></button>
-    <button id="btnAddCompanion"></button>
-    <button id="btnCourseDetail"></button>
-    <button id="btnSettings"></button>
-    <button id="btnTeeToggle"><span id="teeToggleLabel">REGティ</span></button>
-  </div>
-</div>
-
-<!-- ============================================================
-     画面: QR参加（同伴者用・名前選択）
-     ============================================================ -->
-<div class="screen" id="screen-join">
-  <div class="join-hero">
-    <div class="join-hero-icon">🎉</div>
-    <div class="join-hero-title">あなたの名前を選んでください</div>
-    <div class="join-hero-sub">タップするだけで自動的にスコア入力画面が開きます</div>
-    <div class="join-hero-gid" id="joinGroupId"></div>
-  </div>
-  <div class="join-name-list" id="joinNameList"></div>
-  <div class="join-actions">
-    <button class="join-action-btn manual" id="btnJoinManual">
-      <span class="ic">✏️</span>
-      <span>名前がリストにない（手動で入力）</span>
-    </button>
-    <button class="join-action-btn skip" id="btnJoinSkip">
-      <span>スキップしてゲストで開始 ▶</span>
-    </button>
-  </div>
-  <div class="join-help">
-    💡 <b>入力方法：</b>名前をタップするだけで入力画面が開きます。<br>
-    あなたのスコアは「自分」として最上部に固定されます。
-  </div>
-</div>
-
-<!-- placeholder marker -->
-<div style="display:none;" data-marker="end-join"></div>
-</div>
-
-<!-- ============================================================
-     画面: ホーム
-     ============================================================ -->
-<div class="screen" id="screen-home">
-  <div class="home-hero">
-    <div class="home-greet">こんにちは 👋</div>
-    <div class="home-name" id="homeName">ゲスト さん</div>
-    <div class="home-tagline">六甲国際パブリックコース 配布版 v12.0</div>
-  </div>
-  <div id="resumeBannerWrap"></div>
-  <div class="menu-section">
-    <div class="menu-section-label"><span class="lab-dot ready"></span><span>✓ 利用可能な機能</span></div>
-    <div class="menu-grid">
-      <div class="menu-card" data-go="gworld">
-        <div class="ready-badge">READY</div>
-        <div class="ic">⛳</div><div class="ttl">G-LAND</div><div class="sub">スコア管理</div>
-      </div>
-      <div class="menu-card" data-go="compete">
-        <div class="ready-badge">READY</div>
-        <div class="ic">🏆</div><div class="ttl">G-COMPETE</div><div class="sub">招待QR配布</div>
-      </div>
-      <div class="menu-card" data-go="mypage">
-        <div class="ready-badge">READY</div>
-        <div class="ic">👤</div><div class="ttl">マイページ</div><div class="sub">プロフィール・履歴</div>
-      </div>
-    </div>
-  </div>
-  <div class="menu-section">
-    <div class="menu-section-label"><span class="lab-dot soon"></span><span>🔒 開発中・近日公開</span></div>
-    <div class="menu-grid">
-      <div class="menu-card soon" data-soon="Gタウン">
-        <div class="lock">🔒</div><div class="soon-badge">SOON</div>
-        <div class="ic">🏘️</div><div class="ttl">Gタウン</div><div class="sub">コミュニティ</div>
-      </div>
-      <div class="menu-card soon" data-soon="Gプロアマコンペ">
-        <div class="lock">🔒</div><div class="soon-badge">SOON</div>
-        <div class="ic">🏌️</div><div class="ttl">Gプロアマ</div><div class="sub">公式コンペ</div>
-      </div>
-      <div class="menu-card soon" data-soon="統計分析">
-        <div class="lock">🔒</div><div class="soon-badge">SOON</div>
-        <div class="ic">📊</div><div class="ttl">統計分析</div><div class="sub">傾向グラフ</div>
-      </div>
-      <div class="menu-card soon" data-soon="ハンディキャップ">
-        <div class="lock">🔒</div><div class="soon-badge">SOON</div>
-        <div class="ic">🎯</div><div class="ttl">ハンデ管理</div><div class="sub">自動計算</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ============================================================
-     画面: G-COMPETE
-     ============================================================ -->
-<div class="screen" id="screen-compete">
-  <div class="topbar">
-    <div class="topbar-row">
-      <div class="topbar-title">
-        <div class="topbar-course">G-COMPETE</div>
-        <div class="topbar-meta"><span class="dot"></span><span>配布QR・グループ管理（スタンドアロン）</span></div>
-      </div>
-    </div>
-  </div>
-  <div class="compete-list">
-    <div class="compete-card ready" data-action="invite-qr">
-      <div class="c-ic">⚏</div>
-      <div class="c-txt">
-        <div class="c-ttl">招待QR発行</div>
-        <div class="c-sub">仲間にQRを見せてアプリ起動</div>
-      </div>
-      <div class="c-badge">✓ 利用可能</div>
-    </div>
-    <div class="compete-card locked" data-soon="コンペ作成">
-      <div class="c-ic">🏆</div>
-      <div class="c-txt">
-        <div class="c-ttl">🔒 コンペ作成</div>
-        <div class="c-sub">複数組の管理・順位集計</div>
-      </div>
-      <div class="c-badge">SOON</div>
-    </div>
-    <div class="compete-card locked" data-soon="ランキング">
-      <div class="c-ic">📈</div>
-      <div class="c-txt">
-        <div class="c-ttl">🔒 公開ランキング</div>
-        <div class="c-sub">公開設定の参加者のみ</div>
-      </div>
-      <div class="c-badge">SOON</div>
-    </div>
-    <div class="compete-card locked" data-soon="表彰式">
-      <div class="c-ic">🥇</div>
-      <div class="c-txt">
-        <div class="c-ttl">🔒 表彰モード</div>
-        <div class="c-sub">演出付き結果発表</div>
-      </div>
-      <div class="c-badge">SOON</div>
-    </div>
-  </div>
-</div>
-
-<!-- ============================================================
-     画面: マイページ
-     ============================================================ -->
-<div class="screen" id="screen-mypage">
-  <div class="mypage-header">
-    <div class="mypage-avatar">👤</div>
-    <div class="mypage-name" id="myNameDisp">ゲスト</div>
-    <div class="mypage-fullname" id="myFullnameDisp">本名未登録</div>
-  </div>
-  <div class="detail-section">
-    <h3>プロフィール編集（本名）</h3>
-    <div class="form-section" style="padding: 0;">
-      <div class="row2">
-        <div>
-          <label>姓（名字）<span class="required">必須</span></label>
-          <input type="text" id="profLastname" maxlength="12" placeholder="例：山田">
-        </div>
-        <div>
-          <label>名（名前・任意）</label>
-          <input type="text" id="profFirstname" maxlength="12" placeholder="例：太郎（任意）">
+        <button class="dash-cell dash-tap" id="dashScoreBtn">
+          <span class="dc-ico">🔢</span><span class="dc-lbl">スコア表示</span><span class="dc-val" id="dashScore">数字</span>
+        </button>
+        <button class="dash-cell dash-tap" id="dashHolesBtn">
+          <span class="dc-ico">🏁</span><span class="dc-lbl">ホール数</span><span class="dc-val" id="dashHoles">18H</span>
+        </button>
+        <button class="dash-cell dash-tap" id="dashLockerBtn">
+          <span class="dc-ico">🔐</span><span class="dc-lbl">ロッカー</span><span class="dc-val" id="dashLocker">―</span>
+        </button>
+        <button class="dash-cell dash-tap dash-cell-cot" id="dashCotBtn">
+          <span class="dc-ico">⏰</span><span class="dc-lbl">後半スタート</span><span class="dc-val" id="dashCot">06:45</span>
+        </button>
+        <div class="dash-cell dash-cell-status">
+          <span class="dc-ico">📡</span><span class="dc-lbl">同期</span><span class="dc-val" id="dashSync">―</span>
         </div>
       </div>
-      <div class="switch-row">
-        <div>
-          <div class="switch-label">プロフィール公開</div>
-          <div class="switch-sub">公開ランキングに名前を載せる（将来機能）</div>
+      <button class="card-close" id="btnCloseCard">✕</button>
+    </div>
+    <div class="card-scroll" id="cardScroll">
+      <table class="card-table" id="cardTable"><thead></thead><tbody></tbody></table>
+    </div>
+  </section>
+
+  <!-- ========= 5. コンペ ========= -->
+  <section class="screen" id="screen-compete">
+    <header class="page-head"><div class="ph-name">🏆 G-COMPETE</div>
+      <div class="ph-sub">配布QR・グループ管理（スタンドアロン）</div></header>
+    <main class="page-body">
+      <button class="cmp-row enabled" id="btnCmpInvite">
+        <span class="cmp-ico">📱</span>
+        <span class="cmp-txt"><strong>招待QR発行</strong><small>仲間にQRを見せてアプリ起動</small></span>
+        <span class="cmp-tag ok">✓ 利用可能</span>
+      </button>
+      <div class="cmp-row disabled"><span class="cmp-ico">🔒</span><span class="cmp-txt"><strong>コンペ作成</strong><small>複数組の管理・順位集計</small></span><span class="cmp-tag soon">SOON</span></div>
+      <div class="cmp-row disabled"><span class="cmp-ico">🔒</span><span class="cmp-txt"><strong>公開ランキング</strong><small>公開設定の参加者のみ</small></span><span class="cmp-tag soon">SOON</span></div>
+      <div class="cmp-row disabled"><span class="cmp-ico">🔒</span><span class="cmp-txt"><strong>表彰モード</strong><small>演出付き結果発表</small></span><span class="cmp-tag soon">SOON</span></div>
+    </main>
+  </section>
+
+  <!-- ========= 6. マイページ ========= -->
+  <section class="screen" id="screen-mypage">
+    <header class="my-head">
+      <div class="my-avatar">👤</div>
+      <div class="my-name" id="myName">未登録</div>
+      <div class="my-sub" id="mySub">本名未登録</div>
+    </header>
+    <main class="page-body">
+      <h3 class="sect-ttl">▌ プロフィール編集（本名）</h3>
+      <div class="my-form">
+        <label class="my-field"><span>姓（名字）<em>必須</em></span><input id="myFamily" maxlength="16" placeholder="例: 松山"></label>
+        <label class="my-field"><span>ふりがな（名字）<em>必須</em></span><input id="myKana" class="my-input" maxlength="24" placeholder="例：まつやま" autocomplete="off"></label>
+        <label class="my-field"><span>名（名前）<em>必須</em></span><input id="myFirst" maxlength="16" placeholder="例: 茂樹"></label>
+        <label class="my-field"><span>ニックネーム<em>必須</em></span><input id="myNick" maxlength="16" placeholder="例: ゴルフ侍"></label>
+      </div>
+      <h3 class="sect-ttl">▌ コース調整 (ハンデ)</h3>
+      <div class="my-form">
+        <label class="my-field"><span>個人ハンデ（±スコア調整値）</span>
+          <input id="myAdjust" type="number" inputmode="numeric" placeholder="例: -3"></label>
+      </div>
+      <button class="my-save" id="btnMySave">💾 プロフィールを保存</button>
+      <h3 class="sect-ttl">▌ ラウンド履歴</h3>
+      <div class="my-history" id="myHistory">まだラウンド履歴はありません</div>
+      <h3 class="sect-ttl">▌ データ管理</h3>
+      <button class="my-danger" id="btnMyReset">🗑 ローカルデータをリセット</button>
+    </main>
+  </section>
+
+  <!-- ========= フローティング 入力再開バー ========= -->
+  <button class="floating-bar" id="floatingBar" aria-label="入力を再開">
+    <span class="fb-handle"></span>
+    <span class="fb-ttl">▲ <span id="fbHoleLabel">1H</span> の入力を再開</span>
+  </button>
+
+  <!-- ========= 入力パネル ========= -->
+  <div class="panel-mask" id="panelMask"></div>
+  <section class="panel" id="inputPanel" aria-hidden="true">
+    <div class="panel-scroll" id="panelScroll">
+      <header class="panel-head">
+        <div class="ph-hole"><span id="phHoleNo">1</span><small>H</small></div>
+        <div class="ph-par">PAR<span id="phPar">4</span></div>
+        <div class="ph-yard"><span id="phYard">352</span><small>YDS</small></div>
+        <div class="ph-wc" id="phWc" title="トイレあり">🚻</div>
+      </header>
+      <section class="panel-row panel-row-v54">
+        <div class="pr-big">
+          <div class="pr-lbl">ストローク</div>
+          <div class="pr-val pr-val-xxl" id="prStroke">―</div>
         </div>
-        <label class="switch">
-          <input type="checkbox" id="profPublic">
-          <span class="switch-slider"></span>
+        <div class="pr-big">
+          <div class="pr-lbl">パット</div>
+          <div class="pr-val pr-val-xxl" id="prPutt">―</div>
+        </div>
+        <div class="pr-diff-card">
+          <div class="pr-diff-lbl">累積PAR差</div>
+          <div class="pr-diff-val" id="prDiff">E</div>
+        </div>
+      </section>
+      <div class="panel-tabs" data-bind="inputMode">
+        <button data-val="simple" class="active">シンプル</button>
+        <button data-val="counter">カウンター</button>
+      </div>
+      <div class="panel-input">
+        <div class="pi-pane pi-simple active">
+          <div class="pi-grid pi-grid-5">
+            <button class="pi-btn pi-eagle"  data-delta="-2"><span class="pi-num-big" id="ps-2">2</span><span class="pi-lbl">イーグル</span></button>
+            <button class="pi-btn pi-birdie" data-delta="-1"><span class="pi-num-big" id="ps-1">3</span><span class="pi-lbl">バーディ</span></button>
+            <button class="pi-btn pi-par"    data-delta="0"><span class="pi-num-big"  id="ps0">4</span><span class="pi-lbl">パー</span></button>
+            <button class="pi-btn pi-bogey"  data-delta="1"><span class="pi-num-big"  id="ps1">5</span><span class="pi-lbl">ボギー</span></button>
+            <button class="pi-btn pi-dbogey" data-delta="2"><span class="pi-num-big"  id="ps2">6</span><span class="pi-lbl">Dボギー</span></button>
+          </div>
+          <div class="pi-grid pi-grid-4">
+            <button class="pi-btn" data-delta="3"><span class="pi-num-big" id="ps3">7</span><span class="pi-lbl">+3</span></button>
+            <button class="pi-btn" data-delta="4"><span class="pi-num-big" id="ps4">8</span><span class="pi-lbl">+4</span></button>
+            <button class="pi-btn" data-delta="5"><span class="pi-num-big" id="ps5">9</span><span class="pi-lbl">+5</span></button>
+            <button class="pi-btn" data-delta="6"><span class="pi-num-big" id="ps6">10</span><span class="pi-lbl">+6</span></button>
+          </div>
+        </div>
+        <div class="pi-pane pi-counter">
+          <div class="pi-counter-row">
+            <button class="pi-cc pi-cc-minus" id="pcMinus">−</button>
+            <div class="pi-cc-display">
+              <div class="pi-cc-num" id="pcNum">0</div>
+              <div class="pi-cc-cap">タップしてカウント</div>
+            </div>
+            <button class="pi-cc pi-cc-plus" id="pcPlus">＋</button>
+          </div>
+        </div>
+      </div>
+      <section class="panel-putt">
+        <div class="pp-lbl">🏌 パット数 <span class="pp-cur" id="ppCur">0</span></div>
+        <div class="pp-row">
+          <button class="pp-btn active" data-putt="0">0</button>
+          <button class="pp-btn" data-putt="1">1</button>
+          <button class="pp-btn" data-putt="2">2</button>
+          <button class="pp-btn" data-putt="3">3</button>
+          <button class="pp-btn" data-putt="4">4</button>
+          <button class="pp-btn" data-putt="5">5</button>
+        </div>
+      </section>
+    </div>
+    <div class="panel-navbar" id="panelNavbar">
+      <button class="pn-side pn-prev" id="pnPrev" aria-label="前のホール">
+        <span class="pn-arrow">←</span><span class="pn-txt">前</span>
+      </button>
+      <button class="pn-close" id="pnClose" aria-label="閉じる (バー化)">
+        <span class="pn-x">×</span>
+      </button>
+      <button class="pn-side pn-next" id="pnNext" aria-label="次のホール">
+        <span class="pn-txt">次</span><span class="pn-arrow">→</span>
+      </button>
+    </div>
+    <button class="panel-confirm" id="btnPanelConfirm">✓ 確定</button>
+  </section>
+
+  <!-- ========= 汎用モーダル ========= -->
+  <div class="gm-mask" id="gmMask">
+    <div class="gm" id="gmInvite">
+      <div class="gm-head">📱 招待QRコード<button class="gm-x" data-close>✕</button></div>
+      <div class="gm-body">
+        <div id="inviteQR" class="invite-qr"></div>
+        <p class="gm-p">同伴者にこの QR を読み取ってもらえば、自動でラウンドに合流できます。</p>
+        <p class="gm-p gm-p-small" id="inviteUrl"></p>
+      </div>
+    </div>
+    <div class="gm" id="gmSettings">
+      <div class="gm-head">⚙ 詳細設定<button class="gm-x" data-close>✕</button></div>
+      <div class="gm-body">
+        <label class="gm-row"><span>ニックネーム</span><input type="text" id="setNick" maxlength="16"></label>
+        <label class="gm-row"><span>姓（名字）</span><input type="text" id="setFamily" maxlength="16"></label>
+        <label class="gm-row"><span>名（名前）</span><input type="text" id="setFirst" maxlength="16"></label>
+        <label class="gm-row"><span>コース調整 (±)</span><input type="number" id="setAdjust" inputmode="numeric"></label>
+        <button class="gm-save" id="btnSaveSettings">💾 設定を保存</button>
+      </div>
+    </div>
+    <div class="gm" id="gmDashLocker">
+      <div class="gm-head">🔐 貴重品ロッカー番号<button class="gm-x" data-close>✕</button></div>
+      <div class="gm-body">
+        <p class="gm-p">ラウンド中のロッカー番号を変更します。</p>
+        <input id="dashLockerInput" type="text" inputmode="numeric" maxlength="6" placeholder="例: 72" style="height:54px;padding:0 14px;font-size:20px;font-weight:800;border:2px solid var(--c-line);border-radius:10px;background:var(--c-green-pale);width:100%;box-sizing:border-box;margin:8px 0;">
+        <button class="gm-save" id="btnSaveLocker">💾 保存</button>
+      </div>
+    </div>
+    <div class="gm" id="gmDashCot">
+      <div class="gm-head">⏰ 後半スタート時刻<button class="gm-x" data-close>✕</button></div>
+      <div class="gm-body">
+        <p class="gm-p">前半終了後の昼休憩を経て後半 (10H) を開始する時刻を設定します。</p>
+        <input id="dashCotInput" type="time" class="gm-time-input" step="60">
+        <button class="gm-save" id="btnSaveCot">💾 保存</button>
+      </div>
+    </div>
+    <div class="gm gm-scanner" id="gmScanner">
+      <div class="gm-head">📷 QRコードをスキャン<button class="gm-x" data-close>✕</button></div>
+      <div class="gm-body">
+        <video id="scannerVideo" playsinline autoplay muted></video>
+        <canvas id="scannerCanvas" style="display:none;"></canvas>
+        <div class="scanner-frame"></div>
+        <p class="gm-p" id="scannerStatus">📡 カメラを起動中…</p>
+        <p class="gm-p gm-p-small">同伴者の「招待QRコード」または「プロフィールQR」をカメラに映してください。</p>
+      </div>
+    </div>
+    <div class="gm" id="gmCompanionReg">
+      <div class="gm-head">👤 同伴者を登録<button class="gm-x" data-close>✕</button></div>
+      <div class="gm-body">
+        <p class="gm-p">QRから読み取った情報を登録します。<br>名前と「ふりがな」を入力して保存してください。</p>
+        <label class="gm-row">
+          <span>姓（必須）</span>
+          <input type="text" id="cmpFamily" maxlength="16" placeholder="例: 田中">
         </label>
+        <label class="gm-row">
+          <span>ファミリーネーム（ふりがな）<em style="color:#d32f2f;">必須</em></span>
+          <input type="text" id="cmpKana" maxlength="24" placeholder="例: たなか" autocomplete="off">
+        </label>
+        <label class="gm-row">
+          <span>名（任意）</span>
+          <input type="text" id="cmpFirst" maxlength="16" placeholder="例: 一郎">
+        </label>
+        <button class="gm-save" id="btnCmpSave">💾 同伴者として追加</button>
       </div>
-      <button class="primary-btn" id="btnSaveProfile">💾 プロフィールを保存</button>
     </div>
-  </div>
-  <div class="detail-section">
-    <h3>ラウンド履歴</h3>
-    <div id="historyList"></div>
-  </div>
-  <div class="detail-section">
-    <h3>データ管理</h3>
-    <div class="form-section" style="padding: 0;">
-      <button class="danger-btn" id="btnClearAll">⚠️ 全データ削除（リセット）</button>
-    </div>
-  </div>
-</div>
-
-<!-- フッターバー -->
-
-<!-- v32: 9H 集計画面（ハーフ専用） -->
-<div class="v32-half-summary" id="v32HalfSummary">
-  <div class="v32-hs-card">
-    <div class="v32-hs-header">
-      <div class="v32-hs-ico">🏁</div>
-      <div class="v32-hs-title">9ホール 集計（ハーフラウンド）</div>
-      <button type="button" class="v32-hs-close" id="v32HsClose">×</button>
-    </div>
-
-    <div class="v32-hs-section">
-      <div class="v32-hs-section-title">📊 各プレイヤーのスコア（1H〜9H）</div>
-      <div id="v32HsPlayers"></div>
-    </div>
-
-    <div class="v32-hs-section">
-      <div class="v32-hs-section-title">⏰ タイム情報</div>
-      <div id="v32HsTime"></div>
-    </div>
-
-    <div class="v32-hs-actions">
-      <button type="button" class="v32-hs-back" id="v32HsBack">↩ 戻る</button>
-      <button type="button" class="v32-hs-save" id="v32HsSave">💾 9H完結データを保存</button>
-    </div>
-    <div class="v32-hs-meta">※ 9H完結データはマイページ履歴に「ハーフ」として記録されます</div>
-  </div>
-</div>
-
-<nav class="footer-bar">
-  <button class="footer-tab" data-tab="home"><span class="ftab-icon">🏠</span><span>ホーム</span></button>
-  <button class="footer-tab active" data-tab="gworld"><span class="ftab-icon">⛳</span><span>G-WORLD</span></button>
-  <button class="footer-tab" data-tab="compete"><span class="ftab-icon">🏆</span><span>コンペ</span></button>
-  <button class="footer-tab" data-tab="mypage"><span class="ftab-icon">👤</span><span>マイページ</span></button>
-</nav>
-
-<!-- モーダル: スコア入力 -->
-<div class="modal-backdrop" id="scoreModal">
-  <div class="modal v31-modal">
-
-    <!-- v46: スコア入力モーダル ダッシュボード（3列2行）+ マーケティングスペース -->
-    <div class="v46-dash">
-      <button class="v46-dash-close" data-close type="button" aria-label="閉じる">×</button>
-
-      <div class="v46-grid">
-        <!-- 上段 -->
-        <button class="v46-btn v46-btn-tee" id="v46BtnTee" type="button">
-          <span class="v46-btn-ico">⛳</span>
-          <span class="v46-btn-lbl">使用T</span>
-          <span class="v46-btn-val" id="v46TeeVal">REG</span>
-        </button>
-        <button class="v46-btn v46-btn-disp" id="v46BtnDisp" type="button">
-          <span class="v46-btn-ico">🔢</span>
-          <span class="v46-btn-lbl">スコア表示</span>
-          <span class="v46-btn-val" id="v46DispVal">数字</span>
-        </button>
-        <button class="v46-btn v46-btn-holes" id="v46BtnHoles" type="button">
-          <span class="v46-btn-ico">🏁</span>
-          <span class="v46-btn-lbl">ホール数</span>
-          <span class="v46-btn-val" id="v46HolesVal">18H</span>
-        </button>
-
-        <!-- 下段 -->
-        <button class="v46-btn v46-btn-locker" id="v46BtnLocker" type="button">
-          <span class="v46-btn-ico">🔐</span>
-          <span class="v46-btn-lbl">ロッカー</span>
-          <span class="v46-btn-val" id="v46LockerVal">—</span>
-        </button>
-        <button class="v46-btn v46-btn-game" id="v46BtnGame" type="button">
-          <span class="v46-btn-ico">🏌️</span>
-          <span class="v46-btn-lbl">入力人数</span>
-          <span class="v46-btn-val" id="v46GameVal">4人</span>
-        </button>
-        <button class="v46-btn v46-btn-pm" id="v46BtnPm" type="button">
-          <span class="v46-btn-ico">⏰</span>
-          <span class="v46-btn-lbl">後半スタート</span>
-          <span class="v46-btn-val" id="v46PmVal">— : —</span>
-        </button>
+    <div class="gm gm-course-rich" id="gmCourse">
+      <div class="gm-head">
+        <span>📖 コース詳細・ローカルルール</span>
+        <button class="gm-x" data-close>✕</button>
       </div>
-
-      <!-- v47: マーケティングスペースはモーダル最下部（下段拡散層）へ物理移動済み -->
-
-      <!-- v38 聖域: 旧IDをそのまま維持（計算エンジン互換） -->
-      <span class="v46-sanctuary" aria-hidden="true">
-        <button id="v38DashTee"   type="button"></button>
-        <button id="v38DashDisp"  type="button"></button>
-        <span   id="v38DashTeeVal">REG</span>
-        <span   id="v38DashDispVal">数字</span>
-        <span   id="v38DashPm">— : —</span>
-        <span   id="v38DashLocker">—</span>
-        <span   id="v38DashGame">一般</span>
-        <span   id="v38DashHoles">18H</span>
-        <span   id="v38DashInput">シンプル</span>
-        <span   id="scoreModalTitle">スコア入力</span>
-        <span   id="v31ModalPm">— : —</span>
-        <span   id="v31ModalModeBadge">🏌️ 一般</span>
-        <span   id="v32ModalHolesBadge">🏁 18H</span>
-      </span>
-    </div>
-
-    <!-- ============================================================
-         v47: 中段（メイン層） — スコアカード本体、横スクロール復旧
-         ============================================================ -->
-    <div class="v31-modal-top v33-modal-top v47-modal-mid">
-      <div class="v31-scoretable-wrap v33-scoretable-wrap v47-scoretable-wrap">
-        <div class="scoretable-scroll v31-st-scroll v33-st-scroll v47-st-scroll" id="v31ModalTableScroll">
-          <table class="scoretable v33-modal-scoretable" id="v31ModalScoreTable"></table>
+      <div class="gm-body gm-course-body">
+        <h3 class="ci-sect-ttl">▌ コース情報</h3>
+        <div class="ci-card">
+          <div class="ci-lbl">コース名</div>
+          <div class="ci-name-jp">六甲国際パブリックコース</div>
+          <div class="ci-name-en">Rokko Kokusai Public Course</div>
         </div>
-      </div>
-    </div>
-
-    <!-- ============================================================
-         v47: 下段（拡散層） — BOSS広告 + 無料配布QR
-         モーダル最下部に自然配置（flex: 0 0 auto）
-         ============================================================ -->
-    <div class="v47-modal-foot v46-market">
-      <div class="v46-market-boss" aria-label="サントリーBOSS広告">
-        <span class="v46-boss-logo">BOSS</span>
-        <span class="v46-boss-tag">SUNTORY</span>
-        <span class="v46-boss-copy">今、ひと休みしませんか。</span>
-      </div>
-      <div class="v46-market-qr">
-        <img class="v46-qr-img" alt="QR" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=0&data=https%3A%2F%2Fq-bit.github.io%2F">
-        <div class="v46-qr-text">本アプリは<br><b>完全無料・自由配布</b><br>ご自由に<br>お使いください。</div>
-      </div>
-    </div>
-
-    <!-- v33+v38: 聖域 — 計算ロジック・旧ボタンIDをすべて退避 -->
-    <div class="v31-sanctuary" aria-hidden="true">
-      <span id="modalHoleNum">1H</span>
-      <span id="modalHolePar"></span>
-      <span id="modalStroke">0</span>
-      <span id="modalStrokeDiff"></span>
-      <div id="modalPlayerTabs"></div>
-      <!-- v38: 旧6ボタン群IDを聖域に退避(JS互換確保) -->
-      <button id="v31ShotPlus" type="button"></button>
-      <button id="v31ShotMinus" type="button"></button>
-      <button id="v31PuttPlus" type="button"></button>
-      <button id="v31PuttMinus" type="button"></button>
-      <button id="v31PlayerNext" type="button"></button>
-      <button id="v31Confirm" type="button"></button>
-      <span id="v33HoleBadge">1H</span>
-      <span id="v33ParBadge">PAR 4</span>
-      <span id="v33PlayerBadge">—</span>
-      <span id="v33StrokeBadge">0</span>
-      <span id="v34EditHint"></span>
-    </div>
-
-
-    <!-- ============================================================
-         聖域 — v16 計算エンジンが参照する DOM（非表示で保持）
-         ============================================================ -->
-    <div class="v31-sanctuary" aria-hidden="true">
-      <span id="modalModeIcon">⚡</span>
-      <span id="modalModeLabel"></span>
-      <span id="modalModeHint"></span>
-      <button id="btnQuickPar"></button>
-      <button id="btnStrokeMinus"></button>
-      <button id="btnStrokePlus"></button>
-      <div id="puttSection">
-        <button id="btnQuickPutt"></button>
-        <button id="puttToggleMini">ON</button>
-        <button id="btnPuttMinus"></button>
-        <div id="modalPutt">0</div>
-        <button id="btnPuttPlus"></button>
-      </div>
-      <button id="modalHolePrev"></button>
-      <button id="modalHoleNext"></button>
-      <button id="btnClear"></button>
-      <button id="btnConfirm"></button>
-    </div>
-
-  </div>
-</div>
-
-<!-- ============================================================
-     v38: セルタップ → ボトムシート入力パネル
-     入力モード(シンプル/カウンター/ストローク+パット)で内容を動的に切替
-     ============================================================ -->
-<div class="v38-panel v41-panel" id="v38InputPanel" aria-hidden="true">
-  <div class="v38-panel-handle"></div>
-  <button type="button" class="v41-close" id="v38PanelClose" aria-label="閉じる">×</button>
-  <div class="v41-holebar">
-    <button type="button" class="v41-hb-nav v41-hb-prev" id="v38PanelPrevHole">
-      <span class="v41-hb-op">◀</span><span class="v41-hb-lbl">前<br>ホール</span>
-    </button>
-    <div class="v41-hb-center" id="v41HoleCenter">
-      <span class="v41-hb-restroom" id="v41HoleRestroom" aria-label="WC">
-        <span class="v41-hb-wc">WC</span>
-      </span>
-      <span class="v41-hb-hole" id="v38PanelHole">1H</span>
-      <span class="v41-hb-par"  id="v38PanelPar">PAR 4</span>
-      <span class="v41-hb-yards-wrap">
-        <span class="v41-hb-yards" id="v41HoleYards">—</span>
-        <span class="v41-hb-yards-unit">YARDS</span>
-      </span>
-    </div>
-    <button type="button" class="v41-hb-nav v41-hb-next" id="v38PanelNextHole">
-      <span class="v41-hb-lbl">次<br>ホール</span><span class="v41-hb-op">▶</span>
-    </button>
-  </div>
-  <div class="v41-player-grid-wrap">
-    <div class="v41-player-grid" id="v41PlayerGrid"></div>
-  </div>
-  <div class="v38-panel-mode-tabs v41-mode-tabs" id="v38PanelModeTabs">
-    <button type="button" class="v38-pmt-btn" data-pmode="simple">天気予報式</button>
-    <button type="button" class="v38-pmt-btn" data-pmode="counter">カウンター</button>
-    <button type="button" class="v38-pmt-btn" data-pmode="stroke_putt">数字+パット</button>
-  </div>
-  <div class="v38-panel-body v41-panel-body" id="v38PanelBody"></div>
-  <div class="v38-panel-foot v41-panel-foot">
-    <button type="button" class="v41-confirm" id="v41ConfirmBtn">✓ 確定</button>
-  </div>
-  <span class="v41-sanctuary" aria-hidden="true">
-    <span id="v38PanelPlayer">—</span>
-    <span id="v38PanelScore">—</span>
-    <button type="button" id="v38PanelPrevPlayer"></button>
-    <button type="button" id="v38PanelNextPlayer"></button>
-  </span>
-</div>
-<div class="v38-panel-backdrop" id="v38PanelBackdrop" aria-hidden="true"></div>
-
-<!-- v38.2: PM スタート iOS標準時間スピナー用モーダル -->
-<div class="v382-pm-backdrop" id="v382PmPicker" aria-hidden="true">
-  <div class="v382-pm-card">
-    <div class="v382-pm-title">⏰ 後半スタート時間</div>
-    <div class="v382-pm-hint">
-      タップで iOS 標準の時間スピナーが開きます。<br>
-      初期値は「現在時刻 + 45分」です。
-    </div>
-    <input type="time" class="v382-pm-input" id="v382PmInput" step="60">
-    <div class="v382-pm-quick">
-      <button type="button" id="v382PmNow45">⚡ 今+45分</button>
-      <button type="button" id="v382PmClear">🗑 クリア</button>
-    </div>
-    <div class="v382-pm-actions">
-      <button type="button" class="v382-pm-cancel" id="v382PmCancel">キャンセル</button>
-      <button type="button" class="v382-pm-save" id="v382PmSave">✓ 保存</button>
-    </div>
-  </div>
-</div>
-
-
-<!-- モーダル: 招待QR -->
-<div class="modal-backdrop" id="qrModal">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-header">
-      <div class="modal-title">招待QRコード（配布用）</div>
-      <button class="modal-close" data-close>×</button>
-    </div>
-    <div class="qr-modal-body">
-      <div class="qr-group-name" id="qrGroupName">ラウンド名</div>
-      <div class="qr-canvas" id="qrCanvas"></div>
-      <div class="qr-group-id" id="qrGroupId">GID: ABC-1234</div>
-      <div class="qr-join-url" id="qrJoinUrl" title="埋込URL">　</div>
-      <div class="qr-actions">
-        <button class="secondary" id="btnCopyLink">🔗 リンクコピー</button>
-        <button id="btnShareLink">📤 共有</button>
-      </div>
-      <div class="qr-standalone-note">
-        ℹ️ 本アプリは<strong>スタンドアロン型</strong>です。<br>
-        QRはアプリへの招待リンクで、各端末で独立してスコアを記録します。<br>
-        サーバー同期はありません（LocalStorage保存）。
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- v38.1: 同伴者一括追加モーダル(最大3名分・入力された分だけ反映) -->
-<div class="modal-backdrop" id="addModal">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-header">
-      <div class="modal-title">👥 同伴者を一括追加（最大3名）</div>
-      <button class="modal-close" data-close>×</button>
-    </div>
-    <div class="form-section">
-      <div class="v381-batch-hint">
-        💡 最大3名分の入力欄を用意しています。入力した分だけが保存されます。<br>
-        姓（名字）のみ必須・名は任意。空欄の行はスキップします。
-      </div>
-      <div class="v381-batch-block" id="v381BatchBlock">
-        <div class="v381-batch-row" data-batch-idx="1">
-          <div class="v381-batch-num">1</div>
-          <div>
-            <label>姓（必須）</label>
-            <input type="text" class="v381-batch-ln" data-batch-idx="1" maxlength="12" placeholder="例：田中">
+        <div class="ci-card">
+          <div class="ci-lbl">所在地</div>
+          <div class="ci-val">〒651-1263 神戸市北区山田町西下字押部道１６-１</div>
+        </div>
+        <div class="ci-grid-2">
+          <div class="ci-card"><div class="ci-lbl">TEL</div><div class="ci-val">078-583-0351</div></div>
+          <div class="ci-card"><div class="ci-lbl">FAX</div><div class="ci-val">078-583-0355</div></div>
+        </div>
+        <div class="ci-card">
+          <div class="ci-lbl">URL</div>
+          <a class="ci-val ci-link" href="http://www.rok-pc.com" target="_blank" rel="noopener">http://www.rok-pc.com</a>
+        </div>
+        <div class="ci-grid-2">
+          <div class="ci-card"><div class="ci-lbl">REG TEE</div><div class="ci-val">6,047y / 68.2</div></div>
+          <div class="ci-card"><div class="ci-lbl">LADIES TEE</div><div class="ci-val">5,067y / 64.8</div></div>
+        </div>
+        <div class="ci-card">
+          <div class="ci-lbl">PAR</div>
+          <div class="ci-val">72 (OUT 36 / IN 36)</div>
+        </div>
+        <h3 class="ci-sect-ttl">▌ ティーマーカー色</h3>
+        <div class="ci-grid-2">
+          <div class="ci-tee-box">
+            <div class="ci-tee-ttl">GOING OUT (1-9H)</div>
+            <div class="ci-tee-row"><span>REG</span><span class="ci-marker" style="background:#fff;border:2px solid #999;"></span>白マーク</div>
+            <div class="ci-tee-row"><span>LADIES</span><span class="ci-marker" style="background:#ff5252;border:2px solid #c62828;"></span>赤マーク</div>
           </div>
-          <div>
-            <label>名（任意）</label>
-            <input type="text" class="v381-batch-fn" data-batch-idx="1" maxlength="12" placeholder="例：一郎">
+          <div class="ci-tee-box">
+            <div class="ci-tee-ttl">COMING IN (10-18H)</div>
+            <div class="ci-tee-row"><span>REG</span><span class="ci-marker" style="background:#ffd54f;border:2px solid #f9a825;"></span>黄マーク</div>
+            <div class="ci-tee-row"><span>LADIES</span><span class="ci-marker" style="background:#66bb6a;border:2px solid #2e7d32;"></span>緑マーク</div>
           </div>
         </div>
-        <div class="v381-batch-row" data-batch-idx="2">
-          <div class="v381-batch-num">2</div>
-          <div>
-            <label>姓（必須）</label>
-            <input type="text" class="v381-batch-ln" data-batch-idx="2" maxlength="12" placeholder="例：佐藤">
-          </div>
-          <div>
-            <label>名（任意）</label>
-            <input type="text" class="v381-batch-fn" data-batch-idx="2" maxlength="12" placeholder="例：花子">
-          </div>
+        <h3 class="ci-sect-ttl">▌ ヤーデージ・HDCP一覧</h3>
+        <div class="ci-table-wrap">
+          <table class="ci-table" id="ciYardageTable"></table>
         </div>
-        <div class="v381-batch-row" data-batch-idx="3">
-          <div class="v381-batch-num">3</div>
-          <div>
-            <label>姓（必須）</label>
-            <input type="text" class="v381-batch-ln" data-batch-idx="3" maxlength="12" placeholder="例：鈴木">
-          </div>
-          <div>
-            <label>名（任意）</label>
-            <input type="text" class="v381-batch-fn" data-batch-idx="3" maxlength="12" placeholder="例：太郎">
-          </div>
-        </div>
-      </div>
-      <div class="v381-batch-actions">
-        <button type="button" class="v381-batch-clear" id="v381BatchClear">🗑 全クリア</button>
-        <button type="button" class="v381-batch-save" id="v381BatchSave">✓ 保存（<span id="v381BatchCount">0</span>名）</button>
-      </div>
-      <!-- 旧IDをサンクチュアリに退避(JS互換) -->
-      <span style="display:none" aria-hidden="true">
-        <input type="text" id="addLastname">
-        <input type="text" id="addFirstname">
-        <button id="btnAddSubmit" type="button"></button>
-      </span>
-    </div>
-  </div>
-</div>
-
-<!-- モーダル: プレイヤー編集 -->
-<div class="modal-backdrop" id="editPlayerModal">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-header">
-      <div class="modal-title" id="editPlayerTitle">プレイヤー編集</div>
-      <button class="modal-close" data-close>×</button>
-    </div>
-    <div class="form-section">
-      <div class="row2">
-        <div>
-          <label>姓（名字）<span class="required">必須</span></label>
-          <input type="text" id="editLastname" maxlength="12">
-        </div>
-        <div>
-          <label>名（名前・任意）</label>
-          <input type="text" id="editFirstname" maxlength="12">
-        </div>
-      </div>
-      <button class="primary-btn" id="btnEditSubmit">💾 変更を保存</button>
-      <button class="primary-btn" id="btnMakeMe" style="background:linear-gradient(135deg,#C99A1A,#F2C84B);">⭐ このプレイヤーを「自分」にする</button>
-      <button class="danger-btn" id="btnDeletePlayer">🗑️ このプレイヤーを削除</button>
-    </div>
-  </div>
-</div>
-
-<!-- モーダル: コース詳細・ルール -->
-<div class="modal-backdrop" id="detailModal">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-header">
-      <div class="modal-title">コース詳細・ローカルルール</div>
-      <button class="modal-close" data-close>×</button>
-    </div>
-    <div class="detail-section">
-      <h3>コース情報</h3>
-      <div class="course-info-grid">
-        <div class="item full"><div class="label">コース名</div><div class="val">六甲国際パブリックコース<br><span style="font-size:10px;color:var(--ink-soft);">Rokko Kokusai Public Course</span></div></div>
-        <div class="item full"><div class="label">所在地</div><div class="val" style="font-size:12px;">〒651-1263 神戸市北区山田町西下字押部道16-1</div></div>
-        <div class="item"><div class="label">TEL</div><div class="val">078-583-0351</div></div>
-        <div class="item"><div class="label">FAX</div><div class="val">078-583-0355</div></div>
-        <div class="item full"><div class="label">URL</div><div class="val" style="font-size:12px;">http://www.rok-pc.com</div></div>
-        <div class="item"><div class="label">REG TEE</div><div class="val">6,047y / 68.2</div></div>
-        <div class="item"><div class="label">LADIES TEE</div><div class="val">5,067y / 64.8</div></div>
-        <div class="item full"><div class="label">PAR</div><div class="val">72（OUT 36 / IN 36）</div></div>
-      </div>
-    </div>
-    <div class="detail-section">
-      <h3>ティーマーカー色</h3>
-      <div class="course-info-grid">
-        <div class="item"><div class="label">GOING OUT (1-9H)</div><div class="val" style="font-size:12px;">REG ➜ ⚪白マーク<br>LADIES ➜ 🔴赤マーク</div></div>
-        <div class="item"><div class="label">COMING IN (10-18H)</div><div class="val" style="font-size:12px;">REG ➜ 🟡黄マーク<br>LADIES ➜ 🟢緑マーク</div></div>
-      </div>
-    </div>
-    <div class="detail-section">
-      <h3>ヤーデージ・HDCP一覧</h3>
-      <div style="overflow-x:auto;">
-        <table class="yard-table" id="yardTable"></table>
-      </div>
-    </div>
-    <div class="detail-section">
-      <h3>ローカル・ルール</h3>
-      <div class="jga-notice">
-        ⚖️ 本ルールに適応なき事項は全てJGAのゴルフ規則による。
-      </div>
-      <ol class="rules-list" id="rulesList"></ol>
-    </div>
-    <div class="detail-section">
-      <h3>その他の注意事項</h3>
-      <div class="notes-block">
-        ・ハーフ 2時間10分以内でプレーしましょう。<br>
-        ・ボールマーク・バンカーは各自で直しましょう。<br>
-        ・場内での負傷・紛失・盗難等の事故は当事者の責任となります。<br>
-        ・利用約款規則に従ってプレーすること。<br>
-        ・⭐避難小屋（W.C）：3H, 5H, 8H, 12H, 14H, 17H 付近に設置。
+        <h3 class="ci-sect-ttl">▌ ローカル・ルール</h3>
+        <div class="ci-rules-header" id="ciRulesHeader"></div>
+        <div id="ciLocalRules"></div>
+        <h3 class="ci-sect-ttl">▌ その他の注意事項</h3>
+        <div class="ci-notes-card" id="ciOtherNotes"></div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- モーダル: 入力設定 -->
-<div class="modal-backdrop" id="settingsModal">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-header">
-      <div class="modal-title">入力設定</div>
-      <button class="modal-close" data-close>×</button>
-    </div>
-    <div class="form-section">
-      <div class="switch-row" style="border-top: none; margin-top: 0;">
-        <div>
-          <div class="switch-label">パット数入力</div>
-          <div class="switch-sub">パット数を別管理する</div>
-        </div>
-        <label class="switch"><input type="checkbox" id="setPuttEnabled" checked><span class="switch-slider"></span></label>
-      </div>
-      <div class="switch-row">
-        <div>
-          <div class="switch-label">確定後に自動で次ホールへ</div>
-          <div class="switch-sub">スムーズ入力モード</div>
-        </div>
-        <label class="switch"><input type="checkbox" id="setAutoNext" checked><span class="switch-slider"></span></label>
-      </div>
-      <div class="switch-row">
-        <div>
-          <div class="switch-label">パット情報をテーブルに表示</div>
-          <div class="switch-sub">セル下にミニ表記 (p2)</div>
-        </div>
-        <label class="switch"><input type="checkbox" id="setShowPutt"><span class="switch-slider"></span></label>
-      </div>
-      <!-- v43: 使用ティ（COT）はスコア入力モーダルのダッシュボードボタンと、
-           ラウンド準備画面のティー選択トグルに集約したため、ココからは物理削除済み -->
-      <button class="primary-btn" id="btnSaveSettings">💾 設定を保存</button>
+  <!-- ========= フッターナビ ========= -->
+  <nav class="bottom-nav" id="bottomNav">
+    <button data-nav="home"><span>🏠</span>ホーム</button>
+    <button data-nav="gworld"><span>⛳</span>G-WORLD</button>
+    <button data-nav="compete"><span>🏆</span>コンペ</button>
+    <button data-nav="mypage"><span>👤</span>マイページ</button>
+  </nav>
 
-      <!-- v34: 後半スタート時間はメイン画面に統合（設定モーダルからは削除） -->
-      <div class="v31-sanctuary" aria-hidden="true">
-        <input type="time" id="v31PmStartInput">
-        <button id="v31PmSmartFill"></button>
-        <button id="v31PmClear"></button>
-      </div>
+  <div class="toast" id="toast"></div>
 
-      <!-- ============================================================
-           v42: 「スコア表示モード」「使用ティ」はラウンド準備画面へ移管
-           — 設定モーダルからは物理削除した。JSビンディングはサーチ先IDが他箰所にあるため継続動作。
-           ============================================================ -->
+  <script>
+    window.GW_BOOT = {
+      version  : "<?= appMeta.version ?>",
+      course   : "<?= appMeta.course ?>",
+      joinId   : "<?= joinId ?>",
+      webAppUrl: "<?= webAppUrl ?>"
+    };
+  </script>
+  <!-- QRスキャン用 jsQR (軽量・依存ゼロ) -->
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js" defer></script>
 
-      <!-- v33: 招待QRは「同伴者追加」直下へ移管 -->
-
-    </div>
-  </div>
-</div>
-
-
-<!-- モーダル: 手動本名入力（QR参加時のフォールバック） -->
-<div class="modal-backdrop" id="manualNameModal">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-header">
-      <div class="modal-title">あなたの本名を入力</div>
-      <button class="modal-close" data-close>×</button>
-    </div>
-    <div class="form-section">
-      <p style="font-size:12px; color:var(--ink-soft); margin-bottom:10px; line-height:1.6;" id="manualNameHint">
-        招待ホストが入力した「姓」が事前にセットされています。<br>
-        必要に応じて「名」を追加入力してください（任意）。
-      </p>
-      <div class="row2">
-        <div>
-          <label>姓（名字）<span class="required">必須</span></label>
-          <input type="text" id="manualLastname" maxlength="12" placeholder="例：山田">
-        </div>
-        <div>
-          <label>名（名前・任意）</label>
-          <input type="text" id="manualFirstname" maxlength="12" placeholder="例：太郎（任意）">
-        </div>
-      </div>
-      <button class="primary-btn" id="btnManualSubmit">この名前で参加する</button>
-    </div>
-  </div>
-</div>
-
-<!-- トースト -->
-<div class="toast" id="toast"></div>
-
-<!-- ============================================================
-     JavaScript（次でWrite追記）
-     ============================================================ -->
-
-
-<!-- ===== Scripts ===== -->
-<!-- 外部ライブラリ: QRコード生成 (by Kazuhiko Arase) -->
-<script src="./js/vendor/qrcode.js" defer></script>
-
-<!-- アプリ本体: data.js → main.js の順で実行される（deferは記述順を保証） -->
-<script src="./js/data.js" defer></script>
-<script src="./js/main.js" defer></script>
-
+  <?!= include('data_js') ?>
+  <?!= include('state_js') ?>
+  <?!= include('app_js') ?>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
